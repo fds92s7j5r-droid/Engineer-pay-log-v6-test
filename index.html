@@ -1,0 +1,1276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#10233f" />
+  <title>Engineer Pay Log</title>
+  <meta name="application-name" content="Pay Log" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Pay Log" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png" />
+
+  <style>
+    :root{
+      --bg:#f4f7fb;--card:#fff;--ink:#162033;--muted:#6b778c;--line:#dfe6ef;
+      --brand:#10233f;--brand2:#1f5d9b;--good:#157347;--warn:#9a6700;--bad:#b42318;
+      --shadow:0 10px 30px rgba(16,35,63,.08);--radius:18px;
+    }
+    *{box-sizing:border-box} html,body{margin:0;padding:env(safe-area-inset-top) 0 0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif}
+    button,input,textarea,select{font:inherit} button{cursor:pointer}
+    .app{max-width:1100px;margin:0 auto;padding:18px 18px 110px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 0 18px}
+    .brand h1{font-size:24px;margin:0;letter-spacing:-.02em}.brand p{margin:4px 0 0;color:var(--muted);font-size:13px}
+    .pill{display:inline-flex;align-items:center;gap:7px;padding:7px 10px;border-radius:999px;background:#eaf2fb;color:#1c4f82;font-size:12px;font-weight:700}
+    .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+    .span12{grid-column:span 12}.span8{grid-column:span 8}.span6{grid-column:span 6}.span4{grid-column:span 4}
+    .stat .label{color:var(--muted);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}.stat .value{font-size:28px;font-weight:800;margin-top:5px}.stat .sub{font-size:12px;color:var(--muted);margin-top:5px}
+    .section-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}.section-title h2{margin:0;font-size:18px}
+    .btn{border:0;border-radius:12px;padding:11px 14px;font-weight:750;background:#e8eef6;color:var(--brand)}.btn.primary{background:var(--brand);color:#fff}.btn.good{background:#e7f5ec;color:var(--good)}.btn.danger{background:#fdecec;color:var(--bad)}.btn.small{padding:8px 10px;font-size:12px}
+    .form-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}.field{grid-column:span 6}.field.full{grid-column:span 12}.field.third{grid-column:span 4}.field label{display:block;font-size:12px;font-weight:750;color:#445066;margin:0 0 6px}.field input,.field textarea,.field select{width:100%;border:1px solid #cfd8e6;border-radius:12px;background:#fff;color:var(--ink);padding:12px;outline:none}.field input:focus,.field textarea:focus,.field select:focus{border-color:#7ca6d2;box-shadow:0 0 0 3px rgba(31,93,155,.10)} textarea{min-height:78px;resize:vertical}
+    .checks{display:flex;gap:8px;flex-wrap:wrap}.check{display:flex;align-items:center;gap:8px;border:1px solid var(--line);padding:9px 11px;border-radius:12px;background:#fbfcfe}.check input{width:auto;margin:0}
+
+    .conditional-panel{display:none;margin-top:10px;padding:12px;border:1px solid #cfd8e6;border-radius:14px;background:#f8fafc}
+    .conditional-panel.show{display:block}
+    .duration-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .subhead{font-size:12px;font-weight:800;color:#445066;margin:4px 0 8px}
+    .calc{background:linear-gradient(145deg,#10233f,#173b63);color:#fff;border:0}.calc .section-title h2{color:#fff}.calc-row{display:flex;justify-content:space-between;gap:20px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.12)}.calc-row:last-child{border-bottom:0}.calc-row span:first-child{color:#c9d6e5}.calc-row strong{font-variant-numeric:tabular-nums}.calc-total{font-size:21px;padding-top:13px;margin-top:4px;border-top:1px solid rgba(255,255,255,.28)}
+    .badge{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:800;background:#eef3f8;color:#405168}.badge.ot{background:#fff1d6;color:#8a5a00}.badge.holiday{background:#f3e8ff;color:#6f2da8}.badge.penalty{background:#e8f5ee;color:#17633b}.badge.timeslip{background:#fff0a8;color:#6f5700;border:1px solid #e2c348}
+    .shift.timeslip{background:#fff9d8;border-color:#ddc04b;box-shadow:inset 4px 0 0 #ddc04b}
+    .time-slip-check{background:#fff1a6!important;border-color:#dcc044!important;color:#5f4a00;font-weight:850}
+    .time-slip-panel{display:none;margin-top:10px;padding:14px;border:1px solid #d9bb39;border-radius:14px;background:#fff8cf}
+    .time-slip-panel.show{display:block}
+    .time-slip-panel .subhead{color:#624f00}
+    .time-slip-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .history{display:flex;flex-direction:column;gap:9px}.shift{display:grid;grid-template-columns:100px 1fr auto;gap:12px;align-items:center;padding:13px;border:1px solid var(--line);border-radius:14px;background:#fff}.shift-date{font-weight:800}.shift-main{min-width:0}.shift-title{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.shift-sub{color:var(--muted);font-size:12px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.shift-pay{font-weight:850;font-variant-numeric:tabular-nums;text-align:right}.shift-actions{display:flex;gap:5px;margin-top:5px;justify-content:flex-end}
+    .empty{padding:30px;text-align:center;color:var(--muted);border:1px dashed #cbd5e1;border-radius:14px;background:#fbfcfe}
+    .nav{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:6px;padding:7px;background:rgba(255,255,255,.94);backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:18px;box-shadow:0 12px 40px rgba(16,35,63,.18);z-index:10}.nav button{border:0;background:transparent;color:#5d687b;border-radius:12px;padding:10px 13px;font-weight:750}.nav button.active{background:var(--brand);color:#fff}
+    .view{display:none}.view.active{display:block}.notice{font-size:12px;color:var(--muted);line-height:1.5}.rate-note{padding:12px;border-radius:12px;background:#f7fafc;border:1px solid var(--line);font-size:13px;line-height:1.5}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap}.search{flex:1;min-width:180px;border:1px solid #cfd8e6;border-radius:12px;padding:10px 12px}
+    .month-group{margin-top:16px}.month-title{font-weight:850;margin:14px 0 8px;color:#344054}
+    .modal{position:fixed;inset:0;background:rgba(16,24,40,.58);display:none;align-items:flex-end;justify-content:center;z-index:30}.modal.open{display:flex}
+    .modal-card{width:min(640px,calc(100% - 24px));max-height:min(86vh,760px);margin:12px 12px calc(12px + env(safe-area-inset-bottom));background:#fff;border:1px solid #dbe3ec;border-radius:22px;box-shadow:0 18px 60px rgba(0,0,0,.28);display:flex;flex-direction:column;overflow:hidden;color:var(--ink)}
+    .modal-head{flex:0 0 auto;padding:18px 20px 14px;border-bottom:1px solid #e3e9f0;background:#fff}
+    .modal-head h2{font-size:22px;line-height:1.18;color:var(--ink)}
+    .modal-body{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 20px 18px;background:#fff;color:var(--ink);line-height:1.5}
+    .modal-foot{flex:0 0 auto;padding:12px 20px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #e3e9f0;background:#fff}
+    .modal-foot .btn.primary{width:100%;min-height:48px}
+    #whatsNewModal .modal-card{max-height:78vh}
+    #whatsNewModal .whats-new-list{font-size:15px;line-height:1.45;margin:4px 0 0;padding-left:21px}
+    #whatsNewModal .whats-new-list li{margin:0 0 10px}
+    #whatsNewModal .whats-new-list li:last-child{margin-bottom:0}
+    .update-mascot{display:flex;align-items:center;justify-content:center;gap:16px;margin:0 0 14px}
+    .update-mascot img{width:92px;height:92px;border-radius:20px;object-fit:cover;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+    .speech-bubble{position:relative;background:#f3f7fb;border:2px solid #9fb8d3;border-radius:18px;padding:11px 14px;font-weight:900;color:#173b63;font-size:17px}
+    .speech-bubble:before{content:"";position:absolute;left:-12px;bottom:18px;border-width:9px 12px 9px 0;border-style:solid;border-color:transparent #9fb8d3 transparent transparent}
+    .speech-bubble:after{content:"";position:absolute;left:-8px;bottom:20px;border-width:7px 10px 7px 0;border-style:solid;border-color:transparent #f3f7fb transparent transparent}
+    .crew-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .special-panel{margin-top:10px;padding:14px;border:1px solid #b9c9da;border-radius:14px;background:#f5f8fb}
+    .special-panel.hidden{display:none}
+    .special-note{font-size:12px;color:var(--muted);line-height:1.45;margin-top:8px}
+    .calc-row.pay-zero{display:none}
+    .pdf-note{font-size:11px;color:var(--muted)}
+    .sheet{width:min(720px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:22px 22px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -14px 40px rgba(0,0,0,.18)}
+    .danger-zone{border:1px solid #fecaca;background:#fff7f7;border-radius:14px;padding:14px}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px}
+    .start-date-prompt{margin-top:10px;padding:12px 14px;border:2px solid #7ca6d2;border-radius:14px;background:#f2f7fd}
+    .start-date-prompt .tap-hint{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:850;color:#173b63;margin-bottom:8px}
+    .start-date-prompt .tap-hint span:first-child{font-size:20px}
+    .start-date-prompt input[type=date]{min-height:52px;font-size:17px;font-weight:750;background:#fff;border:1px solid #9fb8d3;color:var(--ink);padding:12px 14px}
+    .start-date-prompt .date-format-hint{font-size:11px;color:var(--muted);margin-top:7px}
+    .feature-card{border:1px solid #d9e2ec;background:#fff;border-radius:16px;padding:15px}
+    .feature-card h3{margin:0 0 6px;font-size:15px}.feature-card .big{font-size:28px;font-weight:900;letter-spacing:-.03em}.feature-card .mini{font-size:12px;color:var(--muted);line-height:1.45}
+    .feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .warning-panel{display:none;margin-top:12px;padding:12px 14px;border-radius:14px;border:1px solid #e2c05c;background:#fff8d8;color:#654f00;font-size:12px;line-height:1.5}.warning-panel.show{display:block}.warning-panel strong{display:block;margin-bottom:4px}
+    .backup-reminder{display:none;margin-bottom:14px;padding:12px 14px;border-radius:14px;background:#fff8d8;border:1px solid #e4c65f;color:#685300;font-size:12px;line-height:1.45}.backup-reminder.show{display:block}.mode-banner{padding:10px 12px;border-radius:12px;background:#eaf2fb;border:1px solid #9bbce0;color:#12345b;font-size:12px;font-weight:800;margin-top:10px}.readonly-info{padding:11px 12px;border-radius:12px;background:#f3f6f9;border:1px solid #d8e0e8;color:#263342}.readonly-info strong{font-size:15px;color:#12345b}.trainee-only{display:none}.trainee-mode .trainee-only{display:block}.hidden-by-mode{display:none!important}
+    .saved-job{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #e7edf3}.saved-job:last-child{border-bottom:0}.saved-job-title{font-weight:850}.saved-job-sub{font-size:12px;color:var(--muted);margin-top:3px}
+    .timeslip-group{margin-top:18px}.timeslip-group h3{margin:0 0 8px;font-size:15px}.timeslip-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.timeslip-summary .statbox{padding:12px;border-radius:14px;background:#fff9d8;border:1px solid #e3ca66}.timeslip-summary .num{font-size:24px;font-weight:900}
+    .paycheck-hero{padding:18px;border-radius:18px;background:#10233f;color:white;margin-bottom:14px}.paycheck-hero .payday{font-size:13px;color:#c9d6e5}.paycheck-hero .amount{font-size:34px;font-weight:900;letter-spacing:-.04em;margin:5px 0}.paycheck-hero .range{font-size:13px;color:#dce6f2}.paycheck-nav{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-bottom:12px}
+    .restore-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.restore-preview-item{padding:11px;border-radius:12px;background:#f5f8fb;border:1px solid #dce5ee}.restore-preview-item strong{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+    .version-line{font-size:12px;color:var(--muted);text-align:center;margin-top:14px}.whats-new-list{margin:8px 0 0;padding-left:20px;line-height:1.55}
+    @media(max-width:780px){.modal-card{width:calc(100% - 16px);margin:8px 8px calc(8px + env(safe-area-inset-bottom));max-height:84vh;border-radius:20px}.modal-head{padding:16px 16px 12px}.modal-body{padding:14px 16px 16px}.modal-foot{padding:10px 16px calc(10px + env(safe-area-inset-bottom))}.span8,.span6,.span4{grid-column:span 12}.field,.field.third{grid-column:span 12}.time-slip-grid{grid-template-columns:1fr}.feature-grid,.timeslip-summary,.restore-preview-grid,.crew-grid{grid-template-columns:1fr}.shift{grid-template-columns:78px 1fr auto}.app{padding:12px 12px 105px}.card{padding:15px}.brand h1{font-size:21px}.nav{bottom:8px;width:calc(100% - 16px);justify-content:space-around}.nav button{padding:10px 9px;font-size:12px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand"><h1>Engineer Pay Log</h1><p>Private, local shift & earnings tracker</p></div>
+    <div class="pill">BLET Multi-Rate • 7/29/2026</div>
+  </div>
+
+  <section id="dashboardView" class="view active">
+    <div id="backupReminder" class="backup-reminder"></div>
+    <div class="grid">
+      <div class="card span4 stat"><div class="label">This month</div><div class="value" id="monthTotal">$0.00</div><div class="sub" id="monthCount">0 paid shifts</div></div>
+      <div class="card span4 stat"><div class="label">2026 total</div><div class="value" id="yearTotal">$0.00</div><div class="sub" id="yearHours">0:00 actual hours</div></div>
+      <div class="card span4 stat"><div class="label">Average shift</div><div class="value" id="avgShift">$0.00</div><div class="sub">Calculated earnings</div></div>
+      <div class="card span8">
+        <div class="section-title"><h2>Recent shifts</h2><button class="btn small" onclick="showView('history')">View all</button></div>
+        <div id="recentShifts" class="history"></div>
+      </div>
+      <div class="card span4 calc">
+        <div class="section-title"><h2>Quick add</h2></div>
+        <p style="color:#c9d6e5;line-height:1.5;margin-top:0">Enter a shift and the app handles your 8-hour guarantee, overtime, night differential, holiday pay and penalties automatically.</p>
+        <button class="btn primary" style="width:100%;background:#fff;color:#10233f" onclick="newShift()">+ Add shift</button>
+      </div>
+      <div class="card span12">
+        <div class="section-title"><h2>Pay & Claims</h2></div>
+        <div class="feature-grid">
+          <div class="feature-card"><h3>Expected Paycheck</h3><div class="big" id="dashPaycheckAmount">$0.00</div><div class="mini" id="dashPaycheckDates">Wednesday–Tuesday pay period</div><button class="btn small" style="margin-top:10px" onclick="openPaychecks()">View paycheck</button></div>
+          <div class="feature-card"><h3>Time Slip Center</h3><div class="big" id="dashPendingSlips">0</div><div class="mini">pending time slips</div><button class="btn small" style="margin-top:10px" onclick="showView('timeslips')">View time slips</button></div>
+          <div class="feature-card"><h3>Saved Jobs</h3><div class="big" id="dashSavedJobs">0</div><div class="mini">favorites ready for quick entry</div><button class="btn small" style="margin-top:10px" onclick="showView('savedjobs')">View favorites</button></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="historyView" class="view">
+    <div class="card">
+      <div class="section-title"><h2>Shift history</h2><button class="btn primary small" onclick="newShift()">+ Add shift</button></div>
+      <div class="toolbar"><input id="historySearch" class="search" placeholder="Search assignment, location, shift type or notes…" oninput="renderHistory()"><button class="btn small" onclick="exportCSV()">Export CSV</button><button class="btn small" onclick="exportPDF()">Export PDF</button></div>
+      <div id="historyList"></div>
+    </div>
+  </section>
+
+  <section id="timeslipsView" class="view">
+    <div class="card">
+      <div class="section-title"><h2>Time Slip Center</h2><button class="btn small" onclick="showView('dashboard')">Dashboard</button></div>
+      <p class="notice">Track every shift with a Time Slip. Pending slips stay at the top; paid and denied slips remain available for reference.</p>
+      <div id="timeSlipCenter"></div>
+    </div>
+  </section>
+
+  <section id="savedjobsView" class="view">
+    <div class="card">
+      <div class="section-title"><h2>Saved Jobs / Favorites</h2><button class="btn small" onclick="showView('dashboard')">Dashboard</button></div>
+      <p class="notice">Save regular assignments once, then use them to start a fresh shift with the usual assignment, location, shift type, start time, and end time already filled in.</p>
+      <button class="btn primary small" onclick="saveCurrentAsFavoriteFromPrompt()">+ Create Favorite</button>
+      <div id="savedJobsList" style="margin-top:10px"></div>
+    </div>
+  </section>
+
+  <section id="paychecksView" class="view">
+    <div class="card">
+      <div class="section-title"><h2>Expected Paycheck</h2><button class="btn small" onclick="showView('dashboard')">Dashboard</button></div>
+      <p class="notice">Estimated gross earnings only. Pay periods run Wednesday through Tuesday and are paid the following Thursday.</p>
+      <div class="paycheck-nav"><button class="btn small" onclick="changePaycheckWeek(-1)">‹ Previous</button><strong id="paycheckNavLabel">Paycheck</strong><button class="btn small" onclick="changePaycheckWeek(1)">Next ›</button></div>
+      <div class="paycheck-hero"><div class="payday" id="paycheckDateLabel">Paycheck date</div><div class="amount" id="paycheckAmount">$0.00</div><div class="range" id="paycheckRange">Pay period</div></div>
+      <div class="feature-grid">
+        <div class="feature-card"><h3>Shifts</h3><div class="big" id="paycheckShiftCount">0</div><div class="mini">paid shifts in this period</div></div>
+        <div class="feature-card"><h3>Actual Time</h3><div class="big" id="paycheckHours">0:00</div><div class="mini">hours worked</div></div>
+        <div class="feature-card"><h3>Extras</h3><div class="big" id="paycheckExtras">$0.00</div><div class="mini">earnings above base regular pay</div></div>
+      </div>
+      <div id="paycheckShiftList" style="margin-top:14px"></div>
+    </div>
+  </section>
+
+  <section id="settingsView" class="view">
+    <div class="grid">
+
+      <div class="card span6">
+        <div class="section-title"><h2>Employment & Pay</h2></div>
+        <div class="field full"><label>Employment Start Date</label><input id="settingsHireDate" type="date" onchange="saveHireDateFromSettings()"></div>
+        <div class="rate-note" style="margin-top:12px">
+          <strong>Current Pay Scale:</strong> <span id="settingsCurrentRate">Not set</span><br>
+          1st 365 days: 60%<br>
+          2nd 365 days: 80%<br>
+          3rd 365 days: 90%<br>
+          4th 365 days and beyond: 100%<br>
+          <strong>70% is not currently used.</strong>
+        </div>
+        <p class="notice">Each saved shift records the rate that applied on that shift date, so moving to a higher rate later will not rewrite previously saved earnings.</p>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid #d8e0e8">
+          <label class="check"><input id="traineeModeToggle" type="checkbox" onchange="requestTraineeModeChange(this.checked)"> Engineer Trainee Mode</label>
+          <div id="traineeModeStatus" class="mode-banner" style="display:none">Engineer Trainee Mode is active. New shifts use trainee rules.</div>
+        </div>
+      </div>
+      <div class="card span6">
+        <div class="section-title"><h2>Install Engineer Pay Log</h2></div>
+        <div class="rate-note">
+          <strong>iPhone / iPad — Safari:</strong> Open Engineer Pay Log in Safari → tap Share → Add to Home Screen → Add.<br><br>
+          <strong>Android — Chrome:</strong> Open Engineer Pay Log in Chrome → open the browser menu → Install app or Add to Home screen → confirm.<br><br>
+          <strong>Android — Firefox:</strong> Open Engineer Pay Log in Firefox → open the menu → Install or Add to Home screen → confirm.<br><br>
+          <strong>Desktop — Chrome / Edge:</strong> Use the Install option in the address bar or browser menu when available.
+        </div>
+        <p class="notice"><strong>Installing the app does not back up your shifts.</strong> Your history remains stored locally on that browser/device. Use Backup JSON regularly.</p>
+      </div>
+      <div class="card span6">
+        <div class="section-title"><h2>Pay rules</h2></div>
+        <div class="rate-note"><strong>Pay scale:</strong> Automatically determined from Employment Start Date using the BLET rate tables effective July 29, 2026 (60%, 80%, 90%, 100%).<br><strong>Minimum:</strong> 8 hours per paid shift.<br><strong>Normal OT:</strong> actual time over 8 hours.<br><strong>Full-shift OT:</strong> Holiday, Short Swing, or Relief Day.<br><strong>Night differential:</strong> actual time between 8:00 PM and 5:59 AM.<br><strong>Meal Period:</strong> 20 minutes at time-and-one-half.<br><strong>Freight Meal:</strong> 40 minutes at time-and-one-half.<br><strong>Fuel Claim:</strong> 30 minutes at time-and-one-half.<br><strong>Daily Cert:</strong> $10 once per normal worked shift; excluded from Special Shifts.<br><strong>Trainee:</strong> 1 hour straight time per trainee, maximum 2.<br><strong>Operating Without a Conductor:</strong> 8 hours straight time.<br><strong>Yard Certification:</strong> 1 hour straight time per certification.<br><strong>Commingle / 2 Classes of Service / Sheridan-Shop-House Move:</strong> each adds 8 hours straight time.<br><strong>Terminal Not In Crew Book:</strong> 2 hours straight time.<br><strong>Runaround Claim:</strong> 2 hours straight time plus the entered difference in earnings, all straight time.<br><strong>Time on Time:</strong> variable additional straight-time payment, maximum 8:00 per shift.</div>
+      </div>
+      <div class="card span6">
+        <div class="section-title"><h2>Data</h2></div>
+        <p class="notice">Your shifts are stored only in this browser using local storage. Nothing is uploaded anywhere by this app.</p>
+        <div id="settingsBackupStatus" class="rate-note" style="margin-bottom:12px"><strong>Last backup:</strong> Not recorded</div>
+        <div class="toolbar"><button class="btn" onclick="exportJSON()">Backup JSON</button><label class="btn" style="display:inline-block">Restore JSON<input type="file" accept="application/json" hidden onchange="importJSON(event)"></label></div>
+        <p class="notice"><strong>Restore Preview:</strong> Before a backup replaces your current data, Engineer Pay Log will show the number of shifts and date range in the file.</p>
+        <div class="danger-zone" style="margin-top:16px"><strong>Reset app</strong><p class="notice">Deletes every saved shift from this browser.</p><button class="btn danger small" onclick="clearAll()">Delete all shifts</button></div>
+      </div>
+      <div class="card span6">
+        <div class="section-title"><h2>About</h2></div>
+        <div class="rate-note"><strong>Engineer Pay Log</strong><br>Version <span id="settingsAppVersion">6.0</span><br><br><strong>Current release:</strong> Engineer Trainee Mode, Total Time on Duty, 10-day backup reminders, and an 8-hour Time on Time cap.</div>
+        <button class="btn small" style="margin-top:12px" onclick="openWhatsNew(true)">What's New</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<nav class="nav">
+  <button id="nav-dashboard" class="active" onclick="showView('dashboard')">Dashboard</button>
+  <button id="nav-add" onclick="newShift()">Add Shift</button>
+  <button id="nav-history" onclick="showView('history')">History</button>
+  <button id="nav-settings" onclick="showView('settings')">Settings</button>
+</nav>
+
+
+<div id="welcomeModal" class="modal">
+  <div class="modal-card" style="max-width:640px">
+    <div class="modal-head">
+      <div>
+        <h2 style="margin:0">Welcome to Engineer Pay Log</h2>
+        <div class="muted" style="margin-top:4px">A personal, unofficial pay-tracking tool for locomotive engineers.</div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="rate-note" style="margin-bottom:14px">
+        <strong>Unofficial personal tracking tool.</strong> This app is not an official Long Island Rail Road, MTA, or union product. Always verify payroll questions against official records, agreements, and your pay statement.
+      </div>
+      <div class="rate-note" style="margin-bottom:14px">
+        <strong>Your data stays on this device.</strong> Shift history is stored locally in your browser. Clearing Safari website data, clearing browsing data that removes site storage, or resetting the browser/device may erase your saved shifts.
+      </div>
+      <div class="rate-note" style="margin-bottom:14px">
+        <strong>Back up regularly.</strong> Go to <strong>Settings → Backup JSON</strong>, save the file somewhere safe such as Files or iCloud Drive, and keep a recent copy. If local data is ever lost, use <strong>Settings → Restore JSON</strong>.
+      </div>
+      <div class="rate-note" style="margin-bottom:12px">
+        <strong>Set your employment start date.</strong> Engineer Pay Log uses this date to select the correct 60%, 80%, 90%, or 100% pay table for each shift.
+      </div>
+      <div class="field full">
+        <label>Employment Start Date</label>
+        <div class="start-date-prompt">
+          <div class="tap-hint"><span aria-hidden="true">📅</span><span>Tap below to select your start date</span></div>
+          <input id="welcomeHireDate" type="date" aria-label="Employment Start Date" onchange="updateWelcomeRate()">
+          <div class="date-format-hint">Choose the date you began employment. This determines the pay table used for your shifts.</div>
+        </div>
+      </div>
+      <div class="rate-note" style="margin-top:10px"><strong>Your current pay scale:</strong> <span id="welcomeRatePreview">Enter your start date</span></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn primary" id="welcomeStartBtn">Save Start Date & Get Started</button>
+    </div>
+  </div>
+</div>
+
+<div id="restorePreviewModal" class="modal">
+  <div class="modal-card" style="max-width:600px">
+    <div class="modal-head"><div><h2 style="margin:0">Restore Backup?</h2><div class="muted" style="margin-top:4px">Review the backup before replacing your current data.</div></div></div>
+    <div class="modal-body">
+      <div class="restore-preview-grid">
+        <div class="restore-preview-item"><strong>Backup shifts</strong><span id="restoreShiftCount">0</span></div>
+        <div class="restore-preview-item"><strong>Current shifts</strong><span id="restoreCurrentCount">0</span></div>
+        <div class="restore-preview-item"><strong>Backup date range</strong><span id="restoreDateRange">—</span></div>
+        <div class="restore-preview-item"><strong>Hire date</strong><span id="restoreHireDate">—</span></div>
+      </div>
+      <p class="notice" style="margin-top:14px">Restoring replaces the shifts currently stored in this browser. Make a backup first if you may need your current data later.</p>
+    </div>
+    <div class="modal-foot" style="display:flex;gap:8px;justify-content:flex-end"><button class="btn" onclick="cancelRestore()">Cancel</button><button class="btn primary" onclick="confirmRestore()">Restore Backup</button></div>
+  </div>
+</div>
+
+<div id="whatsNewModal" class="modal">
+  <div class="modal-card" style="max-width:600px">
+    <div class="modal-head"><div><h2 style="margin:0">What's New in Engineer Pay Log 6.0</h2><div class="muted" style="margin-top:4px">Crew tracking, new claims, Special Shifts, cleaner pay details, and PDF reports.</div></div></div>
+    <div class="modal-body">
+      <div class="update-mascot">
+        <img src="./icons/icon-192.png" alt="Engineer Pay Log mascot">
+        <div class="speech-bubble">Change on the change!</div>
+      </div>
+      <ul class="whats-new-list"><li><strong>Engineer Trainee Mode:</strong> A dedicated trainee workflow with restricted claims, trainee overtime rules, Class entries, Holiday - Not Worked, and instructor tracking.</li><li><strong>Total Time on Duty:</strong> Live read-only duration calculated from start and end time.</li><li><strong>Time on Time:</strong> Capped at a maximum of 8:00 per shift.</li><li><strong>Backup reminder:</strong> Startup reminder after more than 10 days with a one-tap Back Up Now button.</li><li><strong>New in 5.0.2 — PDF Layout Cleanup:</strong> Cleaner spacing, flexible shift cards, dedicated claim/crew/note rows, improved wrapping, and better page flow.</li><li><strong>New in 5.0.1 — PDF Report Redesign:</strong> Shift History exports now use a polished report layout with monthly summaries, clearer shift cards, highlighted Time Slips, and the presenting engineer.</li>
+        <li><strong>Crew tracking:</strong> Conductor and Brakeman names can now be saved with each shift.</li>
+        <li><strong>New claims:</strong> Freight Meal (40 min at 1.5×) and Fuel Claim (30 min at 1.5×).</li>
+        <li><strong>Daily Cert:</strong> $10 automatically added to every normal worked shift.</li>
+        <li><strong>Special Shifts:</strong> Sick Day, Paid Guarantee, Two Year Book, Miscellaneous Instruction, Personal Day, and Company Court.</li>
+        <li><strong>Cleaner Calculated Pay:</strong> $0.00 lines stay hidden; only earnings that apply are shown.</li>
+        <li><strong>Holiday Pay:</strong> updated wording replaces “Holiday Bonus.”</li>
+        <li><strong>PDF Export:</strong> create a clean shift-history report in addition to CSV.</li>
+      </ul>
+    </div>
+    <div class="modal-foot"><button class="btn primary" onclick="closeWhatsNew()">Got It</button></div>
+  </div>
+</div>
+
+<div id="shiftModal" class="modal" onclick="if(event.target===this)closeModal()">
+  <div class="sheet">
+    <div class="section-title"><h2 id="formTitle">Add shift</h2><button class="btn small" onclick="closeModal()">Close</button></div>
+    <form id="shiftForm" onsubmit="saveShift(event)">
+      <input type="hidden" id="editId"><input type="hidden" id="shiftRuleMode" value="engineer">
+      <div class="form-grid">
+        <div class="field third"><label>Date</label><input id="date" type="date" required onchange="calculatePreview()"></div>
+        <div class="field third"><label>Start time</label><input id="start" type="time" required onchange="calculatePreview()"></div>
+        <div class="field third"><label>End time</label><input id="end" type="time" required onchange="calculatePreview()"></div>
+        <div class="field full"><label>Total Time on Duty</label><div class="readonly-info"><strong id="timeOnDutyDisplay">—</strong><div class="muted" style="margin-top:2px">Calculated automatically from start and end time</div></div></div>
+        <div id="classToggleWrap" class="field full trainee-only"><label class="check"><input id="classFlag" type="checkbox" onchange="toggleClassDay();calculatePreview()"> Class</label></div>
+        <div id="assignmentField" class="field"><label>Assignment</label><input id="assignment" placeholder="e.g. 194"></div>
+        <div id="locationField" class="field"><label>Location</label><input id="location" placeholder="e.g. JAM"></div>
+        <div id="shiftTypeField" class="field full"><label>Shift Type</label><select id="shiftType"><option value="">Select shift type</option><option>Own</option><option>Pick</option><option>Hung</option><option>Extra Extra</option></select></div>
+        <div id="specialShiftField" class="field full">
+          <label>Special Shift</label>
+          <select id="specialShift" onchange="applyEntryMode();calculatePreview()">
+            <option value="">Normal worked shift</option>
+            <option value="Sick Day">Sick Day</option>
+            <option value="Paid Guarantee">Paid Guarantee</option>
+            <option value="Two Year Book">Two Year Book</option>
+            <option value="Miscellaneous Instruction">Miscellaneous Instruction</option>
+            <option value="Personal Day">Personal Day</option>
+            <option value="Company Court">Company Court</option>
+          </select>
+          <div id="specialShiftPanel" class="special-panel hidden">
+            <div id="specialCategoryWrap" class="field full" style="display:none">
+              <label>Which type of job applies to you?</label>
+              <select id="specialCategory" onchange="toggleSpecialShift();calculatePreview()">
+                <option value="">Select category</option>
+                <option value="extra">Extra List / Subject to Bid</option>
+                <option value="yard">Own a Yard / Freight Job</option>
+                <option value="passenger">Own a Passenger Job</option>
+              </select>
+            </div>
+            <div id="specialShiftMessage" class="special-note"></div>
+          </div>
+        </div>
+        <input id="legacyExtras" type="hidden"><input id="legacyClaims" type="hidden">
+        <div id="notesField" class="field full"><label>Misc. notes</label><textarea id="notes" placeholder="Optional notes"></textarea></div>
+        <div id="traineeInstructorFields" class="field full trainee-only">
+          <div class="crew-grid"><div class="field full"><label>Engineer Name</label><input id="engineerName" placeholder="Instructing engineer"></div><div class="field full"><label>Engineer IBM</label><input id="engineerIBM" placeholder="IBM"></div></div>
+          <p class="notice" style="margin-bottom:0"><strong>Reminder:</strong> Trainees are still responsible for emailing their time sheet to their instructor each week. Engineer Pay Log is for your personal reference only and does not replace the required weekly time sheet.</p>
+        </div>
+        <div id="crewFields" class="field full">
+          <div class="crew-grid">
+            <div class="field full"><label>Conductor Name</label><input id="conductorName" placeholder="Optional"></div>
+            <div class="field full"><label>Brakeman Name</label><input id="brakemanName" placeholder="Optional"></div>
+          </div>
+        </div>
+        <div id="timeSlipField" class="field full">
+          <label class="check time-slip-check"><input id="timeSlipFlag" type="checkbox" onchange="toggleTimeSlip()"> Time Slip</label>
+          <div id="timeSlipWrap" class="time-slip-panel">
+            <div class="subhead">Time Slip Tracking</div>
+            <div class="time-slip-grid">
+              <div class="field full"><label>Date Written</label><input id="timeSlipWritten" type="date"></div>
+              <div class="field full"><label>Date Submitted</label><input id="timeSlipSubmitted" type="date"></div>
+              <div class="field full"><label>Location Submitted</label><input id="timeSlipLocation" placeholder="e.g. Jamaica"></div>
+              <div class="field full"><label>Status</label><select id="timeSlipStatus"><option value="Pending">Pending</option><option value="Paid">Paid</option><option value="Denied">Denied</option></select></div>
+              <div class="field full"><label>Date Paid / Denied</label><input id="timeSlipResolved" type="date"></div>
+            </div>
+            <p class="notice" style="margin-bottom:0;color:#685400">Time Slip tracking is informational only and does not change the calculated earnings for this shift.</p>
+          </div>
+        </div>
+        <div id="payFlagsField" class="field full"><label>Pay flags</label><div class="checks">
+          <label class="check"><input id="holidayFlag" type="checkbox" onchange="calculatePreview()"> Holiday</label>
+          <label class="check"><input id="ssotFlag" type="checkbox" onchange="calculatePreview()"> Short Swing</label>
+          <label class="check"><input id="rdFlag" type="checkbox" onchange="calculatePreview()"> Relief Day</label>
+        </div></div>
+        <div id="penaltiesField" class="field full"><label>Pay Extras / Penalties</label><div class="checks">
+          <label class="check"><input id="mpteFlag" type="checkbox" onchange="calculatePreview()"> Meal Period</label>
+          <label class="check"><input id="freightMealFlag" type="checkbox" onchange="calculatePreview()"> Freight Meal</label>
+          <label class="check"><input id="fuelClaimFlag" type="checkbox" onchange="calculatePreview()"> Fuel Claim</label>
+          <label class="check"><input id="poneFlag" type="checkbox" onchange="toggleTrainee();calculatePreview()"> Trainee</label>
+          <label class="check"><input id="noCoFlag" type="checkbox" onchange="calculatePreview()"> Operating Without a Conductor</label>
+          <label class="check"><input id="certFlag" type="checkbox" onchange="toggleYardCert();calculatePreview()"> Yard Certification</label>
+          <label class="check"><input id="commingleFlag" type="checkbox" onchange="calculatePreview()"> Commingle</label>
+          <label class="check"><input id="yardMoveFlag" type="checkbox" onchange="calculatePreview()"> 2 Classes of Service</label>
+          <label class="check"><input id="sheridanFlag" type="checkbox" onchange="calculatePreview()"> Sheridan / Shop / House Move</label>
+          <label class="check"><input id="terminalFlag" type="checkbox" onchange="calculatePreview()"> Terminal Not In Crew Book</label>
+          <label class="check"><input id="runaroundFlag" type="checkbox" onchange="toggleRunaround();calculatePreview()"> Runaround Claim</label>
+          <label class="check"><input id="a2Flag" type="checkbox" onchange="toggleA2();calculatePreview()"> Time on Time</label>
+        </div>
+          <div id="traineeWrap" class="conditional-panel">
+            <div class="subhead">Number of trainees</div>
+            <select id="traineeCount" onchange="calculatePreview()"><option value="1">1 trainee</option><option value="2">2 trainees</option></select>
+          </div>
+          <div id="yardCertWrap" class="conditional-panel">
+            <div class="subhead">Number of yard certifications</div>
+            <input id="yardCertCount" type="number" inputmode="numeric" min="1" step="1" value="1" oninput="calculatePreview()">
+          </div>
+          <div id="runaroundWrap" class="conditional-panel">
+            <div class="subhead">Difference in earnings (2 hours straight time is added automatically)</div>
+            <div class="duration-grid">
+              <div class="field full"><label>Hours</label><input id="runaroundHours" type="number" inputmode="numeric" min="0" max="24" value="0" oninput="calculatePreview()"></div>
+              <div class="field full"><label>Minutes</label><input id="runaroundMinutes" type="number" inputmode="numeric" min="0" max="59" value="0" oninput="calculatePreview()"></div>
+            </div>
+          </div>
+          <div id="a2DurationWrap" class="conditional-panel">
+            <div class="subhead">Time on Time duration</div>
+            <div class="duration-grid">
+              <div class="field full"><label>Hours</label><input id="a2Hours" type="number" inputmode="numeric" min="0" max="24" value="0" oninput="calculatePreview()"></div>
+              <div class="field full"><label>Minutes</label><input id="a2Minutes" type="number" inputmode="numeric" min="0" max="59" value="0" oninput="calculatePreview()"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card calc" style="margin-top:14px;box-shadow:none" id="previewCard">
+        <div class="section-title"><h2>Calculated pay</h2><span id="payTypeBadge" class="badge">Normal</span></div>
+        <div class="calc-row"><span>Actual / payable time</span><strong id="pTime">—</strong></div>
+        <div class="calc-row"><span>Regular pay</span><strong id="pRegular">$0.00</strong></div>
+        <div class="calc-row"><span>OT pay</span><strong id="pOT">$0.00</strong></div>
+        <div class="calc-row"><span>Night differential</span><strong id="pNight">$0.00</strong></div>
+        <div class="calc-row"><span>Holiday Pay</span><strong id="pHoliday">$0.00</strong></div>
+        <div class="calc-row"><span>Meal Period</span><strong id="pMPTE">$0.00</strong></div>
+        <div class="calc-row"><span>Freight Meal</span><strong id="pFreightMeal">$0.00</strong></div>
+        <div class="calc-row"><span>Fuel Claim</span><strong id="pFuelClaim">$0.00</strong></div>
+        <div class="calc-row"><span>Daily Cert</span><strong id="pDailyCert">$0.00</strong></div>
+        <div class="calc-row"><span>Special Shift Pay</span><strong id="pSpecialPay">$0.00</strong></div>
+        <div class="calc-row"><span>Trainee</span><strong id="pPONE">$0.00</strong></div>
+        <div class="calc-row"><span>Operating Without a Conductor</span><strong id="pNOCO">$0.00</strong></div>
+        <div class="calc-row"><span>Yard Certification</span><strong id="pCERT">$0.00</strong></div>
+        <div class="calc-row"><span>Commingle</span><strong id="pCommingle">$0.00</strong></div>
+        <div class="calc-row"><span>2 Classes of Service</span><strong id="pClasses">$0.00</strong></div>
+        <div class="calc-row"><span>Sheridan / Shop / House Move</span><strong id="pSheridan">$0.00</strong></div>
+        <div class="calc-row"><span>Terminal Not In Crew Book</span><strong id="pTerminal">$0.00</strong></div>
+        <div class="calc-row"><span>Runaround Claim</span><strong id="pRunaround">$0.00</strong></div>
+        <div class="calc-row"><span>Time on Time</span><strong id="p2a">$0.00</strong></div>
+        <div class="calc-row calc-total"><span>Total</span><strong id="pTotal">$0.00</strong></div>
+        <div id="shiftWarnings" class="warning-panel"></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap"><button class="btn primary" style="flex:1;min-width:150px" type="submit">Save shift</button><button id="favoriteBtn" class="btn" type="button" style="display:none" onclick="saveCurrentShiftAsFavorite()">Save as Favorite</button><button id="duplicateBtn" class="btn" type="button" style="display:none" onclick="duplicateCurrentShift()">Duplicate as New</button><button id="deleteBtn" class="btn danger" type="button" style="display:none" onclick="deleteCurrent()">Delete</button></div>
+    </form>
+  </div>
+</div>
+
+<script>
+const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.719,2.578,0.03],[2.292,3.437,0.04],[2.864,4.296,0.05],[3.437,5.156,0.059],[4.01,6.015,0.069],[4.583,6.874,0.079],[5.156,7.733,0.089],[5.728,8.592,0.099],[6.301,9.451,0.109],[6.874,10.311,0.118],[7.447,11.17,0.128],[8.019,12.029,0.138],[8.592,12.888,0.148],[9.165,13.747,0.158],[9.738,14.606,0.167],[10.311,15.466,0.177],[10.883,16.325,0.187],[11.456,17.184,0.197],[12.029,18.043,0.207],[12.602,18.902,0.217],[13.174,19.761,0.226],[13.747,20.621,0.236],[14.32,21.48,0.246],[14.893,22.339,0.256],[15.466,23.198,0.266],[16.038,24.057,0.275],[16.611,24.916,0.285],[17.184,25.776,0.295],[17.757,26.635,0.305],[18.329,27.494,0.315],[18.902,28.353,0.325],[19.475,29.212,0.334],[20.048,30.071,0.344],[20.621,30.931,0.354],[21.193,31.79,0.364],[21.766,32.649,0.374],[22.339,33.508,0.383],[22.912,34.367,0.393],[23.485,35.227,0.403],[24.057,36.086,0.413],[24.63,36.945,0.423],[25.203,37.804,0.433],[25.776,38.663,0.442],[26.348,39.522,0.452],[26.921,40.382,0.462],[27.494,41.241,0.472],[28.067,42.1,0.482],[28.64,42.959,0.491],[29.212,43.818,0.501],[29.785,44.677,0.511],[30.358,45.537,0.521],[30.931,46.396,0.531],[31.503,47.255,0.541],[32.076,48.114,0.55],[32.649,48.973,0.56],[33.222,49.832,0.57],[33.795,50.692,0.58],[34.367,51.551,0.59]],"hour":[null,[34.367,51.55,0.589],[68.734,103.1,1.178],[103.1,154.651,1.768],[137.467,206.201,2.357],[171.834,257.751,2.946],[206.201,309.301,3.535],[240.568,360.852,4.124],[274.935,412.402,4.714]]},"80":{"minute":[null,[0.764,1.146,0.014],[1.528,2.292,0.027],[2.292,3.437,0.04],[3.055,4.583,0.053],[3.819,5.728,0.066],[4.583,6.874,0.079],[5.346,8.019,0.092],[6.11,9.165,0.105],[6.874,10.311,0.118],[7.638,11.456,0.131],[8.401,12.602,0.145],[9.165,13.747,0.158],[9.929,14.893,0.171],[10.692,16.038,0.184],[11.456,17.184,0.197],[12.22,18.329,0.21],[12.984,19.475,0.223],[13.747,20.621,0.236],[14.511,21.766,0.249],[15.275,22.912,0.262],[16.038,24.057,0.275],[16.802,25.203,0.289],[17.566,26.348,0.302],[18.329,27.494,0.315],[19.093,28.64,0.328],[19.857,29.785,0.341],[20.621,30.931,0.354],[21.384,32.076,0.367],[22.148,33.222,0.38],[22.912,34.367,0.393],[23.675,35.513,0.406],[24.439,36.658,0.419],[25.203,37.804,0.433],[25.967,38.95,0.446],[26.73,40.095,0.459],[27.494,41.241,0.472],[28.258,42.386,0.485],[29.021,43.532,0.498],[29.785,44.677,0.511],[30.549,45.823,0.524],[31.313,46.969,0.537],[32.076,48.114,0.55],[32.84,49.26,0.564],[33.604,50.405,0.577],[34.367,51.551,0.59],[35.131,52.696,0.603],[35.895,53.842,0.616],[36.658,54.987,0.629],[37.422,56.133,0.642],[38.186,57.279,0.655],[38.95,58.424,0.668],[39.713,59.57,0.681],[40.477,60.715,0.694],[41.241,61.861,0.708],[42.004,63.006,0.721],[42.768,64.152,0.734],[43.532,65.297,0.747],[44.296,66.443,0.76],[45.059,67.589,0.773],[45.823,68.734,0.786]],"hour":[null,[45.822,68.734,0.786],[91.645,137.467,1.571],[137.467,206.201,2.357],[183.29,274.935,3.142],[229.112,343.668,3.928],[274.935,412.402,4.714],[320.757,481.136,5.499],[366.579,549.869,6.285]]},"90":{"minute":[null,[0.86,1.289,0.015],[1.719,2.578,0.03],[2.578,3.867,0.045],[3.437,5.156,0.059],[4.296,6.444,0.074],[5.156,7.733,0.089],[6.015,9.022,0.104],[6.874,10.311,0.118],[7.733,11.599,0.133],[8.592,12.888,0.148],[9.451,14.177,0.163],[10.311,15.466,0.177],[11.17,16.754,0.192],[12.029,18.043,0.207],[12.888,19.332,0.221],[13.747,20.621,0.236],[14.606,21.909,0.251],[15.466,23.198,0.266],[16.325,24.487,0.28],[17.184,25.776,0.295],[18.043,27.064,0.31],[18.902,28.353,0.325],[19.761,29.642,0.339],[20.621,30.931,0.354],[21.48,32.219,0.369],[22.339,33.508,0.383],[23.198,34.797,0.398],[24.057,36.086,0.413],[24.916,37.374,0.428],[25.776,38.663,0.442],[26.635,39.952,0.457],[27.494,41.241,0.472],[28.353,42.529,0.487],[29.212,43.818,0.501],[30.071,45.107,0.516],[30.931,46.396,0.531],[31.79,47.684,0.546],[32.649,48.973,0.56],[33.508,50.262,0.575],[34.367,51.551,0.59],[35.227,52.84,0.604],[36.086,54.128,0.619],[36.945,55.417,0.634],[37.804,56.706,0.649],[38.663,57.995,0.663],[39.522,59.283,0.678],[40.382,60.572,0.693],[41.241,61.861,0.708],[42.1,63.15,0.722],[42.959,64.438,0.737],[43.818,65.727,0.752],[44.677,67.016,0.766],[45.537,68.305,0.781],[46.396,69.593,0.796],[47.255,70.882,0.811],[48.114,72.171,0.825],[48.973,73.46,0.84],[49.832,74.748,0.855],[50.692,76.037,0.87],[51.551,77.326,0.884]],"hour":[null,[51.55,77.325,0.884],[103.1,154.651,1.768],[154.651,231.976,2.651],[206.201,309.301,3.535],[257.751,386.627,4.419],[309.301,463.952,5.303],[360.852,541.278,6.187],[412.402,618.603,7.07]]},"100":{"minute":[null,[0.955,1.432,0.017],[1.91,2.864,0.033],[2.864,4.296,0.05],[3.819,5.728,0.066],[4.774,7.16,0.082],[5.728,8.592,0.099],[6.683,10.024,0.115],[7.638,11.456,0.131],[8.592,12.888,0.148],[9.547,14.32,0.164],[10.501,15.752,0.181],[11.456,17.184,0.197],[12.411,18.616,0.213],[13.365,20.048,0.23],[14.32,21.48,0.246],[15.275,22.912,0.262],[16.229,24.344,0.279],[17.184,25.776,0.295],[18.139,27.208,0.311],[19.093,28.64,0.328],[20.048,30.071,0.344],[21.002,31.503,0.361],[21.957,32.935,0.377],[22.912,34.367,0.393],[23.866,35.799,0.41],[24.821,37.231,0.426],[25.776,38.663,0.442],[26.73,40.095,0.459],[27.685,41.527,0.475],[28.64,42.959,0.491],[29.594,44.391,0.508],[30.549,45.823,0.524],[31.503,47.255,0.541],[32.458,48.687,0.557],[33.413,50.119,0.573],[34.367,51.551,0.59],[35.322,52.983,0.606],[36.277,54.415,0.622],[37.231,55.847,0.639],[38.186,57.279,0.655],[39.141,58.711,0.672],[40.095,60.142,0.688],[41.05,61.574,0.704],[42.004,63.006,0.721],[42.959,64.438,0.737],[43.914,65.87,0.753],[44.868,67.302,0.77],[45.823,68.734,0.786],[46.778,70.166,0.802],[47.732,71.598,0.819],[48.687,73.03,0.835],[49.641,74.462,0.852],[50.596,75.894,0.868],[51.551,77.326,0.884],[52.505,78.758,0.901],[53.46,80.19,0.917],[54.415,81.622,0.933],[55.369,83.054,0.95],[56.324,84.486,0.966],[57.279,85.918,0.982]],"hour":[null,[57.278,85.917,0.982],[114.556,171.834,1.964],[171.834,257.751,2.946],[229.112,343.668,3.928],[286.39,429.585,4.91],[343.668,515.502,5.892],[400.946,601.419,6.874],[458.224,687.337,7.856]]}};
+
+const HIRE_DATE_KEY='engineerPayLogHireDate';
+const APP_VERSION='6.0';
+const WHATS_NEW_VERSION='6.0';
+const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
+const SAVED_JOBS_KEY='engineerPayLogSavedJobs';
+const LAST_SEEN_VERSION_KEY='engineerPayLogLastSeenVersion';
+const TRAINEE_MODE_KEY='engineerPayLogTraineeMode';
+let savedJobs=JSON.parse(localStorage.getItem(SAVED_JOBS_KEY)||'[]');
+let pendingRestoreData=null;
+let paycheckWeekOffset=0;
+function getHireDate(){return localStorage.getItem(HIRE_DATE_KEY)||''}
+function daysBetweenISO(a,b){
+  if(!a||!b)return null;
+  const A=new Date(a+'T12:00:00'),B=new Date(b+'T12:00:00');
+  return Math.floor((B-A)/86400000);
+}
+function payScaleForDate(dateStr){
+  const hire=getHireDate();
+  const d=daysBetweenISO(hire,dateStr);
+  if(d==null||d<0)return null;
+  if(d<365)return 60;
+  if(d<730)return 80;
+  if(d<1095)return 90;
+  return 100;
+}
+function currentPayScale(){
+  const now=new Date();
+  const today=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  return payScaleForDate(today);
+}
+function rateTableFor(pct){return RATE_TABLES[Number(pct)]||null}
+const SEEDED_SHIFTS=[];
+let shifts = JSON.parse(localStorage.getItem('lirrPayShifts')||'[]');
+const SEED_VERSION='2026-work-log-v1';
+if(localStorage.getItem('lirrPaySeedVersion')!==SEED_VERSION){
+  localStorage.setItem('lirrPaySeedVersion',SEED_VERSION);
+}
+
+
+const DATA_VERSION='engineer-pay-log-v5';
+function legacyHas(text,pattern){return pattern.test(text||'')}
+function inferShiftType(s){
+  if(s.shiftType)return s.shiftType;
+  const m=(s.notes||'').match(/^Status:\s*(Own|Pick|Hung|Extra Extra|XX)(?:\s*\([^\n]*\))?\s*$/im);
+  if(!m)return '';
+  return /^XX$/i.test(m[1])?'Extra Extra':m[1].replace(/\b\w/g,c=>c.toUpperCase());
+}
+function cleanStructuredStatus(notes,shiftType){
+  if(!shiftType)return notes||'';
+  return (notes||'').replace(/^Status:\s*(Own|Pick|Hung|Extra Extra|XX)(?:\s*\([^\n]*\))?\s*\n?/im,'').trim();
+}
+function upgradeShift(s){
+  const extras=s.extras||'', claims=s.claims||'';
+  if(s.shiftType===undefined)s.shiftType=inferShiftType(s);
+  if(s.shiftType)s.notes=cleanStructuredStatus(s.notes,s.shiftType);
+  if(s.mpte===undefined)s.mpte=legacyHas(extras,/MPT&E/i)||legacyHas(claims,/MPT&E/i);
+  if(s.pone===undefined)s.pone=legacyHas(extras,/\bPONE\b/i)||legacyHas(claims,/\bPONE\b|\bTrainee\b/i);
+  if(s.traineeCount===undefined)s.traineeCount=s.pone?1:0;
+  if(s.noCo===undefined)s.noCo=legacyHas(extras,/\bNO\s+CO\b/i)||legacyHas(claims,/\bNO\s+CO\b/i);
+  if(s.cert===undefined)s.cert=legacyHas(extras,/\bCert\b/i)||legacyHas(claims,/\bCert\b/i);
+  if(s.yardCertCount===undefined)s.yardCertCount=s.cert?1:0;
+  if(s.commingle===undefined)s.commingle=legacyHas(claims,/\bCommingle\b/i);
+  if(s.yardMove===undefined)s.yardMove=legacyHas(claims,/\bYard\s+Move\b/i);
+  if(s.sheridanMove===undefined)s.sheridanMove=false;
+  if(s.terminalNotCrewBook===undefined)s.terminalNotCrewBook=false;
+  if(s.runaround===undefined)s.runaround=false;
+  if(s.runaroundDiffMinutes===undefined)s.runaroundDiffMinutes=0;
+  const legacy2A=parse2A(claims);
+  if(s.a2===undefined)s.a2=legacy2A>0;
+  if(s.a2Minutes===undefined)s.a2Minutes=legacy2A;
+  if(s.timeSlip===undefined)s.timeSlip=false;
+  if(s.timeSlipWritten===undefined)s.timeSlipWritten='';
+  if(s.timeSlipSubmitted===undefined)s.timeSlipSubmitted='';
+  if(s.timeSlipLocation===undefined)s.timeSlipLocation='';
+  if(s.timeSlipStatus===undefined)s.timeSlipStatus='Pending';
+  if(s.timeSlipResolved===undefined)s.timeSlipResolved='';
+  if(s.conductorName===undefined)s.conductorName='';
+  if(s.brakemanName===undefined)s.brakemanName='';
+  if(s.freightMeal===undefined)s.freightMeal=false;
+  if(s.fuelClaim===undefined)s.fuelClaim=false;
+  if(s.specialShift===undefined)s.specialShift='';
+  if(s.specialCategory===undefined)s.specialCategory='';
+  if(s.traineeMode===undefined)s.traineeMode=false;
+  if(s.classDay===undefined)s.classDay=false;
+  if(s.engineerName===undefined)s.engineerName='';
+  if(s.engineerIBM===undefined)s.engineerIBM='';
+  return s;
+}
+shifts=shifts.map(upgradeShift);
+if(localStorage.getItem('lirrPayDataVersion')!==DATA_VERSION){
+  localStorage.setItem('lirrPayShifts',JSON.stringify(shifts));
+  localStorage.setItem('lirrPayDataVersion',DATA_VERSION);
+}
+
+
+function money(n){return new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(n||0)}
+function pad(n){return String(n).padStart(2,'0')}
+function fmtMinutes(m){m=Math.max(0,Math.round(m||0));return `${Math.floor(m/60)}:${pad(m%60)}`}
+function parseClock(v){if(!v)return null;const [h,m]=v.split(':').map(Number);return h*60+m}
+function straightPay(minutes,pct){return ratePay(minutes,0,pct)}
+function otPay(minutes,pct){return ratePay(minutes,1,pct)}
+function nightPay(minutes,pct){return ratePay(minutes,2,pct)}
+function ratePay(minutes,idx,pct){
+  const table=rateTableFor(pct);if(!table)return 0;
+  minutes=Math.max(0,Math.round(minutes));let total=0;
+  while(minutes>=480){total+=table.hour[8][idx];minutes-=480}
+  const h=Math.floor(minutes/60);if(h)total+=table.hour[h][idx];
+  const m=minutes%60;if(m)total+=table.minute[m][idx];
+  return total;
+}
+
+function easterSunday(y){let f=Math.floor,g=y%19,c=Math.floor(y/100),h=(c-Math.floor(c/4)-Math.floor((8*c+13)/25)+19*g+15)%30,i=h-Math.floor(h/28)*(1-Math.floor(h/28)*Math.floor(29/(h+1))*Math.floor((21-g)/11)),j=(y+Math.floor(y/4)+i+2-c+Math.floor(c/4))%7,l=i-j,m=3+Math.floor((l+40)/44),d=l+28-31*Math.floor(m/4);return new Date(y,m-1,d)}
+function nthWeekday(y,month,weekday,n){let d=new Date(y,month,1),add=(7+weekday-d.getDay())%7;d.setDate(1+add+7*(n-1));return d}
+function lastWeekday(y,month,weekday){let d=new Date(y,month+1,0),sub=(7+d.getDay()-weekday)%7;d.setDate(d.getDate()-sub);return d}
+function electionDay(y){let d=new Date(y,10,1);while(!(d.getDay()===2&&d.getDate()>=2))d.setDate(d.getDate()+1);return d}
+function isoLocal(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function holidaysFor(y){let eas=easterSunday(y),gf=new Date(eas);gf.setDate(eas.getDate()-2);return new Set([
+`${y}-01-01`,isoLocal(nthWeekday(y,0,1,3)),`${y}-02-12`,isoLocal(nthWeekday(y,1,1,3)),isoLocal(gf),isoLocal(lastWeekday(y,4,1)),`${y}-07-04`,isoLocal(nthWeekday(y,8,1,1)),isoLocal(nthWeekday(y,9,1,2)),isoLocal(electionDay(y)),isoLocal(nthWeekday(y,10,4,4)),`${y}-12-25`
+])}
+function isContractHoliday(dateStr){if(!dateStr)return false;const y=Number(dateStr.slice(0,4));return holidaysFor(y).has(dateStr)}
+function overlapNight(start,end){if(start==null||end==null)return 0;if(end<=start)end+=1440;let total=0;for(let day=-1;day<=1;day++){let a=day*1440+20*60,b=(day+1)*1440+6*60;total+=Math.max(0,Math.min(end,b)-Math.max(start,a))}return Math.round(total)}
+function parse2A(text){const m=(text||'').match(/\b2A\s+(\d+)\s*:\s*(\d{1,2})\b/i);return m?Number(m[1])*60+Number(m[2]):0}
+function countToken(text,token){return new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i').test(text||'')?1:0}
+function payPeriodBoundsForDate(dateStr){
+  if(!dateStr)return null;
+  const d=new Date(dateStr+'T12:00:00');
+  const daysSinceWed=(d.getDay()-3+7)%7;
+  const start=new Date(d);start.setDate(d.getDate()-daysSinceWed);
+  const end=new Date(start);end.setDate(start.getDate()+6);
+  return {start,end,startISO:isoLocal(start),endISO:isoLocal(end)};
+}
+function previousPayPeriodQualifyingEarnings(dateStr,depth=0){
+  if(depth>60)return 0;
+  const cur=payPeriodBoundsForDate(dateStr);if(!cur)return 0;
+  const prevEnd=new Date(cur.start);prevEnd.setDate(prevEnd.getDate()-1);
+  const prevStart=new Date(prevEnd);prevStart.setDate(prevEnd.getDate()-6);
+  const a=isoLocal(prevStart),b=isoLocal(prevEnd);
+  return shifts.filter(x=>x.date>=a&&x.date<=b).reduce((sum,x)=>{
+    const c=calculate(x,depth+1);if(!c||c.rateMissing)return sum;
+    return sum+Math.max(0,c.total-(c.dailyCertPay||0));
+  },0);
+}
+function calculate(s,depth=0){
+  const ratePct=Number(s.ratePct)||payScaleForDate(s.date);
+  if(!ratePct||!rateTableFor(ratePct))return {rateMissing:true,ratePct:null};
+  const table=rateTableFor(ratePct),basicST=table.hour[8][0];
+  const special=s.specialShift||'';
+  const traineeMode=!!s.traineeMode;
+  const sharedSpecial=['Two Year Book','Miscellaneous Instruction','Personal Day','Company Court'].includes(special);
+
+  // Trainee-only flat entries.
+  if(traineeMode&&(s.classDay||special==='Holiday - Not Worked')){
+    let actual=480;
+    if(s.classDay){const st=parseClock(s.start),en=parseClock(s.end);if(st!=null&&en!=null){actual=en-st;if(actual<=0)actual+=1440}}
+    return {actual,payable:480,holiday:false,ssot:false,rd:false,fullOT:false,ratePct,payType:s.classDay?'Class':'Holiday - Not Worked',
+      regular:basicST,ot:0,night:0,holidayBonus:0,mptePay:0,freightMealPay:0,fuelClaimPay:0,dailyCertPay:0,specialPay:0,
+      traineeCount:0,ponePay:0,noCoPay:0,yardCertCount:0,certPay:0,comminglePay:0,classesPay:0,sheridanPay:0,terminalPay:0,
+      runaroundBaseMinutes:0,runaroundDiffMinutes:0,runaroundPay:0,a2mins:0,a2:0,total:basicST};
+  }
+
+  // Flat special shifts: 8 hours straight time, no Daily Cert.
+  if(special==='Sick Day'||special==='Paid Guarantee'){
+    const total=basicST;
+    return {actual:480,payable:480,holiday:false,ssot:false,rd:false,fullOT:false,ratePct,payType:special,
+      regular:basicST,ot:0,night:0,holidayBonus:0,mptePay:0,freightMealPay:0,fuelClaimPay:0,dailyCertPay:0,specialPay:0,
+      traineeCount:0,ponePay:0,noCoPay:0,yardCertCount:0,certPay:0,comminglePay:0,classesPay:0,sheridanPay:0,terminalPay:0,
+      runaroundBaseMinutes:0,runaroundDiffMinutes:0,runaroundPay:0,a2mins:0,a2:0,total};
+  }
+
+  // Shared special shifts for Extra List/STB or Yard/Freight: 1/5 prior pay period, excluding Daily Cert.
+  if(sharedSpecial&&(s.specialCategory==='extra'||s.specialCategory==='yard')){
+    const prior=previousPayPeriodQualifyingEarnings(s.date,depth);
+    const specialPay=prior/5;
+    return {actual:0,payable:0,holiday:false,ssot:false,rd:false,fullOT:false,ratePct,payType:special,
+      regular:0,ot:0,night:0,holidayBonus:0,mptePay:0,freightMealPay:0,fuelClaimPay:0,dailyCertPay:0,specialPay,
+      traineeCount:0,ponePay:0,noCoPay:0,yardCertCount:0,certPay:0,comminglePay:0,classesPay:0,sheridanPay:0,terminalPay:0,
+      runaroundBaseMinutes:0,runaroundDiffMinutes:0,runaroundPay:0,a2mins:0,a2:0,total:specialPay,priorPeriodEarnings:prior};
+  }
+
+  // Normal shifts and passenger-job special shifts use normal job-entry math.
+  const start=parseClock(s.start),end=parseClock(s.end);if(start==null||end==null)return null;
+  let actual=end-start;if(actual<=0)actual+=1440;
+  const payable=traineeMode?Math.max(480,actual-30):Math.max(480,actual);
+  const holiday=traineeMode?false:(!!s.holiday||isContractHoliday(s.date)),ssot=traineeMode?false:!!s.ssot,rd=traineeMode?false:!!s.rd,fullOT=holiday||ssot||rd;
+  const regular=fullOT?0:basicST;
+  const ot=traineeMode?otPay(Math.max(0,actual-510),ratePct):(fullOT?otPay(payable,ratePct):otPay(Math.max(0,actual-480),ratePct));
+  const night=nightPay(overlapNight(start,end),ratePct);
+  const holidayBonus=holiday?basicST:0;
+  const mptePay=s.mpte?otPay(20,ratePct):0;
+  const freightMealPay=s.freightMeal?otPay(40,ratePct):0;
+  const fuelClaimPay=traineeMode?0:(s.fuelClaim?otPay(30,ratePct):0);
+  const traineeCount=!traineeMode&&s.pone?Math.min(2,Math.max(1,Math.round(Number(s.traineeCount)||1))):0;
+  const ponePay=straightPay(60*traineeCount,ratePct);
+  const noCoPay=!traineeMode&&s.noCo?basicST:0;
+  const yardCertCount=!traineeMode&&s.cert?Math.max(1,Math.round(Number(s.yardCertCount)||1)):0;
+  const certPay=straightPay(60*yardCertCount,ratePct);
+  const comminglePay=!traineeMode&&s.commingle?basicST:0;
+  const classesPay=!traineeMode&&s.yardMove?basicST:0;
+  const sheridanPay=!traineeMode&&s.sheridanMove?basicST:0;
+  const terminalPay=!traineeMode&&s.terminalNotCrewBook?straightPay(120,ratePct):0;
+  const runaroundDiffMinutes=!traineeMode&&s.runaround?Math.max(0,Math.round(Number(s.runaroundDiffMinutes)||0)):0;
+  const runaroundBaseMinutes=!traineeMode&&s.runaround?120:0;
+  const runaroundPay=!traineeMode&&s.runaround?straightPay(runaroundBaseMinutes+runaroundDiffMinutes,ratePct):0;
+  const a2mins=!traineeMode&&s.a2?Math.min(480,Math.max(0,Math.round(Number(s.a2Minutes)||0))):0;
+  const a2=straightPay(a2mins,ratePct);
+  const passengerSpecial=sharedSpecial&&s.specialCategory==='passenger';
+  const dailyCertPay=traineeMode||passengerSpecial?0:10;
+  const specialPay=0;
+  const total=regular+ot+night+holidayBonus+mptePay+freightMealPay+fuelClaimPay+dailyCertPay+ponePay+noCoPay+certPay+
+    comminglePay+classesPay+sheridanPay+terminalPay+runaroundPay+a2;
+  return {actual,payable,holiday,ssot,rd,fullOT,ratePct,
+    payType:passengerSpecial?special:(holiday?'Holiday':ssot?'Short Swing':rd?'Relief Day':'Normal'),
+    regular,ot,night,holidayBonus,mptePay,freightMealPay,fuelClaimPay,dailyCertPay,specialPay,
+    traineeCount,ponePay,noCoPay,yardCertCount,certPay,comminglePay,classesPay,sheridanPay,terminalPay,
+    runaroundBaseMinutes,runaroundDiffMinutes,runaroundPay,a2mins,a2,total};
+}
+function formData(){
+  const $=id=>document.getElementById(id);
+  const a2h=Math.max(0,Number($('a2Hours').value)||0),a2m=Math.min(59,Math.max(0,Number($('a2Minutes').value)||0));
+  const rrh=Math.max(0,Number($('runaroundHours').value)||0),rrm=Math.min(59,Math.max(0,Number($('runaroundMinutes').value)||0));
+  return {
+    id:$('editId').value||crypto.randomUUID(),
+    date:$('date').value,start:$('start').value,end:$('end').value,
+    traineeMode:$('shiftRuleMode').value==='trainee',classDay:$('shiftRuleMode').value==='trainee'&&$('classFlag').checked,
+    ratePct:(()=>{const id=$('editId').value,old=shifts.find(x=>x.id===id);return old&&old.date===$('date').value&&old.ratePct?old.ratePct:payScaleForDate($('date').value)})(),
+    assignment:$('assignment').value.trim(),location:$('location').value.trim(),shiftType:$('shiftType').value,
+    specialShift:$('shiftRuleMode').value==='trainee'?($('classFlag').checked?'':$('specialShift').value):$('specialShift').value,specialCategory:$('shiftRuleMode').value==='trainee'?'':$('specialCategory').value,
+    conductorName:$('shiftRuleMode').value==='trainee'?'':$('conductorName').value.trim(),brakemanName:$('shiftRuleMode').value==='trainee'?'':$('brakemanName').value.trim(),
+    engineerName:$('shiftRuleMode').value==='trainee'&&!$('classFlag').checked?$('engineerName').value.trim():'',engineerIBM:$('shiftRuleMode').value==='trainee'&&!$('classFlag').checked?$('engineerIBM').value.trim():'',
+    extras:$('legacyExtras').value||'',claims:$('legacyClaims').value||'',notes:$('notes').value.trim(),
+    timeSlip:$('timeSlipFlag').checked,
+    timeSlipWritten:$('timeSlipFlag').checked?$('timeSlipWritten').value:'',
+    timeSlipSubmitted:$('timeSlipFlag').checked?$('timeSlipSubmitted').value:'',
+    timeSlipLocation:$('timeSlipFlag').checked?$('timeSlipLocation').value.trim():'',
+    timeSlipStatus:$('timeSlipFlag').checked?($('timeSlipStatus').value||'Pending'):'Pending',
+    timeSlipResolved:$('timeSlipFlag').checked?$('timeSlipResolved').value:'',
+    holiday:$('shiftRuleMode').value==='trainee'?false:$('holidayFlag').checked,ssot:$('shiftRuleMode').value==='trainee'?false:$('ssotFlag').checked,rd:$('shiftRuleMode').value==='trainee'?false:$('rdFlag').checked,
+    mpte:$('mpteFlag').checked,freightMeal:$('freightMealFlag').checked,fuelClaim:$('shiftRuleMode').value==='trainee'?false:$('fuelClaimFlag').checked,
+    pone:$('shiftRuleMode').value==='trainee'?false:$('poneFlag').checked,traineeCount:$('shiftRuleMode').value==='trainee'?0:($('poneFlag').checked?Math.min(2,Math.max(1,Number($('traineeCount').value)||1)):0),
+    noCo:$('shiftRuleMode').value==='trainee'?false:$('noCoFlag').checked,cert:$('shiftRuleMode').value==='trainee'?false:$('certFlag').checked,
+    yardCertCount:$('certFlag').checked?Math.max(1,Math.round(Number($('yardCertCount').value)||1)):0,
+    commingle:$('shiftRuleMode').value==='trainee'?false:$('commingleFlag').checked,yardMove:$('shiftRuleMode').value==='trainee'?false:$('yardMoveFlag').checked,sheridanMove:$('shiftRuleMode').value==='trainee'?false:$('sheridanFlag').checked,
+    terminalNotCrewBook:$('shiftRuleMode').value==='trainee'?false:$('terminalFlag').checked,
+    runaround:$('shiftRuleMode').value==='trainee'?false:$('runaroundFlag').checked,runaroundDiffMinutes:$('shiftRuleMode').value==='trainee'?0:($('runaroundFlag').checked?(rrh*60+rrm):0),
+    a2:$('shiftRuleMode').value==='trainee'?false:$('a2Flag').checked,a2Minutes:$('shiftRuleMode').value==='trainee'?0:($('a2Flag').checked?Math.min(480,a2h*60+a2m):0)
+  };
+}
+function setCalcRow(id,value,text){
+  const el=document.getElementById(id);if(!el)return;
+  el.textContent=text??money(value);
+  const row=el.closest('.calc-row');if(row)row.classList.toggle('pay-zero',!(Number(value)>0));
+}
+function resetCalcRows(){
+  ['pRegular','pOT','pNight','pHoliday','pMPTE','pFreightMeal','pFuelClaim','pDailyCert','pSpecialPay','pPONE','pNOCO','pCERT','pCommingle','pClasses','pSheridan','pTerminal','pRunaround','p2a']
+    .forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='$0.00';const row=el.closest('.calc-row');if(row)row.classList.add('pay-zero')}});
+}
+function calculatePreview(){
+  const $=id=>document.getElementById(id),s=formData(),holidayBox=$('holidayFlag');
+  if(!s.traineeMode&&!s.specialShift&&isContractHoliday(s.date))holidayBox.checked=true;
+  updateTimeOnDuty();
+  const c=calculate({...s,holiday:holidayBox.checked});
+  if(!c||c.rateMissing){
+    resetCalcRows();$('pTotal').textContent='$0.00';
+    $('pTime').textContent=c&&c.rateMissing?'Set hire date in Settings':'—';
+    $('payTypeBadge').textContent=c&&c.rateMissing?'Hire date needed':(s.specialShift||'Normal');
+    $('payTypeBadge').className='badge';renderShiftWarnings(s);return;
+  }
+  $('pTime').textContent=c.actual||c.payable?`${fmtMinutes(c.actual)} / ${fmtMinutes(c.payable)}`:'Not time-based';
+  setCalcRow('pRegular',c.regular);setCalcRow('pOT',c.ot);setCalcRow('pNight',c.night);
+  setCalcRow('pHoliday',c.holidayBonus);setCalcRow('pMPTE',c.mptePay);setCalcRow('pFreightMeal',c.freightMealPay);setCalcRow('pFuelClaim',c.fuelClaimPay);
+  setCalcRow('pDailyCert',c.dailyCertPay);setCalcRow('pSpecialPay',c.specialPay);
+  setCalcRow('pPONE',c.ponePay,`${money(c.ponePay)}${c.traineeCount?` (${c.traineeCount})`:''}`);
+  setCalcRow('pNOCO',c.noCoPay);
+  setCalcRow('pCERT',c.certPay,`${money(c.certPay)}${c.yardCertCount?` (${c.yardCertCount})`:''}`);
+  setCalcRow('pCommingle',c.comminglePay);setCalcRow('pClasses',c.classesPay);setCalcRow('pSheridan',c.sheridanPay);setCalcRow('pTerminal',c.terminalPay);
+  setCalcRow('pRunaround',c.runaroundPay,`${money(c.runaroundPay)}${c.runaroundBaseMinutes?` (2:00 + ${fmtMinutes(c.runaroundDiffMinutes)})`:''}`);
+  setCalcRow('p2a',c.a2,`${money(c.a2)}${c.a2mins?` (${fmtMinutes(c.a2mins)})`:''}`);
+  $('pTotal').textContent=money(c.total);
+  $('payTypeBadge').textContent=`${c.payType} • ${c.ratePct}%`;
+  $('payTypeBadge').className='badge '+(c.fullOT?'ot':'')+(c.holiday?' holiday':'');
+  renderShiftWarnings(s);
+}
+
+function isTraineeMode(){return localStorage.getItem(TRAINEE_MODE_KEY)==='on'}
+function requestTraineeModeChange(enable){
+  const box=document.getElementById('traineeModeToggle');
+  const msg=enable?'Enable Engineer Trainee Mode?\n\nEngineer Pay Log will switch new entries to trainee rules. Existing shift history will not be changed.':'Leave Engineer Trainee Mode?\n\nOnly turn off Trainee Mode after graduating from Engineer training. New shifts will use standard Engineer rules. Existing trainee shifts will not be changed.';
+  if(!confirm(msg)){if(box)box.checked=!enable;return}
+  localStorage.setItem(TRAINEE_MODE_KEY,enable?'on':'off');updateTraineeModeUI();
+}
+function updateTraineeModeUI(){
+  const on=isTraineeMode(),box=document.getElementById('traineeModeToggle'),status=document.getElementById('traineeModeStatus');
+  if(box)box.checked=on;if(status)status.style.display=on?'block':'none';
+}
+function updateTimeOnDuty(){
+  const el=document.getElementById('timeOnDutyDisplay'),st=parseClock(document.getElementById('start')?.value),en=parseClock(document.getElementById('end')?.value);
+  if(!el)return;if(st==null||en==null){el.textContent='—';return}let m=en-st;if(m<=0)m+=1440;el.textContent=`${Math.floor(m/60)} hr ${String(m%60).padStart(2,'0')} min`;
+}
+function applyEntryMode(){
+  const trainee=document.getElementById('shiftRuleMode').value==='trainee',classDay=trainee&&document.getElementById('classFlag').checked,holidayOff=trainee&&document.getElementById('specialShift').value==='Holiday - Not Worked',simpleDay=classDay||holidayOff;
+  document.getElementById('shiftForm').classList.toggle('trainee-mode',trainee);
+  ['payFlagsField','crewFields','timeSlipField'].forEach(id=>document.getElementById(id)?.classList.toggle('hidden-by-mode',trainee));
+  ['assignmentField','shiftTypeField','penaltiesField','notesField','traineeInstructorFields'].forEach(id=>document.getElementById(id)?.classList.toggle('hidden-by-mode',simpleDay));
+  document.getElementById('specialShiftField')?.classList.toggle('hidden-by-mode',classDay);
+  document.getElementById('locationField')?.classList.toggle('hidden-by-mode',holidayOff);
+  if(trainee&&!simpleDay){
+    document.getElementById('specialShiftField')?.classList.remove('hidden-by-mode');
+    document.getElementById('penaltiesField')?.classList.remove('hidden-by-mode');
+    document.getElementById('notesField')?.classList.remove('hidden-by-mode');
+    document.getElementById('traineeInstructorFields')?.classList.remove('hidden-by-mode');
+  }
+  const special=document.getElementById('specialShift'),specialValue=special.value;
+  if(trainee){special.innerHTML='<option value="">Normal worked shift</option><option value="Holiday - Not Worked">Holiday - Not Worked</option>';special.value=['','Holiday - Not Worked'].includes(specialValue)?specialValue:''}
+  else if(special.options.length<7){special.innerHTML='<option value="">Normal worked shift</option><option value="Sick Day">Sick Day</option><option value="Paid Guarantee">Paid Guarantee</option><option value="Two Year Book">Two Year Book</option><option value="Miscellaneous Instruction">Miscellaneous Instruction</option><option value="Personal Day">Personal Day</option><option value="Company Court">Company Court</option>';special.value=specialValue}
+  const allowed=new Set(['mpteFlag','freightMealFlag']);
+  document.querySelectorAll('#penaltiesField .check').forEach(l=>{const inp=l.querySelector('input');l.classList.toggle('hidden-by-mode',trainee&&inp&&!allowed.has(inp.id))});
+  const dailyRow=document.getElementById('pDailyCert')?.closest('.calc-row');if(dailyRow)dailyRow.classList.toggle('hidden-by-mode',trainee);
+  if(trainee){['holidayFlag','ssotFlag','rdFlag','fuelClaimFlag','poneFlag','noCoFlag','certFlag','commingleFlag','yardMoveFlag','sheridanFlag','terminalFlag','runaroundFlag','a2Flag'].forEach(id=>{const e=document.getElementById(id);if(e)e.checked=false})}
+  toggleSpecialShift();updateTimeOnDuty();
+}
+function toggleClassDay(){applyEntryMode()}
+function toggleSpecialShift(){
+  const $=id=>document.getElementById(id),type=$('specialShift').value,shared=['Two Year Book','Miscellaneous Instruction','Personal Day','Company Court'].includes(type);
+  const panel=$('specialShiftPanel'),catWrap=$('specialCategoryWrap'),msg=$('specialShiftMessage'),start=$('start'),end=$('end'),trainee=$('shiftRuleMode').value==='trainee';
+  panel.classList.toggle('hidden',!type);catWrap.style.display=shared?'block':'none';
+  if(!shared)$('specialCategory').value='';
+  const category=$('specialCategory').value,needsTime=trainee?(type!=='Holiday - Not Worked'):(!type||(shared&&category==='passenger'));
+  start.required=needsTime;end.required=needsTime;
+  start.disabled=!!type&&!needsTime;end.disabled=!!type&&!needsTime;
+  if(start.disabled){start.value='';end.value=''}
+  if(!type)msg.textContent='';
+  else if(type==='Holiday - Not Worked')msg.textContent='Pays a flat 8:00 hours of straight time.';
+  else if(type==='Sick Day'||type==='Paid Guarantee')msg.textContent='Pays a flat 8:00 hours of straight time. Daily Cert does not apply.';
+  else if(!category)msg.textContent='Choose the job category that applies to this Special Shift.';
+  else if(category==='passenger')msg.textContent='Enter the earnings of your regular passenger job using the normal job fields. Daily Cert will be excluded.';
+  else{
+    const s=formData(),prior=previousPayPeriodQualifyingEarnings(s.date),amt=prior/5;
+    msg.textContent=`Pays 1/5 of the previous pay period’s qualifying earnings, excluding Daily Cert. Current estimate: ${money(amt)} from ${money(prior)}.`;
+  }
+}
+function toggleTimeSlip(){
+  const $=id=>document.getElementById(id);
+  const checked=$('timeSlipFlag').checked;
+  $('timeSlipWrap').classList.toggle('show',checked);
+  if(checked&&!$('timeSlipStatus').value)$('timeSlipStatus').value='Pending';
+}
+function toggleA2(){
+  const $=id=>document.getElementById(id);
+  $('a2DurationWrap').classList.toggle('show',$('a2Flag').checked);
+}
+function toggleTrainee(){
+  const $=id=>document.getElementById(id);
+  $('traineeWrap').classList.toggle('show',$('poneFlag').checked);
+}
+function toggleYardCert(){
+  const $=id=>document.getElementById(id);
+  $('yardCertWrap').classList.toggle('show',$('certFlag').checked);
+}
+function toggleRunaround(){
+  const $=id=>document.getElementById(id);
+  $('runaroundWrap').classList.toggle('show',$('runaroundFlag').checked);
+}
+function newShift(){
+  const $=id=>document.getElementById(id);
+  $('shiftForm').reset();$('editId').value='';$('shiftRuleMode').value=isTraineeMode()?'trainee':'engineer';$('legacyExtras').value='';$('legacyClaims').value='';
+  $('formTitle').textContent='Add shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';
+  $('date').value=new Date().toISOString().slice(0,10);$('holidayFlag').checked=isContractHoliday($('date').value);
+  $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';
+  applyEntryMode();$('specialShift').value='';$('specialCategory').value='';$('classFlag').checked=false;$('conductorName').value='';$('brakemanName').value='';$('engineerName').value='';$('engineerIBM').value='';$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;
+  $('traineeCount').value=1;$('yardCertCount').value=1;
+  $('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;
+  applyEntryMode();toggleSpecialShift();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleRunaround();toggleA2();
+  $('shiftModal').classList.add('open');calculatePreview();
+}
+function editShift(id){
+  const $=id=>document.getElementById(id);
+  const s=shifts.find(x=>x.id===id);if(!s)return;upgradeShift(s);
+  $('editId').value=s.id;$('shiftRuleMode').value=s.traineeMode?'trainee':'engineer';applyEntryMode();$('date').value=s.date;$('start').value=s.start;$('end').value=s.end;$('assignment').value=s.assignment||'';
+  $('location').value=s.location||'';$('shiftType').value=s.shiftType||'';$('legacyExtras').value=s.extras||'';$('legacyClaims').value=s.claims||'';
+  $('notes').value=s.notes||'';$('engineerName').value=s.engineerName||'';$('engineerIBM').value=s.engineerIBM||'';$('classFlag').checked=!!s.classDay;$('conductorName').value=s.conductorName||'';$('brakemanName').value=s.brakemanName||'';
+  $('specialShift').value=s.specialShift||'';$('specialCategory').value=s.specialCategory||'';
+  $('timeSlipFlag').checked=!!s.timeSlip;$('timeSlipWritten').value=s.timeSlipWritten||'';$('timeSlipSubmitted').value=s.timeSlipSubmitted||'';$('timeSlipLocation').value=s.timeSlipLocation||'';$('timeSlipStatus').value=s.timeSlipStatus||'Pending';$('timeSlipResolved').value=s.timeSlipResolved||'';
+  $('holidayFlag').checked=!!s.holiday;$('ssotFlag').checked=!!s.ssot;$('rdFlag').checked=!!s.rd;
+  $('mpteFlag').checked=!!s.mpte;$('freightMealFlag').checked=!!s.freightMeal;$('fuelClaimFlag').checked=!!s.fuelClaim;$('poneFlag').checked=!!s.pone;$('traineeCount').value=Math.min(2,Math.max(1,Number(s.traineeCount)||1));
+  $('noCoFlag').checked=!!s.noCo;$('certFlag').checked=!!s.cert;$('yardCertCount').value=Math.max(1,Number(s.yardCertCount)||1);
+  $('commingleFlag').checked=!!s.commingle;$('yardMoveFlag').checked=!!s.yardMove;$('sheridanFlag').checked=!!s.sheridanMove;
+  $('terminalFlag').checked=!!s.terminalNotCrewBook;$('runaroundFlag').checked=!!s.runaround;
+  const rr=Math.max(0,Number(s.runaroundDiffMinutes)||0);$('runaroundHours').value=Math.floor(rr/60);$('runaroundMinutes').value=rr%60;
+  $('a2Flag').checked=!!s.a2;const mins=Math.max(0,Number(s.a2Minutes)||0);$('a2Hours').value=Math.floor(mins/60);$('a2Minutes').value=mins%60;
+  applyEntryMode();toggleSpecialShift();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleRunaround();toggleA2();
+  $('formTitle').textContent='Edit shift';$('deleteBtn').style.display='block';$('duplicateBtn').style.display='inline-flex';$('favoriteBtn').style.display='inline-flex';$('shiftModal').classList.add('open');calculatePreview();
+}
+function duplicateShift(id){
+  const $=id=>document.getElementById(id);
+  const s=shifts.find(x=>x.id===id);if(!s)return;
+  upgradeShift(s);
+  $('shiftForm').reset();$('editId').value='';$('shiftRuleMode').value=s.traineeMode?'trainee':'engineer';$('legacyExtras').value='';$('legacyClaims').value='';
+  $('formTitle').textContent='Duplicate shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';
+
+  $('date').value=new Date().toISOString().slice(0,10);
+  $('start').value=s.start||'';$('end').value=s.end||'';
+  applyEntryMode();$('assignment').value=s.assignment||'';$('location').value=s.location||'';$('shiftType').value=s.shiftType||'';$('conductorName').value=s.conductorName||'';$('brakemanName').value=s.brakemanName||'';$('engineerName').value=s.engineerName||'';$('engineerIBM').value=s.engineerIBM||'';$('classFlag').checked=!!s.classDay;$('specialShift').value=s.specialShift||'';$('specialCategory').value=s.specialCategory||'';
+
+  $('notes').value='';
+  $('holidayFlag').checked=isContractHoliday($('date').value);$('ssotFlag').checked=false;$('rdFlag').checked=false;
+  $('mpteFlag').checked=false;$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('poneFlag').checked=false;$('noCoFlag').checked=false;$('certFlag').checked=false;
+  $('commingleFlag').checked=false;$('yardMoveFlag').checked=false;$('sheridanFlag').checked=false;$('terminalFlag').checked=false;
+  $('runaroundFlag').checked=false;$('a2Flag').checked=false;
+  $('traineeCount').value=1;$('yardCertCount').value=1;$('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;
+
+  $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';
+
+  applyEntryMode();toggleSpecialShift();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleRunaround();toggleA2();
+  $('shiftModal').classList.add('open');calculatePreview();
+}
+function duplicateCurrentShift(){
+  const id=document.getElementById('editId').value;
+  if(id)duplicateShift(id);
+}
+function closeModal(){document.getElementById('shiftModal').classList.remove('open')}
+function saveShift(e){e.preventDefault();const s=formData();const idx=shifts.findIndex(x=>x.id===s.id);if(idx>=0)shifts[idx]=s;else shifts.push(s);persist();closeModal();renderAll();showView('dashboard')}
+function deleteCurrent(){const id=document.getElementById('editId').value;if(!id)return;if(confirm('Delete this shift?')){shifts=shifts.filter(x=>x.id!==id);persist();closeModal();renderAll()}}
+function persist(){localStorage.setItem('lirrPayShifts',JSON.stringify(shifts))}
+function dateLabel(iso){if(!iso)return'';return new Date(iso+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}
+function fullDateLabel(iso){return new Date(iso+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})}
+
+function escapeHTML(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
+function formatDateShort(iso){if(!iso)return '—';return new Date(iso+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+function hasPenaltyOrClaim(s){return !!(s.mpte||s.freightMeal||s.fuelClaim||s.pone||s.noCo||s.cert||s.commingle||s.yardMove||s.sheridanMove||s.terminalNotCrewBook||s.runaround||s.a2)}
+function collectWarnings(s){
+  const w=[];
+  if(hasPenaltyOrClaim(s)&&!s.timeSlip)w.push('This shift has a penalty or claim but no Time Slip is marked.');
+  if(s.timeSlip){
+    if(!s.timeSlipWritten)w.push('Time Slip is marked but Date Written is blank.');
+    if(!s.timeSlipSubmitted)w.push('Time Slip is marked but Date Submitted is blank.');
+    if(!s.timeSlipLocation)w.push('Time Slip is marked but Location Submitted is blank.');
+    if((s.timeSlipStatus==='Paid'||s.timeSlipStatus==='Denied')&&!s.timeSlipResolved)w.push(`Time Slip is ${s.timeSlipStatus} but Date Paid / Denied is blank.`);
+  }
+  return w;
+}
+function renderShiftWarnings(s){
+  const box=document.getElementById('shiftWarnings');if(!box)return;
+  const w=collectWarnings(s);
+  if(!w.length){box.classList.remove('show');box.innerHTML='';return}
+  box.innerHTML='<strong>Check this entry</strong>'+w.map(x=>`• ${escapeHTML(x)}`).join('<br>');box.classList.add('show');
+}
+function persistSavedJobs(){localStorage.setItem(SAVED_JOBS_KEY,JSON.stringify(savedJobs))}
+function favoriteFromShift(s,name){return {id:crypto.randomUUID(),name:name||s.assignment||'Saved Job',assignment:s.assignment||'',location:s.location||'',shiftType:s.shiftType||'',start:s.start||'',end:s.end||''}}
+function saveCurrentShiftAsFavorite(){
+  const id=document.getElementById('editId').value,s=shifts.find(x=>x.id===id);if(!s)return;
+  const name=prompt('Name this favorite job:',s.assignment||'Saved Job');if(!name)return;
+  savedJobs.push(favoriteFromShift(s,name.trim()));persistSavedJobs();renderSavedJobs();renderDashboard();alert('Favorite saved.');
+}
+function saveCurrentAsFavoriteFromPrompt(){
+  const name=prompt('Favorite name (for example: Job 194)');if(!name)return;
+  const assignment=prompt('Assignment / job number','')||'',location=prompt('Location','')||'',start=prompt('Normal start time (HH:MM)','')||'',end=prompt('Normal end time (HH:MM)','')||'',shiftType=prompt('Shift Type: Own, Pick, Hung, or Extra Extra','Own')||'';
+  savedJobs.push({id:crypto.randomUUID(),name:name.trim(),assignment,location,start,end,shiftType});persistSavedJobs();renderSavedJobs();renderDashboard();
+}
+function deleteFavorite(id){if(!confirm('Delete this saved job?'))return;savedJobs=savedJobs.filter(j=>j.id!==id);persistSavedJobs();renderSavedJobs();renderDashboard()}
+function useFavorite(id){
+  const j=savedJobs.find(x=>x.id===id);if(!j)return;newShift();const $=id=>document.getElementById(id);
+  $('assignment').value=j.assignment||'';$('location').value=j.location||'';$('shiftType').value=j.shiftType||'';$('start').value=j.start||'';$('end').value=j.end||'';$('formTitle').textContent=`Add shift • ${j.name||'Favorite'}`;calculatePreview();
+}
+function renderSavedJobs(){
+  const el=document.getElementById('savedJobsList');if(!el)return;
+  if(!savedJobs.length){el.innerHTML='<div class="empty">No saved jobs yet. Open a saved shift and choose “Save as Favorite,” or create one here.</div>';return}
+  el.innerHTML=savedJobs.map(j=>`<div class="saved-job"><div><div class="saved-job-title">${escapeHTML(j.name)}</div><div class="saved-job-sub">${escapeHTML(j.assignment||'No assignment')}${j.location?' • '+escapeHTML(j.location):''}${j.shiftType?' • '+escapeHTML(j.shiftType):''}${j.start||j.end?' • '+escapeHTML(j.start||'—')+'–'+escapeHTML(j.end||'—'):''}</div></div><div style="display:flex;gap:6px"><button class="btn small" onclick="useFavorite('${j.id}')">Use</button><button class="btn small danger" onclick="deleteFavorite('${j.id}')">Delete</button></div></div>`).join('');
+}
+function timeSlipCard(s){
+  const status=s.timeSlipStatus||'Pending';
+  return `<div class="shift timeslip"><div class="shift-date">${dateLabel(s.date)}</div><div class="shift-main"><div class="shift-title">${escapeHTML(s.assignment||'Shift')} <span class="badge timeslip">${escapeHTML(status)}</span></div><div class="shift-sub">${formatDateShort(s.timeSlipWritten)} written${s.timeSlipSubmitted?' • '+formatDateShort(s.timeSlipSubmitted)+' submitted':''}${s.timeSlipLocation?' • '+escapeHTML(s.timeSlipLocation):''}${s.timeSlipResolved?' • '+formatDateShort(s.timeSlipResolved):''}</div></div><div><button class="btn small" onclick="editShift('${s.id}')">Edit</button></div></div>`;
+}
+function renderTimeSlipCenter(){
+  const el=document.getElementById('timeSlipCenter');if(!el)return;
+  const slips=shifts.filter(s=>s.timeSlip).sort((a,b)=>(b.timeSlipSubmitted||b.timeSlipWritten||b.date).localeCompare(a.timeSlipSubmitted||a.timeSlipWritten||a.date));
+  const groups=['Pending','Paid','Denied'],counts=Object.fromEntries(groups.map(g=>[g,slips.filter(s=>(s.timeSlipStatus||'Pending')===g).length]));
+  let out=`<div class="timeslip-summary">${groups.map(g=>`<div class="statbox"><div class="num">${counts[g]}</div><div>${g}</div></div>`).join('')}</div>`;
+  for(const g of groups){const list=slips.filter(s=>(s.timeSlipStatus||'Pending')===g);out+=`<div class="timeslip-group"><h3>${g}</h3>${list.length?list.map(timeSlipCard).join(''):'<div class="empty">No '+g.toLowerCase()+' time slips.</div>'}</div>`}
+  el.innerHTML=out;
+}
+function getNextThursday(base=new Date()){const d=new Date(base.getFullYear(),base.getMonth(),base.getDate()),delta=(4-d.getDay()+7)%7;d.setDate(d.getDate()+delta);return d}
+function addDaysDate(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function isoFromDate(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function paycheckInfo(offset=0){
+  const payday=getNextThursday(new Date());payday.setDate(payday.getDate()+offset*7);
+  const periodEnd=addDaysDate(payday,-9),periodStart=addDaysDate(periodEnd,-6),startISO=isoFromDate(periodStart),endISO=isoFromDate(periodEnd);
+  const items=shifts.map(s=>({s,c:calculate(s)})).filter(x=>x.c&&!x.c.rateMissing&&x.s.date>=startISO&&x.s.date<=endISO);
+  const total=items.reduce((a,x)=>a+x.c.total,0),regular=items.reduce((a,x)=>a+x.c.regular,0),actual=items.reduce((a,x)=>a+x.c.actual,0);
+  return {payday,periodStart,periodEnd,items,total,actual,extras:Math.max(0,total-regular)};
+}
+function renderPaycheck(){
+  const info=paycheckInfo(paycheckWeekOffset),label=info.payday.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}),range=`${info.periodStart.toLocaleDateString('en-US',{month:'short',day:'numeric'})} – ${info.periodEnd.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val};
+  set('paycheckNavLabel',label);set('paycheckDateLabel',`Paycheck • ${label}`);set('paycheckAmount',money(info.total));set('paycheckRange',`Pay period: ${range}`);set('paycheckShiftCount',String(info.items.length));set('paycheckHours',fmtMinutes(info.actual));set('paycheckExtras',money(info.extras));
+  const list=document.getElementById('paycheckShiftList');if(list)list.innerHTML=info.items.length?info.items.sort((a,b)=>b.s.date.localeCompare(a.s.date)).map(x=>shiftHTML(x.s)).join(''):'<div class="empty">No shifts saved for this pay period.</div>';
+}
+function changePaycheckWeek(delta){paycheckWeekOffset+=delta;renderPaycheck()}
+function openPaychecks(){paycheckWeekOffset=0;showView('paychecks');renderPaycheck()}
+function backupAgeDays(){const raw=localStorage.getItem(LAST_BACKUP_KEY);if(!raw)return null;const d=new Date(raw);if(Number.isNaN(d.getTime()))return null;return Math.floor((Date.now()-d.getTime())/86400000)}
+function updateBackupUI(){
+  const age=backupAgeDays(),raw=localStorage.getItem(LAST_BACKUP_KEY),status=document.getElementById('settingsBackupStatus');
+  if(status)status.innerHTML=raw?`<strong>Last backup:</strong> ${new Date(raw).toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})} (${age} day${age===1?'':'s'} ago)`:'<strong>Last backup:</strong> No backup recorded on this device.';
+  const reminder=document.getElementById('backupReminder');if(!reminder)return;
+  if(age===null||age>10){const text=age===null?'No backup has been recorded on this device yet.':`Your last recorded backup was ${age} days ago.`;reminder.innerHTML=`<strong>Time for a backup</strong><br>${text} Backing up helps protect your shift history.<div style="display:flex;gap:8px;margin-top:9px;flex-wrap:wrap"><button class="btn primary small" onclick="exportJSON()">Back Up Now</button><button class="btn small" onclick="document.getElementById('backupReminder').classList.remove('show')">Remind Me Later</button></div>`;reminder.classList.add('show')}else reminder.classList.remove('show');
+}
+function previewRestore(data){
+  pendingRestoreData=data;const dates=data.shifts.map(s=>s.date).filter(Boolean).sort();
+  document.getElementById('restoreShiftCount').textContent=String(data.shifts.length);document.getElementById('restoreCurrentCount').textContent=String(shifts.length);
+  document.getElementById('restoreDateRange').textContent=dates.length?`${formatDateShort(dates[0])} – ${formatDateShort(dates[dates.length-1])}`:'No dated shifts';
+  document.getElementById('restoreHireDate').textContent=data.hireDate?formatDateShort(data.hireDate):'Not included';document.getElementById('restorePreviewModal').classList.add('open');
+}
+function cancelRestore(){pendingRestoreData=null;document.getElementById('restorePreviewModal').classList.remove('open')}
+function confirmRestore(){const data=pendingRestoreData;if(!data)return;shifts=data.shifts.map(upgradeShift);if(data.hireDate)localStorage.setItem(HIRE_DATE_KEY,data.hireDate);if(data.traineeMode!==undefined)localStorage.setItem(TRAINEE_MODE_KEY,data.traineeMode?'on':'off');if(Array.isArray(data.savedJobs)){savedJobs=data.savedJobs;persistSavedJobs()}persist();cancelRestore();updateRateDisplays();renderAll();alert('Backup restored.')}
+function openWhatsNew(force=false){if(!force&&localStorage.getItem(LAST_SEEN_VERSION_KEY)===WHATS_NEW_VERSION)return;document.getElementById('whatsNewModal')?.classList.add('open')}
+function closeWhatsNew(){localStorage.setItem(LAST_SEEN_VERSION_KEY,WHATS_NEW_VERSION);document.getElementById('whatsNewModal').classList.remove('open')}
+function shiftHTML(s){
+  const c=calculate(s);let tags=[];
+  if(c&&c.payType!=='Normal')tags.push(`<span class="badge ot">${c.payType}</span>`);
+  if(s.mpte||s.freightMeal||s.fuelClaim||s.pone||s.noCo||s.cert||s.commingle||s.yardMove||s.sheridanMove||s.terminalNotCrewBook||s.runaround||s.a2)tags.push('<span class="badge penalty">Extra</span>');
+  if(s.timeSlip)tags.push(`<span class="badge timeslip">Time Slip • ${s.timeSlipStatus||'Pending'}</span>`);
+  if(!c)tags.push('<span class="badge">In progress</span>');
+  const timeText=s.specialShift&&!s.start?'Special Shift':(s.end?`${s.start}–${s.end}`:`${s.start||'—'}–…`);
+  const typeText=s.classDay?' • Class':(s.specialShift?` • ${s.specialShift}`:(s.shiftType?` • ${s.shiftType}`:''));
+  const timeSlipText=s.timeSlip?` • Time Slip: ${s.timeSlipStatus||'Pending'}`:'';
+  return `<div class="shift${s.timeSlip?' timeslip':''}"><div class="shift-date">${dateLabel(s.date)}</div><div class="shift-main"><div class="shift-title">${s.classDay?'Class':(s.specialShift||s.assignment||'Shift')} ${tags.join(' ')}</div><div class="shift-sub">${timeText}${s.location?' • '+s.location:''}${typeText}${timeSlipText}</div></div><div><div class="shift-pay">${c&&!c.rateMissing?money(c.total):'—'}</div><div class="shift-actions"><button class="btn small" onclick="duplicateShift('${s.id}')">Duplicate</button><button class="btn small" onclick="editShift('${s.id}')">Edit</button></div></div></div>`
+}
+function renderDashboard(){
+  const valid=shifts.map(s=>({s,c:calculate(s)})).filter(x=>x.c&&!x.c.rateMissing).sort((a,b)=>b.s.date.localeCompare(a.s.date));
+  const now=new Date(),ym=`${now.getFullYear()}-${pad(now.getMonth()+1)}`,month=valid.filter(x=>x.s.date.startsWith(ym));
+  monthTotal.textContent=money(month.reduce((a,x)=>a+x.c.total,0));monthCount.textContent=`${month.length} paid shift${month.length===1?'':'s'}`;
+  const yr=valid.filter(x=>x.s.date.startsWith('2026-'));yearTotal.textContent=money(yr.reduce((a,x)=>a+x.c.total,0));yearHours.textContent=`${fmtMinutes(yr.reduce((a,x)=>a+x.c.actual,0))} actual hours`;
+  avgShift.textContent=money(valid.length?valid.reduce((a,x)=>a+x.c.total,0)/valid.length:0);recentShifts.innerHTML=valid.length?valid.slice(0,6).map(x=>shiftHTML(x.s)).join(''):'<div class="empty">No shifts saved yet.</div>';
+  const pi=paycheckInfo(0),amount=document.getElementById('dashPaycheckAmount'),dates=document.getElementById('dashPaycheckDates');
+  if(amount)amount.textContent=money(pi.total);if(dates)dates.textContent=`${pi.periodStart.toLocaleDateString('en-US',{month:'short',day:'numeric'})}–${pi.periodEnd.toLocaleDateString('en-US',{month:'short',day:'numeric'})} • pays ${pi.payday.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;
+  const p=document.getElementById('dashPendingSlips');if(p)p.textContent=String(shifts.filter(s=>s.timeSlip&&(s.timeSlipStatus||'Pending')==='Pending').length);
+  const f=document.getElementById('dashSavedJobs');if(f)f.textContent=String(savedJobs.length);updateBackupUI();
+}
+function renderHistory(){
+  const q=(historySearch?.value||'').toLowerCase();
+  let list=shifts.filter(s=>s.start||s.specialShift).filter(s=>[
+    s.date,s.assignment,s.location,s.shiftType,s.specialShift,s.specialCategory,s.conductorName,s.brakemanName,s.notes,
+    s.mpte?'Meal Period':'',s.freightMeal?'Freight Meal':'',s.fuelClaim?'Fuel Claim':'',s.pone?'Trainee':'',s.noCo?'Operating Without a Conductor':'',s.cert?'Yard Certification':'',
+    s.commingle?'Commingle':'',s.yardMove?'2 Classes of Service':'',s.sheridanMove?'Sheridan Shop House Move':'',
+    s.terminalNotCrewBook?'Terminal Not In Crew Book':'',s.runaround?'Runaround Claim':'',s.a2?'Time on Time':'',
+    s.timeSlip?'Time Slip':'',s.timeSlipStatus||'',s.timeSlipLocation||'',s.timeSlipWritten||'',s.timeSlipSubmitted||'',s.timeSlipResolved||''
+  ].join(' ').toLowerCase().includes(q)).sort((a,b)=>b.date.localeCompare(a.date));
+  if(!list.length){historyList.innerHTML='<div class="empty" style="margin-top:14px">No matching shifts.</div>';return}
+  let html='',last='';
+  for(const s of list){
+    const m=new Date(s.date+'T12:00:00').toLocaleDateString('en-US',{month:'long',year:'numeric'});
+    if(m!==last){html+=`<div class="month-title">${m}</div>`;last=m}
+    html+=shiftHTML(s)
+  }
+  historyList.innerHTML=html
+}
+function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='settings')updateBackupUI()}
+function getFilteredHistoryShifts(){
+  const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
+  return shifts.filter(s=>[
+    s.date,s.assignment,s.location,s.shiftType,s.specialShift,s.specialCategory,s.conductorName,s.brakemanName,s.notes,
+    s.mpte?'Meal Period':'',s.freightMeal?'Freight Meal':'',s.fuelClaim?'Fuel Claim':'',s.pone?'Trainee':'',s.noCo?'Operating Without a Conductor':'',s.cert?'Yard Certification':'',
+    s.commingle?'Commingle':'',s.yardMove?'2 Classes of Service':'',s.sheridanMove?'Sheridan Shop House Move':'',s.terminalNotCrewBook?'Terminal Not In Crew Book':'',
+    s.runaround?'Runaround Claim':'',s.a2?'Time on Time':'',s.timeSlip?'Time Slip':'',s.timeSlipStatus||'',s.timeSlipLocation||''
+  ].join(' ').toLowerCase().includes(q)).sort((a,b)=>a.date.localeCompare(b.date));
+}
+function exportCSV(){
+  let rows=[['Date','Mode','Class','Engineer Name','Engineer IBM','Assignment','Location','Shift Type','Special Shift','Special Category','Conductor','Brakeman','Start','End','Actual Time','Payable Time','Pay Scale','Pay Type','Regular Pay','OT Pay','Night Differential','Holiday Pay','Daily Cert','Meal Period','Freight Meal','Fuel Claim','Trainees','Trainee Pay','Operating Without a Conductor','Yard Certifications','Yard Certification Pay','Commingle','2 Classes of Service','Sheridan / Shop / House Move','Terminal Not In Crew Book','Runaround Difference','Runaround Pay','Time on Time','Time on Time Pay','Special Shift Pay','Time Slip','Time Slip Date Written','Time Slip Date Submitted','Time Slip Location','Time Slip Status','Time Slip Date Paid/Denied','Total','Notes']];
+  for(const s of getFilteredHistoryShifts()){
+    const c=calculate(s);if(!c||c.rateMissing)continue;
+    rows.push([s.date,s.traineeMode?'Trainee':'Engineer',s.classDay?'Yes':'No',s.engineerName||'',s.engineerIBM||'',s.assignment,s.location,s.shiftType||'',s.specialShift||'',s.specialCategory||'',s.conductorName||'',s.brakemanName||'',s.start||'',s.end||'',fmtMinutes(c.actual),fmtMinutes(c.payable),c.ratePct+'%',c.payType,c.regular.toFixed(3),c.ot.toFixed(3),c.night.toFixed(3),c.holidayBonus.toFixed(3),(c.dailyCertPay||0).toFixed(2),c.mptePay.toFixed(3),(c.freightMealPay||0).toFixed(3),(c.fuelClaimPay||0).toFixed(3),c.traineeCount,c.ponePay.toFixed(3),c.noCoPay.toFixed(3),c.yardCertCount,c.certPay.toFixed(3),c.comminglePay.toFixed(3),c.classesPay.toFixed(3),c.sheridanPay.toFixed(3),c.terminalPay.toFixed(3),fmtMinutes(c.runaroundDiffMinutes),c.runaroundPay.toFixed(3),fmtMinutes(c.a2mins),c.a2.toFixed(3),(c.specialPay||0).toFixed(3),s.timeSlip?'Yes':'No',s.timeSlipWritten||'',s.timeSlipSubmitted||'',s.timeSlipLocation||'',s.timeSlipStatus||'',s.timeSlipResolved||'',c.total.toFixed(3),s.notes||''])
+  }
+  const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\n');
+  download('Engineer_Pay_Log.csv',csv,'text/csv')
+}
+function pdfEscape(s){return String(s??'').replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)').replace(/[^\x20-\x7E]/g,' ')}
+function pdfMoney(v){return '$'+Number(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function pdfTextWidth(text,size=10,bold=false){return String(text??'').length*size*(bold?.56:.51)}
+function pdfWrap(text,maxWidth,size=9,bold=false){
+  const words=String(text??'').replace(/\s+/g,' ').trim().split(' '),out=[];let line='';
+  for(const word of words){const test=line?line+' '+word:word;if(pdfTextWidth(test,size,bold)<=maxWidth)line=test;else{if(line)out.push(line);line=word}}
+  if(line)out.push(line);return out.length?out:[''];
+}
+async function exportPDF(){
+  const list=getFilteredHistoryShifts();
+  if(!list.length){alert('There are no shifts in the current History view to export.');return}
+  const records=[];
+  for(const s of list){const c=calculate(s);if(c&&!c.rateMissing)records.push({s,c})}
+  if(!records.length){alert('There are no calculated shifts in the current History view to export.');return}
+
+  let mascotBytes=null;
+  try{mascotBytes=new Uint8Array(await (await fetch('./icons/presenting-engineer.jpg')).arrayBuffer())}catch(e){}
+  const W=612,H=792,M=28,navy='0.055 0.145 0.285',blue='0.09 0.34 0.63',muted='0.35 0.40 0.48',line='0.86 0.88 0.91',yellow='1 0.72 0.08',paleYellow='1 0.97 0.80',green='0.18 0.55 0.22',paleGreen='0.91 0.98 0.90',paleBlue='0.93 0.96 1',purple='0.36 0.17 0.67',red='0.72 0.08 0.08';
+  const pages=[];let ops=[],y=0,pageNo=0;
+  const esc=pdfEscape;
+  const txt=(x,yt,t,size=9,bold=false,color=navy)=>{ops.push(`${color} rg BT /${bold?'F2':'F1'} ${size} Tf 1 0 0 1 ${x.toFixed(1)} ${(H-yt).toFixed(1)} Tm (${esc(t)}) Tj ET`)};
+  const rect=(x,yt,w,h,fill='1 1 1',stroke=line,r=0)=>{ops.push(`${fill} rg ${stroke} RG ${x.toFixed(1)} ${(H-yt-h).toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)} re B`)};
+  const fillRect=(x,yt,w,h,fill)=>ops.push(`${fill} rg ${x.toFixed(1)} ${(H-yt-h).toFixed(1)} ${w.toFixed(1)} ${h.toFixed(1)} re f`);
+  const rule=(x1,yt,x2,color=line,width=.6)=>ops.push(`${color} RG ${width} w ${x1} ${(H-yt).toFixed(1)} m ${x2} ${(H-yt).toFixed(1)} l S`);
+  const pill=(x,yt,label,fill,stroke,color=navy)=>{const w=Math.max(48,pdfTextWidth(label,7.4,true)+16);rect(x,yt,w,17,fill,stroke);txt(x+8,yt+11.8,label,7.4,true,color);return w};
+  const footer=()=>{txt(M,H-16,`Engineer Pay Log ${APP_VERSION}`,7.5,false,muted);txt(W-M-54,H-16,`Page ${pageNo}`,7.5,false,muted)};
+  const newPage=(withHeader=false)=>{if(ops.length){footer();pages.push(ops.join('\n'))}ops=[];pageNo++;y=M;if(withHeader)drawHeader()};
+  const drawHeader=()=>{
+    if(mascotBytes)ops.push(`q 70 0 0 118 30 ${H-150} cm /Im1 Do Q`);
+    txt(mascotBytes?112:30,54,'ENGINEER PAY LOG',25,true,navy);txt(mascotBytes?112:30,77,'SHIFT HISTORY REPORT',12,true,blue);
+    fillRect(mascotBytes?112:30,86,178,3,yellow);
+    rect(390,28,194,74,'0.98 0.985 0.995',line);txt(405,49,'Report Date',7.5,true,muted);txt(472,49,new Date().toLocaleDateString('en-US'),8.5,true,navy);
+    txt(405,68,'Date Range',7.5,true,muted);txt(472,68,`${formatDateShort(records[0].s.date)} - ${formatDateShort(records[records.length-1].s.date)}`,8.2,true,navy);
+    txt(405,87,'Export Type',7.5,true,muted);txt(472,87,'PDF',8.5,true,navy);y=160;
+  };
+  newPage(true);
+
+  const months=new Map();
+  for(const r of records){const key=r.s.date.slice(0,7);if(!months.has(key,[]))months.set(key,[]);months.get(key).push(r)}
+  let grand=0,grandMinutes=0,grandClaims=0,timeSlipCount=0;
+  for(const [key,items] of months){
+    const monthName=new Date(key+'-15T12:00:00').toLocaleDateString('en-US',{month:'long',year:'numeric'}).toUpperCase();
+    const monthTotal=items.reduce((a,r)=>a+r.c.total,0), monthMinutes=items.reduce((a,r)=>a+(r.c.actual||0),0), monthSlips=items.filter(r=>r.s.timeSlip).length;
+    if(y>650)newPage(true);
+    fillRect(M,y,W-2*M,38,navy);txt(M+16,y+25,monthName,14,true,'1 1 1');
+    txt(330,y+17,String(items.length),10,true,'1 1 1');txt(330,y+29,'SHIFTS',6.8,true,'0.80 0.86 0.94');
+    txt(398,y+17,fmtMinutes(monthMinutes),10,true,'1 1 1');txt(398,y+29,'HOURS',6.8,true,'0.80 0.86 0.94');
+    txt(474,y+17,pdfMoney(monthTotal),10,true,'1 1 1');txt(474,y+29,'EARNINGS',6.8,true,'0.80 0.86 0.94');y+=48;
+    for(const {s,c} of items){
+      const tags=[];
+      if(c.dailyCertPay)tags.push(['Daily Cert',paleGreen,'0.50 0.76 0.45',green]);
+      if(s.mpte)tags.push(['Meal Period',paleBlue,'0.52 0.65 0.92',navy]);
+      if(s.freightMeal)tags.push(['Freight Meal',paleBlue,'0.52 0.65 0.92',navy]);
+      if(s.fuelClaim)tags.push(['Fuel Claim',paleBlue,'0.52 0.65 0.92',navy]);
+      if(s.pone)tags.push(['Trainee',paleBlue,'0.52 0.65 0.92',navy]);
+      if(s.noCo)tags.push(['No Conductor',paleBlue,'0.52 0.65 0.92',navy]);
+      if(s.cert)tags.push(['Yard Cert',paleBlue,'0.52 0.65 0.92',navy]);
+      if(s.commingle)tags.push(['Commingle',paleBlue,'0.52 0.65 0.92',navy]);
+      if(s.yardMove)tags.push(['2 Classes',paleBlue,'0.52 0.65 0.92',navy]);
+      if(s.sheridanMove)tags.push(['Sheridan/Shop/House',paleBlue,'0.52 0.65 0.92',navy]);
+      if(s.terminalNotCrewBook)tags.push(['Terminal Claim',paleBlue,'0.52 0.65 0.92',navy]);
+      if(s.runaround)tags.push(['Runaround',paleBlue,'0.52 0.65 0.92',navy]);
+      if(s.a2)tags.push(['Time on Time',paleBlue,'0.52 0.65 0.92',navy]);
+      if(c.holidayBonus)tags.push(['Holiday Pay','1 0.93 0.93','0.92 0.55 0.55',red]);
+      if(s.timeSlip)tags.push([`Time Slip ${s.timeSlipStatus||'Pending'}`,paleYellow,'0.92 0.65 0.10','0.55 0.38 0.02']);
+
+      const contentX=M+84;
+      const earningsX=W-M-90;
+      const contentRight=earningsX-18;
+      const contentW=contentRight-contentX;
+
+      const title=s.classDay?'Class':(s.assignment||s.specialShift||'Shift');
+      const metaText=s.specialShift
+        ? `${s.specialShift}${s.specialCategory?'  |  '+s.specialCategory:''}`
+        : `${s.location||'—'}  |  ${s.shiftType||'Regular Shift'}  |  ${s.start||'--'}-${s.end||'--'} (${fmtMinutes(c.actual||0)})`;
+      const metaLines=pdfWrap(metaText,contentW,7.4,true);
+
+      const crewText=[s.engineerName?`Engineer: ${s.engineerName}${s.engineerIBM?' ('+s.engineerIBM+')':''}`:'',
+        s.conductorName?`Conductor: ${s.conductorName}`:'',
+        s.brakemanName?`Brakeman: ${s.brakemanName}`:''
+      ].filter(Boolean).join('   |   ');
+      const crewLines=crewText?pdfWrap(crewText,contentW,7.2,false):[];
+      const noteLines=s.notes?pdfWrap('Notes: '+s.notes,contentW,7.1,false):[];
+
+      // Prebuild badge rows so they can never collide with the metadata row.
+      const badgeRows=[]; let badgeRow=[], badgeWidth=0;
+      for(const t of tags){
+        const w=Math.max(48,pdfTextWidth(t[0],7.0,true)+16);
+        if(badgeRow.length && badgeWidth+6+w>contentW){
+          badgeRows.push(badgeRow); badgeRow=[]; badgeWidth=0;
+        }
+        badgeRow.push(t);
+        badgeWidth+=(badgeWidth?6:0)+w;
+      }
+      if(badgeRow.length)badgeRows.push(badgeRow);
+
+      // Fixed internal row system:
+      // title -> metadata -> badges -> crew -> notes.
+      const titleTop=18;
+      const metaTop=38;
+      const badgeTop=55 + Math.max(0,(metaLines.length-1)*9);
+      const crewTop=badgeTop + (badgeRows.length?badgeRows.length*19+4:0);
+      const notesTop=crewTop + (crewLines.length?crewLines.length*9+4:0);
+      const bodyBottom=notesTop + (noteLines.length?noteLines.length*9:0) + 12;
+      const cardH=Math.max(78,bodyBottom);
+
+      if(y+cardH>H-48){
+        newPage(false);
+        fillRect(M,y,W-2*M,26,navy);
+        txt(M+14,y+18,monthName+' (CONTINUED)',10,true,'1 1 1');
+        y+=36;
+      }
+
+      rect(M,y,W-2*M,cardH,s.timeSlip?'1 0.992 0.94':'1 1 1',s.timeSlip?'0.93 0.68 0.12':line);
+      if(s.timeSlip)fillRect(M,y,5,cardH,yellow);
+
+      const d=new Date(s.date+'T12:00:00');
+      txt(M+14,y+18,d.toLocaleDateString('en-US',{weekday:'short'}).toUpperCase(),7.5,true,blue);
+      txt(M+14,y+35,d.toLocaleDateString('en-US',{month:'short'}).toUpperCase(),8,true,navy);
+      txt(M+14,y+56,String(d.getDate()),20,true,navy);
+      rule(M+70,y+9,M+70,y+cardH-9);
+
+      txt(contentX,y+titleTop,title,13,true,s.specialShift?purple:navy);
+      txt(earningsX,y+18,'EARNINGS',6.8,true,muted);
+      txt(earningsX,y+41,pdfMoney(c.total),15,true,s.timeSlip?'0.52 0.36 0.02':navy);
+
+      // Metadata gets its own reserved row(s).
+      let my=y+metaTop;
+      for(const ml of metaLines){
+        txt(contentX,my,ml,7.4,true,s.specialShift?purple:muted);
+        my+=9;
+      }
+
+      // Claims/penalties get dedicated row(s) below metadata.
+      let by=y+badgeTop;
+      for(const row of badgeRows){
+        let x=contentX;
+        for(const t of row){
+          x+=pill(x,by-11,...t)+6;
+        }
+        by+=19;
+      }
+
+      // Crew gets its own row(s).
+      let cy=y+crewTop;
+      for(const cl of crewLines){
+        txt(contentX,cy,cl,7.2,false,navy);
+        cy+=9;
+      }
+
+      // Notes are always below everything else.
+      let ny=y+notesTop;
+      for(const nl of noteLines){
+        txt(contentX,ny,nl,7.1,false,muted);
+        ny+=9;
+      }
+
+      y+=cardH+8;
+      grand+=c.total;
+      grandMinutes+=(c.actual||0);
+      if(s.timeSlip)timeSlipCount++;
+      grandClaims+=(c.mptePay||0)+(c.freightMealPay||0)+(c.fuelClaimPay||0)+(c.ponePay||0)+(c.noCoPay||0)+(c.certPay||0)+(c.comminglePay||0)+(c.classesPay||0)+(c.sheridanPay||0)+(c.terminalPay||0)+(c.runaroundPay||0)+(c.a2||0);
+    }
+    if(y+42>H-45)newPage(false);
+    rect(M,y,W-2*M,36,'0.965 0.975 0.99',line);txt(M+14,y+22,monthName+' SUMMARY',9.5,true,navy);txt(235,y+16,String(items.length),9,true,navy);txt(235,y+28,'SHIFTS',6.5,true,muted);txt(310,y+16,fmtMinutes(monthMinutes),9,true,navy);txt(310,y+28,'HOURS',6.5,true,muted);txt(405,y+16,pdfMoney(monthTotal),9,true,navy);txt(405,y+28,'GROSS',6.5,true,muted);txt(510,y+16,String(monthSlips),9,true,monthSlips?'0.55 0.38 0.02':navy);txt(510,y+28,'TIME SLIPS',6.5,true,muted);y+=50;
+  }
+  if(y+76>H-45)newPage(false);
+  fillRect(M,y,150,66,navy);txt(M+16,y+25,'GRAND TOTAL',13,true,'1 1 1');txt(M+16,y+43,`${formatDateShort(records[0].s.date)} - ${formatDateShort(records[records.length-1].s.date)}`,7.5,false,'0.82 0.88 0.96');
+  rect(M+150,y,W-2*M-150,66,'0.98 0.985 0.995',line);txt(M+166,y+22,String(records.length),11,true,navy);txt(M+166,y+37,'TOTAL SHIFTS',6.5,true,muted);txt(M+245,y+22,fmtMinutes(grandMinutes),11,true,navy);txt(M+245,y+37,'TOTAL HOURS',6.5,true,muted);txt(M+340,y+22,pdfMoney(grand),11,true,navy);txt(M+340,y+37,'GROSS EARNINGS',6.5,true,muted);txt(M+465,y+22,String(timeSlipCount),11,true,timeSlipCount?'0.55 0.38 0.02':navy);txt(M+465,y+37,'TIME SLIPS',6.5,true,muted);
+  footer();pages.push(ops.join('\n'));
+
+  const enc=new TextEncoder(),chunks=[],objects=[];
+  const strBytes=s=>enc.encode(s);
+  const addObj=(parts)=>{objects.push(Array.isArray(parts)?parts:[strBytes(parts)]);return objects.length};
+  const font1=addObj('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
+  const font2=addObj('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>');
+  let imageId=0;if(mascotBytes)imageId=addObj([strBytes(`<< /Type /XObject /Subtype /Image /Width 460 /Height 1536 /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${mascotBytes.length} >>\nstream\n`),mascotBytes,strBytes('\nendstream')]);
+  const contentIds=[],pageIds=[];
+  for(const content of pages){const b=strBytes(content);contentIds.push(addObj([strBytes(`<< /Length ${b.length} >>\nstream\n`),b,strBytes('\nendstream')]));pageIds.push(addObj('PAGE'))}
+  const pagesId=addObj('PAGES'),catalogId=addObj(`<< /Type /Catalog /Pages ${objects.length} 0 R >>`);
+  pageIds.forEach((id,i)=>{objects[id-1]=[strBytes(`<< /Type /Page /Parent ${pagesId} 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 ${font1} 0 R /F2 ${font2} 0 R >>${imageId?` /XObject << /Im1 ${imageId} 0 R >>`:''} >> /Contents ${contentIds[i]} 0 R >>`)]});
+  objects[pagesId-1]=[strBytes(`<< /Type /Pages /Kids [${pageIds.map(id=>id+' 0 R').join(' ')}] /Count ${pageIds.length} >>`)];
+  objects[catalogId-1]=[strBytes(`<< /Type /Catalog /Pages ${pagesId} 0 R >>`)];
+  const header=strBytes('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');let total=header.length;chunks.push(header);const offsets=[0];
+  objects.forEach((parts,i)=>{offsets[i+1]=total;const pre=strBytes(`${i+1} 0 obj\n`),post=strBytes('\nendobj\n');chunks.push(pre);total+=pre.length;for(const part of parts){chunks.push(part);total+=part.length}chunks.push(post);total+=post.length});
+  const xref=total;let tail=`xref\n0 ${objects.length+1}\n0000000000 65535 f \n`;for(let i=1;i<=objects.length;i++)tail+=String(offsets[i]).padStart(10,'0')+' 00000 n \n';tail+=`trailer\n<< /Size ${objects.length+1} /Root ${catalogId} 0 R >>\nstartxref\n${xref}\n%%EOF`;
+  const tb=strBytes(tail);chunks.push(tb);total+=tb.length;const pdf=new Uint8Array(total);let pos=0;for(const ch of chunks){pdf.set(ch,pos);pos+=ch.length}
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([pdf],{type:'application/pdf'}));a.download='Engineer_Pay_Log_Shift_History.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
+}
+function exportJSON(){const exported=new Date().toISOString();download('Engineer_Pay_Log_backup.json',JSON.stringify({version:8,appVersion:APP_VERSION,exported,hireDate:getHireDate(),traineeMode:isTraineeMode(),savedJobs,shifts},null,2),'application/json');localStorage.setItem(LAST_BACKUP_KEY,exported);updateBackupUI()}
+function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const data=JSON.parse(r.result);if(!data||!Array.isArray(data.shifts))throw 0;previewRestore(data)}catch{alert('That backup file could not be read or does not contain a valid Engineer Pay Log backup.')}};r.readAsText(f);e.target.value=''}
+function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function clearAll(){if(confirm('Delete every saved shift from this browser?')){shifts=[];persist();renderAll()}}
+renderAll();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js').catch(err => {
+      console.warn('Service worker registration failed:', err);
+    });
+  });
+}
+</script>
+
+
+<script>
+function updateRateDisplays(){
+  const hire=getHireDate();
+  const settings=document.getElementById('settingsHireDate');
+  if(settings)settings.value=hire;
+  const pct=currentPayScale();
+  const display=document.getElementById('settingsCurrentRate');
+  if(display)display.textContent=pct?`${pct}%`:'Not set';
+}
+function saveHireDateFromSettings(){
+  const input=document.getElementById('settingsHireDate');
+  if(!input)return;
+  if(input.value)localStorage.setItem(HIRE_DATE_KEY,input.value);
+  else localStorage.removeItem(HIRE_DATE_KEY);
+  updateRateDisplays();renderAll();
+}
+function updateWelcomeRate(){
+  const input=document.getElementById('welcomeHireDate');
+  const out=document.getElementById('welcomeRatePreview');
+  if(!input||!out)return;
+  if(!input.value){out.textContent='Enter your start date';return}
+  const now=new Date();
+  const today=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const d=daysBetweenISO(input.value,today);
+  const pct=d==null||d<0?null:(d<365?60:d<730?80:d<1095?90:100);
+  out.textContent=pct?`${pct}%`:'Check the date entered';
+}
+(function(){
+  const WELCOME_KEY='engineerPayLogWelcomeSeen_v2';
+  window.addEventListener('load',()=>{
+    const modal=document.getElementById('welcomeModal');
+    const btn=document.getElementById('welcomeStartBtn');
+    const input=document.getElementById('welcomeHireDate');
+    const existing=getHireDate();
+    if(input&&existing)input.value=existing;
+    updateWelcomeRate();updateRateDisplays();updateTraineeModeUI();
+    const needsWelcome=modal&&(localStorage.getItem(WELCOME_KEY)!=='yes'||!existing);
+    if(needsWelcome)modal.classList.add('open');else setTimeout(()=>openWhatsNew(false),200);
+    if(btn)btn.addEventListener('click',()=>{
+      const hire=document.getElementById('welcomeHireDate')?.value||'';
+      if(!hire){alert('Please enter your employment start date so Engineer Pay Log can use the correct pay scale.');return}
+      localStorage.setItem(HIRE_DATE_KEY,hire);
+      localStorage.setItem(WELCOME_KEY,'yes');
+      updateRateDisplays();modal.classList.remove('open');renderAll();setTimeout(()=>openWhatsNew(false),150);
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
