@@ -375,6 +375,11 @@
           <label class="check"><input id="mpteFlag" type="checkbox" onchange="calculatePreview()"> Meal Period</label>
           <label class="check"><input id="freightMealFlag" type="checkbox" onchange="calculatePreview()"> Freight Meal</label>
           <label class="check"><input id="fuelClaimFlag" type="checkbox" onchange="calculatePreview()"> Fuel Claim</label>
+          <label class="check"><input id="otCompletionFlag" type="checkbox" onchange="toggleOTCompletion();calculatePreview()"> Overtime Upon Completion</label>
+          <div id="otCompletionFields" class="claim-detail" style="display:none">
+            <div class="field full"><label>Original Job Completion Time</label><input id="otCompletionTime" type="time" onchange="calculatePreview()"></div>
+            <div class="muted" id="otCompletionPreview">Claim begins one minute after the original job completion time.</div>
+          </div>
           <label class="check"><input id="poneFlag" type="checkbox" onchange="toggleTrainee();calculatePreview()"> Trainee</label>
           <label class="check"><input id="noCoFlag" type="checkbox" onchange="calculatePreview()"> Operating Without a Conductor</label>
           <label class="check"><input id="certFlag" type="checkbox" onchange="toggleYardCert();calculatePreview()"> Yard Certification</label>
@@ -419,6 +424,7 @@
         <div class="calc-row"><span>Meal Period</span><strong id="pMPTE">$0.00</strong></div>
         <div class="calc-row"><span>Freight Meal</span><strong id="pFreightMeal">$0.00</strong></div>
         <div class="calc-row"><span>Fuel Claim</span><strong id="pFuelClaim">$0.00</strong></div>
+        <div class="calc-row"><span>Overtime Upon Completion</span><strong id="pOTCompletion">$0.00</strong></div>
         <div class="calc-row"><span>Daily Cert</span><strong id="pDailyCert">$0.00</strong></div>
         <div class="calc-row"><span>Special Shift Pay</span><strong id="pSpecialPay">$0.00</strong></div>
         <div class="calc-row"><span>Trainee</span><strong id="pPONE">$0.00</strong></div>
@@ -521,6 +527,8 @@ function upgradeShift(s){
   if(s.brakemanName===undefined)s.brakemanName='';
   if(s.freightMeal===undefined)s.freightMeal=false;
   if(s.fuelClaim===undefined)s.fuelClaim=false;
+  if(s.otCompletion===undefined)s.otCompletion=false;
+  if(s.otCompletionTime===undefined)s.otCompletionTime='';
   if(s.specialShift===undefined)s.specialShift='';
   if(s.specialCategory===undefined)s.specialCategory='';
   if(s.traineeMode===undefined)s.traineeMode=false;
@@ -632,6 +640,16 @@ function calculate(s,depth=0){
   const mptePay=s.mpte?otPay(20,ratePct):0;
   const freightMealPay=s.freightMeal?otPay(40,ratePct):0;
   const fuelClaimPay=traineeMode?0:(s.fuelClaim?otPay(30,ratePct):0);
+  let otCompletionMinutes=0;
+  if(!traineeMode&&s.otCompletion&&s.otCompletionTime){
+    const scheduledEnd=parseClock(s.otCompletionTime),actualEnd=parseClock(s.end);
+    if(scheduledEnd!=null&&actualEnd!=null){
+      let resolvedEnd=actualEnd;
+      if(resolvedEnd<=scheduledEnd)resolvedEnd+=1440;
+      otCompletionMinutes=Math.max(0,resolvedEnd-(scheduledEnd+1));
+    }
+  }
+  const otCompletionPay=otCompletionMinutes?otPay(otCompletionMinutes,ratePct):0;
   const traineeCount=!traineeMode&&s.pone?Math.min(2,Math.max(1,Math.round(Number(s.traineeCount)||1))):0;
   const ponePay=straightPay(60*traineeCount,ratePct);
   const noCoPay=!traineeMode&&s.noCo?basicST:0;
@@ -649,11 +667,11 @@ function calculate(s,depth=0){
   const passengerSpecial=sharedSpecial&&s.specialCategory==='passenger';
   const dailyCertPay=traineeMode||passengerSpecial?0:10;
   const specialPay=0;
-  const total=regular+ot+night+holidayBonus+mptePay+freightMealPay+fuelClaimPay+dailyCertPay+ponePay+noCoPay+certPay+
+  const total=regular+ot+night+holidayBonus+mptePay+freightMealPay+fuelClaimPay+otCompletionPay+dailyCertPay+ponePay+noCoPay+certPay+
     comminglePay+classesPay+sheridanPay+terminalPay+runaroundPay+a2;
   return {actual,payable,holiday,ssot,rd,fullOT,ratePct,
     payType:passengerSpecial?special:(holiday?'Holiday':ssot?'Short Swing':rd?'Relief Day':'Normal'),
-    regular,ot,night,holidayBonus,mptePay,freightMealPay,fuelClaimPay,dailyCertPay,specialPay,
+    regular,ot,night,holidayBonus,mptePay,freightMealPay,fuelClaimPay,otCompletionPay,otCompletionMinutes,dailyCertPay,specialPay,
     traineeCount,ponePay,noCoPay,yardCertCount,certPay,comminglePay,classesPay,sheridanPay,terminalPay,
     runaroundBaseMinutes,runaroundDiffMinutes,runaroundPay,a2mins,a2,total};
 }
@@ -678,7 +696,7 @@ function formData(){
     timeSlipStatus:$('timeSlipFlag').checked?($('timeSlipStatus').value||'Pending'):'Pending',
     timeSlipResolved:$('timeSlipFlag').checked?$('timeSlipResolved').value:'',
     holiday:$('shiftRuleMode').value==='trainee'?false:$('holidayFlag').checked,ssot:$('shiftRuleMode').value==='trainee'?false:$('ssotFlag').checked,rd:$('shiftRuleMode').value==='trainee'?false:$('rdFlag').checked,
-    mpte:$('mpteFlag').checked,freightMeal:$('freightMealFlag').checked,fuelClaim:$('shiftRuleMode').value==='trainee'?false:$('fuelClaimFlag').checked,
+    mpte:$('mpteFlag').checked,freightMeal:$('freightMealFlag').checked,fuelClaim:$('shiftRuleMode').value==='trainee'?false:$('fuelClaimFlag').checked,otCompletion:$('shiftRuleMode').value==='trainee'?false:$('otCompletionFlag').checked,otCompletionTime:$('shiftRuleMode').value==='trainee'?'':($('otCompletionFlag').checked?$('otCompletionTime').value:''),
     pone:$('poneFlag').checked,traineeCount:$('poneFlag').checked?Math.min(2,Math.max(1,Number($('traineeCount').value)||1)):0,
     noCo:$('noCoFlag').checked,cert:$('certFlag').checked,
     yardCertCount:$('certFlag').checked?Math.max(1,Math.round(Number($('yardCertCount').value)||1)):0,
@@ -694,7 +712,7 @@ function setCalcRow(id,value,text){
   const row=el.closest('.calc-row');if(row)row.classList.toggle('pay-zero',!(Number(value)>0));
 }
 function resetCalcRows(){
-  ['pRegular','pOT','pNight','pHoliday','pMPTE','pFreightMeal','pFuelClaim','pDailyCert','pSpecialPay','pPONE','pNOCO','pCERT','pCommingle','pClasses','pSheridan','pTerminal','pRunaround','p2a']
+  ['pRegular','pOT','pNight','pHoliday','pMPTE','pFreightMeal','pFuelClaim','pOTCompletion','pDailyCert','pSpecialPay','pPONE','pNOCO','pCERT','pCommingle','pClasses','pSheridan','pTerminal','pRunaround','p2a']
     .forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='$0.00';const row=el.closest('.calc-row');if(row)row.classList.add('pay-zero')}});
 }
 function calculatePreview(){
@@ -710,7 +728,7 @@ function calculatePreview(){
   }
   $('pTime').textContent=c.actual||c.payable?`${fmtMinutes(c.actual)} / ${fmtMinutes(c.payable)}`:'Not time-based';
   setCalcRow('pRegular',c.regular);setCalcRow('pOT',c.ot);setCalcRow('pNight',c.night);
-  setCalcRow('pHoliday',c.holidayBonus);setCalcRow('pMPTE',c.mptePay);setCalcRow('pFreightMeal',c.freightMealPay);setCalcRow('pFuelClaim',c.fuelClaimPay);
+  setCalcRow('pHoliday',c.holidayBonus);setCalcRow('pMPTE',c.mptePay);setCalcRow('pFreightMeal',c.freightMealPay);setCalcRow('pFuelClaim',c.fuelClaimPay);setCalcRow('pOTCompletion',c.otCompletionPay,`${money(c.otCompletionPay)}${c.otCompletionMinutes?` (${fmtMinutes(c.otCompletionMinutes)})`:''}`);
   setCalcRow('pDailyCert',c.dailyCertPay);setCalcRow('pSpecialPay',c.specialPay);
   setCalcRow('pPONE',c.ponePay,`${money(c.ponePay)}${c.traineeCount?` (${c.traineeCount})`:''}`);
   setCalcRow('pNOCO',c.noCoPay);
@@ -758,7 +776,7 @@ function applyEntryMode(){
   const allowed=new Set(['mpteFlag','freightMealFlag']);
   document.querySelectorAll('#penaltiesField .check').forEach(l=>{const inp=l.querySelector('input');l.classList.toggle('hidden-by-mode',trainee&&inp&&!allowed.has(inp.id))});
   const dailyRow=document.getElementById('pDailyCert')?.closest('.calc-row');if(dailyRow)dailyRow.classList.toggle('hidden-by-mode',trainee);
-  if(trainee){['holidayFlag','ssotFlag','rdFlag','fuelClaimFlag','poneFlag','noCoFlag','certFlag','commingleFlag','yardMoveFlag','sheridanFlag','terminalFlag','runaroundFlag','a2Flag'].forEach(id=>{const e=document.getElementById(id);if(e)e.checked=false})}
+  if(trainee){['holidayFlag','ssotFlag','rdFlag','fuelClaimFlag','otCompletionFlag','poneFlag','noCoFlag','certFlag','commingleFlag','yardMoveFlag','sheridanFlag','terminalFlag','runaroundFlag','a2Flag'].forEach(id=>{const e=document.getElementById(id);if(e)e.checked=false})}
   toggleSpecialShift();updateTimeOnDuty();
 }
 function toggleClassDay(){applyEntryMode()}
@@ -780,6 +798,12 @@ function toggleSpecialShift(){
     const s=formData(),prior=previousPayPeriodQualifyingEarnings(s.date),amt=prior/5;
     msg.textContent=`Pays 1/5 of the previous pay period’s qualifying earnings, excluding Daily Cert. Current estimate: ${money(amt)} from ${money(prior)}.`;
   }
+}
+function toggleOTCompletion(){
+  const on=!!document.getElementById('otCompletionFlag')?.checked;
+  const fields=document.getElementById('otCompletionFields');
+  if(fields)fields.style.display=on?'block':'none';
+  if(!on){const t=document.getElementById('otCompletionTime');if(t)t.value=''}
 }
 function toggleTimeSlip(){
   const $=id=>document.getElementById(id);
@@ -809,10 +833,10 @@ function newShift(){
   $('formTitle').textContent='Add shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';
   $('date').value=new Date().toISOString().slice(0,10);$('holidayFlag').checked=isContractHoliday($('date').value);
   $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';
-  applyEntryMode();$('specialShift').value='';$('specialCategory').value='';$('classFlag').checked=false;$('conductorName').value='';$('brakemanName').value='';$('engineerName').value='';$('engineerIBM').value='';$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;
+  applyEntryMode();$('specialShift').value='';$('specialCategory').value='';$('classFlag').checked=false;$('conductorName').value='';$('brakemanName').value='';$('engineerName').value='';$('engineerIBM').value='';$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('otCompletionFlag').checked=false;$('otCompletionTime').value='';
   $('traineeCount').value=1;$('yardCertCount').value=1;
   $('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;
-  applyEntryMode();toggleSpecialShift();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleRunaround();toggleA2();
+  applyEntryMode();toggleSpecialShift();toggleOTCompletion();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleRunaround();toggleA2();
   $('shiftModal').classList.add('open');calculatePreview();
 }
 function editShift(id){
@@ -824,13 +848,13 @@ function editShift(id){
   $('specialShift').value=s.specialShift||'';$('specialCategory').value=s.specialCategory||'';
   $('timeSlipFlag').checked=!!s.timeSlip;$('timeSlipWritten').value=s.timeSlipWritten||'';$('timeSlipSubmitted').value=s.timeSlipSubmitted||'';$('timeSlipLocation').value=s.timeSlipLocation||'';$('timeSlipStatus').value=s.timeSlipStatus||'Pending';$('timeSlipResolved').value=s.timeSlipResolved||'';
   $('holidayFlag').checked=!!s.holiday;$('ssotFlag').checked=!!s.ssot;$('rdFlag').checked=!!s.rd;
-  $('mpteFlag').checked=!!s.mpte;$('freightMealFlag').checked=!!s.freightMeal;$('fuelClaimFlag').checked=!!s.fuelClaim;$('poneFlag').checked=!!s.pone;$('traineeCount').value=Math.min(2,Math.max(1,Number(s.traineeCount)||1));
+  $('mpteFlag').checked=!!s.mpte;$('freightMealFlag').checked=!!s.freightMeal;$('fuelClaimFlag').checked=!!s.fuelClaim;$('otCompletionFlag').checked=!!s.otCompletion;$('otCompletionTime').value=s.otCompletionTime||'';$('poneFlag').checked=!!s.pone;$('traineeCount').value=Math.min(2,Math.max(1,Number(s.traineeCount)||1));
   $('noCoFlag').checked=!!s.noCo;$('certFlag').checked=!!s.cert;$('yardCertCount').value=Math.max(1,Number(s.yardCertCount)||1);
   $('commingleFlag').checked=!!s.commingle;$('yardMoveFlag').checked=!!s.yardMove;$('sheridanFlag').checked=!!s.sheridanMove;
   $('terminalFlag').checked=!!s.terminalNotCrewBook;$('runaroundFlag').checked=!!s.runaround;
   const rr=Math.max(0,Number(s.runaroundDiffMinutes)||0);$('runaroundHours').value=Math.floor(rr/60);$('runaroundMinutes').value=rr%60;
   $('a2Flag').checked=!!s.a2;const mins=Math.max(0,Number(s.a2Minutes)||0);$('a2Hours').value=Math.floor(mins/60);$('a2Minutes').value=mins%60;
-  applyEntryMode();toggleSpecialShift();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleRunaround();toggleA2();
+  applyEntryMode();toggleSpecialShift();toggleOTCompletion();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleRunaround();toggleA2();
   $('formTitle').textContent='Edit shift';$('deleteBtn').style.display='block';$('duplicateBtn').style.display='inline-flex';$('favoriteBtn').style.display='inline-flex';$('shiftModal').classList.add('open');calculatePreview();
 }
 function duplicateShift(id){
@@ -846,14 +870,14 @@ function duplicateShift(id){
 
   $('notes').value='';
   $('holidayFlag').checked=isContractHoliday($('date').value);$('ssotFlag').checked=false;$('rdFlag').checked=false;
-  $('mpteFlag').checked=false;$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('poneFlag').checked=false;$('noCoFlag').checked=false;$('certFlag').checked=false;
+  $('mpteFlag').checked=false;$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('poneFlag').checked=false;$('noCoFlag').checked=false;$('certFlag').checked=false;
   $('commingleFlag').checked=false;$('yardMoveFlag').checked=false;$('sheridanFlag').checked=false;$('terminalFlag').checked=false;
   $('runaroundFlag').checked=false;$('a2Flag').checked=false;
   $('traineeCount').value=1;$('yardCertCount').value=1;$('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;
 
   $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';
 
-  applyEntryMode();toggleSpecialShift();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleRunaround();toggleA2();
+  applyEntryMode();toggleSpecialShift();toggleOTCompletion();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleRunaround();toggleA2();
   $('shiftModal').classList.add('open');calculatePreview();
 }
 function duplicateCurrentShift(){
@@ -869,7 +893,7 @@ function fullDateLabel(iso){return new Date(iso+'T12:00:00').toLocaleDateString(
 
 function escapeHTML(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]))}
 function formatDateShort(iso){if(!iso)return '—';return new Date(iso+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
-function hasPenaltyOrClaim(s){return !!(s.mpte||s.freightMeal||s.fuelClaim||s.pone||s.noCo||s.cert||s.commingle||s.yardMove||s.sheridanMove||s.terminalNotCrewBook||s.runaround||s.a2)}
+function hasPenaltyOrClaim(s){return !!(s.mpte||s.freightMeal||s.fuelClaim||s.otCompletion||s.pone||s.noCo||s.cert||s.commingle||s.yardMove||s.sheridanMove||s.terminalNotCrewBook||s.runaround||s.a2)}
 function collectWarnings(s){
   const w=[];
   if(hasPenaltyOrClaim(s)&&!s.timeSlip)w.push('This shift has a penalty or claim but no Time Slip is marked.');
@@ -959,7 +983,7 @@ function closeWhatsNew(){localStorage.setItem(LAST_SEEN_VERSION_KEY,WHATS_NEW_VE
 function shiftHTML(s){
   const c=calculate(s);let tags=[];
   if(c&&c.payType!=='Normal')tags.push(`<span class="badge ot">${c.payType}</span>`);
-  if(s.mpte||s.freightMeal||s.fuelClaim||s.pone||s.noCo||s.cert||s.commingle||s.yardMove||s.sheridanMove||s.terminalNotCrewBook||s.runaround||s.a2)tags.push('<span class="badge penalty">Extra</span>');
+  if(s.mpte||s.freightMeal||s.fuelClaim||s.otCompletion||s.pone||s.noCo||s.cert||s.commingle||s.yardMove||s.sheridanMove||s.terminalNotCrewBook||s.runaround||s.a2)tags.push('<span class="badge penalty">Extra</span>');
   if(s.timeSlip)tags.push(`<span class="badge timeslip">Time Slip • ${s.timeSlipStatus||'Pending'}</span>`);
   if(!c)tags.push('<span class="badge">In progress</span>');
   const timeText=s.specialShift&&!s.start?'Special Shift':(s.end?`${s.start}–${s.end}`:`${s.start||'—'}–…`);
@@ -982,7 +1006,7 @@ function renderHistory(){
   const q=(historySearch?.value||'').toLowerCase();
   let list=shifts.filter(s=>s.start||s.specialShift).filter(s=>[
     s.date,s.assignment,s.location,s.shiftType,s.specialShift,s.specialCategory,s.conductorName,s.brakemanName,s.notes,
-    s.mpte?'Meal Period':'',s.freightMeal?'Freight Meal':'',s.fuelClaim?'Fuel Claim':'',s.pone?'Trainee':'',s.noCo?'Operating Without a Conductor':'',s.cert?'Yard Certification':'',
+    s.mpte?'Meal Period':'',s.freightMeal?'Freight Meal':'',s.fuelClaim?'Fuel Claim':'',s.otCompletion?'Overtime Upon Completion':'',s.pone?'Trainee':'',s.noCo?'Operating Without a Conductor':'',s.cert?'Yard Certification':'',
     s.commingle?'Commingle':'',s.yardMove?'2 Classes of Service':'',s.sheridanMove?'Sheridan Shop House Move':'',
     s.terminalNotCrewBook?'Terminal Not In Crew Book':'',s.runaround?'Runaround Claim':'',s.a2?'Time on Time':'',
     s.timeSlip?'Time Slip':'',s.timeSlipStatus||'',s.timeSlipLocation||'',s.timeSlipWritten||'',s.timeSlipSubmitted||'',s.timeSlipResolved||''
@@ -1002,16 +1026,16 @@ function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
   return shifts.filter(s=>[
     s.date,s.assignment,s.location,s.shiftType,s.specialShift,s.specialCategory,s.conductorName,s.brakemanName,s.notes,
-    s.mpte?'Meal Period':'',s.freightMeal?'Freight Meal':'',s.fuelClaim?'Fuel Claim':'',s.pone?'Trainee':'',s.noCo?'Operating Without a Conductor':'',s.cert?'Yard Certification':'',
+    s.mpte?'Meal Period':'',s.freightMeal?'Freight Meal':'',s.fuelClaim?'Fuel Claim':'',s.otCompletion?'Overtime Upon Completion':'',s.pone?'Trainee':'',s.noCo?'Operating Without a Conductor':'',s.cert?'Yard Certification':'',
     s.commingle?'Commingle':'',s.yardMove?'2 Classes of Service':'',s.sheridanMove?'Sheridan Shop House Move':'',s.terminalNotCrewBook?'Terminal Not In Crew Book':'',
     s.runaround?'Runaround Claim':'',s.a2?'Time on Time':'',s.timeSlip?'Time Slip':'',s.timeSlipStatus||'',s.timeSlipLocation||''
   ].join(' ').toLowerCase().includes(q)).sort((a,b)=>a.date.localeCompare(b.date));
 }
 function exportCSV(){
-  let rows=[['Date','Mode','Class','Engineer Name','Engineer IBM','Assignment','Location','Shift Type','Special Shift','Special Category','Conductor','Brakeman','Start','End','Actual Time','Payable Time','Pay Scale','Pay Type','Regular Pay','OT Pay','Night Differential','Holiday Pay','Daily Cert','Meal Period','Freight Meal','Fuel Claim','Trainees','Trainee Pay','Operating Without a Conductor','Yard Certifications','Yard Certification Pay','Commingle','2 Classes of Service','Sheridan / Shop / House Move','Terminal Not In Crew Book','Runaround Difference','Runaround Pay','Time on Time','Time on Time Pay','Special Shift Pay','Time Slip','Time Slip Date Written','Time Slip Date Submitted','Time Slip Location','Time Slip Status','Time Slip Date Paid/Denied','Total','Notes']];
+  let rows=[['Date','Mode','Class','Engineer Name','Engineer IBM','Assignment','Location','Shift Type','Special Shift','Special Category','Conductor','Brakeman','Start','End','Actual Time','Payable Time','Pay Scale','Pay Type','Regular Pay','OT Pay','Night Differential','Holiday Pay','Daily Cert','Meal Period','Freight Meal','Fuel Claim','OT Upon Completion Time','OT Upon Completion Pay','Trainees','Trainee Pay','Operating Without a Conductor','Yard Certifications','Yard Certification Pay','Commingle','2 Classes of Service','Sheridan / Shop / House Move','Terminal Not In Crew Book','Runaround Difference','Runaround Pay','Time on Time','Time on Time Pay','Special Shift Pay','Time Slip','Time Slip Date Written','Time Slip Date Submitted','Time Slip Location','Time Slip Status','Time Slip Date Paid/Denied','Total','Notes']];
   for(const s of getFilteredHistoryShifts()){
     const c=calculate(s);if(!c||c.rateMissing)continue;
-    rows.push([s.date,s.traineeMode?'Trainee':'Engineer',s.classDay?'Yes':'No',s.engineerName||'',s.engineerIBM||'',s.assignment,s.location,s.shiftType||'',s.specialShift||'',s.specialCategory||'',s.conductorName||'',s.brakemanName||'',s.start||'',s.end||'',fmtMinutes(c.actual),fmtMinutes(c.payable),c.ratePct+'%',c.payType,c.regular.toFixed(3),c.ot.toFixed(3),c.night.toFixed(3),c.holidayBonus.toFixed(3),(c.dailyCertPay||0).toFixed(2),c.mptePay.toFixed(3),(c.freightMealPay||0).toFixed(3),(c.fuelClaimPay||0).toFixed(3),c.traineeCount,c.ponePay.toFixed(3),c.noCoPay.toFixed(3),c.yardCertCount,c.certPay.toFixed(3),c.comminglePay.toFixed(3),c.classesPay.toFixed(3),c.sheridanPay.toFixed(3),c.terminalPay.toFixed(3),fmtMinutes(c.runaroundDiffMinutes),c.runaroundPay.toFixed(3),fmtMinutes(c.a2mins),c.a2.toFixed(3),(c.specialPay||0).toFixed(3),s.timeSlip?'Yes':'No',s.timeSlipWritten||'',s.timeSlipSubmitted||'',s.timeSlipLocation||'',s.timeSlipStatus||'',s.timeSlipResolved||'',c.total.toFixed(3),s.notes||''])
+    rows.push([s.date,s.traineeMode?'Trainee':'Engineer',s.classDay?'Yes':'No',s.engineerName||'',s.engineerIBM||'',s.assignment,s.location,s.shiftType||'',s.specialShift||'',s.specialCategory||'',s.conductorName||'',s.brakemanName||'',s.start||'',s.end||'',fmtMinutes(c.actual),fmtMinutes(c.payable),c.ratePct+'%',c.payType,c.regular.toFixed(3),c.ot.toFixed(3),c.night.toFixed(3),c.holidayBonus.toFixed(3),(c.dailyCertPay||0).toFixed(2),c.mptePay.toFixed(3),(c.freightMealPay||0).toFixed(3),(c.fuelClaimPay||0).toFixed(3),fmtMinutes(c.otCompletionMinutes||0),(c.otCompletionPay||0).toFixed(3),c.traineeCount,c.ponePay.toFixed(3),c.noCoPay.toFixed(3),c.yardCertCount,c.certPay.toFixed(3),c.comminglePay.toFixed(3),c.classesPay.toFixed(3),c.sheridanPay.toFixed(3),c.terminalPay.toFixed(3),fmtMinutes(c.runaroundDiffMinutes),c.runaroundPay.toFixed(3),fmtMinutes(c.a2mins),c.a2.toFixed(3),(c.specialPay||0).toFixed(3),s.timeSlip?'Yes':'No',s.timeSlipWritten||'',s.timeSlipSubmitted||'',s.timeSlipLocation||'',s.timeSlipStatus||'',s.timeSlipResolved||'',c.total.toFixed(3),s.notes||''])
   }
   const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\n');
   download('Engineer_Pay_Log.csv',csv,'text/csv')
@@ -1069,7 +1093,7 @@ async function exportPDF(){
       if(c.dailyCertPay)tags.push(['Daily Cert',paleGreen,'0.50 0.76 0.45',green]);
       if(s.mpte)tags.push(['Meal Period',paleBlue,'0.52 0.65 0.92',navy]);
       if(s.freightMeal)tags.push(['Freight Meal',paleBlue,'0.52 0.65 0.92',navy]);
-      if(s.fuelClaim)tags.push(['Fuel Claim',paleBlue,'0.52 0.65 0.92',navy]);
+      if(s.fuelClaim)tags.push(['Fuel Claim',paleBlue,'0.52 0.65 0.92',navy]);if(s.otCompletion)tags.push([`OT Upon Completion ${fmtMinutes(c.otCompletionMinutes||0)}`,paleBlue,'0.52 0.65 0.92',navy]);
       if(s.pone)tags.push(['Trainee',paleBlue,'0.52 0.65 0.92',navy]);
       if(s.noCo)tags.push(['No Conductor',paleBlue,'0.52 0.65 0.92',navy]);
       if(s.cert)tags.push(['Yard Cert',paleBlue,'0.52 0.65 0.92',navy]);
@@ -1177,7 +1201,7 @@ async function exportPDF(){
       grand+=c.total;
       grandMinutes+=(c.actual||0);
       if(s.timeSlip)timeSlipCount++;
-      grandClaims+=(c.mptePay||0)+(c.freightMealPay||0)+(c.fuelClaimPay||0)+(c.ponePay||0)+(c.noCoPay||0)+(c.certPay||0)+(c.comminglePay||0)+(c.classesPay||0)+(c.sheridanPay||0)+(c.terminalPay||0)+(c.runaroundPay||0)+(c.a2||0);
+      grandClaims+=(c.mptePay||0)+(c.freightMealPay||0)+(c.fuelClaimPay||0)+(c.otCompletionPay||0)+(c.ponePay||0)+(c.noCoPay||0)+(c.certPay||0)+(c.comminglePay||0)+(c.classesPay||0)+(c.sheridanPay||0)+(c.terminalPay||0)+(c.runaroundPay||0)+(c.a2||0);
     }
     if(y+42>H-45)newPage(false);
     rect(M,y,W-2*M,36,'0.965 0.975 0.99',line);txt(M+14,y+22,monthName+' SUMMARY',9.5,true,navy);txt(235,y+16,String(items.length),9,true,navy);txt(235,y+28,'SHIFTS',6.5,true,muted);txt(310,y+16,fmtMinutes(monthMinutes),9,true,navy);txt(310,y+28,'HOURS',6.5,true,muted);txt(405,y+16,pdfMoney(monthTotal),9,true,navy);txt(405,y+28,'GROSS',6.5,true,muted);txt(510,y+16,String(monthSlips),9,true,monthSlips?'0.55 0.38 0.02':navy);txt(510,y+28,'TIME SLIPS',6.5,true,muted);y+=50;
