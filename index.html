@@ -631,10 +631,23 @@ function calculate(s,depth=0){
   // Normal shifts and passenger-job special shifts use normal job-entry math.
   const start=parseClock(s.start),end=parseClock(s.end);if(start==null||end==null)return null;
   let actual=end-start;if(actual<=0)actual+=1440;
-  const payable=traineeMode?Math.max(480,actual-30):Math.max(480,actual);
+
+  // Overtime Upon Completion is paid separately from the original assignment.
+  // When this claim is used, ordinary guarantee/overtime is based only on the
+  // original job (Start -> Original Job Completion), not the later final End Time.
+  let baseActual=actual;
+  if(!traineeMode&&s.otCompletion&&s.otCompletionTime){
+    const scheduledEnd=parseClock(s.otCompletionTime);
+    if(scheduledEnd!=null){
+      baseActual=scheduledEnd-start;
+      if(baseActual<=0)baseActual+=1440;
+    }
+  }
+
+  const payable=traineeMode?Math.max(480,actual-30):Math.max(480,baseActual);
   const holiday=traineeMode?false:(!!s.holiday||isContractHoliday(s.date)),ssot=traineeMode?false:!!s.ssot,rd=traineeMode?false:!!s.rd,fullOT=holiday||ssot||rd;
   const regular=fullOT?0:basicST;
-  const ot=traineeMode?otPay(Math.max(0,actual-510),ratePct):(fullOT?otPay(payable,ratePct):otPay(Math.max(0,actual-480),ratePct));
+  const ot=traineeMode?otPay(Math.max(0,actual-510),ratePct):(fullOT?otPay(payable,ratePct):otPay(Math.max(0,baseActual-480),ratePct));
   const night=nightPay(overlapNight(start,end),ratePct);
   const holidayBonus=holiday?basicST:0;
   const mptePay=s.mpte?otPay(20,ratePct):0;
