@@ -679,13 +679,13 @@ function formData(){
     timeSlipResolved:$('timeSlipFlag').checked?$('timeSlipResolved').value:'',
     holiday:$('shiftRuleMode').value==='trainee'?false:$('holidayFlag').checked,ssot:$('shiftRuleMode').value==='trainee'?false:$('ssotFlag').checked,rd:$('shiftRuleMode').value==='trainee'?false:$('rdFlag').checked,
     mpte:$('mpteFlag').checked,freightMeal:$('freightMealFlag').checked,fuelClaim:$('shiftRuleMode').value==='trainee'?false:$('fuelClaimFlag').checked,
-    pone:$('shiftRuleMode').value==='trainee'?false:$('poneFlag').checked,traineeCount:$('shiftRuleMode').value==='trainee'?0:($('poneFlag').checked?Math.min(2,Math.max(1,Number($('traineeCount').value)||1)):0),
-    noCo:$('shiftRuleMode').value==='trainee'?false:$('noCoFlag').checked,cert:$('shiftRuleMode').value==='trainee'?false:$('certFlag').checked,
+    pone:$('poneFlag').checked,traineeCount:$('poneFlag').checked?Math.min(2,Math.max(1,Number($('traineeCount').value)||1)):0,
+    noCo:$('noCoFlag').checked,cert:$('certFlag').checked,
     yardCertCount:$('certFlag').checked?Math.max(1,Math.round(Number($('yardCertCount').value)||1)):0,
-    commingle:$('shiftRuleMode').value==='trainee'?false:$('commingleFlag').checked,yardMove:$('shiftRuleMode').value==='trainee'?false:$('yardMoveFlag').checked,sheridanMove:$('shiftRuleMode').value==='trainee'?false:$('sheridanFlag').checked,
-    terminalNotCrewBook:$('shiftRuleMode').value==='trainee'?false:$('terminalFlag').checked,
-    runaround:$('shiftRuleMode').value==='trainee'?false:$('runaroundFlag').checked,runaroundDiffMinutes:$('shiftRuleMode').value==='trainee'?0:($('runaroundFlag').checked?(rrh*60+rrm):0),
-    a2:$('shiftRuleMode').value==='trainee'?false:$('a2Flag').checked,a2Minutes:$('shiftRuleMode').value==='trainee'?0:($('a2Flag').checked?Math.min(480,a2h*60+a2m):0)
+    commingle:$('commingleFlag').checked,yardMove:$('yardMoveFlag').checked,sheridanMove:$('sheridanFlag').checked,
+    terminalNotCrewBook:$('terminalFlag').checked,
+    runaround:$('runaroundFlag').checked,runaroundDiffMinutes:$('runaroundFlag').checked?(rrh*60+rrm):0,
+    a2:$('a2Flag').checked,a2Minutes:$('a2Flag').checked?Math.min(480,a2h*60+a2m):0
   };
 }
 function setCalcRow(id,value,text){
@@ -743,7 +743,7 @@ function applyEntryMode(){
   const trainee=document.getElementById('shiftRuleMode').value==='trainee',classDay=trainee&&document.getElementById('classFlag').checked,holidayOff=trainee&&document.getElementById('specialShift').value==='Holiday - Not Worked',simpleDay=classDay||holidayOff;
   document.getElementById('shiftForm').classList.toggle('trainee-mode',trainee);
   ['payFlagsField','crewFields','timeSlipField'].forEach(id=>document.getElementById(id)?.classList.toggle('hidden-by-mode',trainee));
-  ['assignmentField','shiftTypeField','penaltiesField','notesField','traineeInstructorFields'].forEach(id=>document.getElementById(id)?.classList.toggle('hidden-by-mode',simpleDay));
+  ['assignmentField','penaltiesField','notesField','traineeInstructorFields'].forEach(id=>document.getElementById(id)?.classList.toggle('hidden-by-mode',simpleDay));   document.getElementById('shiftTypeField')?.classList.toggle('hidden-by-mode',trainee);
   document.getElementById('specialShiftField')?.classList.toggle('hidden-by-mode',classDay);
   document.getElementById('locationField')?.classList.toggle('hidden-by-mode',holidayOff);
   if(trainee&&!simpleDay){
@@ -752,9 +752,9 @@ function applyEntryMode(){
     document.getElementById('notesField')?.classList.remove('hidden-by-mode');
     document.getElementById('traineeInstructorFields')?.classList.remove('hidden-by-mode');
   }
-  const special=document.getElementById('specialShift'),specialValue=special.value;
-  if(trainee){special.innerHTML='<option value="">Normal worked shift</option><option value="Holiday - Not Worked">Holiday - Not Worked</option>';special.value=['','Holiday - Not Worked'].includes(specialValue)?specialValue:''}
-  else if(special.options.length<7){special.innerHTML='<option value="">Normal worked shift</option><option value="Sick Day">Sick Day</option><option value="Paid Guarantee">Paid Guarantee</option><option value="Two Year Book">Two Year Book</option><option value="Miscellaneous Instruction">Miscellaneous Instruction</option><option value="Personal Day">Personal Day</option><option value="Company Court">Company Court</option>';special.value=specialValue}
+  const special=document.getElementById('specialShift');
+  if(trainee){special.innerHTML='<option value="">Normal worked shift</option><option value="Holiday - Not Worked">Holiday - Not Worked</option>';if(!['','Holiday - Not Worked'].includes(special.value))special.value=''}
+  else if(special.options.length<7)special.innerHTML='<option value="">Normal worked shift</option><option value="Sick Day">Sick Day</option><option value="Paid Guarantee">Paid Guarantee</option><option value="Two Year Book">Two Year Book</option><option value="Miscellaneous Instruction">Miscellaneous Instruction</option><option value="Personal Day">Personal Day</option><option value="Company Court">Company Court</option>';
   const allowed=new Set(['mpteFlag','freightMealFlag']);
   document.querySelectorAll('#penaltiesField .check').forEach(l=>{const inp=l.querySelector('input');l.classList.toggle('hidden-by-mode',trainee&&inp&&!allowed.has(inp.id))});
   const dailyRow=document.getElementById('pDailyCert')?.closest('.calc-row');if(dailyRow)dailyRow.classList.toggle('hidden-by-mode',trainee);
