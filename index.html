@@ -258,23 +258,94 @@
           </div>
 
           <div id="myJobRegularFields" style="margin-top:12px">
-            <div class="field full"><label>Job Number</label><input id="myJobNumber" placeholder="e.g. 28"></div>
-            <div class="field full" style="margin-top:10px"><label>Location</label><select id="myJobLocationSelect" onchange="myJobLocationChanged()"></select></div>
-            <div id="myJobOtherLocationWrap" class="field full" style="display:none;margin-top:8px"><label>Other Location</label><input id="myJobOtherLocation" placeholder="Enter terminal / location"></div>
-            <div class="my-job-grid" style="margin-top:12px">
-              <div class="my-job-portion">
-                <h3>Mon. to Fri.</h3>
-                <div class="field full"><label>Start Time</label><input id="myJobWeekdayStart" type="time"></div>
-                <div class="field full" style="margin-top:8px"><label>Release Time</label><input id="myJobWeekdayEnd" type="time"></div>
+            <div class="field full"><label>Job Number</label><input id="myJobNumber" placeholder="e.g. 9"></div>
+            <p class="notice" style="margin-top:10px">Set the location and scheduled times for each day you work. Mark scheduled days off as Relief Day.</p>
+
+            <div id="myJobRegularMondayCard" class="relief-day">
+              <div class="relief-day-head">
+                <strong>Monday</strong>
+                <label class="check"><input id="myJobRegularMondayOff" type="checkbox" onchange="toggleMyJobRegularDay('monday')"> Relief Day</label>
               </div>
-              <div class="my-job-portion">
-                <h3>Sat. - Sun. <span class="muted" style="font-weight:500">(optional)</span></h3>
-                <div class="field full"><label>Start Time</label><input id="myJobWeekendStart" type="time"></div>
-                <div class="field full" style="margin-top:8px"><label>Release Time</label><input id="myJobWeekendEnd" type="time"></div>
+              <div class="relief-day-fields">
+                <div class="field full"><label>Location</label><select id="myJobRegularMondayLocation" onchange="myJobRegularLocationChanged('monday')"></select></div>
+                <div id="myJobRegularMondayOtherWrap" class="field full" style="display:none"><label>Other Location</label><input id="myJobRegularMondayOther" placeholder="Enter terminal / location"></div>
+                <div class="field full"><label>Start Time</label><input id="myJobRegularMondayStart" type="time"></div>
+                <div class="field full"><label>Release Time</label><input id="myJobRegularMondayEnd" type="time"></div>
+              </div>
+            </div>
+            <div id="myJobRegularTuesdayCard" class="relief-day">
+              <div class="relief-day-head">
+                <strong>Tuesday</strong>
+                <label class="check"><input id="myJobRegularTuesdayOff" type="checkbox" onchange="toggleMyJobRegularDay('tuesday')"> Relief Day</label>
+              </div>
+              <div class="relief-day-fields">
+                <div class="field full"><label>Location</label><select id="myJobRegularTuesdayLocation" onchange="myJobRegularLocationChanged('tuesday')"></select></div>
+                <div id="myJobRegularTuesdayOtherWrap" class="field full" style="display:none"><label>Other Location</label><input id="myJobRegularTuesdayOther" placeholder="Enter terminal / location"></div>
+                <div class="field full"><label>Start Time</label><input id="myJobRegularTuesdayStart" type="time"></div>
+                <div class="field full"><label>Release Time</label><input id="myJobRegularTuesdayEnd" type="time"></div>
+              </div>
+            </div>
+            <div id="myJobRegularWednesdayCard" class="relief-day">
+              <div class="relief-day-head">
+                <strong>Wednesday</strong>
+                <label class="check"><input id="myJobRegularWednesdayOff" type="checkbox" onchange="toggleMyJobRegularDay('wednesday')"> Relief Day</label>
+              </div>
+              <div class="relief-day-fields">
+                <div class="field full"><label>Location</label><select id="myJobRegularWednesdayLocation" onchange="myJobRegularLocationChanged('wednesday')"></select></div>
+                <div id="myJobRegularWednesdayOtherWrap" class="field full" style="display:none"><label>Other Location</label><input id="myJobRegularWednesdayOther" placeholder="Enter terminal / location"></div>
+                <div class="field full"><label>Start Time</label><input id="myJobRegularWednesdayStart" type="time"></div>
+                <div class="field full"><label>Release Time</label><input id="myJobRegularWednesdayEnd" type="time"></div>
+              </div>
+            </div>
+            <div id="myJobRegularThursdayCard" class="relief-day">
+              <div class="relief-day-head">
+                <strong>Thursday</strong>
+                <label class="check"><input id="myJobRegularThursdayOff" type="checkbox" onchange="toggleMyJobRegularDay('thursday')"> Relief Day</label>
+              </div>
+              <div class="relief-day-fields">
+                <div class="field full"><label>Location</label><select id="myJobRegularThursdayLocation" onchange="myJobRegularLocationChanged('thursday')"></select></div>
+                <div id="myJobRegularThursdayOtherWrap" class="field full" style="display:none"><label>Other Location</label><input id="myJobRegularThursdayOther" placeholder="Enter terminal / location"></div>
+                <div class="field full"><label>Start Time</label><input id="myJobRegularThursdayStart" type="time"></div>
+                <div class="field full"><label>Release Time</label><input id="myJobRegularThursdayEnd" type="time"></div>
+              </div>
+            </div>
+            <div id="myJobRegularFridayCard" class="relief-day">
+              <div class="relief-day-head">
+                <strong>Friday</strong>
+                <label class="check"><input id="myJobRegularFridayOff" type="checkbox" onchange="toggleMyJobRegularDay('friday')"> Relief Day</label>
+              </div>
+              <div class="relief-day-fields">
+                <div class="field full"><label>Location</label><select id="myJobRegularFridayLocation" onchange="myJobRegularLocationChanged('friday')"></select></div>
+                <div id="myJobRegularFridayOtherWrap" class="field full" style="display:none"><label>Other Location</label><input id="myJobRegularFridayOther" placeholder="Enter terminal / location"></div>
+                <div class="field full"><label>Start Time</label><input id="myJobRegularFridayStart" type="time"></div>
+                <div class="field full"><label>Release Time</label><input id="myJobRegularFridayEnd" type="time"></div>
+              </div>
+            </div>
+            <div id="myJobRegularSaturdayCard" class="relief-day">
+              <div class="relief-day-head">
+                <strong>Saturday</strong>
+                <label class="check"><input id="myJobRegularSaturdayOff" type="checkbox" onchange="toggleMyJobRegularDay('saturday')"> Relief Day</label>
+              </div>
+              <div class="relief-day-fields">
+                <div class="field full"><label>Location</label><select id="myJobRegularSaturdayLocation" onchange="myJobRegularLocationChanged('saturday')"></select></div>
+                <div id="myJobRegularSaturdayOtherWrap" class="field full" style="display:none"><label>Other Location</label><input id="myJobRegularSaturdayOther" placeholder="Enter terminal / location"></div>
+                <div class="field full"><label>Start Time</label><input id="myJobRegularSaturdayStart" type="time"></div>
+                <div class="field full"><label>Release Time</label><input id="myJobRegularSaturdayEnd" type="time"></div>
+              </div>
+            </div>
+            <div id="myJobRegularSundayCard" class="relief-day">
+              <div class="relief-day-head">
+                <strong>Sunday</strong>
+                <label class="check"><input id="myJobRegularSundayOff" type="checkbox" onchange="toggleMyJobRegularDay('sunday')"> Relief Day</label>
+              </div>
+              <div class="relief-day-fields">
+                <div class="field full"><label>Location</label><select id="myJobRegularSundayLocation" onchange="myJobRegularLocationChanged('sunday')"></select></div>
+                <div id="myJobRegularSundayOtherWrap" class="field full" style="display:none"><label>Other Location</label><input id="myJobRegularSundayOther" placeholder="Enter terminal / location"></div>
+                <div class="field full"><label>Start Time</label><input id="myJobRegularSundayStart" type="time"></div>
+                <div class="field full"><label>Release Time</label><input id="myJobRegularSundayEnd" type="time"></div>
               </div>
             </div>
           </div>
-
           <div id="myJobReliefFields" class="relief-days">
             <div class="field full"><label>Relief Crew Number</label><input id="myJobReliefCrewNumber" placeholder="e.g. 406"></div>
             <p class="notice" style="margin-top:10px">Set the assignment, location, and times for each day you work. Mark scheduled days off as Relief Day.</p>
@@ -944,6 +1015,23 @@ function normalizeMyJob(j){
   if(!j)return null;
   if(!j.type)j.type='regular';
   if(!j.reliefDays)j.reliefDays={};
+  if(!j.regularDays)j.regularDays={};
+
+  // Backward compatibility for the first My Job test format:
+  // convert the old Mon-Fri / Sat-Sun settings into seven daily portions.
+  if(j.type==='regular' && !Object.keys(j.regularDays).length && (j.location||j.weekdayStart||j.weekdayEnd||j.weekendStart||j.weekendEnd)){
+    MY_JOB_RELIEF_DAYS.forEach(day=>{
+      const weekend=day==='saturday'||day==='sunday';
+      const start=weekend?(j.weekendStart||''):(j.weekdayStart||'');
+      const end=weekend?(j.weekendEnd||''):(j.weekdayEnd||'');
+      j.regularDays[day]={
+        reliefDay:false,
+        location:j.location||'',
+        start,
+        end
+      };
+    });
+  }
   return j;
 }
 function myJobConfigured(){
@@ -951,12 +1039,16 @@ function myJobConfigured(){
   if(!(j&&j.enabled))return false;
   if(j.type==='relief'){
     if(!j.reliefCrewNumber)return false;
-    return MY_JOB_RELIEF_DAYS.some(day=>{
+    return MY_JOB_RELIEF_DAYS.every(day=>{
       const d=j.reliefDays?.[day];
-      return d&&(d.reliefDay||(d.assignment&&d.location&&d.start&&d.end));
+      return !!(d&&(d.reliefDay||(d.assignment&&d.location&&d.start&&d.end)));
     });
   }
-  return !!(j.assignment&&j.location&&j.weekdayStart&&j.weekdayEnd);
+  if(!j.assignment)return false;
+  return MY_JOB_RELIEF_DAYS.every(day=>{
+    const d=j.regularDays?.[day];
+    return !!(d&&(d.reliefDay||(d.location&&d.start&&d.end)));
+  });
 }
 function fillTerminalSelect(el){
   if(!el||el.options.length)return;
@@ -975,6 +1067,37 @@ function setMyJobLocationUI(value){
   else if(value){sel.value='__other__';other.value=value}
   else{sel.value='';other.value=''}
   myJobLocationChanged();
+}
+function initRegularLocationSelects(){
+  MY_JOB_RELIEF_DAYS.forEach(day=>{
+    const cap=day.charAt(0).toUpperCase()+day.slice(1);
+    fillTerminalSelect(document.getElementById(`myJobRegular${cap}Location`));
+  });
+}
+function myJobRegularLocationChanged(day){
+  const cap=day.charAt(0).toUpperCase()+day.slice(1);
+  const sel=document.getElementById(`myJobRegular${cap}Location`),wrap=document.getElementById(`myJobRegular${cap}OtherWrap`);
+  if(wrap)wrap.style.display=sel&&sel.value==='__other__'?'block':'none';
+}
+function setRegularLocationUI(day,value){
+  const cap=day.charAt(0).toUpperCase()+day.slice(1);
+  const sel=document.getElementById(`myJobRegular${cap}Location`),other=document.getElementById(`myJobRegular${cap}Other`);
+  if(!sel||!other)return;
+  const t=terminalForValue(value);
+  if(t){sel.value=t.name;other.value=''}
+  else if(value){sel.value='__other__';other.value=value}
+  else{sel.value='';other.value=''}
+  myJobRegularLocationChanged(day);
+}
+function toggleMyJobRegularDay(day){
+  const cap=day.charAt(0).toUpperCase()+day.slice(1);
+  const off=document.getElementById(`myJobRegular${cap}Off`)?.checked;
+  document.getElementById(`myJobRegular${cap}Card`)?.classList.toggle('relief-off',!!off);
+}
+function regularLocationValue(day){
+  const cap=day.charAt(0).toUpperCase()+day.slice(1);
+  const sel=document.getElementById(`myJobRegular${cap}Location`);
+  return sel?.value==='__other__'?(document.getElementById(`myJobRegular${cap}Other`)?.value||'').trim():(sel?.value||'');
 }
 function initReliefLocationSelects(){
   MY_JOB_RELIEF_DAYS.forEach(day=>{
@@ -1050,27 +1173,37 @@ function saveMyJob(){
     localStorage.setItem(MY_JOB_KEY,JSON.stringify({enabled:true,type:'relief',reliefCrewNumber,reliefDays}));
   }else{
     const assignment=(document.getElementById('myJobNumber')?.value||'').trim();
-    const sel=document.getElementById('myJobLocationSelect');
-    const location=sel?.value==='__other__'?(document.getElementById('myJobOtherLocation')?.value||'').trim():(sel?.value||'');
-    const weekdayStart=document.getElementById('myJobWeekdayStart')?.value||'',weekdayEnd=document.getElementById('myJobWeekdayEnd')?.value||'';
-    const weekendStart=document.getElementById('myJobWeekendStart')?.value||'',weekendEnd=document.getElementById('myJobWeekendEnd')?.value||'';
-    if(!assignment||!location||!weekdayStart||!weekdayEnd){alert('Please enter the job number, location, and Mon.–Fri. start and release times.');return}
-    if((weekendStart&&!weekendEnd)||(!weekendStart&&weekendEnd)){alert('Please enter both weekend times, or leave both blank.');return}
-    localStorage.setItem(MY_JOB_KEY,JSON.stringify({enabled:true,type:'regular',assignment,location,weekdayStart,weekdayEnd,weekendStart,weekendEnd}));
+    if(!assignment){alert('Please enter the Job Number.');return}
+    const regularDays={};
+    for(const day of MY_JOB_RELIEF_DAYS){
+      const cap=day.charAt(0).toUpperCase()+day.slice(1),reliefDay=!!document.getElementById(`myJobRegular${cap}Off`)?.checked;
+      const location=regularLocationValue(day);
+      const start=document.getElementById(`myJobRegular${cap}Start`)?.value||'',end=document.getElementById(`myJobRegular${cap}End`)?.value||'';
+      if(!reliefDay&&(!location||!start||!end)){alert(`Please complete ${cap}'s location, start, and release time, or mark it as a Relief Day.`);return}
+      regularDays[day]={reliefDay,location:reliefDay?'':location,start:reliefDay?'':start,end:reliefDay?'':end};
+    }
+    localStorage.setItem(MY_JOB_KEY,JSON.stringify({enabled:true,type:'regular',assignment,regularDays}));
   }
   const box=document.getElementById('myJobEnabled');if(box)box.checked=true;
   renderMyJobUI();alert('My Job saved.');
 }
 function loadMyJobSettings(){
-  initMyJobLocationSelect();initReliefLocationSelects();
-  const j=normalizeMyJob(getMyJob())||{type:'regular',reliefDays:{}};
+  initRegularLocationSelects();initReliefLocationSelects();
+  const j=normalizeMyJob(getMyJob())||{type:'regular',regularDays:{},reliefDays:{}};
   const box=document.getElementById('myJobEnabled'),fields=document.getElementById('myJobSettingsFields');
   if(box)box.checked=!!j.enabled;if(fields)fields.classList.toggle('show',!!j.enabled);
   const type=j.type==='relief'?'relief':'regular';
   const reg=document.getElementById('myJobTypeRegular'),rel=document.getElementById('myJobTypeRelief');
   if(reg)reg.checked=type==='regular';if(rel)rel.checked=type==='relief';updateMyJobTypeUI(type);
   const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||''};
-  set('myJobNumber',j.assignment);setMyJobLocationUI(j.location||'');set('myJobWeekdayStart',j.weekdayStart);set('myJobWeekdayEnd',j.weekdayEnd);set('myJobWeekendStart',j.weekendStart);set('myJobWeekendEnd',j.weekendEnd);
+
+  set('myJobNumber',j.assignment);
+  MY_JOB_RELIEF_DAYS.forEach(day=>{
+    const cap=day.charAt(0).toUpperCase()+day.slice(1),d=j.regularDays?.[day]||{};
+    const off=document.getElementById(`myJobRegular${cap}Off`);if(off)off.checked=!!d.reliefDay;
+    setRegularLocationUI(day,d.location||'');set(`myJobRegular${cap}Start`,d.start);set(`myJobRegular${cap}End`,d.end);toggleMyJobRegularDay(day);
+  });
+
   set('myJobReliefCrewNumber',j.reliefCrewNumber);
   MY_JOB_RELIEF_DAYS.forEach(day=>{
     const cap=day.charAt(0).toUpperCase()+day.slice(1),d=j.reliefDays?.[day]||{};
@@ -1082,7 +1215,7 @@ function renderMyJobUI(){
   const j=normalizeMyJob(getMyJob()),configured=myJobConfigured();
   const title=document.getElementById('myJobDashTitle'),sub=document.getElementById('myJobDashSub'),btn=document.getElementById('myJobDashButton');
   if(title)title.textContent=configured?(j.type==='relief'?`My Relief Crew: ${j.reliefCrewNumber}`:`My Job: ${j.assignment}`):'Own a regular job?';
-  if(sub)sub.textContent=configured?(j.type==='relief'?'Daily assignments, terminals, and times are ready for quick entry.':`${canonicalLocation(j.location)} • ready for weekday/weekend quick entry`):'Click here to add your job details and make daily entry faster.';
+  if(sub)sub.textContent=configured?(j.type==='relief'?'Daily assignments, terminals, and times are ready for quick entry.':'Daily terminals and times are ready for quick entry.'):'Click here to add your job details and make daily entry faster.';
   if(btn)btn.textContent=configured?'Edit My Job':'Set up My Job';
   const control=document.getElementById('myJobEntryControl'),label=document.getElementById('myJobEntryLabel');
   if(control)control.classList.toggle('show',configured&&!isTraineeMode());
@@ -1096,23 +1229,26 @@ function applyMyJob(){
   const j=normalizeMyJob(getMyJob());if(!j||!j.enabled)return;
   const date=document.getElementById('date')?.value;if(!date){alert('Select a date first.');return}
   const d=new Date(date+'T12:00:00'),day=MY_JOB_RELIEF_DAYS[(d.getDay()+6)%7];
+  const dayLabel=day.charAt(0).toUpperCase()+day.slice(1);
+
   if(j.type==='relief'){
     const portion=j.reliefDays?.[day];
-    if(!portion){alert(`No ${day.charAt(0).toUpperCase()+day.slice(1)} portion is configured for My Relief Crew.`);return}
-    if(portion.reliefDay){alert(`${day.charAt(0).toUpperCase()+day.slice(1)} is configured as a Relief Day for My Job.`);return}
+    if(!portion){alert(`No ${dayLabel} portion is configured for My Relief Crew.`);return}
+    if(portion.reliefDay){alert(`${dayLabel} is configured as a Relief Day for My Job.`);return}
     document.getElementById('assignment').value=portion.assignment||'';
     setLocationUI(portion.location||'');
     document.getElementById('start').value=portion.start||'';
     document.getElementById('end').value=portion.end||'';
     setShiftTypeUI('Own');calculatePreview();return;
   }
-  const weekend=d.getDay()===0||d.getDay()===6;
-  const start=weekend?j.weekendStart:j.weekdayStart,end=weekend?j.weekendEnd:j.weekdayEnd;
-  if(weekend&&(!start||!end)){alert('No Sat.–Sun. portion is configured for My Job. You can add weekend times in Settings.');return}
+
+  const portion=j.regularDays?.[day];
+  if(!portion){alert(`No ${dayLabel} portion is configured for My Job.`);return}
+  if(portion.reliefDay){alert(`${dayLabel} is configured as a Relief Day for My Job.`);return}
   document.getElementById('assignment').value=j.assignment||'';
-  setLocationUI(j.location||'');
-  document.getElementById('start').value=start||'';
-  document.getElementById('end').value=end||'';
+  setLocationUI(portion.location||'');
+  document.getElementById('start').value=portion.start||'';
+  document.getElementById('end').value=portion.end||'';
   setShiftTypeUI('Own');
   calculatePreview();
 }
