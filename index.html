@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#10233f" />
-  <title>Engineer Pay Log</title>
+  <!-- BRANCH + HOLD DOWN TEST BUILD -->
+<title>Engineer Pay Log</title>
   <meta name="application-name" content="Pay Log" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -34,12 +35,14 @@
     .btn{border:0;border-radius:12px;padding:11px 14px;font-weight:750;background:#e8eef6;color:var(--brand)}.btn.primary{background:var(--brand);color:#fff}.btn.good{background:#e7f5ec;color:var(--good)}.btn.danger{background:#fdecec;color:var(--bad)}.btn.small{padding:8px 10px;font-size:12px}
     .form-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}.field{grid-column:span 6}.field.full{grid-column:span 12}.field.third{grid-column:span 4}.field label{display:block;font-size:12px;font-weight:750;color:#445066;margin:0 0 6px}.field input,.field textarea,.field select{width:100%;border:1px solid #cfd8e6;border-radius:12px;background:#fff;color:var(--ink);padding:12px;outline:none}.field input:focus,.field textarea:focus,.field select:focus{border-color:#7ca6d2;box-shadow:0 0 0 3px rgba(31,93,155,.10)} textarea{min-height:78px;resize:vertical}
     .checks{display:flex;gap:8px;flex-wrap:wrap}.check{display:flex;align-items:center;gap:8px;border:1px solid var(--line);padding:9px 11px;border-radius:12px;background:#fbfcfe}.check input{width:auto;margin:0}
-    .shift-type-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.shift-type-choice{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-width:0;min-height:72px;border:1px solid var(--line);padding:9px 4px;border-radius:12px;background:#fbfcfe;font-size:11.5px;font-weight:750;color:#445066;text-align:center;line-height:1.05;white-space:normal}
-.shift-type-choice input{width:28px;height:28px;margin:0;flex:0 0 auto}
+    .shift-type-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.shift-type-choice{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-width:0;min-height:78px;border:1px solid var(--line);padding:10px 6px;border-radius:12px;background:#fbfcfe;font-size:12px;font-weight:750;color:#445066;text-align:center;line-height:1.1;white-space:normal}
+.shift-type-choice input{width:30px;height:30px;margin:0;flex:0 0 auto}
+.shift-type-choice:nth-child(-n+3){grid-column:span 2}
+.shift-type-choice:nth-child(n+4){grid-column:span 3}
 .terminal-select-wrap{position:relative}
 .terminal-dot{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px;border:1px solid rgba(0,0,0,.08)}
-@media(max-width:430px){.shift-type-row{gap:6px}.shift-type-choice{font-size:10.8px;padding:8px 2px;min-height:70px}}
+@media(max-width:430px){.shift-type-row{gap:7px}.shift-type-choice{font-size:11.5px;padding:9px 5px;min-height:76px}}
 
 
     /* TEST B — LIRR station-sign-inspired branch stripe */
@@ -329,7 +332,7 @@
         <div class="field"><label>End time</label><input id="end" type="time" required onchange="calculatePreview()"></div>
         <div class="field full"><label>Total Time on Duty</label><div class="readonly-info"><strong id="timeOnDutyDisplay">—</strong><div class="muted" style="margin-top:2px">Calculated automatically from start and end time</div></div></div>
         <div id="classToggleWrap" class="field full trainee-only"><label class="check"><input id="classFlag" type="checkbox" onchange="toggleClassDay();calculatePreview()"> Class</label></div>
-        <div id="shiftTypeField" class="field full"><label>Shift Type</label><input id="shiftType" type="hidden"><div class="shift-type-row"><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Own" onchange="chooseShiftType(this)">Own</label><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Pick" onchange="chooseShiftType(this)">Pick</label><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Hung" onchange="chooseShiftType(this)">Hung</label><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Extra Extra" onchange="chooseShiftType(this)">Extra Extra</label></div></div>
+        <div id="shiftTypeField" class="field full"><label>Shift Type</label><input id="shiftType" type="hidden"><div class="shift-type-row"><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Own" onchange="chooseShiftType(this)">Own</label><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Pick" onchange="chooseShiftType(this)">Pick</label><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Hung" onchange="chooseShiftType(this)">Hung</label><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Extra Extra" onchange="chooseShiftType(this)">Extra Extra</label><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Hold Down" onchange="chooseShiftType(this)">Hold Down</label></div></div>
         <div id="specialShiftField" class="field full">
           <label>Special Shift</label>
           <select id="specialShift" onchange="applyEntryMode();calculatePreview()">
@@ -504,13 +507,13 @@ const DATA_VERSION='engineer-pay-log-v5';
 function legacyHas(text,pattern){return pattern.test(text||'')}
 function inferShiftType(s){
   if(s.shiftType)return s.shiftType;
-  const m=(s.notes||'').match(/^Status:\s*(Own|Pick|Hung|Extra Extra|XX)(?:\s*\([^\n]*\))?\s*$/im);
+  const m=(s.notes||'').match(/^Status:\s*(Own|Pick|Hung|Extra Extra|Hold Down|XX)(?:\s*\([^\n]*\))?\s*$/im);
   if(!m)return '';
   return /^XX$/i.test(m[1])?'Extra Extra':m[1].replace(/\b\w/g,c=>c.toUpperCase());
 }
 function cleanStructuredStatus(notes,shiftType){
   if(!shiftType)return notes||'';
-  return (notes||'').replace(/^Status:\s*(Own|Pick|Hung|Extra Extra|XX)(?:\s*\([^\n]*\))?\s*\n?/im,'').trim();
+  return (notes||'').replace(/^Status:\s*(Own|Pick|Hung|Extra Extra|Hold Down|XX)(?:\s*\([^\n]*\))?\s*\n?/im,'').trim();
 }
 function upgradeShift(s){
   const extras=s.extras||'', claims=s.claims||'';
@@ -983,7 +986,7 @@ function saveCurrentShiftAsFavorite(){
 }
 function saveCurrentAsFavoriteFromPrompt(){
   const name=prompt('Favorite name (for example: Job 194)');if(!name)return;
-  const assignment=prompt('Assignment / job number','')||'',location=prompt('Location','')||'',start=prompt('Normal start time (HH:MM)','')||'',end=prompt('Normal end time (HH:MM)','')||'',shiftType=prompt('Shift Type: Own, Pick, Hung, or Extra Extra','Own')||'';
+  const assignment=prompt('Assignment / job number','')||'',location=prompt('Location','')||'',start=prompt('Normal start time (HH:MM)','')||'',end=prompt('Normal end time (HH:MM)','')||'',shiftType=prompt('Shift Type: Own, Pick, Hung, Extra Extra, or Hold Down','Own')||'';
   savedJobs.push({id:crypto.randomUUID(),name:name.trim(),assignment,location,start,end,shiftType});persistSavedJobs();renderSavedJobs();renderDashboard();
 }
 function deleteFavorite(id){if(!confirm('Delete this saved job?'))return;savedJobs=savedJobs.filter(j=>j.id!==id);persistSavedJobs();renderSavedJobs();renderDashboard()}
