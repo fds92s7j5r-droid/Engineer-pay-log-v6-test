@@ -1295,7 +1295,7 @@ function formData(){
     timeSlipResolved:$('timeSlipFlag').checked?$('timeSlipResolved').value:'',
     holiday:$('shiftRuleMode').value==='trainee'?false:$('holidayFlag').checked,ssot:$('shiftRuleMode').value==='trainee'?false:$('ssotFlag').checked,rd:$('shiftRuleMode').value==='trainee'?false:$('rdFlag').checked,
     mpte:$('mpteFlag').checked,freightMeal:$('freightMealFlag').checked,fuelClaim:$('shiftRuleMode').value==='trainee'?false:$('fuelClaimFlag').checked,otCompletion:$('shiftRuleMode').value==='trainee'?false:$('otCompletionFlag').checked,otCompletionTime:$('shiftRuleMode').value==='trainee'?'':($('otCompletionFlag').checked?$('otCompletionTime').value:''),
-    unscheduledOT:$('shiftRuleMode').value==='trainee'?false:$('unscheduledOTFlag').checked,crewBookReleaseTime:$('shiftRuleMode').value==='trainee'?'':($('unscheduledOTFlag').checked?$('crewBookReleaseTime').value:''),
+    unscheduledOT:$('unscheduledOTFlag').checked,crewBookReleaseTime:$('unscheduledOTFlag').checked?$('crewBookReleaseTime').value:'',
     pone:$('poneFlag').checked,traineeCount:$('poneFlag').checked?Math.min(2,Math.max(1,Number($('traineeCount').value)||1)):0,
     noCo:$('noCoFlag').checked,cert:$('certFlag').checked,
     yardCertCount:$('certFlag').checked?Math.max(1,Math.round(Number($('yardCertCount').value)||1)):0,
@@ -1375,7 +1375,7 @@ function toggleUnscheduledOT(){
 function applyEntryMode(){
   const trainee=document.getElementById('shiftRuleMode').value==='trainee',classDay=trainee&&document.getElementById('classFlag').checked,holidayOff=trainee&&document.getElementById('specialShift').value==='Holiday - Not Worked',simpleDay=classDay||holidayOff;
   document.getElementById('shiftForm').classList.toggle('trainee-mode',trainee);
-  ['payFlagsField','crewFields','timeSlipField','unscheduledOTField'].forEach(id=>document.getElementById(id)?.classList.toggle('hidden-by-mode',trainee));
+  ['payFlagsField','crewFields','timeSlipField'].forEach(id=>document.getElementById(id)?.classList.toggle('hidden-by-mode',trainee));
   ['assignmentField','penaltiesField','notesField','traineeInstructorFields'].forEach(id=>document.getElementById(id)?.classList.toggle('hidden-by-mode',simpleDay));   document.getElementById('shiftTypeField')?.classList.toggle('hidden-by-mode',trainee);
   document.getElementById('specialShiftField')?.classList.toggle('hidden-by-mode',classDay);
   document.getElementById('locationField')?.classList.toggle('hidden-by-mode',holidayOff);
