@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#10233f" />
-  <!-- BRANCH + HOLD DOWN TEST BUILD -->
+  <!-- BRANCH + HOLD DOWN TEST BUILD - LABELS BELOW CHECKBOXES -->
 <title>Engineer Pay Log</title>
   <meta name="application-name" content="Pay Log" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -38,6 +38,7 @@
     .shift-type-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
 .shift-type-choice{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-width:0;min-height:104px;border:1px solid var(--line);padding:16px 8px;border-radius:14px;background:#fbfcfe;font-size:12px;font-weight:750;color:#445066;text-align:center;line-height:1.15;white-space:normal}
 .shift-type-choice input{width:30px;height:30px;margin:0;flex:0 0 auto}
+.shift-type-choice span{display:block;width:100%;text-align:center;margin:0;line-height:1.15}
 .shift-type-choice:nth-child(-n+3){grid-column:span 2}
 .shift-type-choice:nth-child(n+4){grid-column:span 3;min-height:98px}
 .terminal-select-wrap{position:relative}
@@ -335,7 +336,7 @@
         <div class="field"><label>End time</label><input id="end" type="time" required onchange="calculatePreview()"></div>
         <div class="field full"><label>Total Time on Duty</label><div class="readonly-info"><strong id="timeOnDutyDisplay">—</strong><div class="muted" style="margin-top:2px">Calculated automatically from start and end time</div></div></div>
         <div id="classToggleWrap" class="field full trainee-only"><label class="check"><input id="classFlag" type="checkbox" onchange="toggleClassDay();calculatePreview()"> Class</label></div>
-        <div id="shiftTypeField" class="field full"><label>Shift Type</label><input id="shiftType" type="hidden"><div class="shift-type-row"><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Own" onchange="chooseShiftType(this)">Own</label><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Pick" onchange="chooseShiftType(this)">Pick</label><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Hung" onchange="chooseShiftType(this)">Hung</label><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Extra Extra" onchange="chooseShiftType(this)">Extra Extra</label><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Hold Down" onchange="chooseShiftType(this)">Hold Down</label></div></div>
+        <div id="shiftTypeField" class="field full"><label>Shift Type</label><input id="shiftType" type="hidden"><div class="shift-type-row"><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Own" onchange="chooseShiftType(this)"><span>Own</span></label><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Pick" onchange="chooseShiftType(this)"><span>Pick</span></label><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Hung" onchange="chooseShiftType(this)"><span>Hung</span></label><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Extra Extra" onchange="chooseShiftType(this)"><span>Extra Extra</span></label><label class="shift-type-choice"><input type="checkbox" name="shiftTypeChoice" value="Hold Down" onchange="chooseShiftType(this)"><span>Hold Down</span></label></div></div>
         <div id="specialShiftField" class="field full">
           <label>Special Shift</label>
           <select id="specialShift" onchange="applyEntryMode();calculatePreview()">
