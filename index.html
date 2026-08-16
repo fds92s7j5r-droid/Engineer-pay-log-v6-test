@@ -580,6 +580,7 @@
       <input type="hidden" id="editId"><input type="hidden" id="shiftRuleMode" value="engineer">
       <div class="form-grid">
         <div class="field full"><label>Date</label><input id="date" type="date" required onchange="calculatePreview()"></div>
+        <div id="classToggleWrap" class="field full trainee-only"><label class="check"><input id="classFlag" type="checkbox" onchange="toggleClassDay();calculatePreview()"> Class</label></div>
         <div id="myJobEntryControl" class="field full my-job-entry">
           <button class="btn small" type="button" onclick="applyMyJob()">Use My Job</button>
           <span id="myJobEntryLabel" class="my-job-label"></span>
@@ -596,7 +597,7 @@
             <div class="readonly-info" style="margin-top:8px"><div class="muted">Unscheduled OT Claimed</div><strong id="unscheduledOTPreview">—</strong><div class="muted" style="margin-top:2px">Time beyond Crew Book release. Write this amount on your time slip.</div></div>
           </div>
         </div>
-        <div id="classToggleWrap" class="field full trainee-only"><label class="check"><input id="classFlag" type="checkbox" onchange="toggleClassDay();calculatePreview()"> Class</label></div>
+        
         <div id="shiftTypeField" class="field full"><label>Shift Type</label><input id="shiftType" type="hidden"><div class="shift-type-row">
 <div class="shift-type-choice" onclick="chooseShiftTypeTile(event,this)"><input type="checkbox" name="shiftTypeChoice" value="Own" onchange="chooseShiftType(this)"><span>Own</span></div>
 <div class="shift-type-choice" onclick="chooseShiftTypeTile(event,this)"><input type="checkbox" name="shiftTypeChoice" value="Pick" onchange="chooseShiftType(this)"><span>Pick</span></div>
@@ -1379,7 +1380,9 @@ function applyEntryMode(){
   ['assignmentField','penaltiesField','notesField','traineeInstructorFields'].forEach(id=>document.getElementById(id)?.classList.toggle('hidden-by-mode',simpleDay));   document.getElementById('shiftTypeField')?.classList.toggle('hidden-by-mode',trainee);
   document.getElementById('specialShiftField')?.classList.toggle('hidden-by-mode',classDay);
   document.getElementById('locationField')?.classList.toggle('hidden-by-mode',holidayOff);
+  document.getElementById('unscheduledOTField')?.classList.toggle('hidden-by-mode',simpleDay);
   if(trainee&&!simpleDay){
+    document.getElementById('unscheduledOTField')?.classList.remove('hidden-by-mode');
     document.getElementById('specialShiftField')?.classList.remove('hidden-by-mode');
     document.getElementById('penaltiesField')?.classList.remove('hidden-by-mode');
     document.getElementById('notesField')?.classList.remove('hidden-by-mode');
