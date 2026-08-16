@@ -60,6 +60,21 @@
     .terminal-select-wrap.has-terminal-color #locationSelect{padding-top:15px;padding-bottom:9px;font-weight:700}
 
 
+
+    .my-job-card{border:1px solid #cfd8e6;background:linear-gradient(180deg,#f8fbff,#ffffff)}
+    .my-job-dash{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+    .my-job-dash-title{font-size:17px;font-weight:800;color:var(--brand);margin-bottom:3px}
+    .my-job-dash-sub{font-size:12px;color:var(--muted);line-height:1.45}
+    .my-job-entry{display:none;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 4px}
+    .my-job-entry.show{display:flex}
+    .my-job-entry .my-job-label{font-size:12px;font-weight:800;color:#445066}
+    .my-job-settings-fields{display:none;margin-top:12px}
+    .my-job-settings-fields.show{display:block}
+    .my-job-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .my-job-portion{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fbfcfe}
+    .my-job-portion h3{font-size:13px;margin:0 0 10px;color:var(--brand)}
+    @media(max-width:600px){.my-job-grid{grid-template-columns:1fr}}
+
     .conditional-panel{display:none;margin-top:10px;padding:12px;border:1px solid #cfd8e6;border-radius:14px;background:#f8fafc}
     .conditional-panel.show{display:block}
     .duration-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -133,6 +148,15 @@
       <div class="card span4 stat"><div class="label">This month</div><div class="value" id="monthTotal">$0.00</div><div class="sub" id="monthCount">0 paid shifts</div></div>
       <div class="card span4 stat"><div class="label">2026 total</div><div class="value" id="yearTotal">$0.00</div><div class="sub" id="yearHours">0:00 actual hours</div></div>
       <div class="card span4 stat"><div class="label">Average shift</div><div class="value" id="avgShift">$0.00</div><div class="sub">Calculated earnings</div></div>
+      <div id="myJobDashboardCard" class="card span12 my-job-card">
+        <div class="my-job-dash">
+          <div>
+            <div id="myJobDashTitle" class="my-job-dash-title">Own a regular job?</div>
+            <div id="myJobDashSub" class="my-job-dash-sub">Click here to add your job details and make daily entry faster.</div>
+          </div>
+          <button id="myJobDashButton" class="btn small" onclick="openMyJobSettings()">Set up My Job</button>
+        </div>
+      </div>
       <div class="card span8">
         <div class="section-title"><h2>Recent shifts</h2><button class="btn small" onclick="showView('history')">View all</button></div>
         <div id="recentShifts" class="history"></div>
@@ -211,6 +235,29 @@
         <div style="margin-top:14px;padding-top:14px;border-top:1px solid #d8e0e8">
           <label class="check"><input id="traineeModeToggle" type="checkbox" onchange="requestTraineeModeChange(this.checked)"> Engineer Trainee Mode</label>
           <div id="traineeModeStatus" class="mode-banner" style="display:none">Engineer Trainee Mode is active. New shifts use trainee rules.</div>
+        </div>
+      </div>
+      <div id="myJobSettingsCard" class="card span6 my-job-card">
+        <div class="section-title"><h2>My Job</h2></div>
+        <label class="check"><input id="myJobEnabled" type="checkbox" onchange="requestMyJobToggle(this.checked)"> I own a regular job</label>
+        <div id="myJobSettingsFields" class="my-job-settings-fields">
+          <div class="field full"><label>Job Number</label><input id="myJobNumber" placeholder="e.g. 28"></div>
+          <div class="field full" style="margin-top:10px"><label>Location</label><select id="myJobLocationSelect" onchange="myJobLocationChanged()"></select></div>
+          <div id="myJobOtherLocationWrap" class="field full" style="display:none;margin-top:8px"><label>Other Location</label><input id="myJobOtherLocation" placeholder="Enter terminal / location"></div>
+          <div class="my-job-grid" style="margin-top:12px">
+            <div class="my-job-portion">
+              <h3>Mon. to Fri.</h3>
+              <div class="field full"><label>Start Time</label><input id="myJobWeekdayStart" type="time"></div>
+              <div class="field full" style="margin-top:8px"><label>Release Time</label><input id="myJobWeekdayEnd" type="time"></div>
+            </div>
+            <div class="my-job-portion">
+              <h3>Sat. - Sun. <span class="muted" style="font-weight:500">(optional)</span></h3>
+              <div class="field full"><label>Start Time</label><input id="myJobWeekendStart" type="time"></div>
+              <div class="field full" style="margin-top:8px"><label>Release Time</label><input id="myJobWeekendEnd" type="time"></div>
+            </div>
+          </div>
+          <p class="notice" style="margin-top:12px">Using My Job fills only the job number, location, scheduled times, and Shift Type = Own. You can freely edit the daily shift afterward without changing this saved template.</p>
+          <button class="btn primary" type="button" onclick="saveMyJob()">Save My Job</button>
         </div>
       </div>
       <div class="card span6">
@@ -334,6 +381,10 @@
       <input type="hidden" id="editId"><input type="hidden" id="shiftRuleMode" value="engineer">
       <div class="form-grid">
         <div class="field full"><label>Date</label><input id="date" type="date" required onchange="calculatePreview()"></div>
+        <div id="myJobEntryControl" class="field full my-job-entry">
+          <button class="btn small" type="button" onclick="applyMyJob()">Use My Job</button>
+          <span id="myJobEntryLabel" class="my-job-label"></span>
+        </div>
         <div id="assignmentField" class="field full"><label>Assignment</label><input id="assignment" placeholder="e.g. 194"></div>
         <div id="locationField" class="field full"><label>Location</label><div id="terminalSelectWrap" class="terminal-select-wrap"><span id="terminalFieldDot" class="terminal-field-dot" aria-hidden="true"></span><select id="locationSelect" onchange="terminalSelectionChanged()"></select></div><div id="otherLocationWrap" style="display:none;margin-top:8px"><input id="locationOther" placeholder="Enter terminal / location" oninput="syncLocationValue()"></div><input id="location" type="hidden"></div>
         <div class="field"><label>Start time</label><input id="start" type="time" required onchange="calculatePreview()"></div>
@@ -492,6 +543,7 @@ const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
 const SAVED_JOBS_KEY='engineerPayLogSavedJobs';
 const LAST_SEEN_VERSION_KEY='engineerPayLogLastSeenVersion';
 const TRAINEE_MODE_KEY='engineerPayLogTraineeMode';
+const MY_JOB_KEY='engineerPayLogMyJob';
 let savedJobs=JSON.parse(localStorage.getItem(SAVED_JOBS_KEY)||'[]');
 let pendingRestoreData=null;
 let paycheckWeekOffset=0;
@@ -730,30 +782,30 @@ function calculate(s,depth=0){
 }
 const TERMINALS=[
   {name:'Babylon',aliases:['BAB'],branch:'Babylon',color:'#00985F'},
-  {name:'Brooklyn',aliases:['ATL'],branch:'City Terminal Zone',color:'#4D5357'},
-  {name:'Far Rockaway',aliases:['FRY'],branch:'Far Rockaway',color:'#6E3219'},
-  {name:'Grand Central Madison',aliases:['GCM','GCT'],branch:'City Terminal Zone',color:'#4D5357'},
+  {name:'Brooklyn',aliases:['ATL','Atlantic Terminal'],branch:'City Terminal Zone',color:'#4D5357'},
+  {name:'Far Rockaway',aliases:['FRY','Far Rock'],branch:'Far Rockaway',color:'#6E3219'},
+  {name:'Grand Central Madison',aliases:['GCM','GCT','Grand Central'],branch:'City Terminal Zone',color:'#4D5357'},
   {name:'Hempstead',aliases:['HEM'],branch:'Hempstead',color:'#CE8E00'},
   {name:'Hicksville',aliases:['HVL'],branch:'Port Jefferson',color:'#006EC7'},
   {name:'Hillside',aliases:['HSF'],branch:'City Terminal Zone',color:'#4D5357'},
-  {name:'Holban Yard',aliases:['HOL'],branch:'City Terminal Zone',color:'#4D5357'},
+  {name:'Holban Yard',aliases:['HOL','Holban'],branch:'City Terminal Zone',color:'#4D5357'},
   {name:'Huntington',aliases:['HUN'],branch:'Port Jefferson',color:'#006EC7'},
   {name:'Jamaica',aliases:['JAM'],branch:'City Terminal Zone',color:'#4D5357'},
   {name:'Jamaica Storage Yard',aliases:['JSY'],branch:'City Terminal Zone',color:'#4D5357'},
   {name:'Long Beach',aliases:['LBH'],branch:'Long Beach',color:'#FF6319'},
   {name:'Long Island City',aliases:['LIC'],branch:'City Terminal Zone',color:'#4D5357'},
-  {name:'Midday Yard',aliases:['MDY'],branch:'City Terminal Zone',color:'#4D5357'},
+  {name:'Midday Yard',aliases:['MDY','Midday'],branch:'City Terminal Zone',color:'#4D5357'},
   {name:'Morris Park',aliases:['MRS'],branch:'City Terminal Zone',color:'#4D5357'},
   {name:'Oyster Bay',aliases:['OBY'],branch:'Oyster Bay',color:'#00AF3F'},
   {name:'Patchogue',aliases:['PAT'],branch:'Montauk',color:'#00B2A9'},
-  {name:'Penn Station',aliases:['NYK'],branch:'City Terminal Zone',color:'#4D5357'},
-  {name:'Port Jefferson',aliases:['PJN'],branch:'Port Jefferson',color:'#006EC7'},
+  {name:'Penn Station',aliases:['NYK','Penn','New York'],branch:'City Terminal Zone',color:'#4D5357'},
+  {name:'Port Jefferson',aliases:['PJN','PJ','Port Jeff'],branch:'Port Jefferson',color:'#006EC7'},
   {name:'Port Washington',aliases:['PWS'],branch:'Port Washington',color:'#C60C30'},
   {name:'Richmond Hill',aliases:['RHL'],branch:'City Terminal Zone',color:'#4D5357'},
-  {name:'Ronkonkoma',aliases:['RON'],branch:'Ronkonkoma',color:'#A626AA'},
+  {name:'Ronkonkoma',aliases:['RON','KO'],branch:'Ronkonkoma',color:'#A626AA'},
   {name:'Speonk',aliases:['SPK'],branch:'Montauk',color:'#00B2A9'},
   {name:'West Hempstead',aliases:['WHD'],branch:'West Hempstead',color:'#00A1DE'},
-  {name:'West Side Yard',aliases:['WSY'],branch:'City Terminal Zone',color:'#4D5357'}
+  {name:'West Side Yard',aliases:['WSY','West Side'],branch:'City Terminal Zone',color:'#4D5357'}
 ];
 function terminalForValue(value){const v=(value||'').trim().toLowerCase();return TERMINALS.find(t=>t.name.toLowerCase()===v||t.aliases.some(a=>a.toLowerCase()===v))||null}
 function terminalDotHTML(value){const t=terminalForValue(value);return t?`<span class="terminal-dot" style="background:${t.color}"></span>`:''}
@@ -762,6 +814,90 @@ function initTerminalSelect(){const el=document.getElementById('locationSelect')
 function setLocationUI(value){initTerminalSelect();const sel=document.getElementById('locationSelect'),other=document.getElementById('locationOther'),hidden=document.getElementById('location');const t=terminalForValue(value);if(t){sel.value=t.name;other.value='';hidden.value=t.name}else if(value){sel.value='__other__';other.value=value;hidden.value=value}else{sel.value='';other.value='';hidden.value=''}terminalSelectionChanged(false)}
 function terminalSelectionChanged(clearOther=true){const sel=document.getElementById('locationSelect'),otherWrap=document.getElementById('otherLocationWrap'),other=document.getElementById('locationOther'),hidden=document.getElementById('location'),wrap=document.getElementById('terminalSelectWrap'),dot=document.getElementById('terminalFieldDot');if(!sel)return;const isOther=sel.value==='__other__';otherWrap.style.display=isOther?'block':'none';if(isOther){if(clearOther)other.value='';hidden.value=other.value.trim();if(wrap){wrap.style.removeProperty('--terminal-color');wrap.classList.remove('has-terminal-color')}if(dot)dot.style.display='none'}else{hidden.value=sel.value;const t=terminalForValue(sel.value);if(wrap){if(t){wrap.style.setProperty('--terminal-color',t.color);wrap.classList.add('has-terminal-color')}else{wrap.style.removeProperty('--terminal-color');wrap.classList.remove('has-terminal-color')}}if(dot){dot.style.background=t?t.color:'transparent';dot.style.display=t?'block':'none'}}calculatePreview()}
 function syncLocationValue(){document.getElementById('location').value=document.getElementById('locationOther').value.trim()}
+function getMyJob(){
+  try{return JSON.parse(localStorage.getItem(MY_JOB_KEY)||'null')}catch(e){return null}
+}
+function myJobConfigured(){
+  const j=getMyJob();return !!(j&&j.enabled&&j.assignment&&j.location&&j.weekdayStart&&j.weekdayEnd)
+}
+function initMyJobLocationSelect(){
+  const el=document.getElementById('myJobLocationSelect');if(!el||el.options.length)return;
+  el.innerHTML='<option value="">Select terminal</option>'+TERMINALS.map(t=>`<option value="${t.name}">${t.name}</option>`).join('')+'<option value="__other__">Other</option>';
+}
+function myJobLocationChanged(){
+  const sel=document.getElementById('myJobLocationSelect'),wrap=document.getElementById('myJobOtherLocationWrap');
+  if(wrap)wrap.style.display=sel&&sel.value==='__other__'?'block':'none';
+}
+function setMyJobLocationUI(value){
+  initMyJobLocationSelect();
+  const sel=document.getElementById('myJobLocationSelect'),other=document.getElementById('myJobOtherLocation');if(!sel||!other)return;
+  const t=terminalForValue(value);
+  if(t){sel.value=t.name;other.value=''}
+  else if(value){sel.value='__other__';other.value=value}
+  else{sel.value='';other.value=''}
+  myJobLocationChanged();
+}
+function requestMyJobToggle(enable){
+  const box=document.getElementById('myJobEnabled');
+  if(enable){
+    const msg='You are about to use the My Job feature.\n\nThis feature is intended for Engineers who own a regular job. If you get trimmed or change jobs at any point, simply return to Settings and update My Job for the new job you own.\n\nExtra List and Subject To Bid Engineers do not need to use this feature.\n\nContinue?';
+    if(!confirm(msg)){if(box)box.checked=false;return}
+  }
+  const fields=document.getElementById('myJobSettingsFields');if(fields)fields.classList.toggle('show',enable);
+  if(!enable){
+    const j=getMyJob()||{};j.enabled=false;localStorage.setItem(MY_JOB_KEY,JSON.stringify(j));renderMyJobUI();
+  }
+}
+function saveMyJob(){
+  const assignment=(document.getElementById('myJobNumber')?.value||'').trim();
+  const sel=document.getElementById('myJobLocationSelect');
+  const location=sel?.value==='__other__'?(document.getElementById('myJobOtherLocation')?.value||'').trim():(sel?.value||'');
+  const weekdayStart=document.getElementById('myJobWeekdayStart')?.value||'';
+  const weekdayEnd=document.getElementById('myJobWeekdayEnd')?.value||'';
+  const weekendStart=document.getElementById('myJobWeekendStart')?.value||'';
+  const weekendEnd=document.getElementById('myJobWeekendEnd')?.value||'';
+  if(!assignment||!location||!weekdayStart||!weekdayEnd){alert('Please enter the job number, location, and Mon.–Fri. start and release times.');return}
+  if((weekendStart&&!weekendEnd)||(!weekendStart&&weekendEnd)){alert('Please enter both weekend times, or leave both blank.');return}
+  localStorage.setItem(MY_JOB_KEY,JSON.stringify({enabled:true,assignment,location,weekdayStart,weekdayEnd,weekendStart,weekendEnd}));
+  const box=document.getElementById('myJobEnabled');if(box)box.checked=true;
+  renderMyJobUI();alert('My Job saved.');
+}
+function loadMyJobSettings(){
+  initMyJobLocationSelect();
+  const j=getMyJob()||{};
+  const box=document.getElementById('myJobEnabled'),fields=document.getElementById('myJobSettingsFields');
+  if(box)box.checked=!!j.enabled;if(fields)fields.classList.toggle('show',!!j.enabled);
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||''};
+  set('myJobNumber',j.assignment);setMyJobLocationUI(j.location||'');set('myJobWeekdayStart',j.weekdayStart);set('myJobWeekdayEnd',j.weekdayEnd);set('myJobWeekendStart',j.weekendStart);set('myJobWeekendEnd',j.weekendEnd);
+}
+function renderMyJobUI(){
+  const j=getMyJob(),configured=myJobConfigured();
+  const title=document.getElementById('myJobDashTitle'),sub=document.getElementById('myJobDashSub'),btn=document.getElementById('myJobDashButton');
+  if(title)title.textContent=configured?`My Job: ${j.assignment}`:'Own a regular job?';
+  if(sub)sub.textContent=configured?`${canonicalLocation(j.location)} • ready for weekday/weekend quick entry`:'Click here to add your job details and make daily entry faster.';
+  if(btn)btn.textContent=configured?'Edit My Job':'Set up My Job';
+  const control=document.getElementById('myJobEntryControl'),label=document.getElementById('myJobEntryLabel');
+  if(control)control.classList.toggle('show',configured&&!isTraineeMode());
+  if(label)label.textContent=configured?`My Job: ${j.assignment}`:'';
+}
+function openMyJobSettings(){
+  showView('settings');
+  setTimeout(()=>document.getElementById('myJobSettingsCard')?.scrollIntoView({behavior:'smooth',block:'start'}),50);
+}
+function applyMyJob(){
+  const j=getMyJob();if(!j||!j.enabled)return;
+  const date=document.getElementById('date')?.value;if(!date){alert('Select a date first.');return}
+  const d=new Date(date+'T12:00:00'),weekend=d.getDay()===0||d.getDay()===6;
+  const start=weekend?j.weekendStart:j.weekdayStart,end=weekend?j.weekendEnd:j.weekdayEnd;
+  if(weekend&&(!start||!end)){alert('No Sat.–Sun. portion is configured for My Job. You can add weekend times in Settings.');return}
+  document.getElementById('assignment').value=j.assignment||'';
+  setLocationUI(j.location||'');
+  document.getElementById('start').value=start||'';
+  document.getElementById('end').value=end||'';
+  setShiftTypeUI('Own');
+  calculatePreview();
+}
+
 function chooseShiftTypeTile(event,tile){
   if(event.target && event.target.matches('input[type="checkbox"]'))return;
   const box=tile.querySelector('input[type="checkbox"]');
@@ -844,7 +980,7 @@ function requestTraineeModeChange(enable){
   const box=document.getElementById('traineeModeToggle');
   const msg=enable?'Enable Engineer Trainee Mode?\n\nEngineer Pay Log will switch new entries to trainee rules. Existing shift history will not be changed.':'Leave Engineer Trainee Mode?\n\nOnly turn off Trainee Mode after graduating from Engineer training. New shifts will use standard Engineer rules. Existing trainee shifts will not be changed.';
   if(!confirm(msg)){if(box)box.checked=!enable;return}
-  localStorage.setItem(TRAINEE_MODE_KEY,enable?'on':'off');updateTraineeModeUI();
+  localStorage.setItem(TRAINEE_MODE_KEY,enable?'on':'off');updateTraineeModeUI();renderMyJobUI();
 }
 function updateTraineeModeUI(){
   const on=isTraineeMode(),box=document.getElementById('traineeModeToggle'),status=document.getElementById('traineeModeStatus');
@@ -946,7 +1082,7 @@ function newShift(){
   $('traineeCount').value=1;$('yardCertCount').value=1;
   $('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;
   applyEntryMode();toggleSpecialShift();toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleRunaround();toggleA2();
-  $('shiftModal').classList.add('open');calculatePreview();
+  renderMyJobUI();$('shiftModal').classList.add('open');calculatePreview();
 }
 function editShift(id){
   const $=id=>document.getElementById(id);
@@ -1129,8 +1265,8 @@ function renderHistory(){
   }
   historyList.innerHTML=html
 }
-function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION}
-function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='settings')updateBackupUI()}
+function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='settings'){updateBackupUI();loadMyJobSettings()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
   return shifts.filter(s=>[
