@@ -36,9 +36,10 @@
     .form-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}.field{grid-column:span 6}.field.full{grid-column:span 12}.field.third{grid-column:span 4}.field label{display:block;font-size:12px;font-weight:750;color:#445066;margin:0 0 6px}.field input,.field textarea,.field select{width:100%;border:1px solid #cfd8e6;border-radius:12px;background:#fff;color:var(--ink);padding:12px;outline:none}.field input:focus,.field textarea:focus,.field select:focus{border-color:#7ca6d2;box-shadow:0 0 0 3px rgba(31,93,155,.10)} textarea{min-height:78px;resize:vertical}
     .checks{display:flex;gap:8px;flex-wrap:wrap}.check{display:flex;align-items:center;gap:8px;border:1px solid var(--line);padding:9px 11px;border-radius:12px;background:#fbfcfe}.check input{width:auto;margin:0}
     .shift-type-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
-.shift-type-choice{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-width:0;min-height:104px;border:1px solid var(--line);padding:16px 8px;border-radius:14px;background:#fbfcfe;font-size:12px;font-weight:750;color:#445066;text-align:center;line-height:1.15;white-space:normal}
+.field label.shift-type-choice{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;min-width:0;min-height:104px;border:1px solid var(--line);padding:16px 8px;border-radius:14px;background:#fbfcfe;font-size:12px;font-weight:750;color:#445066;text-align:center;line-height:1.15;white-space:normal}
 .shift-type-choice input{width:30px;height:30px;margin:0;flex:0 0 auto}
 .shift-type-choice span{display:block;width:100%;text-align:center;margin:0;line-height:1.15}
+.field label.shift-type-choice{margin:0}
 .shift-type-choice:nth-child(-n+3){grid-column:span 2}
 .shift-type-choice:nth-child(n+4){grid-column:span 3;min-height:98px}
 .terminal-select-wrap{position:relative}
