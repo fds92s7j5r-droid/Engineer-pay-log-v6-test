@@ -4,8 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <meta name="theme-color" content="#10233f" />
-  <!-- BRANCH TEST A2: DOT ONLY -->
-<title>Engineer Pay Log</title>
+  <title>Engineer Pay Log</title>
   <meta name="application-name" content="Pay Log" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -43,9 +42,11 @@
 @media(max-width:430px){.shift-type-row{gap:6px}.shift-type-choice{font-size:10.8px;padding:8px 2px;min-height:70px}}
 
 
-    /* TEST A — branch-color dot inside the Location field */
-    .terminal-field-dot{display:none;position:absolute;left:14px;top:50%;transform:translateY(-50%);width:12px;height:12px;border-radius:50%;border:1px solid rgba(0,0,0,.10);z-index:2;pointer-events:none}
-    .terminal-select-wrap.has-terminal-color #locationSelect{padding-left:36px}
+    /* TEST B — LIRR station-sign-inspired branch stripe */
+    .terminal-field-dot{display:none!important}
+    .terminal-select-wrap{border-radius:12px;overflow:hidden}
+    .terminal-select-wrap.has-terminal-color::before{content:"";position:absolute;left:1px;right:1px;top:1px;height:6px;background:var(--terminal-color);z-index:2;pointer-events:none;border-radius:11px 11px 0 0}
+    .terminal-select-wrap.has-terminal-color #locationSelect{padding-top:15px;padding-bottom:9px;font-weight:700}
 
 
     .conditional-panel{display:none;margin-top:10px;padding:12px;border:1px solid #cfd8e6;border-radius:14px;background:#f8fafc}
@@ -106,32 +107,7 @@
     .restore-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.restore-preview-item{padding:11px;border-radius:12px;background:#f5f8fb;border:1px solid #dce5ee}.restore-preview-item strong{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
     .version-line{font-size:12px;color:var(--muted);text-align:center;margin-top:14px}.whats-new-list{margin:8px 0 0;padding-left:20px;line-height:1.55}
     @media(max-width:780px){.modal-card{width:calc(100% - 16px);margin:8px 8px calc(8px + env(safe-area-inset-bottom));max-height:84vh;border-radius:20px}.modal-head{padding:16px 16px 12px}.modal-body{padding:14px 16px 16px}.modal-foot{padding:10px 16px calc(10px + env(safe-area-inset-bottom))}.span8,.span6,.span4{grid-column:span 12}.field,.field.third{grid-column:span 12}.time-slip-grid{grid-template-columns:1fr}.feature-grid,.timeslip-summary,.restore-preview-grid,.crew-grid{grid-template-columns:1fr}.shift{grid-template-columns:78px 1fr auto}.app{padding:12px 12px 105px}.card{padding:15px}.brand h1{font-size:21px}.nav{bottom:8px;width:calc(100% - 16px);justify-content:space-around}.nav button{padding:10px 9px;font-size:12px}}
-  
-/* DOT-ONLY comparison build: deliberately suppress any station-sign stripe */
-.terminal-select-wrap::before,
-.terminal-select-wrap.has-terminal-color::before { content:none !important; display:none !important; }
-.terminal-select-wrap { overflow:visible !important; }
-.terminal-select-wrap.has-terminal-color #locationSelect {
-  padding-left:38px !important;
-  padding-top:12px !important;
-  padding-bottom:12px !important;
-  font-weight:400 !important;
-}
-.terminal-field-dot {
-  display:none;
-  position:absolute;
-  left:15px;
-  top:50%;
-  transform:translateY(-50%);
-  width:13px;
-  height:13px;
-  border-radius:50%;
-  border:1px solid rgba(0,0,0,.10);
-  z-index:3;
-  pointer-events:none;
-}
-
-</style>
+  </style>
 </head>
 <body>
 <div class="app">
