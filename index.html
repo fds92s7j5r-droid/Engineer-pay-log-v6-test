@@ -801,6 +801,7 @@
 
           <div id="myJobRegularFields" style="margin-top:12px">
             <div class="field full"><label>Job Number</label><input id="myJobNumber" placeholder="e.g. 9"></div>
+            <button id="crewBookFillRegularBtn" class="btn small" type="button" style="display:none;margin-bottom:12px" onclick="fillRegularMyJobFromCrewBook()">Fill from Crew Book</button>
             <div class="field full"><label>Home Terminal</label><select id="myJobRegularLocation" onchange="myJobRegularHomeLocationChanged()"></select></div>
             <div id="myJobRegularOtherWrap" class="field full" style="display:none"><label>Other Home Terminal</label><input id="myJobRegularOther" placeholder="Enter terminal / location"></div>
             <p class="notice" style="margin-top:10px">Set one home terminal for the job, then enter the scheduled times for each workday. Mark scheduled days off as Relief Day.</p>
@@ -878,6 +879,7 @@
           </div>
           <div id="myJobReliefFields" class="relief-days">
             <div class="field full"><label>Relief Crew Number</label><input id="myJobReliefCrewNumber" placeholder="e.g. 406"></div>
+            <button id="crewBookFillReliefBtn" class="btn small" type="button" style="display:none;margin-bottom:12px" onclick="fillReliefMyJobFromCrewBook()">Fill from Crew Book</button>
             <p class="notice" style="margin-top:10px">Set the assignment, location, and times for each day you work. Mark scheduled days off as Relief Day.</p>
 
           <div id="myJobReliefMondayCard" class="relief-day">
@@ -994,6 +996,14 @@
         <p class="notice">Engineer Pay Log starts in Light Mode. Dark Mode can be enabled here at any time. Terminal station-sign stripes and branch colors are preserved exactly.</p>
       </div>
 
+      <div class="card span6" id="crewBookAssistSettingsCard">
+        <div class="section-title"><h2>Crew Book Assistance <span style="font-size:.72em;font-weight:700;opacity:.7">BETA</span></h2></div>
+        <label class="check"><input id="crewBookAssistToggle" type="checkbox" onchange="requestCrewBookAssistToggle(this.checked)"> Enable Crew Book Assistance</label>
+        <div id="crewBookAssistStatus" class="rate-note" style="display:none;margin-top:12px"></div>
+        <p class="notice" style="margin-top:12px"><strong>Current test dataset:</strong> General Order 201, Revision 6, effective July 6, 2026. This first beta includes a small set of assignments we have manually verified while testing the interpretation logic.</p>
+        <p class="notice"><strong>Important:</strong> Crew Book information in Engineer Pay Log is manually maintained by a friendly neighborhood engineer and is provided for convenience and reference only. Always independently verify your assignment using the official Crew Book in Comply365 or on the official Service Planning website. This data is manually updated as revisions are published and does not account for track work programs, special event programs, temporary service changes, or day-to-day instructions. Any auto-filled entry remains fully editable. You are responsible for verifying and updating the information that pertains to your assignment.</p>
+      </div>
+
       <div class="card span6" id="netEstimatorSettingsCard">
         <div class="section-title"><h2>Net Pay Estimator</h2></div>
         <label class="check"><input id="netEstimatorToggle" type="checkbox" onchange="requestNetEstimatorToggle(this.checked)"> Show Estimated Net Pay</label>
@@ -1029,7 +1039,7 @@
       </div>
       <div class="card span6">
         <div class="section-title"><h2>About</h2></div>
-        <div class="rate-note"><strong>Engineer Pay Log</strong><br>Version <span id="settingsAppVersion">7.2.7</span><br><br><strong>Current release:</strong> Dark Mode, Estimated Net Pay, List/Calendar History views, vacation gross setup in Settings, and a refreshed app icon.</div>
+        <div class="rate-note"><strong>Engineer Pay Log</strong><br>Version <span id="settingsAppVersion">7.2.8</span><br><br><strong>Current release:</strong> Crew Book Assistance beta, Dark Mode, Estimated Net Pay, List/Calendar History views, and My Job enhancements.</div>
         <button class="btn small" style="margin-top:12px" onclick="openWhatsNew(true)">What's New</button>
       </div>
     </div>
@@ -1314,7 +1324,7 @@
 const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.719,2.578,0.03],[2.292,3.437,0.04],[2.864,4.296,0.05],[3.437,5.156,0.059],[4.01,6.015,0.069],[4.583,6.874,0.079],[5.156,7.733,0.089],[5.728,8.592,0.099],[6.301,9.451,0.109],[6.874,10.311,0.118],[7.447,11.17,0.128],[8.019,12.029,0.138],[8.592,12.888,0.148],[9.165,13.747,0.158],[9.738,14.606,0.167],[10.311,15.466,0.177],[10.883,16.325,0.187],[11.456,17.184,0.197],[12.029,18.043,0.207],[12.602,18.902,0.217],[13.174,19.761,0.226],[13.747,20.621,0.236],[14.32,21.48,0.246],[14.893,22.339,0.256],[15.466,23.198,0.266],[16.038,24.057,0.275],[16.611,24.916,0.285],[17.184,25.776,0.295],[17.757,26.635,0.305],[18.329,27.494,0.315],[18.902,28.353,0.325],[19.475,29.212,0.334],[20.048,30.071,0.344],[20.621,30.931,0.354],[21.193,31.79,0.364],[21.766,32.649,0.374],[22.339,33.508,0.383],[22.912,34.367,0.393],[23.485,35.227,0.403],[24.057,36.086,0.413],[24.63,36.945,0.423],[25.203,37.804,0.433],[25.776,38.663,0.442],[26.348,39.522,0.452],[26.921,40.382,0.462],[27.494,41.241,0.472],[28.067,42.1,0.482],[28.64,42.959,0.491],[29.212,43.818,0.501],[29.785,44.677,0.511],[30.358,45.537,0.521],[30.931,46.396,0.531],[31.503,47.255,0.541],[32.076,48.114,0.55],[32.649,48.973,0.56],[33.222,49.832,0.57],[33.795,50.692,0.58],[34.367,51.551,0.59]],"hour":[null,[34.367,51.55,0.589],[68.734,103.1,1.178],[103.1,154.651,1.768],[137.467,206.201,2.357],[171.834,257.751,2.946],[206.201,309.301,3.535],[240.568,360.852,4.124],[274.935,412.402,4.714]]},"80":{"minute":[null,[0.764,1.146,0.014],[1.528,2.292,0.027],[2.292,3.437,0.04],[3.055,4.583,0.053],[3.819,5.728,0.066],[4.583,6.874,0.079],[5.346,8.019,0.092],[6.11,9.165,0.105],[6.874,10.311,0.118],[7.638,11.456,0.131],[8.401,12.602,0.145],[9.165,13.747,0.158],[9.929,14.893,0.171],[10.692,16.038,0.184],[11.456,17.184,0.197],[12.22,18.329,0.21],[12.984,19.475,0.223],[13.747,20.621,0.236],[14.511,21.766,0.249],[15.275,22.912,0.262],[16.038,24.057,0.275],[16.802,25.203,0.289],[17.566,26.348,0.302],[18.329,27.494,0.315],[19.093,28.64,0.328],[19.857,29.785,0.341],[20.621,30.931,0.354],[21.384,32.076,0.367],[22.148,33.222,0.38],[22.912,34.367,0.393],[23.675,35.513,0.406],[24.439,36.658,0.419],[25.203,37.804,0.433],[25.967,38.95,0.446],[26.73,40.095,0.459],[27.494,41.241,0.472],[28.258,42.386,0.485],[29.021,43.532,0.498],[29.785,44.677,0.511],[30.549,45.823,0.524],[31.313,46.969,0.537],[32.076,48.114,0.55],[32.84,49.26,0.564],[33.604,50.405,0.577],[34.367,51.551,0.59],[35.131,52.696,0.603],[35.895,53.842,0.616],[36.658,54.987,0.629],[37.422,56.133,0.642],[38.186,57.279,0.655],[38.95,58.424,0.668],[39.713,59.57,0.681],[40.477,60.715,0.694],[41.241,61.861,0.708],[42.004,63.006,0.721],[42.768,64.152,0.734],[43.532,65.297,0.747],[44.296,66.443,0.76],[45.059,67.589,0.773],[45.823,68.734,0.786]],"hour":[null,[45.822,68.734,0.786],[91.645,137.467,1.571],[137.467,206.201,2.357],[183.29,274.935,3.142],[229.112,343.668,3.928],[274.935,412.402,4.714],[320.757,481.136,5.499],[366.579,549.869,6.285]]},"90":{"minute":[null,[0.86,1.289,0.015],[1.719,2.578,0.03],[2.578,3.867,0.045],[3.437,5.156,0.059],[4.296,6.444,0.074],[5.156,7.733,0.089],[6.015,9.022,0.104],[6.874,10.311,0.118],[7.733,11.599,0.133],[8.592,12.888,0.148],[9.451,14.177,0.163],[10.311,15.466,0.177],[11.17,16.754,0.192],[12.029,18.043,0.207],[12.888,19.332,0.221],[13.747,20.621,0.236],[14.606,21.909,0.251],[15.466,23.198,0.266],[16.325,24.487,0.28],[17.184,25.776,0.295],[18.043,27.064,0.31],[18.902,28.353,0.325],[19.761,29.642,0.339],[20.621,30.931,0.354],[21.48,32.219,0.369],[22.339,33.508,0.383],[23.198,34.797,0.398],[24.057,36.086,0.413],[24.916,37.374,0.428],[25.776,38.663,0.442],[26.635,39.952,0.457],[27.494,41.241,0.472],[28.353,42.529,0.487],[29.212,43.818,0.501],[30.071,45.107,0.516],[30.931,46.396,0.531],[31.79,47.684,0.546],[32.649,48.973,0.56],[33.508,50.262,0.575],[34.367,51.551,0.59],[35.227,52.84,0.604],[36.086,54.128,0.619],[36.945,55.417,0.634],[37.804,56.706,0.649],[38.663,57.995,0.663],[39.522,59.283,0.678],[40.382,60.572,0.693],[41.241,61.861,0.708],[42.1,63.15,0.722],[42.959,64.438,0.737],[43.818,65.727,0.752],[44.677,67.016,0.766],[45.537,68.305,0.781],[46.396,69.593,0.796],[47.255,70.882,0.811],[48.114,72.171,0.825],[48.973,73.46,0.84],[49.832,74.748,0.855],[50.692,76.037,0.87],[51.551,77.326,0.884]],"hour":[null,[51.55,77.325,0.884],[103.1,154.651,1.768],[154.651,231.976,2.651],[206.201,309.301,3.535],[257.751,386.627,4.419],[309.301,463.952,5.303],[360.852,541.278,6.187],[412.402,618.603,7.07]]},"100":{"minute":[null,[0.955,1.432,0.017],[1.91,2.864,0.033],[2.864,4.296,0.05],[3.819,5.728,0.066],[4.774,7.16,0.082],[5.728,8.592,0.099],[6.683,10.024,0.115],[7.638,11.456,0.131],[8.592,12.888,0.148],[9.547,14.32,0.164],[10.501,15.752,0.181],[11.456,17.184,0.197],[12.411,18.616,0.213],[13.365,20.048,0.23],[14.32,21.48,0.246],[15.275,22.912,0.262],[16.229,24.344,0.279],[17.184,25.776,0.295],[18.139,27.208,0.311],[19.093,28.64,0.328],[20.048,30.071,0.344],[21.002,31.503,0.361],[21.957,32.935,0.377],[22.912,34.367,0.393],[23.866,35.799,0.41],[24.821,37.231,0.426],[25.776,38.663,0.442],[26.73,40.095,0.459],[27.685,41.527,0.475],[28.64,42.959,0.491],[29.594,44.391,0.508],[30.549,45.823,0.524],[31.503,47.255,0.541],[32.458,48.687,0.557],[33.413,50.119,0.573],[34.367,51.551,0.59],[35.322,52.983,0.606],[36.277,54.415,0.622],[37.231,55.847,0.639],[38.186,57.279,0.655],[39.141,58.711,0.672],[40.095,60.142,0.688],[41.05,61.574,0.704],[42.004,63.006,0.721],[42.959,64.438,0.737],[43.914,65.87,0.753],[44.868,67.302,0.77],[45.823,68.734,0.786],[46.778,70.166,0.802],[47.732,71.598,0.819],[48.687,73.03,0.835],[49.641,74.462,0.852],[50.596,75.894,0.868],[51.551,77.326,0.884],[52.505,78.758,0.901],[53.46,80.19,0.917],[54.415,81.622,0.933],[55.369,83.054,0.95],[56.324,84.486,0.966],[57.279,85.918,0.982]],"hour":[null,[57.278,85.917,0.982],[114.556,171.834,1.964],[171.834,257.751,2.946],[229.112,343.668,3.928],[286.39,429.585,4.91],[343.668,515.502,5.892],[400.946,601.419,6.874],[458.224,687.337,7.856]]}};
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
-const APP_VERSION='7.2.7';
+const APP_VERSION='7.2.8';
 const WHATS_NEW_VERSION='7.2';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
 const SAVED_JOBS_KEY='engineerPayLogSavedJobs';
@@ -1327,6 +1337,8 @@ const APPEARANCE_KEY='engineerPayLogAppearanceMode';
 const NET_ESTIMATOR_ENABLED_KEY='engineerPayLogNetEstimatorEnabled';
 const NET_PAY_HISTORY_KEY='engineerPayLogNetPayHistory';
 const HISTORY_VIEW_KEY='engineerPayLogHistoryView';
+const CREW_BOOK_ASSIST_KEY='engineerPayLogCrewBookAssist';
+const CREW_BOOK_ASSIST_SEEN_KEY='engineerPayLogCrewBookAssistSeen';
 let savedJobs=JSON.parse(localStorage.getItem(SAVED_JOBS_KEY)||'[]');
 let pendingRestoreData=null;
 let paycheckWeekOffset=0;
@@ -2193,6 +2205,63 @@ function applyMyJob(){
   calculatePreview();
 }
 
+
+const CREW_BOOK_DAYS=['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+const CREW_BOOK_REVISION={go:'201',revision:'6',effective:'2026-07-06'};
+const CREW_BOOK_JOBS={
+  '1':{terminal:'Jamaica Storage Yard',relief:['monday','tuesday'],resolve:(date,day)=>{if(['monday','tuesday','wednesday','thursday','friday'].includes(day))return{start:'00:35',end:'10:37'};if(day==='saturday')return{start:'06:43',end:'14:38'};if(day==='sunday'){const d=date;return (d>='2026-05-31'&&d<='2026-08-30')?{start:'06:43',end:'16:26'}:{start:'06:43',end:'14:38'}};return null}},
+  '9':{terminal:'Jamaica Storage Yard',relief:['thursday','friday'],resolve:(date,day)=>{if(day==='saturday'||day==='sunday')return{start:'14:11',end:'21:58'};if(!['monday','tuesday','wednesday','thursday','friday'].includes(day))return null;const special=(day==='friday'&&date>='2026-05-22'&&date<='2026-09-04')||(date==='2026-06-18')||(date==='2026-07-02');return{start:special?'14:59':'14:04',end:'21:46'}}},
+  '28':{terminal:'Oyster Bay',relief:['saturday','sunday'],resolve:(date,day)=>['saturday','sunday'].includes(day)?{start:'16:08',end:'00:58'}:{start:'14:33',end:'00:59'}},
+  '34':{terminal:'Port Jefferson',relief:['saturday','sunday'],resolve:(date,day)=>['saturday','sunday'].includes(day)?{start:'06:30',end:'15:33'}:{start:'06:35',end:'13:38'}},
+  '38':{terminal:'Port Jefferson',relief:['saturday','sunday'],resolve:(date,day)=>day==='saturday'?{start:'15:00',end:'18:33'}:day==='sunday'?{start:'15:00',end:'00:10'}:null},
+  '39':{terminal:'Port Jefferson',relief:['monday','tuesday'],resolve:(date,day)=>['saturday','sunday'].includes(day)?{start:'13:27',end:'20:07'}:{start:'11:38',end:'20:44'}},
+  '40':{terminal:'Port Jefferson',relief:['monday','tuesday'],resolve:(date,day)=>['saturday','sunday'].includes(day)?{start:'18:00',end:'00:57'}:{start:'13:21',end:'23:33'}},
+  '53':{terminal:'Speonk',relief:['wednesday','thursday'],resolve:(date,day)=>({start:'17:20',end:'01:33'})},
+  '105':{terminal:'West Side Yard',relief:['thursday','friday'],resolve:(date,day)=>['saturday','sunday'].includes(day)?{start:'14:47',end:'00:56'}:{start:'14:46',end:'00:23'}},
+  '108':{terminal:'West Side Yard',relief:['tuesday','wednesday'],resolve:(date,day)=>['saturday','sunday'].includes(day)?{start:'15:20',end:'00:17'}:{start:'15:40',end:'00:29'}},
+  '110':{terminal:'West Side Yard',relief:['thursday','friday'],resolve:(date,day)=>['saturday','sunday'].includes(day)?{start:'16:01',end:'00:03'}:{start:'16:06',end:'23:21'}},
+  '349':{terminal:'Ronkonkoma',relief:['saturday','sunday'],resolve:(date,day)=>['saturday','sunday'].includes(day)?{start:'13:51',end:'22:35'}:{start:'11:07',end:'22:48'}},
+  '352':{terminal:'Ronkonkoma',relief:['saturday','sunday'],resolve:(date,day)=>day==='saturday'?{start:'17:12',end:'01:46'}:day==='sunday'?{start:'17:12',end:'01:47'}:{start:'13:50',end:'22:02'}}
+};
+const CREW_BOOK_RELIEF={
+ '401':{monday:'39',tuesday:'39',wednesday:'53',thursday:'53',friday:null,saturday:null,sunday:'34'},
+ '406':{monday:'40',tuesday:'40',wednesday:null,thursday:null,friday:'9',saturday:'349',sunday:'349'},
+ '475':{monday:null,tuesday:'108',wednesday:'108',thursday:'105',friday:'110',saturday:'352',sunday:null}
+};
+function crewBookAssistEnabled(){return !isTraineeMode()&&localStorage.getItem(CREW_BOOK_ASSIST_KEY)==='on'}
+function requestCrewBookAssistToggle(enable){
+  const box=document.getElementById('crewBookAssistToggle');
+  if(isTraineeMode()){if(box)box.checked=false;localStorage.setItem(CREW_BOOK_ASSIST_KEY,'off');return}
+  if(enable&&localStorage.getItem(CREW_BOOK_ASSIST_SEEN_KEY)!=='yes'){
+    const msg='Enable Crew Book Assistance (Beta)?\n\nCrew Book information is manually maintained by a friendly neighborhood engineer and is for convenience and reference only. Always verify your assignment using the official Crew Book in Comply365 or the official Service Planning website.\n\nThis data does not account for track work programs, special event programs, temporary service changes, or day-to-day instructions. Auto-filled entries remain editable, and you are responsible for verifying and updating the information that pertains to your assignment.';
+    if(!confirm(msg)){if(box)box.checked=false;return}
+    localStorage.setItem(CREW_BOOK_ASSIST_SEEN_KEY,'yes');
+  }
+  localStorage.setItem(CREW_BOOK_ASSIST_KEY,enable?'on':'off');renderCrewBookAssistUI();
+}
+function renderCrewBookAssistUI(){
+  const trainee=isTraineeMode(),card=document.getElementById('crewBookAssistSettingsCard'),box=document.getElementById('crewBookAssistToggle'),status=document.getElementById('crewBookAssistStatus');
+  if(card)card.style.display=trainee?'none':'';
+  const on=!trainee&&localStorage.getItem(CREW_BOOK_ASSIST_KEY)==='on';if(box)box.checked=on;
+  if(status){status.style.display=on?'block':'none';status.innerHTML=on?`<strong>Active:</strong> GO ${CREW_BOOK_REVISION.go}, Revision ${CREW_BOOK_REVISION.revision}, effective ${CREW_BOOK_REVISION.effective}. Crew Book-assisted fields remain editable.`:''}
+  ['crewBookFillRegularBtn','crewBookFillReliefBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=on?'inline-flex':'none'});
+}
+function crewBookDayForDate(date){const d=new Date(date+'T12:00:00');return CREW_BOOK_DAYS[(d.getDay()+6)%7]}
+function representativeDateForDay(day){const base='2026-08-17';const idx=CREW_BOOK_DAYS.indexOf(day);const d=new Date(base+'T12:00:00');d.setDate(d.getDate()+idx);return d.toISOString().slice(0,10)}
+function fillRegularMyJobFromCrewBook(){
+  if(!crewBookAssistEnabled())return;const n=(document.getElementById('myJobNumber')?.value||'').trim(),job=CREW_BOOK_JOBS[n];
+  if(!job){alert(`Job ${n||'(blank)'} is not yet in the verified Crew Book beta dataset. Enter it manually for now.`);return}
+  setRegularLocationUI(job.terminal);
+  for(const day of CREW_BOOK_DAYS){const cap=day[0].toUpperCase()+day.slice(1),off=job.relief.includes(day),box=document.getElementById(`myJobRegular${cap}Off`);if(box)box.checked=off;const x=job.resolve(representativeDateForDay(day),day)||{};const st=document.getElementById(`myJobRegular${cap}Start`),en=document.getElementById(`myJobRegular${cap}End`);if(st)st.value=off?'':(x.start||'');if(en)en.value=off?'':(x.end||'');toggleMyJobRegularDay(day)}
+  alert(`Job ${n} filled from the verified Revision 6 beta dataset. Please review every day against the official Crew Book before saving.`);
+}
+function fillReliefMyJobFromCrewBook(){
+  if(!crewBookAssistEnabled())return;const n=(document.getElementById('myJobReliefCrewNumber')?.value||'').trim(),map=CREW_BOOK_RELIEF[n];
+  if(!map){alert(`Relief Crew ${n||'(blank)'} is not yet in the verified Crew Book beta dataset. Enter it manually for now.`);return}
+  for(const day of CREW_BOOK_DAYS){const cap=day[0].toUpperCase()+day.slice(1),jn=map[day],off=!jn,box=document.getElementById(`myJobRelief${cap}Off`);if(box)box.checked=off;const job=jn?CREW_BOOK_JOBS[jn]:null,x=job?job.resolve(representativeDateForDay(day),day):{};const a=document.getElementById(`myJobRelief${cap}Assignment`),st=document.getElementById(`myJobRelief${cap}Start`),en=document.getElementById(`myJobRelief${cap}End`);if(a)a.value=jn||'';if(st)st.value=off?'':(x?.start||'');if(en)en.value=off?'':(x?.end||'');if(!off&&job)setReliefLocationUI(day,job.terminal);else setReliefLocationUI(day,'');toggleMyJobReliefDay(day)}
+  alert(`Relief Crew ${n} filled from the verified Revision 6 beta dataset. Please review every day against the official Crew Book before saving.`);
+}
+
 function chooseShiftTypeTile(event,tile){
   if(event.target && event.target.matches('input[type="checkbox"]'))return;
   const box=tile.querySelector('input[type="checkbox"]');
@@ -2282,7 +2351,7 @@ function requestTraineeModeChange(enable){
   const box=document.getElementById('traineeModeToggle');
   const msg=enable?'Enable Engineer Trainee Mode?\n\nEngineer Pay Log will switch new entries to trainee rules. Existing shift history will not be changed.':'Leave Engineer Trainee Mode?\n\nOnly turn off Trainee Mode after graduating from Engineer training. New shifts will use standard Engineer rules. Existing trainee shifts will not be changed.';
   if(!confirm(msg)){if(box)box.checked=!enable;return}
-  localStorage.setItem(TRAINEE_MODE_KEY,enable?'on':'off');updateTraineeModeUI();renderMyJobUI();
+  localStorage.setItem(TRAINEE_MODE_KEY,enable?'on':'off');if(enable)localStorage.setItem(CREW_BOOK_ASSIST_KEY,'off');updateTraineeModeUI();renderMyJobUI();renderCrewBookAssistUI();
 }
 function updateTraineeModeUI(){
   const on=isTraineeMode(),box=document.getElementById('traineeModeToggle'),status=document.getElementById('traineeModeStatus');
@@ -2656,7 +2725,7 @@ function previewRestore(data){
   document.getElementById('restoreHireDate').textContent=data.hireDate?formatDateShort(data.hireDate):'Not included';document.getElementById('restorePreviewModal').classList.add('open');
 }
 function cancelRestore(){pendingRestoreData=null;document.getElementById('restorePreviewModal').classList.remove('open')}
-function confirmRestore(){const data=pendingRestoreData;if(!data)return;shifts=data.shifts.map(upgradeShift);if(data.hireDate)localStorage.setItem(HIRE_DATE_KEY,data.hireDate);if(data.traineeMode!==undefined)localStorage.setItem(TRAINEE_MODE_KEY,data.traineeMode?'on':'off');if(data.myJob!==undefined){if(data.myJob)localStorage.setItem(MY_JOB_KEY,JSON.stringify(data.myJob));else localStorage.removeItem(MY_JOB_KEY)}if(data.vacationGrossByYear&&typeof data.vacationGrossByYear==='object')localStorage.setItem(VACATION_GROSS_KEY,JSON.stringify(data.vacationGrossByYear));if(data.appearanceMode)localStorage.setItem(APPEARANCE_KEY,data.appearanceMode);if(data.netEstimatorEnabled!==undefined)localStorage.setItem(NET_ESTIMATOR_ENABLED_KEY,data.netEstimatorEnabled?'1':'0');if(Array.isArray(data.netPayHistory))localStorage.setItem(NET_PAY_HISTORY_KEY,JSON.stringify(data.netPayHistory.slice(0,10)));if(Array.isArray(data.savedJobs)){savedJobs=data.savedJobs;persistSavedJobs()}persist();cancelRestore();updateRateDisplays();renderAll();alert('Backup restored.')}
+function confirmRestore(){const data=pendingRestoreData;if(!data)return;shifts=data.shifts.map(upgradeShift);if(data.hireDate)localStorage.setItem(HIRE_DATE_KEY,data.hireDate);if(data.traineeMode!==undefined)localStorage.setItem(TRAINEE_MODE_KEY,data.traineeMode?'on':'off');if(data.myJob!==undefined){if(data.myJob)localStorage.setItem(MY_JOB_KEY,JSON.stringify(data.myJob));else localStorage.removeItem(MY_JOB_KEY)}if(data.vacationGrossByYear&&typeof data.vacationGrossByYear==='object')localStorage.setItem(VACATION_GROSS_KEY,JSON.stringify(data.vacationGrossByYear));if(data.appearanceMode)localStorage.setItem(APPEARANCE_KEY,data.appearanceMode);if(data.crewBookAssistEnabled!==undefined&&!data.traineeMode)localStorage.setItem(CREW_BOOK_ASSIST_KEY,data.crewBookAssistEnabled?'on':'off');if(data.netEstimatorEnabled!==undefined)localStorage.setItem(NET_ESTIMATOR_ENABLED_KEY,data.netEstimatorEnabled?'1':'0');if(Array.isArray(data.netPayHistory))localStorage.setItem(NET_PAY_HISTORY_KEY,JSON.stringify(data.netPayHistory.slice(0,10)));if(Array.isArray(data.savedJobs)){savedJobs=data.savedJobs;persistSavedJobs()}persist();cancelRestore();updateRateDisplays();renderAll();alert('Backup restored.')}
 function openWhatsNew(force=false){if(!force&&localStorage.getItem(LAST_SEEN_VERSION_KEY)===WHATS_NEW_VERSION)return;document.getElementById('whatsNewModal')?.classList.add('open')}
 function closeWhatsNew(){localStorage.setItem(LAST_SEEN_VERSION_KEY,WHATS_NEW_VERSION);document.getElementById('whatsNewModal').classList.remove('open')}
 function historyAccentColor(s){
@@ -2785,8 +2854,8 @@ function renderHistory(){
   }
   historyList.innerHTML=out;
 }
-function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView());const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;renderMyJobWeekPreview()}
-function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='settings'){updateBackupUI();loadMyJobSettings();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance()}renderMyJobUI()}
+function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView());const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;renderMyJobWeekPreview()}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
   return shifts.filter(s=>[
@@ -2997,7 +3066,7 @@ async function exportPDF(){
   const tb=strBytes(tail);chunks.push(tb);total+=tb.length;const pdf=new Uint8Array(total);let pos=0;for(const ch of chunks){pdf.set(ch,pos);pos+=ch.length}
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([pdf],{type:'application/pdf'}));a.download='Engineer_Pay_Log_Shift_History.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
 }
-function exportJSON(){const exported=new Date().toISOString();download('Engineer_Pay_Log_backup.json',JSON.stringify({version:11,appVersion:APP_VERSION,exported,hireDate:getHireDate(),traineeMode:isTraineeMode(),myJob:getMyJob(),vacationGrossByYear:getVacationGrossMap(),appearanceMode:getAppearanceMode(),netEstimatorEnabled:netEstimatorEnabled(),netPayHistory:getNetPayHistory(),savedJobs,shifts},null,2),'application/json');localStorage.setItem(LAST_BACKUP_KEY,exported);updateBackupUI()}
+function exportJSON(){const exported=new Date().toISOString();download('Engineer_Pay_Log_backup.json',JSON.stringify({version:11,appVersion:APP_VERSION,exported,hireDate:getHireDate(),traineeMode:isTraineeMode(),myJob:getMyJob(),vacationGrossByYear:getVacationGrossMap(),appearanceMode:getAppearanceMode(),crewBookAssistEnabled:crewBookAssistEnabled(),netEstimatorEnabled:netEstimatorEnabled(),netPayHistory:getNetPayHistory(),savedJobs,shifts},null,2),'application/json');localStorage.setItem(LAST_BACKUP_KEY,exported);updateBackupUI()}
 function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const data=JSON.parse(r.result);if(!data||!Array.isArray(data.shifts))throw 0;previewRestore(data)}catch{alert('That backup file could not be read or does not contain a valid Engineer Pay Log backup.')}};r.readAsText(f);e.target.value=''}
 function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 function clearAll(){if(confirm('Delete every saved shift from this browser?')){shifts=[];persist();renderAll()}}
