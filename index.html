@@ -144,7 +144,105 @@
     .restore-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.restore-preview-item{padding:11px;border-radius:12px;background:#f5f8fb;border:1px solid #dce5ee}.restore-preview-item strong{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
     .version-line{font-size:12px;color:var(--muted);text-align:center;margin-top:14px}.whats-new-list{margin:8px 0 0;padding-left:20px;line-height:1.55}
     @media(max-width:780px){.modal-card{width:calc(100% - 16px);margin:8px 8px calc(8px + env(safe-area-inset-bottom));max-height:84vh;border-radius:20px}.modal-head{padding:16px 16px 12px}.modal-body{padding:14px 16px 16px}.modal-foot{padding:10px 16px calc(10px + env(safe-area-inset-bottom))}.span8,.span6,.span4{grid-column:span 12}.field,.field.third{grid-column:span 12}.time-slip-grid{grid-template-columns:1fr}.feature-grid,.timeslip-summary,.restore-preview-grid,.crew-grid{grid-template-columns:1fr}.shift{grid-template-columns:78px 1fr auto}.app{padding:12px 12px 105px}.card{padding:15px}.brand h1{font-size:21px}.nav{bottom:8px;width:calc(100% - 16px);justify-content:space-around}.nav button{padding:10px 9px;font-size:12px}}
+  
+    /* V7.2 appearance, estimator, and history views */
+    .estimate-label{font-size:11px;font-weight:850;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:7px}
+    .net-estimate-block{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}
+    .net-estimate-amount{font-size:25px;font-weight:850;margin:3px 0 4px;font-variant-numeric:tabular-nums}
+    .settings-divider{height:1px;background:var(--line);margin:16px 0}
+    .appearance-options{display:grid;gap:9px}
+    .appearance-choice{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:13px;padding:12px;background:var(--card)}
+    .appearance-choice input{width:20px;height:20px}
+    .appearance-choice span{display:flex;flex-direction:column;gap:2px}.appearance-choice small{color:var(--muted)}
+    .net-pay-rows{display:grid;gap:8px;margin:10px 0 14px}
+    .net-pay-row{display:grid;grid-template-columns:44px 1fr 1fr 70px;gap:8px;align-items:end}
+    .net-pay-row .row-num{font-weight:850;color:var(--muted);padding-bottom:12px}
+    .net-pay-row .pct{font-size:12px;font-weight:800;text-align:right;padding-bottom:12px;color:var(--muted)}
+    .net-pay-row label{font-size:11px;font-weight:750;color:#445066}.net-pay-row input{width:100%;border:1px solid #cfd8e6;border-radius:10px;background:var(--card);color:var(--ink);padding:10px}
+    .history-view-toggle{display:grid;grid-template-columns:1fr 1fr;border:1px solid #cfd8e6;border-radius:12px;padding:3px;margin-bottom:12px;background:var(--bg)}
+    .history-view-toggle button{border:0;border-radius:9px;background:transparent;color:var(--muted);font-weight:800;padding:9px}
+    .history-view-toggle button.active{background:var(--card);color:var(--brand);box-shadow:0 2px 8px rgba(16,35,63,.10)}
+    .history .shift,.history-card-shell .shift{grid-template-columns:84px 1fr auto;padding:14px 14px;border-radius:16px}
+    .history-card-shell .shift-date{font-size:15px}
+    .history-card-shell .shift-title{font-size:16px}
+    .history-card-shell .shift-pay{font-size:17px}
+    .month-title{font-size:18px;font-weight:850;margin:18px 2px 8px}
+    .calendar-nav{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;text-align:center;margin:4px 0 12px}
+    .calendar-nav strong{font-size:18px}
+    .calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--line);gap:1px}
+    .calendar-head{background:var(--card);font-size:10px;font-weight:850;text-align:center;padding:8px 2px;color:var(--muted)}
+    .calendar-day{background:var(--card);min-height:100px;padding:6px;overflow:hidden}
+    .calendar-day.outside{opacity:.45}
+    .calendar-date{font-size:12px;font-weight:850;text-align:right;margin-bottom:4px}
+    .calendar-event{display:block;width:100%;border:0;border-radius:6px;padding:4px 5px;margin:3px 0;text-align:left;font-size:10px;line-height:1.15;font-weight:850;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:none}
+    .calendar-event.special{color:#fff}
+    .calendar-event.vacation{background:#b95f83}
+    .calendar-event.unpaid{background:#687386}
+    .calendar-event.default-special{background:#4d6480}
+    .calendar-more{font-size:9px;color:var(--muted);font-weight:800;margin-top:3px}
+    @media(max-width:600px){
+      .calendar-day{min-height:82px;padding:4px}
+      .calendar-event{font-size:8.8px;padding:4px 3px}
+      .net-pay-row{grid-template-columns:34px 1fr 1fr 54px}
+      .history-card-shell{padding:13px}
+      .history-card-shell .shift{grid-template-columns:74px 1fr auto;gap:8px;padding:12px}
+      .history-card-shell .shift-actions .btn{padding:7px 8px}
+    }
+    @media(max-width:430px){
+      .calendar-day{min-height:72px}
+      .calendar-date{font-size:11px}
+      .calendar-event{font-size:8px}
+    }
+
+    html[data-theme="dark"]{
+      --bg:#0b1422;--card:#101d2e;--ink:#edf3fb;--muted:#9dafc4;--line:#2a3a50;
+      --brand:#dce9f8;--brand2:#79aee2;--good:#69d59a;--warn:#ffc857;--bad:#ff827a;
+      --shadow:0 10px 30px rgba(0,0,0,.25);
+      color-scheme:dark;
+    }
+    html[data-theme="dark"] body{background:var(--bg);color:var(--ink)}
+    html[data-theme="dark"] .card,
+    html[data-theme="dark"] .shift,
+    html[data-theme="dark"] .feature-card,
+    html[data-theme="dark"] .my-job-portion,
+    html[data-theme="dark"] .relief-day,
+    html[data-theme="dark"] .check,
+    html[data-theme="dark"] .conditional-panel,
+    html[data-theme="dark"] .readonly-info,
+    html[data-theme="dark"] .appearance-choice,
+    html[data-theme="dark"] .calendar-day,
+    html[data-theme="dark"] .calendar-head{background:var(--card);color:var(--ink)}
+    html[data-theme="dark"] .field input,
+    html[data-theme="dark"] .field textarea,
+    html[data-theme="dark"] .field select,
+    html[data-theme="dark"] .search,
+    html[data-theme="dark"] .net-pay-row input{background:#0c1828;color:var(--ink);border-color:#34465e}
+    html[data-theme="dark"] .btn{background:#20324a;color:#e8f1fb}
+    html[data-theme="dark"] .btn.primary{background:#315f91;color:#fff}
+    html[data-theme="dark"] .nav{background:rgba(14,27,44,.94)}
+    html[data-theme="dark"] .nav button{color:#9dafc4}
+    html[data-theme="dark"] .nav button.active{background:#294c73;color:#fff}
+    html[data-theme="dark"] .my-job-card{background:linear-gradient(180deg,#132338,#101d2e)}
+    html[data-theme="dark"] .calc{background:linear-gradient(145deg,#10233f,#173b63)}
+    html[data-theme="dark"] .empty{background:#0d1929}
+    html[data-theme="dark"] .shift.timeslip{background:#342d12}
+    html[data-theme="dark"] .time-slip-panel{background:#342d12}
+    html[data-theme="dark"] .badge{background:#28384d;color:#d9e5f2}
+    html[data-theme="dark"] .badge.penalty{background:#153b2b;color:#a6e8c3}
+    html[data-theme="dark"] .badge.ot{background:#473412;color:#ffd780}
+    html[data-theme="dark"] .badge.holiday{background:#342247;color:#d9b1ff}
+    html[data-theme="dark"] .history-view-toggle{background:#0c1828;border-color:#34465e}
+    html[data-theme="dark"] .history-view-toggle button.active{background:#1c2e45;color:#fff}
+    /* Intentionally no dark-mode override for --terminal-color or terminal branch stripes. */
+
   </style>
+  <script>
+    try{
+      const m=localStorage.getItem('engineerPayLogAppearanceMode')||'system';
+      const d=m==='dark'||(m==='system'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.setAttribute('data-theme',d?'dark':'light');
+    }catch(e){}
+  </script>
 </head>
 <body>
 <div class="app">
@@ -180,7 +278,18 @@
       <div class="card span12">
         <div class="section-title"><h2>Pay & Claims</h2></div>
         <div class="feature-grid">
-          <div class="feature-card"><h3>Expected Paycheck</h3><div class="big" id="dashPaycheckAmount">$0.00</div><div class="mini" id="dashPaycheckDates">Wednesday–Tuesday pay period</div><button class="btn small" style="margin-top:10px" onclick="openPaychecks()">View paycheck</button></div>
+          <div class="feature-card paycheck-estimate-card">
+  <h3>Expected Paycheck</h3>
+  <div class="estimate-label">Gross Estimate</div>
+  <div class="big" id="dashPaycheckAmount">$0.00</div>
+  <div id="dashNetEstimateBlock" class="net-estimate-block" style="display:none">
+    <div class="estimate-label">Net Estimate</div>
+    <div class="net-estimate-amount" id="dashNetEstimate">$0.00</div>
+    <div class="mini">Based on your average take-home percentage from the last 10 paychecks. Actual net pay may vary.</div>
+  </div>
+  <div class="mini" id="dashPaycheckDates">Wednesday–Tuesday pay period</div>
+  <button class="btn small" style="margin-top:10px" onclick="openPaychecks()">View paycheck</button>
+</div>
           <div class="feature-card"><h3>Time Slip Center</h3><div class="big" id="dashPendingSlips">0</div><div class="mini">pending time slips</div><button class="btn small" style="margin-top:10px" onclick="showView('timeslips')">View time slips</button></div>
           <div class="feature-card"><h3>Saved Jobs</h3><div class="big" id="dashSavedJobs">0</div><div class="mini">favorites ready for quick entry</div><button class="btn small" style="margin-top:10px" onclick="showView('savedjobs')">View favorites</button></div>
         </div>
@@ -189,10 +298,24 @@
   </section>
 
   <section id="historyView" class="view">
-    <div class="card">
+    <div class="card history-card-shell">
       <div class="section-title"><h2>Shift history</h2><button class="btn primary small" onclick="newShift()">+ Add shift</button></div>
-      <div class="toolbar"><input id="historySearch" class="search" placeholder="Search assignment, location, shift type or notes…" oninput="renderHistory()"><button class="btn small" onclick="exportCSV()">Export CSV</button><button class="btn small" onclick="exportPDF()">Export PDF</button></div>
+      <div class="history-view-toggle" role="tablist" aria-label="History view">
+        <button id="historyListTab" class="active" type="button" onclick="setHistoryView('list')">List</button>
+        <button id="historyCalendarTab" type="button" onclick="setHistoryView('calendar')">Calendar</button>
+      </div>
+      <div id="historyListControls">
+        <div class="toolbar"><input id="historySearch" class="search" placeholder="Search assignment, location, shift type or notes…" oninput="renderHistory()"><button class="btn small" onclick="exportCSV()">Export CSV</button><button class="btn small" onclick="exportPDF()">Export PDF</button></div>
+      </div>
       <div id="historyList"></div>
+      <div id="historyCalendarWrap" style="display:none">
+        <div class="calendar-nav">
+          <button class="btn small" type="button" onclick="changeCalendarMonth(-1)">‹</button>
+          <strong id="calendarMonthLabel">Month</strong>
+          <button class="btn small" type="button" onclick="changeCalendarMonth(1)">›</button>
+        </div>
+        <div id="historyCalendar"></div>
+      </div>
     </div>
   </section>
 
@@ -243,6 +366,12 @@
           <strong>70% is not currently used.</strong>
         </div>
         <p class="notice">Each saved shift records the rate that applied on that shift date, so moving to a higher rate later will not rewrite previously saved earnings.</p>
+        <div class="settings-divider"></div>
+        <div class="field full">
+          <label id="settingsVacationGrossLabel">Previous Year Gross Earnings for Vacation</label>
+          <input id="settingsVacationGross" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" onchange="saveVacationGrossFromSettings()">
+        </div>
+        <p class="notice">Optional convenience setting. This is the same annual value used by Vacation Week and Single Vacation Day entries, so you can enter or update it here instead of during vacation entry.</p>
         <div style="margin-top:14px;padding-top:14px;border-top:1px solid #d8e0e8">
           <label class="check"><input id="traineeModeToggle" type="checkbox" onchange="requestTraineeModeChange(this.checked)"> Engineer Trainee Mode</label>
           <div id="traineeModeStatus" class="mode-banner" style="display:none">Engineer Trainee Mode is active. New shifts use trainee rules.</div>
@@ -454,6 +583,27 @@
         </div>
       </div>
       <div class="card span6">
+        <div class="section-title"><h2>Appearance</h2></div>
+        <div class="appearance-options">
+          <label class="appearance-choice"><input type="radio" name="appearanceMode" value="system" onchange="setAppearanceMode(this.value)"> <span><strong>System Default</strong><small>Follow your device setting</small></span></label>
+          <label class="appearance-choice"><input type="radio" name="appearanceMode" value="light" onchange="setAppearanceMode(this.value)"> <span><strong>Light</strong><small>Always use light mode</small></span></label>
+          <label class="appearance-choice"><input type="radio" name="appearanceMode" value="dark" onchange="setAppearanceMode(this.value)"> <span><strong>Dark</strong><small>Always use dark mode</small></span></label>
+        </div>
+        <p class="notice">Terminal station-sign stripes and branch colors are preserved exactly in every appearance mode.</p>
+      </div>
+
+      <div class="card span6" id="netEstimatorSettingsCard">
+        <div class="section-title"><h2>Net Pay Estimator</h2></div>
+        <label class="check"><input id="netEstimatorToggle" type="checkbox" onchange="requestNetEstimatorToggle(this.checked)"> Show Estimated Net Pay</label>
+        <div id="netEstimatorSummary" class="rate-note" style="margin-top:12px;display:none"></div>
+        <div id="netPaySetup" style="display:none;margin-top:14px">
+          <p class="notice">Enter your 10 most recent paychecks. Gross and net amounts can be obtained from the BSC portal.</p>
+          <div id="netPayRows" class="net-pay-rows"></div>
+          <button class="btn primary" type="button" onclick="saveNetPayHistory()">Save Paycheck History</button>
+        </div>
+      </div>
+
+      <div class="card span6">
         <div class="section-title"><h2>Install Engineer Pay Log</h2></div>
         <div class="rate-note">
           <strong>iPhone / iPad — Safari:</strong> Open Engineer Pay Log in Safari → tap Share → Add to Home Screen → Add.<br><br>
@@ -477,7 +627,7 @@
       </div>
       <div class="card span6">
         <div class="section-title"><h2>About</h2></div>
-        <div class="rate-note"><strong>Engineer Pay Log</strong><br>Version <span id="settingsAppVersion">7.1.0</span><br><br><strong>Current release:</strong> Vacation Week and Single Vacation Day pay tracking, corrected Special Shift 1/5 calculations, My Job, Unscheduled Overtime, Relief Crew support, terminal branch colors, and updated Shift Type controls.</div>
+        <div class="rate-note"><strong>Engineer Pay Log</strong><br>Version <span id="settingsAppVersion">7.2.0</span><br><br><strong>Current release:</strong> Dark Mode, Estimated Net Pay, List/Calendar History views, vacation gross setup in Settings, and a refreshed app icon.</div>
         <button class="btn small" style="margin-top:12px" onclick="openWhatsNew(true)">What's New</button>
       </div>
     </div>
@@ -545,24 +695,36 @@
   </div>
 </div>
 
+<div id="netEstimatorIntroModal" class="modal">
+  <div class="modal-card" style="max-width:600px">
+    <div class="modal-head"><div><h2 style="margin:0">Enable Net Pay Estimator?</h2><div class="muted" style="margin-top:4px">A planning estimate based on your own paycheck history.</div></div></div>
+    <div class="modal-body">
+      <p style="margin-top:0">Net Pay Estimator uses the average take-home percentage from your last 10 paychecks to estimate future net pay.</p>
+      <p>Because taxes, deductions, benefits, contributions, withholding, and other payroll items vary from employee to employee, this is an <strong>estimate only</strong> and is not a guarantee of your actual paycheck.</p>
+      <p>To use this feature, enter the gross and net amounts from your 10 most recent paychecks. These amounts can be found in the BSC portal. Keeping your paycheck history current will improve the estimate.</p>
+    </div>
+    <div class="modal-foot"><button class="btn" onclick="cancelNetEstimatorIntro()">Cancel</button><button class="btn primary" onclick="continueNetEstimatorIntro()">Continue</button></div>
+  </div>
+</div>
+
 <div id="whatsNewModal" class="modal">
   <div class="modal-card" style="max-width:600px">
-    <div class="modal-head"><div><h2 style="margin:0">What's New in Engineer Pay Log 7.1</h2><div class="muted" style="margin-top:4px">Vacation pay tracking and more accurate Special Shift calculations.</div></div></div>
+    <div class="modal-head"><div><h2 style="margin:0">What's New in Engineer Pay Log 7.2</h2><div class="muted" style="margin-top:4px">A major quality-of-life and appearance update.</div></div></div>
     <div class="modal-body">
       <div class="update-mascot">
-        <img src="./icons/icon-192.png" alt="Engineer Pay Log mascot">
+        <img src="./icons/icon-192.png" alt="Engineer Pay Log icon">
         <div class="speech-bubble">Change on the change!</div>
       </div>
-      <p style="margin-top:0"><strong>Engineer Pay Log 7.1 is here.</strong></p>
-      <p class="muted">This update adds requested vacation functionality and improves several contract-based Special Shift calculations:</p>
+      <p style="margin-top:0"><strong>Engineer Pay Log 7.2 is here.</strong></p>
       <ul class="whats-new-list">
-        <li><strong>Vacation Week</strong> — Enter the Monday that begins your vacation. Engineer Pay Log automatically tracks the Monday-through-Sunday vacation period and calculates one week of vacation pay.</li>
-        <li><strong>Single Vacation Day</strong> — Calculate a single vacation day as one-fifth of your vacation-week value.</li>
-        <li><strong>Year-aware vacation earnings</strong> — Enter the previous year's gross earnings once. Engineer Pay Log remembers that amount for vacation entries in the current calendar year.</li>
-        <li><strong>Corrected 1/5 Special Shift calculations</strong> — Personal Day, Company Court, Two Year Book, and Miscellaneous Instruction now apply the appropriate previous-week Relief Day / holiday exclusions and one-basic-day minimum.</li>
-        <li><strong>My Job recognition remains automatic</strong> — Passenger and Yard/Freight job classification continues to avoid unnecessary re-entry when the app can determine your job class.</li>
+        <li><strong>Dark Mode</strong> — Choose System Default, Light, or Dark in Settings. LIRR terminal branch colors remain unchanged.</li>
+        <li><strong>Estimated Net Pay</strong> — Optional estimator based on the average take-home percentage from your 10 most recent paychecks.</li>
+        <li><strong>Calendar History</strong> — Switch between the familiar running list and a monthly calendar with branch-colored job entries and Special Shifts.</li>
+        <li><strong>Refreshed History cards</strong> — Cleaner scanning while preserving Duplicate, Edit, search, CSV, and PDF export.</li>
+        <li><strong>Vacation setup in Settings</strong> — Save the prior year's gross earnings before you need to enter a Vacation Week or Single Vacation Day.</li>
+        <li><strong>New Engineer Pay Log icon</strong> — Updated with the presenting engineer and LIRR diesel imagery.</li>
       </ul>
-      <p class="notice" style="margin-top:14px"><strong>Vacation Weeks do not block normal shift entry.</strong> If you work during the vacation period, including Relief Day work, record that shift normally.</p>
+      <p class="notice" style="margin-top:14px">All existing shift history, pay rules, Special Shift fixes, Unscheduled Overtime logic, My Job settings, backups, and hidden personal logging shortcuts remain intact.</p>
       <div style="text-align:center;margin-top:18px"><strong>Change on the change!</strong></div>
     </div>
     <div class="modal-foot"><button class="btn primary" onclick="closeWhatsNew()">Got It</button></div>
@@ -750,8 +912,8 @@
 const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.719,2.578,0.03],[2.292,3.437,0.04],[2.864,4.296,0.05],[3.437,5.156,0.059],[4.01,6.015,0.069],[4.583,6.874,0.079],[5.156,7.733,0.089],[5.728,8.592,0.099],[6.301,9.451,0.109],[6.874,10.311,0.118],[7.447,11.17,0.128],[8.019,12.029,0.138],[8.592,12.888,0.148],[9.165,13.747,0.158],[9.738,14.606,0.167],[10.311,15.466,0.177],[10.883,16.325,0.187],[11.456,17.184,0.197],[12.029,18.043,0.207],[12.602,18.902,0.217],[13.174,19.761,0.226],[13.747,20.621,0.236],[14.32,21.48,0.246],[14.893,22.339,0.256],[15.466,23.198,0.266],[16.038,24.057,0.275],[16.611,24.916,0.285],[17.184,25.776,0.295],[17.757,26.635,0.305],[18.329,27.494,0.315],[18.902,28.353,0.325],[19.475,29.212,0.334],[20.048,30.071,0.344],[20.621,30.931,0.354],[21.193,31.79,0.364],[21.766,32.649,0.374],[22.339,33.508,0.383],[22.912,34.367,0.393],[23.485,35.227,0.403],[24.057,36.086,0.413],[24.63,36.945,0.423],[25.203,37.804,0.433],[25.776,38.663,0.442],[26.348,39.522,0.452],[26.921,40.382,0.462],[27.494,41.241,0.472],[28.067,42.1,0.482],[28.64,42.959,0.491],[29.212,43.818,0.501],[29.785,44.677,0.511],[30.358,45.537,0.521],[30.931,46.396,0.531],[31.503,47.255,0.541],[32.076,48.114,0.55],[32.649,48.973,0.56],[33.222,49.832,0.57],[33.795,50.692,0.58],[34.367,51.551,0.59]],"hour":[null,[34.367,51.55,0.589],[68.734,103.1,1.178],[103.1,154.651,1.768],[137.467,206.201,2.357],[171.834,257.751,2.946],[206.201,309.301,3.535],[240.568,360.852,4.124],[274.935,412.402,4.714]]},"80":{"minute":[null,[0.764,1.146,0.014],[1.528,2.292,0.027],[2.292,3.437,0.04],[3.055,4.583,0.053],[3.819,5.728,0.066],[4.583,6.874,0.079],[5.346,8.019,0.092],[6.11,9.165,0.105],[6.874,10.311,0.118],[7.638,11.456,0.131],[8.401,12.602,0.145],[9.165,13.747,0.158],[9.929,14.893,0.171],[10.692,16.038,0.184],[11.456,17.184,0.197],[12.22,18.329,0.21],[12.984,19.475,0.223],[13.747,20.621,0.236],[14.511,21.766,0.249],[15.275,22.912,0.262],[16.038,24.057,0.275],[16.802,25.203,0.289],[17.566,26.348,0.302],[18.329,27.494,0.315],[19.093,28.64,0.328],[19.857,29.785,0.341],[20.621,30.931,0.354],[21.384,32.076,0.367],[22.148,33.222,0.38],[22.912,34.367,0.393],[23.675,35.513,0.406],[24.439,36.658,0.419],[25.203,37.804,0.433],[25.967,38.95,0.446],[26.73,40.095,0.459],[27.494,41.241,0.472],[28.258,42.386,0.485],[29.021,43.532,0.498],[29.785,44.677,0.511],[30.549,45.823,0.524],[31.313,46.969,0.537],[32.076,48.114,0.55],[32.84,49.26,0.564],[33.604,50.405,0.577],[34.367,51.551,0.59],[35.131,52.696,0.603],[35.895,53.842,0.616],[36.658,54.987,0.629],[37.422,56.133,0.642],[38.186,57.279,0.655],[38.95,58.424,0.668],[39.713,59.57,0.681],[40.477,60.715,0.694],[41.241,61.861,0.708],[42.004,63.006,0.721],[42.768,64.152,0.734],[43.532,65.297,0.747],[44.296,66.443,0.76],[45.059,67.589,0.773],[45.823,68.734,0.786]],"hour":[null,[45.822,68.734,0.786],[91.645,137.467,1.571],[137.467,206.201,2.357],[183.29,274.935,3.142],[229.112,343.668,3.928],[274.935,412.402,4.714],[320.757,481.136,5.499],[366.579,549.869,6.285]]},"90":{"minute":[null,[0.86,1.289,0.015],[1.719,2.578,0.03],[2.578,3.867,0.045],[3.437,5.156,0.059],[4.296,6.444,0.074],[5.156,7.733,0.089],[6.015,9.022,0.104],[6.874,10.311,0.118],[7.733,11.599,0.133],[8.592,12.888,0.148],[9.451,14.177,0.163],[10.311,15.466,0.177],[11.17,16.754,0.192],[12.029,18.043,0.207],[12.888,19.332,0.221],[13.747,20.621,0.236],[14.606,21.909,0.251],[15.466,23.198,0.266],[16.325,24.487,0.28],[17.184,25.776,0.295],[18.043,27.064,0.31],[18.902,28.353,0.325],[19.761,29.642,0.339],[20.621,30.931,0.354],[21.48,32.219,0.369],[22.339,33.508,0.383],[23.198,34.797,0.398],[24.057,36.086,0.413],[24.916,37.374,0.428],[25.776,38.663,0.442],[26.635,39.952,0.457],[27.494,41.241,0.472],[28.353,42.529,0.487],[29.212,43.818,0.501],[30.071,45.107,0.516],[30.931,46.396,0.531],[31.79,47.684,0.546],[32.649,48.973,0.56],[33.508,50.262,0.575],[34.367,51.551,0.59],[35.227,52.84,0.604],[36.086,54.128,0.619],[36.945,55.417,0.634],[37.804,56.706,0.649],[38.663,57.995,0.663],[39.522,59.283,0.678],[40.382,60.572,0.693],[41.241,61.861,0.708],[42.1,63.15,0.722],[42.959,64.438,0.737],[43.818,65.727,0.752],[44.677,67.016,0.766],[45.537,68.305,0.781],[46.396,69.593,0.796],[47.255,70.882,0.811],[48.114,72.171,0.825],[48.973,73.46,0.84],[49.832,74.748,0.855],[50.692,76.037,0.87],[51.551,77.326,0.884]],"hour":[null,[51.55,77.325,0.884],[103.1,154.651,1.768],[154.651,231.976,2.651],[206.201,309.301,3.535],[257.751,386.627,4.419],[309.301,463.952,5.303],[360.852,541.278,6.187],[412.402,618.603,7.07]]},"100":{"minute":[null,[0.955,1.432,0.017],[1.91,2.864,0.033],[2.864,4.296,0.05],[3.819,5.728,0.066],[4.774,7.16,0.082],[5.728,8.592,0.099],[6.683,10.024,0.115],[7.638,11.456,0.131],[8.592,12.888,0.148],[9.547,14.32,0.164],[10.501,15.752,0.181],[11.456,17.184,0.197],[12.411,18.616,0.213],[13.365,20.048,0.23],[14.32,21.48,0.246],[15.275,22.912,0.262],[16.229,24.344,0.279],[17.184,25.776,0.295],[18.139,27.208,0.311],[19.093,28.64,0.328],[20.048,30.071,0.344],[21.002,31.503,0.361],[21.957,32.935,0.377],[22.912,34.367,0.393],[23.866,35.799,0.41],[24.821,37.231,0.426],[25.776,38.663,0.442],[26.73,40.095,0.459],[27.685,41.527,0.475],[28.64,42.959,0.491],[29.594,44.391,0.508],[30.549,45.823,0.524],[31.503,47.255,0.541],[32.458,48.687,0.557],[33.413,50.119,0.573],[34.367,51.551,0.59],[35.322,52.983,0.606],[36.277,54.415,0.622],[37.231,55.847,0.639],[38.186,57.279,0.655],[39.141,58.711,0.672],[40.095,60.142,0.688],[41.05,61.574,0.704],[42.004,63.006,0.721],[42.959,64.438,0.737],[43.914,65.87,0.753],[44.868,67.302,0.77],[45.823,68.734,0.786],[46.778,70.166,0.802],[47.732,71.598,0.819],[48.687,73.03,0.835],[49.641,74.462,0.852],[50.596,75.894,0.868],[51.551,77.326,0.884],[52.505,78.758,0.901],[53.46,80.19,0.917],[54.415,81.622,0.933],[55.369,83.054,0.95],[56.324,84.486,0.966],[57.279,85.918,0.982]],"hour":[null,[57.278,85.917,0.982],[114.556,171.834,1.964],[171.834,257.751,2.946],[229.112,343.668,3.928],[286.39,429.585,4.91],[343.668,515.502,5.892],[400.946,601.419,6.874],[458.224,687.337,7.856]]}};
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
-const APP_VERSION='7.1.4';
-const WHATS_NEW_VERSION='7.1';
+const APP_VERSION='7.2.0';
+const WHATS_NEW_VERSION='7.2';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
 const SAVED_JOBS_KEY='engineerPayLogSavedJobs';
 const LAST_SEEN_VERSION_KEY='engineerPayLogLastSeenVersion';
@@ -759,10 +921,202 @@ const TRAINEE_MODE_KEY='engineerPayLogTraineeMode';
 const MY_JOB_KEY='engineerPayLogMyJob';
 const MY_JOB_INTRO_SEEN_KEY='engineerPayLogMyJobIntroSeen';
 const VACATION_GROSS_KEY='engineerPayLogVacationGrossByYear';
+const APPEARANCE_KEY='engineerPayLogAppearanceMode';
+const NET_ESTIMATOR_ENABLED_KEY='engineerPayLogNetEstimatorEnabled';
+const NET_PAY_HISTORY_KEY='engineerPayLogNetPayHistory';
+const HISTORY_VIEW_KEY='engineerPayLogHistoryView';
 let savedJobs=JSON.parse(localStorage.getItem(SAVED_JOBS_KEY)||'[]');
 let pendingRestoreData=null;
 let paycheckWeekOffset=0;
 function getHireDate(){return localStorage.getItem(HIRE_DATE_KEY)||''}
+
+function getAppearanceMode(){return localStorage.getItem(APPEARANCE_KEY)||'system'}
+function resolveAppearance(mode=getAppearanceMode()){
+  if(mode==='dark'||mode==='light')return mode;
+  return window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+}
+function applyAppearance(){
+  const resolved=resolveAppearance();
+  document.documentElement.setAttribute('data-theme',resolved);
+  const meta=document.querySelector('meta[name="theme-color"]');
+  if(meta)meta.setAttribute('content',resolved==='dark'?'#0b1422':'#10233f');
+  document.querySelectorAll('input[name="appearanceMode"]').forEach(r=>r.checked=r.value===getAppearanceMode());
+}
+function setAppearanceMode(mode){
+  if(!['system','light','dark'].includes(mode))mode='system';
+  localStorage.setItem(APPEARANCE_KEY,mode);applyAppearance();
+}
+if(window.matchMedia){
+  const appearanceMedia=window.matchMedia('(prefers-color-scheme: dark)');
+  const appearanceListener=()=>{if(getAppearanceMode()==='system')applyAppearance()};
+  if(appearanceMedia.addEventListener)appearanceMedia.addEventListener('change',appearanceListener);
+  else if(appearanceMedia.addListener)appearanceMedia.addListener(appearanceListener);
+}
+
+function getNetPayHistory(){
+  try{
+    const v=JSON.parse(localStorage.getItem(NET_PAY_HISTORY_KEY)||'[]');
+    return Array.isArray(v)?v.slice(0,10).map(x=>({gross:Number(x.gross)||0,net:Number(x.net)||0})):[];
+  }catch{return []}
+}
+function netEstimatorEnabled(){return localStorage.getItem(NET_ESTIMATOR_ENABLED_KEY)==='1'}
+function netTakeHomeRate(){
+  const rows=getNetPayHistory().filter(x=>x.gross>0&&x.net>=0);
+  if(rows.length!==10)return null;
+  return rows.reduce((sum,x)=>sum+(x.net/x.gross),0)/10;
+}
+function requestNetEstimatorToggle(on){
+  if(on){
+    document.getElementById('netEstimatorIntroModal')?.classList.add('open');
+  }else{
+    localStorage.setItem(NET_ESTIMATOR_ENABLED_KEY,'0');
+    renderNetEstimatorSettings();renderDashboard();
+  }
+}
+function cancelNetEstimatorIntro(){
+  document.getElementById('netEstimatorIntroModal')?.classList.remove('open');
+  const t=document.getElementById('netEstimatorToggle');if(t)t.checked=netEstimatorEnabled();
+}
+function continueNetEstimatorIntro(){
+  localStorage.setItem(NET_ESTIMATOR_ENABLED_KEY,'1');
+  document.getElementById('netEstimatorIntroModal')?.classList.remove('open');
+  renderNetEstimatorSettings();renderDashboard();
+  setTimeout(()=>document.getElementById('netPaySetup')?.scrollIntoView({behavior:'smooth',block:'start'}),60);
+}
+function renderNetPayRows(){
+  const host=document.getElementById('netPayRows');if(!host)return;
+  const rows=getNetPayHistory();
+  host.innerHTML=Array.from({length:10},(_,i)=>{
+    const r=rows[i]||{gross:0,net:0},pct=r.gross>0?(r.net/r.gross*100):null;
+    return `<div class="net-pay-row">
+      <div class="row-num">${i+1}</div>
+      <div><label>Gross</label><input id="netGross${i}" type="number" min="0" step="0.01" inputmode="decimal" value="${r.gross||''}" oninput="updateNetPayRowPct(${i})"></div>
+      <div><label>Net</label><input id="netNet${i}" type="number" min="0" step="0.01" inputmode="decimal" value="${r.net||''}" oninput="updateNetPayRowPct(${i})"></div>
+      <div class="pct" id="netPct${i}">${pct!=null?pct.toFixed(1)+'%':'—'}</div>
+    </div>`;
+  }).join('');
+}
+function updateNetPayRowPct(i){
+  const g=Number(document.getElementById(`netGross${i}`)?.value)||0,n=Number(document.getElementById(`netNet${i}`)?.value)||0,p=document.getElementById(`netPct${i}`);
+  if(p)p.textContent=g>0?(n/g*100).toFixed(1)+'%':'—';
+}
+function saveNetPayHistory(){
+  const rows=[];
+  for(let i=0;i<10;i++){
+    const gross=Number(document.getElementById(`netGross${i}`)?.value)||0;
+    const net=Number(document.getElementById(`netNet${i}`)?.value)||0;
+    if(!(gross>0)||net<0||net>gross){
+      alert(`Enter a valid gross and net amount for paycheck ${i+1}. Net pay cannot exceed gross pay.`);
+      return;
+    }
+    rows.push({gross,net});
+  }
+  localStorage.setItem(NET_PAY_HISTORY_KEY,JSON.stringify(rows));
+  localStorage.setItem(NET_ESTIMATOR_ENABLED_KEY,'1');
+  renderNetEstimatorSettings();renderDashboard();
+  const rate=netTakeHomeRate();
+  alert(`Paycheck history saved. Estimated take-home rate: ${(rate*100).toFixed(1)}%.`);
+}
+function renderNetEstimatorSettings(){
+  const toggle=document.getElementById('netEstimatorToggle'),setup=document.getElementById('netPaySetup'),summary=document.getElementById('netEstimatorSummary');
+  if(toggle)toggle.checked=netEstimatorEnabled();
+  if(setup)setup.style.display=netEstimatorEnabled()?'block':'none';
+  renderNetPayRows();
+  const rate=netTakeHomeRate();
+  if(summary){
+    if(rate!=null){
+      summary.style.display='block';
+      summary.innerHTML=`<strong>Estimated Take-Home Rate:</strong> ${(rate*100).toFixed(1)}%<br><span class="muted">Average of the 10 individual net-to-gross percentages.</span>`;
+    }else if(netEstimatorEnabled()){
+      summary.style.display='block';summary.innerHTML='<strong>Setup incomplete.</strong> Enter all 10 recent paychecks to begin showing a Net Estimate.';
+    }else summary.style.display='none';
+  }
+}
+
+function loadVacationGrossSettings(){
+  const d=new Date(),year=d.getFullYear(),prior=year-1,label=document.getElementById('settingsVacationGrossLabel'),input=document.getElementById('settingsVacationGross');
+  if(label)label.textContent=`${prior} Gross Earnings for ${year} Vacation`;
+  if(input){const v=getVacationGrossForYear(year);input.value=v?String(v):''}
+}
+function saveVacationGrossFromSettings(){
+  const input=document.getElementById('settingsVacationGross'),year=new Date().getFullYear(),n=Number(input?.value)||0;
+  if(!input)return;
+  if(n>0)setVacationGrossForYear(year,n);
+  else{
+    const map=getVacationGrossMap();delete map[String(year)];localStorage.setItem(VACATION_GROSS_KEY,JSON.stringify(map));
+  }
+  updateVacationUI();
+}
+
+let calendarMonthCursor=null;
+function getHistoryView(){return localStorage.getItem(HISTORY_VIEW_KEY)||'list'}
+function setHistoryView(view){
+  if(!['list','calendar'].includes(view))view='list';
+  localStorage.setItem(HISTORY_VIEW_KEY,view);
+  const list=view==='list';
+  const lt=document.getElementById('historyListTab'),ct=document.getElementById('historyCalendarTab');
+  if(lt)lt.classList.toggle('active',list);if(ct)ct.classList.toggle('active',!list);
+  const lc=document.getElementById('historyListControls'),hl=document.getElementById('historyList'),cw=document.getElementById('historyCalendarWrap');
+  if(lc)lc.style.display=list?'block':'none';if(hl)hl.style.display=list?'block':'none';if(cw)cw.style.display=list?'none':'block';
+  if(!list){if(!calendarMonthCursor)calendarMonthCursor=currentCalendarMonth();renderHistoryCalendar()}
+  else renderHistory();
+}
+function currentCalendarMonth(){
+  const dates=shifts.map(s=>s.date).filter(Boolean).sort();
+  const d=dates.length?new Date(dates[dates.length-1]+'T12:00:00'):new Date();
+  return new Date(d.getFullYear(),d.getMonth(),1);
+}
+function changeCalendarMonth(delta){
+  if(!calendarMonthCursor)calendarMonthCursor=currentCalendarMonth();
+  calendarMonthCursor=new Date(calendarMonthCursor.getFullYear(),calendarMonthCursor.getMonth()+delta,1);
+  renderHistoryCalendar();
+}
+function specialCalendarColor(s){
+  if(isSecretUnpaidSickShift(s))return '#687386';
+  const map={
+    'Personal Day':'#1f8f5f','Two Year Book':'#00B2A9','Vacation Week':'#b95f83','Single Vacation Day':'#b95f83',
+    'Sick Day':'#7c5cc4','Paid Guarantee':'#64748b','Company Court':'#b56a18','Miscellaneous Instruction':'#356bb3','Holiday - Not Worked':'#9a6700'
+  };
+  return map[s.specialShift]||'#4d6480';
+}
+function calendarEventLabel(s){
+  if(isSecretUnpaidSickShift(s))return 'Unpaid Sick';
+  if(s.specialShift==='Two Year Book')return '2 Yr Book';
+  if(s.specialShift==='Single Vacation Day')return 'Vac Day';
+  if(s.specialShift)return s.specialShift;
+  return s.assignment||'Shift';
+}
+function calendarEntriesForDate(dateStr){
+  const entries=[];
+  for(const s of shifts){
+    if(s.specialShift==='Vacation Week'){
+      const end=s.vacationEndDate||addDaysISO(s.date,6);
+      if(dateStr>=s.date&&dateStr<=end)entries.push(s);
+    }else if(s.date===dateStr)entries.push(s);
+  }
+  return entries;
+}
+function renderHistoryCalendar(){
+  const host=document.getElementById('historyCalendar'),label=document.getElementById('calendarMonthLabel');
+  if(!host)return;
+  if(!calendarMonthCursor)calendarMonthCursor=currentCalendarMonth();
+  const y=calendarMonthCursor.getFullYear(),m=calendarMonthCursor.getMonth();
+  if(label)label.textContent=calendarMonthCursor.toLocaleDateString('en-US',{month:'long',year:'numeric'});
+  const first=new Date(y,m,1),gridStart=new Date(y,m,1-first.getDay());
+  const heads=['SUN','MON','TUE','WED','THU','FRI','SAT'].map(x=>`<div class="calendar-head">${x}</div>`).join('');
+  let cells='';
+  for(let i=0;i<42;i++){
+    const d=new Date(gridStart);d.setDate(gridStart.getDate()+i);
+    const ds=isoLocal(d),outside=d.getMonth()!==m,entries=calendarEntriesForDate(ds);
+    const shown=entries.slice(0,3).map(s=>{
+      const terminal=terminalForValue(s.location),color=(s.specialShift||isSecretUnpaidSickShift(s))?specialCalendarColor(s):(terminal?terminal.color:'#4D5357');
+      const cls=s.specialShift==='Vacation Week'?' vacation':(isSecretUnpaidSickShift(s)?' unpaid':'');
+      return `<button class="calendar-event${cls}" type="button" style="background:${color}" onclick="editShift('${s.id}')" title="${escapeHTML(calendarEventLabel(s))}">${escapeHTML(calendarEventLabel(s))}</button>`;
+    }).join('');
+    cells+=`<div class="calendar-day${outside?' outside':''}"><div class="calendar-date">${d.getDate()}</div>${shown}${entries.length>3?`<div class="calendar-more">+${entries.length-3} more</div>`:''}</div>`;
+  }
+  host.innerHTML=`<div class="calendar-grid">${heads}${cells}</div>`;
+}
 function getVacationGrossMap(){
   try{const v=JSON.parse(localStorage.getItem(VACATION_GROSS_KEY)||'{}');return v&&typeof v==='object'&&!Array.isArray(v)?v:{}}
   catch{return {}}
@@ -1901,21 +2255,28 @@ function previewRestore(data){
   document.getElementById('restoreHireDate').textContent=data.hireDate?formatDateShort(data.hireDate):'Not included';document.getElementById('restorePreviewModal').classList.add('open');
 }
 function cancelRestore(){pendingRestoreData=null;document.getElementById('restorePreviewModal').classList.remove('open')}
-function confirmRestore(){const data=pendingRestoreData;if(!data)return;shifts=data.shifts.map(upgradeShift);if(data.hireDate)localStorage.setItem(HIRE_DATE_KEY,data.hireDate);if(data.traineeMode!==undefined)localStorage.setItem(TRAINEE_MODE_KEY,data.traineeMode?'on':'off');if(data.myJob!==undefined){if(data.myJob)localStorage.setItem(MY_JOB_KEY,JSON.stringify(data.myJob));else localStorage.removeItem(MY_JOB_KEY)}if(data.vacationGrossByYear&&typeof data.vacationGrossByYear==='object')localStorage.setItem(VACATION_GROSS_KEY,JSON.stringify(data.vacationGrossByYear));if(Array.isArray(data.savedJobs)){savedJobs=data.savedJobs;persistSavedJobs()}persist();cancelRestore();updateRateDisplays();renderAll();alert('Backup restored.')}
+function confirmRestore(){const data=pendingRestoreData;if(!data)return;shifts=data.shifts.map(upgradeShift);if(data.hireDate)localStorage.setItem(HIRE_DATE_KEY,data.hireDate);if(data.traineeMode!==undefined)localStorage.setItem(TRAINEE_MODE_KEY,data.traineeMode?'on':'off');if(data.myJob!==undefined){if(data.myJob)localStorage.setItem(MY_JOB_KEY,JSON.stringify(data.myJob));else localStorage.removeItem(MY_JOB_KEY)}if(data.vacationGrossByYear&&typeof data.vacationGrossByYear==='object')localStorage.setItem(VACATION_GROSS_KEY,JSON.stringify(data.vacationGrossByYear));if(data.appearanceMode)localStorage.setItem(APPEARANCE_KEY,data.appearanceMode);if(data.netEstimatorEnabled!==undefined)localStorage.setItem(NET_ESTIMATOR_ENABLED_KEY,data.netEstimatorEnabled?'1':'0');if(Array.isArray(data.netPayHistory))localStorage.setItem(NET_PAY_HISTORY_KEY,JSON.stringify(data.netPayHistory.slice(0,10)));if(Array.isArray(data.savedJobs)){savedJobs=data.savedJobs;persistSavedJobs()}persist();cancelRestore();updateRateDisplays();renderAll();alert('Backup restored.')}
 function openWhatsNew(force=false){if(!force&&localStorage.getItem(LAST_SEEN_VERSION_KEY)===WHATS_NEW_VERSION)return;document.getElementById('whatsNewModal')?.classList.add('open')}
 function closeWhatsNew(){localStorage.setItem(LAST_SEEN_VERSION_KEY,WHATS_NEW_VERSION);document.getElementById('whatsNewModal').classList.remove('open')}
 function shiftHTML(s){
   const c=calculate(s);let tags=[];
-  if(c&&c.payType!=='Normal')tags.push(`<span class="badge ot">${c.payType}</span>`);
+  if(c&&c.payType!=='Normal')tags.push(`<span class="badge ot">${escapeHTML(c.payType)}</span>`);
   if(s.mpte||s.freightMeal||s.fuelClaim||s.otCompletion||s.unscheduledOT||s.pone||s.noCo||s.cert||s.commingle||s.yardMove||s.sheridanMove||s.terminalNotCrewBook||s.runaround||s.a2)tags.push('<span class="badge penalty">Extra</span>');
-  if(s.timeSlip)tags.push(`<span class="badge timeslip">Time Slip • ${s.timeSlipStatus||'Pending'}</span>`);
+  if(s.timeSlip)tags.push(`<span class="badge timeslip">Time Slip • ${escapeHTML(s.timeSlipStatus||'Pending')}</span>`);
   if(!c)tags.push('<span class="badge">In progress</span>');
   const vacationWeek=s.specialShift==='Vacation Week',unpaidSick=isSecretUnpaidSickShift(s);
   const timeText=unpaidSick?'Unpaid • No earnings':(vacationWeek?`Vacation period: ${vacationRangeText(s.date)}`:(s.specialShift&&!s.start?'Special Shift':(s.end?`${s.start}–${s.end}`:`${s.start||'—'}–…`)));
-  const typeText=s.classDay?' • Class':(s.specialShift?` • ${s.specialShift}`:(s.shiftType?` • ${s.shiftType}`:''));
-  const timeSlipText=s.timeSlip?` • Time Slip: ${s.timeSlipStatus||'Pending'}`:'';
+  const terminal=terminalForValue(s.location),dot=s.location?terminalDotHTML(s.location):'';
+  const subLocation=s.location?`${dot}${escapeHTML(canonicalLocation(s.location))}`:'';
+  const typeText=s.classDay?'Class':(s.shiftType||'');
+  const sub=[timeText,subLocation,typeText].filter(Boolean).join(' • ');
   const dateText=vacationWeek?`${dateLabel(s.date)}–${dateLabel(s.vacationEndDate||addDaysISO(s.date,6))}`:dateLabel(s.date);
-  return `<div class="shift${s.timeSlip?' timeslip':''}"><div class="shift-date">${dateText}</div><div class="shift-main"><div class="shift-title">${s.classDay?'Class':(s.specialShift||s.assignment||'Shift')} ${tags.join(' ')}</div><div class="shift-sub">${timeText}${s.location?' • '+terminalDotHTML(s.location)+escapeHTML(canonicalLocation(s.location)):''}${typeText}${timeSlipText}</div></div><div><div class="shift-pay">${c&&!c.rateMissing?money(c.total):'—'}</div><div class="shift-actions"><button class="btn small" onclick="duplicateShift('${s.id}')">Duplicate</button><button class="btn small" onclick="editShift('${s.id}')">Edit</button></div></div></div>`
+  const title=escapeHTML(s.classDay?'Class':(s.specialShift||s.assignment||'Shift'));
+  return `<div class="shift${s.timeSlip?' timeslip':''}">
+    <div class="shift-date">${dateText}</div>
+    <div class="shift-main"><div class="shift-title">${title} ${tags.join(' ')}</div><div class="shift-sub">${sub}</div></div>
+    <div><div class="shift-pay">${c&&!c.rateMissing?money(c.total):'—'}</div><div class="shift-actions"><button class="btn small" onclick="duplicateShift('${s.id}')">Duplicate</button><button class="btn small" onclick="editShift('${s.id}')">Edit</button></div></div>
+  </div>`
 }
 function renderDashboard(){
   const valid=shifts.map(s=>({s,c:calculate(s)})).filter(x=>x.c&&!x.c.rateMissing).sort((a,b)=>b.s.date.localeCompare(a.s.date));
@@ -1925,10 +2286,15 @@ function renderDashboard(){
   avgShift.textContent=money(valid.length?valid.reduce((a,x)=>a+x.c.total,0)/valid.length:0);recentShifts.innerHTML=valid.length?valid.slice(0,6).map(x=>shiftHTML(x.s)).join(''):'<div class="empty">No shifts saved yet.</div>';
   const pi=paycheckInfo(0),amount=document.getElementById('dashPaycheckAmount'),dates=document.getElementById('dashPaycheckDates');
   if(amount)amount.textContent=money(pi.total);if(dates)dates.textContent=`${pi.periodStart.toLocaleDateString('en-US',{month:'short',day:'numeric'})}–${pi.periodEnd.toLocaleDateString('en-US',{month:'short',day:'numeric'})} • pays ${pi.payday.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;
+  const netBlock=document.getElementById('dashNetEstimateBlock'),netAmount=document.getElementById('dashNetEstimate'),netRate=netTakeHomeRate();
+  const showNet=netEstimatorEnabled()&&netRate!=null;
+  if(netBlock)netBlock.style.display=showNet?'block':'none';
+  if(netAmount&&showNet)netAmount.textContent=money(pi.total*netRate);
   const p=document.getElementById('dashPendingSlips');if(p)p.textContent=String(shifts.filter(s=>s.timeSlip&&(s.timeSlipStatus||'Pending')==='Pending').length);
   const f=document.getElementById('dashSavedJobs');if(f)f.textContent=String(savedJobs.length);updateBackupUI();
 }
 function renderHistory(){
+  if(getHistoryView()==='calendar'){renderHistoryCalendar();return}
   const q=(historySearch?.value||'').toLowerCase();
   let list=shifts.filter(s=>s.start||s.specialShift).filter(s=>[
     s.date,s.assignment,s.location,s.shiftType,s.specialShift,s.specialCategory,s.conductorName,s.brakemanName,s.notes,
@@ -1946,8 +2312,8 @@ function renderHistory(){
   }
   historyList.innerHTML=html
 }
-function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION}
-function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='settings'){updateBackupUI();loadMyJobSettings()}renderMyJobUI()}
+function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView());const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='settings'){updateBackupUI();loadMyJobSettings();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
   return shifts.filter(s=>[
@@ -2158,7 +2524,7 @@ async function exportPDF(){
   const tb=strBytes(tail);chunks.push(tb);total+=tb.length;const pdf=new Uint8Array(total);let pos=0;for(const ch of chunks){pdf.set(ch,pos);pos+=ch.length}
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([pdf],{type:'application/pdf'}));a.download='Engineer_Pay_Log_Shift_History.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
 }
-function exportJSON(){const exported=new Date().toISOString();download('Engineer_Pay_Log_backup.json',JSON.stringify({version:10,appVersion:APP_VERSION,exported,hireDate:getHireDate(),traineeMode:isTraineeMode(),myJob:getMyJob(),vacationGrossByYear:getVacationGrossMap(),savedJobs,shifts},null,2),'application/json');localStorage.setItem(LAST_BACKUP_KEY,exported);updateBackupUI()}
+function exportJSON(){const exported=new Date().toISOString();download('Engineer_Pay_Log_backup.json',JSON.stringify({version:11,appVersion:APP_VERSION,exported,hireDate:getHireDate(),traineeMode:isTraineeMode(),myJob:getMyJob(),vacationGrossByYear:getVacationGrossMap(),appearanceMode:getAppearanceMode(),netEstimatorEnabled:netEstimatorEnabled(),netPayHistory:getNetPayHistory(),savedJobs,shifts},null,2),'application/json');localStorage.setItem(LAST_BACKUP_KEY,exported);updateBackupUI()}
 function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const data=JSON.parse(r.result);if(!data||!Array.isArray(data.shifts))throw 0;previewRestore(data)}catch{alert('That backup file could not be read or does not contain a valid Engineer Pay Log backup.')}};r.readAsText(f);e.target.value=''}
 function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 function clearAll(){if(confirm('Delete every saved shift from this browser?')){shifts=[];persist();renderAll()}}
