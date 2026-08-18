@@ -631,6 +631,29 @@
       color:#aab8c9!important;
     }
 
+
+    /* V7.2.5 convenience features */
+    .recent-shift-quickfill{border:1px solid var(--line);border-radius:14px;padding:11px;background:var(--card);margin-top:-2px}
+    .recent-shift-buttons{display:flex;gap:7px;flex-wrap:wrap}
+    .recent-shift-btn{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:8px 10px;font-weight:850;font-size:12px;text-align:left}
+    .recent-shift-btn small{display:block;font-weight:650;color:var(--muted);margin-top:3px}
+    .myjob-week-preview{margin-top:14px;margin-bottom:12px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card)}
+    .myjob-preview-head{padding:11px 13px;font-weight:850;border-bottom:1px solid var(--line);background:var(--bg)}
+    .myjob-preview-row{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--line)}
+    .myjob-preview-row:last-child{border-bottom:0}
+    .myjob-preview-day{font-weight:850;color:var(--muted);font-size:11px}
+    .myjob-preview-main{min-width:0}
+    .myjob-preview-title{font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .myjob-preview-sub{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .myjob-preview-time{font-size:11px;font-weight:800;color:var(--muted);text-align:right;white-space:nowrap}
+    .calendar-day.clickable-empty{cursor:pointer}
+    .calendar-day.clickable-empty:active{box-shadow:inset 0 0 0 2px var(--brand2)}
+    html[data-theme="dark"] .recent-shift-quickfill,
+    html[data-theme="dark"] .myjob-week-preview{background:#101d2d!important;border-color:#314158!important}
+    html[data-theme="dark"] .recent-shift-btn,
+    html[data-theme="dark"] .myjob-preview-head{background:#0a1727!important;color:#f2f6fb!important;border-color:#3c5069!important}
+    html[data-theme="dark"] .myjob-preview-row{border-color:#314158!important}
+
 </style>
   <script>
     try{
@@ -974,7 +997,9 @@
           </div>
           </div>
 
-          <p class="notice" style="margin-top:12px">Using My Job fills only the assignment, location, scheduled times, and Shift Type = Own. You can freely edit the daily shift afterward without changing this saved template.</p>
+          
+          <div id="myJobWeekPreview" class="myjob-week-preview" style="display:none"></div>
+<p class="notice" style="margin-top:12px">Using My Job fills only the assignment, location, scheduled times, and Shift Type = Own. You can freely edit the daily shift afterward without changing this saved template.</p>
           <button class="btn primary" type="button" onclick="saveMyJob()">Save My Job</button>
         </div>
       </div>
@@ -1023,7 +1048,7 @@
       </div>
       <div class="card span6">
         <div class="section-title"><h2>About</h2></div>
-        <div class="rate-note"><strong>Engineer Pay Log</strong><br>Version <span id="settingsAppVersion">7.2.4</span><br><br><strong>Current release:</strong> Dark Mode, Estimated Net Pay, List/Calendar History views, vacation gross setup in Settings, and a refreshed app icon.</div>
+        <div class="rate-note"><strong>Engineer Pay Log</strong><br>Version <span id="settingsAppVersion">7.2.5</span><br><br><strong>Current release:</strong> Dark Mode, Estimated Net Pay, List/Calendar History views, vacation gross setup in Settings, and a refreshed app icon.</div>
         <button class="btn small" style="margin-top:12px" onclick="openWhatsNew(true)">What's New</button>
       </div>
     </div>
@@ -1115,7 +1140,9 @@
       <ul class="whats-new-list">
         <li><strong>Dark Mode</strong> — Choose System Default, Light, or Dark in Settings. LIRR terminal branch colors remain unchanged.</li>
         <li><strong>Estimated Net Pay</strong> — Optional estimator based on the average take-home percentage from your 10 most recent paychecks.</li>
-        <li><strong>Calendar History</strong> — Switch between the familiar running list and a monthly calendar with branch-colored job entries and Special Shifts.</li>
+        <li><strong>Calendar History</strong> — Switch between the familiar running list and a monthly calendar with branch-colored job entries and Special Shifts. Tap an empty date to start a new shift for that day.</li>
+        <li><strong>Repeat Recent Shift</strong> — Quickly fill a new entry from one of your five most recent unique worked assignments.</li>
+        <li><strong>My Job weekly preview</strong> — See your saved Monday–Sunday owned-job schedule at a glance in Settings.</li>
         <li><strong>Refreshed History list</strong> — Compact day/date rows, branch-color accents, monthly earnings totals, and the same Duplicate/Edit/search/export tools.</li>
         <li><strong>Vacation setup in Settings</strong> — Save the prior year's gross earnings before you need to enter a Vacation Week or Single Vacation Day.</li>
         <li><strong>New Engineer Pay Log icon</strong> — Updated with the presenting engineer and LIRR diesel imagery.</li>
@@ -1140,6 +1167,11 @@
           <span id="myJobEntryLabel" class="my-job-label"></span>
         </div>
         <div id="assignmentField" class="field full"><label>Assignment</label><input id="assignment" placeholder="e.g. 194" oninput="handleSecretUnpaidSick();calculatePreview()"></div>
+        <div id="recentShiftQuickFill" class="recent-shift-quickfill" style="display:none">
+          <div class="subhead" style="margin-bottom:8px">Repeat Recent Shift</div>
+          <div id="recentShiftQuickButtons" class="recent-shift-buttons"></div>
+          <div class="muted" style="margin-top:7px">Quickly fills assignment, location, scheduled times, and Shift Type from a recent worked shift. Your selected date stays unchanged.</div>
+        </div>
         <div id="locationField" class="field full"><label>Location</label><div id="terminalSelectWrap" class="terminal-select-wrap"><span id="terminalFieldDot" class="terminal-field-dot" aria-hidden="true"></span><select id="locationSelect" onchange="terminalSelectionChanged()" class="terminal-select" data-terminal-select="true"></select></div><div id="otherLocationWrap" style="display:none;margin-top:8px"><input id="locationOther" placeholder="Enter terminal / location" oninput="syncLocationValue()"></div><input id="location" type="hidden"></div>
         <div class="field"><label>Start time</label><input id="start" type="time" required onchange="calculatePreview()"></div>
         <div class="field"><label>Actual release time</label><input id="end" type="time" required onchange="calculatePreview()"></div>
@@ -1308,7 +1340,7 @@
 const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.719,2.578,0.03],[2.292,3.437,0.04],[2.864,4.296,0.05],[3.437,5.156,0.059],[4.01,6.015,0.069],[4.583,6.874,0.079],[5.156,7.733,0.089],[5.728,8.592,0.099],[6.301,9.451,0.109],[6.874,10.311,0.118],[7.447,11.17,0.128],[8.019,12.029,0.138],[8.592,12.888,0.148],[9.165,13.747,0.158],[9.738,14.606,0.167],[10.311,15.466,0.177],[10.883,16.325,0.187],[11.456,17.184,0.197],[12.029,18.043,0.207],[12.602,18.902,0.217],[13.174,19.761,0.226],[13.747,20.621,0.236],[14.32,21.48,0.246],[14.893,22.339,0.256],[15.466,23.198,0.266],[16.038,24.057,0.275],[16.611,24.916,0.285],[17.184,25.776,0.295],[17.757,26.635,0.305],[18.329,27.494,0.315],[18.902,28.353,0.325],[19.475,29.212,0.334],[20.048,30.071,0.344],[20.621,30.931,0.354],[21.193,31.79,0.364],[21.766,32.649,0.374],[22.339,33.508,0.383],[22.912,34.367,0.393],[23.485,35.227,0.403],[24.057,36.086,0.413],[24.63,36.945,0.423],[25.203,37.804,0.433],[25.776,38.663,0.442],[26.348,39.522,0.452],[26.921,40.382,0.462],[27.494,41.241,0.472],[28.067,42.1,0.482],[28.64,42.959,0.491],[29.212,43.818,0.501],[29.785,44.677,0.511],[30.358,45.537,0.521],[30.931,46.396,0.531],[31.503,47.255,0.541],[32.076,48.114,0.55],[32.649,48.973,0.56],[33.222,49.832,0.57],[33.795,50.692,0.58],[34.367,51.551,0.59]],"hour":[null,[34.367,51.55,0.589],[68.734,103.1,1.178],[103.1,154.651,1.768],[137.467,206.201,2.357],[171.834,257.751,2.946],[206.201,309.301,3.535],[240.568,360.852,4.124],[274.935,412.402,4.714]]},"80":{"minute":[null,[0.764,1.146,0.014],[1.528,2.292,0.027],[2.292,3.437,0.04],[3.055,4.583,0.053],[3.819,5.728,0.066],[4.583,6.874,0.079],[5.346,8.019,0.092],[6.11,9.165,0.105],[6.874,10.311,0.118],[7.638,11.456,0.131],[8.401,12.602,0.145],[9.165,13.747,0.158],[9.929,14.893,0.171],[10.692,16.038,0.184],[11.456,17.184,0.197],[12.22,18.329,0.21],[12.984,19.475,0.223],[13.747,20.621,0.236],[14.511,21.766,0.249],[15.275,22.912,0.262],[16.038,24.057,0.275],[16.802,25.203,0.289],[17.566,26.348,0.302],[18.329,27.494,0.315],[19.093,28.64,0.328],[19.857,29.785,0.341],[20.621,30.931,0.354],[21.384,32.076,0.367],[22.148,33.222,0.38],[22.912,34.367,0.393],[23.675,35.513,0.406],[24.439,36.658,0.419],[25.203,37.804,0.433],[25.967,38.95,0.446],[26.73,40.095,0.459],[27.494,41.241,0.472],[28.258,42.386,0.485],[29.021,43.532,0.498],[29.785,44.677,0.511],[30.549,45.823,0.524],[31.313,46.969,0.537],[32.076,48.114,0.55],[32.84,49.26,0.564],[33.604,50.405,0.577],[34.367,51.551,0.59],[35.131,52.696,0.603],[35.895,53.842,0.616],[36.658,54.987,0.629],[37.422,56.133,0.642],[38.186,57.279,0.655],[38.95,58.424,0.668],[39.713,59.57,0.681],[40.477,60.715,0.694],[41.241,61.861,0.708],[42.004,63.006,0.721],[42.768,64.152,0.734],[43.532,65.297,0.747],[44.296,66.443,0.76],[45.059,67.589,0.773],[45.823,68.734,0.786]],"hour":[null,[45.822,68.734,0.786],[91.645,137.467,1.571],[137.467,206.201,2.357],[183.29,274.935,3.142],[229.112,343.668,3.928],[274.935,412.402,4.714],[320.757,481.136,5.499],[366.579,549.869,6.285]]},"90":{"minute":[null,[0.86,1.289,0.015],[1.719,2.578,0.03],[2.578,3.867,0.045],[3.437,5.156,0.059],[4.296,6.444,0.074],[5.156,7.733,0.089],[6.015,9.022,0.104],[6.874,10.311,0.118],[7.733,11.599,0.133],[8.592,12.888,0.148],[9.451,14.177,0.163],[10.311,15.466,0.177],[11.17,16.754,0.192],[12.029,18.043,0.207],[12.888,19.332,0.221],[13.747,20.621,0.236],[14.606,21.909,0.251],[15.466,23.198,0.266],[16.325,24.487,0.28],[17.184,25.776,0.295],[18.043,27.064,0.31],[18.902,28.353,0.325],[19.761,29.642,0.339],[20.621,30.931,0.354],[21.48,32.219,0.369],[22.339,33.508,0.383],[23.198,34.797,0.398],[24.057,36.086,0.413],[24.916,37.374,0.428],[25.776,38.663,0.442],[26.635,39.952,0.457],[27.494,41.241,0.472],[28.353,42.529,0.487],[29.212,43.818,0.501],[30.071,45.107,0.516],[30.931,46.396,0.531],[31.79,47.684,0.546],[32.649,48.973,0.56],[33.508,50.262,0.575],[34.367,51.551,0.59],[35.227,52.84,0.604],[36.086,54.128,0.619],[36.945,55.417,0.634],[37.804,56.706,0.649],[38.663,57.995,0.663],[39.522,59.283,0.678],[40.382,60.572,0.693],[41.241,61.861,0.708],[42.1,63.15,0.722],[42.959,64.438,0.737],[43.818,65.727,0.752],[44.677,67.016,0.766],[45.537,68.305,0.781],[46.396,69.593,0.796],[47.255,70.882,0.811],[48.114,72.171,0.825],[48.973,73.46,0.84],[49.832,74.748,0.855],[50.692,76.037,0.87],[51.551,77.326,0.884]],"hour":[null,[51.55,77.325,0.884],[103.1,154.651,1.768],[154.651,231.976,2.651],[206.201,309.301,3.535],[257.751,386.627,4.419],[309.301,463.952,5.303],[360.852,541.278,6.187],[412.402,618.603,7.07]]},"100":{"minute":[null,[0.955,1.432,0.017],[1.91,2.864,0.033],[2.864,4.296,0.05],[3.819,5.728,0.066],[4.774,7.16,0.082],[5.728,8.592,0.099],[6.683,10.024,0.115],[7.638,11.456,0.131],[8.592,12.888,0.148],[9.547,14.32,0.164],[10.501,15.752,0.181],[11.456,17.184,0.197],[12.411,18.616,0.213],[13.365,20.048,0.23],[14.32,21.48,0.246],[15.275,22.912,0.262],[16.229,24.344,0.279],[17.184,25.776,0.295],[18.139,27.208,0.311],[19.093,28.64,0.328],[20.048,30.071,0.344],[21.002,31.503,0.361],[21.957,32.935,0.377],[22.912,34.367,0.393],[23.866,35.799,0.41],[24.821,37.231,0.426],[25.776,38.663,0.442],[26.73,40.095,0.459],[27.685,41.527,0.475],[28.64,42.959,0.491],[29.594,44.391,0.508],[30.549,45.823,0.524],[31.503,47.255,0.541],[32.458,48.687,0.557],[33.413,50.119,0.573],[34.367,51.551,0.59],[35.322,52.983,0.606],[36.277,54.415,0.622],[37.231,55.847,0.639],[38.186,57.279,0.655],[39.141,58.711,0.672],[40.095,60.142,0.688],[41.05,61.574,0.704],[42.004,63.006,0.721],[42.959,64.438,0.737],[43.914,65.87,0.753],[44.868,67.302,0.77],[45.823,68.734,0.786],[46.778,70.166,0.802],[47.732,71.598,0.819],[48.687,73.03,0.835],[49.641,74.462,0.852],[50.596,75.894,0.868],[51.551,77.326,0.884],[52.505,78.758,0.901],[53.46,80.19,0.917],[54.415,81.622,0.933],[55.369,83.054,0.95],[56.324,84.486,0.966],[57.279,85.918,0.982]],"hour":[null,[57.278,85.917,0.982],[114.556,171.834,1.964],[171.834,257.751,2.946],[229.112,343.668,3.928],[286.39,429.585,4.91],[343.668,515.502,5.892],[400.946,601.419,6.874],[458.224,687.337,7.856]]}};
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
-const APP_VERSION='7.2.4';
+const APP_VERSION='7.2.5';
 const WHATS_NEW_VERSION='7.2';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
 const SAVED_JOBS_KEY='engineerPayLogSavedJobs';
@@ -1509,7 +1541,9 @@ function renderHistoryCalendar(){
       const cls=s.specialShift==='Vacation Week'?' vacation':(isSecretUnpaidSickShift(s)?' unpaid':'');
       return `<button class="calendar-event${cls}" type="button" style="background:${color}" onclick="editShift('${s.id}')" title="${escapeHTML(calendarEventLabel(s))}">${escapeHTML(calendarEventLabel(s))}</button>`;
     }).join('');
-    cells+=`<div class="calendar-day${outside?' outside':''}"><div class="calendar-date">${d.getDate()}</div>${shown}${entries.length>3?`<div class="calendar-more">+${entries.length-3} more</div>`:''}</div>`;
+    const canAdd=!outside&&entries.length===0;
+    const addAttrs=canAdd?` onclick="addShiftForCalendarDate('${ds}')" role="button" tabindex="0"`:'';
+    cells+=`<div class="calendar-day${outside?' outside':''}${canAdd?' clickable-empty':''}"${addAttrs}><div class="calendar-date">${d.getDate()}</div>${shown}${entries.length>3?`<div class="calendar-more">+${entries.length-3} more</div>`:''}</div>`;
   }
   host.innerHTML=`<div class="calendar-grid">${heads}${cells}</div>`;
 }
@@ -2117,7 +2151,7 @@ function saveMyJob(){
   }
   const box=document.getElementById('myJobEnabled');if(box)box.checked=true;
   renderMyJobUI();alert('My Job saved.');
-}
+renderMyJobWeekPreview();}
 function loadMyJobSettings(){
   initRegularLocationSelects();initReliefLocationSelects();
   const j=normalizeMyJob(getMyJob())||{type:'regular',regularDays:{},reliefDays:{}};
@@ -2141,7 +2175,7 @@ function loadMyJobSettings(){
     const off=document.getElementById(`myJobRelief${cap}Off`);if(off)off.checked=!!d.reliefDay;
     set(`myJobRelief${cap}Assignment`,d.assignment);setReliefLocationUI(day,d.location||'');set(`myJobRelief${cap}Start`,d.start);set(`myJobRelief${cap}End`,d.end);toggleMyJobReliefDay(day);
   });
-}
+renderMyJobWeekPreview();}
 function renderMyJobUI(){
   const j=normalizeMyJob(getMyJob()),configured=myJobConfigured(),trainee=isTraineeMode();
   const dashCard=document.getElementById('myJobDashboardCard'),settingsCard=document.getElementById('myJobSettingsCard');
@@ -2500,7 +2534,7 @@ function newShift(){
   $('traineeCount').value=1;$('yardCertCount').value=1;
   $('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;
   applyEntryMode();toggleSpecialShift();toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleRunaround();toggleA2();
-  renderMyJobUI();$('shiftModal').classList.add('open');calculatePreview();
+  renderMyJobUI();$('shiftModal').classList.add('open');renderRecentShiftQuickFill();calculatePreview();
 }
 function editShift(id){
   const $=id=>document.getElementById(id);
@@ -2518,7 +2552,7 @@ function editShift(id){
   const rr=Math.max(0,Number(s.runaroundDiffMinutes)||0);$('runaroundHours').value=Math.floor(rr/60);$('runaroundMinutes').value=rr%60;
   $('a2Flag').checked=!!s.a2;const mins=Math.max(0,Number(s.a2Minutes)||0);$('a2Hours').value=Math.floor(mins/60);$('a2Minutes').value=mins%60;
   applyEntryMode();toggleSpecialShift();handleSecretUnpaidSick();if(isVacationSpecial(s.specialShift))updateVacationUI(s.vacationGross||getVacationGrossForYear(Number(s.date.slice(0,4))));toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleRunaround();toggleA2();
-  $('formTitle').textContent='Edit shift';$('deleteBtn').style.display='block';$('duplicateBtn').style.display='inline-flex';$('favoriteBtn').style.display='inline-flex';$('shiftModal').classList.add('open');calculatePreview();
+  $('formTitle').textContent='Edit shift';$('deleteBtn').style.display='block';$('duplicateBtn').style.display='inline-flex';$('favoriteBtn').style.display='inline-flex';$('shiftModal').classList.add('open');renderRecentShiftQuickFill();calculatePreview();
 }
 function duplicateShift(id){
   const $=id=>document.getElementById(id);
@@ -2542,7 +2576,7 @@ function duplicateShift(id){
   $('vacationGrossInput').value='';$('vacationGrossInput').dataset.vacationYear='';
 
   applyEntryMode();toggleSpecialShift();handleSecretUnpaidSick();toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleRunaround();toggleA2();
-  $('shiftModal').classList.add('open');calculatePreview();
+  $('shiftModal').classList.add('open');renderRecentShiftQuickFill();calculatePreview();
 }
 function duplicateCurrentShift(){
   const id=document.getElementById('editId').value;
@@ -2702,6 +2736,76 @@ function shiftHTML(s){
     </div>
   </div>`;
 }
+
+function recentWorkedShifts(limit=5){
+  const seen=new Set(),out=[];
+  const sorted=[...shifts]
+    .filter(s=>s&&!s.classDay&&!s.specialShift&&!isSecretUnpaidSickShift(s)&&s.assignment&&s.start&&s.end)
+    .sort((a,b)=>b.date.localeCompare(a.date));
+  for(const s of sorted){
+    const key=[s.assignment,canonicalLocation(s.location||''),s.start,s.end,s.shiftType||''].join('|');
+    if(seen.has(key))continue;
+    seen.add(key);out.push(s);
+    if(out.length>=limit)break;
+  }
+  return out;
+}
+function renderRecentShiftQuickFill(){
+  const wrap=document.getElementById('recentShiftQuickFill'),host=document.getElementById('recentShiftQuickButtons');
+  if(!wrap||!host)return;
+  const rows=recentWorkedShifts(5);
+  wrap.style.display=rows.length?'block':'none';
+  host.innerHTML=rows.map(s=>{
+    const loc=canonicalLocation(s.location||'');
+    const meta=[loc,s.start&&s.end?`${s.start}–${s.end}`:''].filter(Boolean).join(' • ');
+    return `<button class="recent-shift-btn" type="button" onclick="applyRecentShift('${s.id}')">${escapeHTML(s.assignment)}<small>${escapeHTML(meta)}</small></button>`;
+  }).join('');
+}
+function applyRecentShift(id){
+  const s=shifts.find(x=>x.id===id);if(!s)return;
+  const $=id=>document.getElementById(id),keepDate=$('date')?.value||isoLocal(new Date());
+  $('assignment').value=s.assignment||'';
+  setLocationUI(s.location||'');
+  $('start').value=s.start||'';
+  $('end').value=s.end||'';
+  setShiftTypeUI(s.shiftType||'');
+  $('date').value=keepDate;
+  handleSecretUnpaidSick();
+  toggleSpecialShift();
+  toggleUnscheduledOT();
+  toggleOTCompletion();
+  calculatePreview();
+}
+
+function myJobPreviewRows(){
+  const j=normalizeMyJob(getMyJob());
+  if(!(j&&j.enabled))return [];
+  return MY_JOB_RELIEF_DAYS.map(day=>{
+    const cap=day.charAt(0).toUpperCase()+day.slice(1);
+    if(j.type==='relief'){
+      const d=j.reliefDays?.[day]||{};
+      return {day:cap,relief:!!d.reliefDay,title:d.reliefDay?'Relief Day':(d.assignment||'—'),location:d.location||'',start:d.start||'',end:d.end||''};
+    }
+    const d=j.regularDays?.[day]||{};
+    return {day:cap,relief:!!d.reliefDay,title:d.reliefDay?'Relief Day':(j.assignment||'—'),location:d.location||'',start:d.start||'',end:d.end||''};
+  });
+}
+function renderMyJobWeekPreview(){
+  const host=document.getElementById('myJobWeekPreview');if(!host)return;
+  const rows=myJobPreviewRows();
+  if(!rows.length){host.style.display='none';host.innerHTML='';return}
+  host.style.display='block';
+  host.innerHTML=`<div class="myjob-preview-head">Weekly Schedule Preview</div>${rows.map(r=>{
+    const sub=r.relief?'No regular assignment':canonicalLocation(r.location||'');
+    const tm=r.relief?'—':((r.start||r.end)?`${r.start||'—'}–${r.end||'—'}`:'—');
+    return `<div class="myjob-preview-row"><div class="myjob-preview-day">${r.day.slice(0,3).toUpperCase()}</div><div class="myjob-preview-main"><div class="myjob-preview-title">${escapeHTML(r.title)}</div><div class="myjob-preview-sub">${escapeHTML(sub)}</div></div><div class="myjob-preview-time">${escapeHTML(tm)}</div></div>`;
+  }).join('')}`;
+}
+function addShiftForCalendarDate(dateStr){
+  newShift();
+  const d=document.getElementById('date');
+  if(d){d.value=dateStr;updateVacationUI();calculatePreview()}
+}
 function renderDashboard(){
   const valid=shifts.map(s=>({s,c:calculate(s)})).filter(x=>x.c&&!x.c.rateMissing).sort((a,b)=>b.s.date.localeCompare(a.s.date));
   const now=new Date(),ym=`${now.getFullYear()}-${pad(now.getMonth()+1)}`,month=valid.filter(x=>x.s.date.startsWith(ym));
@@ -2750,7 +2854,7 @@ function renderHistory(){
   }
   historyList.innerHTML=out;
 }
-function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView());const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION}
+function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView());const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;renderMyJobWeekPreview()}
 function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='settings'){updateBackupUI();loadMyJobSettings();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
