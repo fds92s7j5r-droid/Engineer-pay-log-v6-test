@@ -1,0 +1,15 @@
+Engineer Pay Log V8.2.2 TEST PATCH
+
+Purpose:
+Correct Vacation Week handling inside the prior-week 1/5 Special Shift calculation.
+
+Fix:
+A Vacation Week is a five-day paid earnings unit even though its history record spans Monday-Sunday. When an applicable Vacation Week overlaps the qualifying prior-week window, its full weekly earnings are included once. The previous 5/7 (or other calendar-day) proration has been removed.
+
+Retained from V8.2.1:
+The prior-week date lookup uses bounds.startISO, preserving the V8.2.1 date-type fix.
+
+Known regression case:
+Vacation Week $4,073.70 -> Personal Day expected $814.74.
+
+This package is intended for personal-repository testing before production release.
