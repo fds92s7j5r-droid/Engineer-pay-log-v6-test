@@ -1140,23 +1140,22 @@
 
 <div id="whatsNewModal" class="modal">
   <div class="modal-card" style="max-width:600px">
-    <div class="modal-head"><div><h2 style="margin:0">What's New in Engineer Pay Log 8.2.1</h2><div class="muted" style="margin-top:4px">A correction to previous-week Special Shift pay calculations.</div></div></div>
+    <div class="modal-head"><div><h2 style="margin:0">What's New in Engineer Pay Log 8.2.4</h2><div class="muted" style="margin-top:4px">Vacation Week relief days are now used for accurate Special Shift calculations.</div></div></div>
     <div class="modal-body">
       <div class="update-mascot">
         <img src="./icons/icon-192.png" alt="Engineer Pay Log icon">
         <div class="speech-bubble">Change on the change!</div>
       </div>
-      <p style="margin-top:0"><strong>Engineer Pay Log 8.2.1 is here 🚂</strong></p>
-      <p>This update corrects an issue affecting the <strong>1/5 previous-week pay calculation</strong> used for certain Special Shifts.</p>
-      <p>The fix applies to:</p>
+      <p style="margin-top:0"><strong>Engineer Pay Log 8.2.4 is here 🚂</strong></p>
+      <p>Vacation Week entries now include the <strong>two consecutive relief days that applied during that vacation week</strong>.</p>
+      <p>This allows Engineer Pay Log to correctly allocate Vacation Week earnings across your five regular workdays when calculating Special Shifts based on the previous pay period, including:</p>
       <ul class="whats-new-list">
         <li><strong>Personal Day</strong></li>
         <li><strong>Two Year Book</strong></li>
         <li><strong>Miscellaneous Instruction</strong></li>
         <li><strong>Company Court</strong></li>
       </ul>
-      <p>For <strong>Extra List / Subject to Bid</strong> and applicable <strong>Yard / Freight</strong> employees, these shifts will now correctly use the qualifying earnings from the previous Wednesday–Tuesday pay period instead of incorrectly falling back to the minimum basic day.</p>
-      <p class="notice" style="margin-top:14px">No action is required beyond updating to V8.2.1.</p>
+      <p class="notice" style="margin-top:14px"><strong>Important:</strong> Users must select the relief days they had during their Vacation Week to make sure these calculations are correct. If you already have an older Vacation Week saved, open that entry, select the correct relief-day pair, and save it once.</p>
       <div style="text-align:center;margin-top:18px"><strong>Change on the change!</strong></div>
     </div>
     <div class="modal-foot"><button class="btn primary" onclick="closeWhatsNew()">Got It</button></div>
@@ -1183,8 +1182,10 @@
         <div id="unscheduledOTField" class="field full">
           <label class="check"><input id="unscheduledOTFlag" type="checkbox" onchange="toggleUnscheduledOT();calculatePreview()"> Unscheduled Overtime</label>
           <div id="unscheduledOTFields" class="claim-detail" style="display:none">
-            <div class="field full"><label>Crew Book Release Time</label><input id="crewBookReleaseTime" type="time" onchange="calculatePreview()"></div>
-            <div class="readonly-info" style="margin-top:8px"><div class="muted">Unscheduled OT Claimed</div><strong id="unscheduledOTPreview">—</strong><div class="muted" style="margin-top:2px">Time beyond the later of Crew Book release or 8 hours on duty. Write this amount on your time slip.</div></div>
+            <div class="field full"><label>Where did the unscheduled overtime occur?</label><select id="unscheduledOTType" onchange="toggleUnscheduledOTType();calculatePreview()"><option value="after">After Scheduled Release</option><option value="early">Early Report</option></select></div>
+            <div id="unscheduledOTAfterFields"><div class="field full"><label>Crew Book Release Time</label><input id="crewBookReleaseTime" type="time" onchange="calculatePreview()"></div></div>
+            <div id="unscheduledOTEarlyFields" style="display:none"><div class="field full"><label>Scheduled On-Duty Time</label><input id="scheduledOnDutyTime" type="time" onchange="calculatePreview()"></div></div>
+            <div class="readonly-info" style="margin-top:8px"><div class="muted" id="unscheduledOTPreviewLabel">Unscheduled OT Claimed</div><strong id="unscheduledOTPreview">—</strong><div class="muted" id="unscheduledOTPreviewHelp" style="margin-top:2px">Time beyond the later of Crew Book release or 8 hours on duty. Write this amount on your time slip.</div></div>
           </div>
         </div>
         
@@ -1376,8 +1377,8 @@
 const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.719,2.578,0.03],[2.292,3.437,0.04],[2.864,4.296,0.05],[3.437,5.156,0.059],[4.01,6.015,0.069],[4.583,6.874,0.079],[5.156,7.733,0.089],[5.728,8.592,0.099],[6.301,9.451,0.109],[6.874,10.311,0.118],[7.447,11.17,0.128],[8.019,12.029,0.138],[8.592,12.888,0.148],[9.165,13.747,0.158],[9.738,14.606,0.167],[10.311,15.466,0.177],[10.883,16.325,0.187],[11.456,17.184,0.197],[12.029,18.043,0.207],[12.602,18.902,0.217],[13.174,19.761,0.226],[13.747,20.621,0.236],[14.32,21.48,0.246],[14.893,22.339,0.256],[15.466,23.198,0.266],[16.038,24.057,0.275],[16.611,24.916,0.285],[17.184,25.776,0.295],[17.757,26.635,0.305],[18.329,27.494,0.315],[18.902,28.353,0.325],[19.475,29.212,0.334],[20.048,30.071,0.344],[20.621,30.931,0.354],[21.193,31.79,0.364],[21.766,32.649,0.374],[22.339,33.508,0.383],[22.912,34.367,0.393],[23.485,35.227,0.403],[24.057,36.086,0.413],[24.63,36.945,0.423],[25.203,37.804,0.433],[25.776,38.663,0.442],[26.348,39.522,0.452],[26.921,40.382,0.462],[27.494,41.241,0.472],[28.067,42.1,0.482],[28.64,42.959,0.491],[29.212,43.818,0.501],[29.785,44.677,0.511],[30.358,45.537,0.521],[30.931,46.396,0.531],[31.503,47.255,0.541],[32.076,48.114,0.55],[32.649,48.973,0.56],[33.222,49.832,0.57],[33.795,50.692,0.58],[34.367,51.551,0.59]],"hour":[null,[34.367,51.55,0.589],[68.734,103.1,1.178],[103.1,154.651,1.768],[137.467,206.201,2.357],[171.834,257.751,2.946],[206.201,309.301,3.535],[240.568,360.852,4.124],[274.935,412.402,4.714]]},"80":{"minute":[null,[0.764,1.146,0.014],[1.528,2.292,0.027],[2.292,3.437,0.04],[3.055,4.583,0.053],[3.819,5.728,0.066],[4.583,6.874,0.079],[5.346,8.019,0.092],[6.11,9.165,0.105],[6.874,10.311,0.118],[7.638,11.456,0.131],[8.401,12.602,0.145],[9.165,13.747,0.158],[9.929,14.893,0.171],[10.692,16.038,0.184],[11.456,17.184,0.197],[12.22,18.329,0.21],[12.984,19.475,0.223],[13.747,20.621,0.236],[14.511,21.766,0.249],[15.275,22.912,0.262],[16.038,24.057,0.275],[16.802,25.203,0.289],[17.566,26.348,0.302],[18.329,27.494,0.315],[19.093,28.64,0.328],[19.857,29.785,0.341],[20.621,30.931,0.354],[21.384,32.076,0.367],[22.148,33.222,0.38],[22.912,34.367,0.393],[23.675,35.513,0.406],[24.439,36.658,0.419],[25.203,37.804,0.433],[25.967,38.95,0.446],[26.73,40.095,0.459],[27.494,41.241,0.472],[28.258,42.386,0.485],[29.021,43.532,0.498],[29.785,44.677,0.511],[30.549,45.823,0.524],[31.313,46.969,0.537],[32.076,48.114,0.55],[32.84,49.26,0.564],[33.604,50.405,0.577],[34.367,51.551,0.59],[35.131,52.696,0.603],[35.895,53.842,0.616],[36.658,54.987,0.629],[37.422,56.133,0.642],[38.186,57.279,0.655],[38.95,58.424,0.668],[39.713,59.57,0.681],[40.477,60.715,0.694],[41.241,61.861,0.708],[42.004,63.006,0.721],[42.768,64.152,0.734],[43.532,65.297,0.747],[44.296,66.443,0.76],[45.059,67.589,0.773],[45.823,68.734,0.786]],"hour":[null,[45.822,68.734,0.786],[91.645,137.467,1.571],[137.467,206.201,2.357],[183.29,274.935,3.142],[229.112,343.668,3.928],[274.935,412.402,4.714],[320.757,481.136,5.499],[366.579,549.869,6.285]]},"90":{"minute":[null,[0.86,1.289,0.015],[1.719,2.578,0.03],[2.578,3.867,0.045],[3.437,5.156,0.059],[4.296,6.444,0.074],[5.156,7.733,0.089],[6.015,9.022,0.104],[6.874,10.311,0.118],[7.733,11.599,0.133],[8.592,12.888,0.148],[9.451,14.177,0.163],[10.311,15.466,0.177],[11.17,16.754,0.192],[12.029,18.043,0.207],[12.888,19.332,0.221],[13.747,20.621,0.236],[14.606,21.909,0.251],[15.466,23.198,0.266],[16.325,24.487,0.28],[17.184,25.776,0.295],[18.043,27.064,0.31],[18.902,28.353,0.325],[19.761,29.642,0.339],[20.621,30.931,0.354],[21.48,32.219,0.369],[22.339,33.508,0.383],[23.198,34.797,0.398],[24.057,36.086,0.413],[24.916,37.374,0.428],[25.776,38.663,0.442],[26.635,39.952,0.457],[27.494,41.241,0.472],[28.353,42.529,0.487],[29.212,43.818,0.501],[30.071,45.107,0.516],[30.931,46.396,0.531],[31.79,47.684,0.546],[32.649,48.973,0.56],[33.508,50.262,0.575],[34.367,51.551,0.59],[35.227,52.84,0.604],[36.086,54.128,0.619],[36.945,55.417,0.634],[37.804,56.706,0.649],[38.663,57.995,0.663],[39.522,59.283,0.678],[40.382,60.572,0.693],[41.241,61.861,0.708],[42.1,63.15,0.722],[42.959,64.438,0.737],[43.818,65.727,0.752],[44.677,67.016,0.766],[45.537,68.305,0.781],[46.396,69.593,0.796],[47.255,70.882,0.811],[48.114,72.171,0.825],[48.973,73.46,0.84],[49.832,74.748,0.855],[50.692,76.037,0.87],[51.551,77.326,0.884]],"hour":[null,[51.55,77.325,0.884],[103.1,154.651,1.768],[154.651,231.976,2.651],[206.201,309.301,3.535],[257.751,386.627,4.419],[309.301,463.952,5.303],[360.852,541.278,6.187],[412.402,618.603,7.07]]},"100":{"minute":[null,[0.955,1.432,0.017],[1.91,2.864,0.033],[2.864,4.296,0.05],[3.819,5.728,0.066],[4.774,7.16,0.082],[5.728,8.592,0.099],[6.683,10.024,0.115],[7.638,11.456,0.131],[8.592,12.888,0.148],[9.547,14.32,0.164],[10.501,15.752,0.181],[11.456,17.184,0.197],[12.411,18.616,0.213],[13.365,20.048,0.23],[14.32,21.48,0.246],[15.275,22.912,0.262],[16.229,24.344,0.279],[17.184,25.776,0.295],[18.139,27.208,0.311],[19.093,28.64,0.328],[20.048,30.071,0.344],[21.002,31.503,0.361],[21.957,32.935,0.377],[22.912,34.367,0.393],[23.866,35.799,0.41],[24.821,37.231,0.426],[25.776,38.663,0.442],[26.73,40.095,0.459],[27.685,41.527,0.475],[28.64,42.959,0.491],[29.594,44.391,0.508],[30.549,45.823,0.524],[31.503,47.255,0.541],[32.458,48.687,0.557],[33.413,50.119,0.573],[34.367,51.551,0.59],[35.322,52.983,0.606],[36.277,54.415,0.622],[37.231,55.847,0.639],[38.186,57.279,0.655],[39.141,58.711,0.672],[40.095,60.142,0.688],[41.05,61.574,0.704],[42.004,63.006,0.721],[42.959,64.438,0.737],[43.914,65.87,0.753],[44.868,67.302,0.77],[45.823,68.734,0.786],[46.778,70.166,0.802],[47.732,71.598,0.819],[48.687,73.03,0.835],[49.641,74.462,0.852],[50.596,75.894,0.868],[51.551,77.326,0.884],[52.505,78.758,0.901],[53.46,80.19,0.917],[54.415,81.622,0.933],[55.369,83.054,0.95],[56.324,84.486,0.966],[57.279,85.918,0.982]],"hour":[null,[57.278,85.917,0.982],[114.556,171.834,1.964],[171.834,257.751,2.946],[229.112,343.668,3.928],[286.39,429.585,4.91],[343.668,515.502,5.892],[400.946,601.419,6.874],[458.224,687.337,7.856]]}};
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
-const APP_VERSION='8.2.4-test1';
-const WHATS_NEW_VERSION='8.2.1';
+const APP_VERSION='8.2.4 Early Report Test';
+const WHATS_NEW_VERSION='8.2.4';
 const CONTACT_EMAIL='admin@engineerpaylog.com';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
 const SAVED_JOBS_KEY='engineerPayLogSavedJobs';
@@ -1716,7 +1717,9 @@ function upgradeShift(s){
   if(s.sheridanMove===undefined)s.sheridanMove=false;
   if(s.terminalNotCrewBook===undefined)s.terminalNotCrewBook=false;
   if(s.unscheduledOT===undefined)s.unscheduledOT=false;
+  if(s.unscheduledOTType===undefined)s.unscheduledOTType='after';
   if(s.crewBookReleaseTime===undefined)s.crewBookReleaseTime='';
+  if(s.scheduledOnDutyTime===undefined)s.scheduledOnDutyTime='';
   if(s.runaround===undefined)s.runaround=false;
   if(s.runaroundDiffMinutes===undefined)s.runaroundDiffMinutes=0;
   const legacy2A=parse2A(claims);
@@ -1938,15 +1941,18 @@ function calculate(s,depth=0){
   // Normal shifts and passenger-job special shifts use normal job-entry math.
   const start=parseClock(s.start),end=parseClock(s.end);if(start==null||end==null)return null;
   let actual=end-start;if(actual<=0)actual+=1440;
+  const earlyReportMinutes=!traineeMode&&s.unscheduledOT&&s.unscheduledOTType==='early'?Math.max(0,calculateEarlyReportMinutes(s.start,s.scheduledOnDutyTime)||0):0;
+  const scheduledStart=earlyReportMinutes?parseClock(s.scheduledOnDutyTime):null;
+  const regularStart=scheduledStart==null?start:scheduledStart;
 
   // Overtime Upon Completion is paid separately from the original assignment.
   // When this claim is used, ordinary guarantee/overtime is based only on the
   // original job (Start -> Original Job Completion), not the later final End Time.
-  let baseActual=actual;
+  let baseActual=end-regularStart;if(baseActual<=0)baseActual+=1440;
   if(!traineeMode&&s.otCompletion&&s.otCompletionTime){
     const scheduledEnd=parseClock(s.otCompletionTime);
     if(scheduledEnd!=null){
-      baseActual=scheduledEnd-start;
+      baseActual=scheduledEnd-regularStart;
       if(baseActual<=0)baseActual+=1440;
     }
   }
@@ -1954,7 +1960,8 @@ function calculate(s,depth=0){
   const payable=traineeMode?Math.max(480,actual-30):Math.max(480,baseActual);
   const holiday=traineeMode?false:(!!s.holiday||isContractHoliday(s.date)),ssot=traineeMode?false:!!s.ssot,rd=traineeMode?false:!!s.rd,fullOT=holiday||ssot||rd;
   const regular=fullOT?0:basicST;
-  const ot=traineeMode?otPay(Math.max(0,actual-510),ratePct):(fullOT?otPay(payable,ratePct):otPay(Math.max(0,baseActual-480),ratePct));
+  const earlyReportPay=earlyReportMinutes?otPay(earlyReportMinutes,ratePct):0;
+  const ot=traineeMode?otPay(Math.max(0,actual-510),ratePct):(fullOT?otPay(payable,ratePct)+earlyReportPay:otPay(Math.max(0,baseActual-480),ratePct)+earlyReportPay);
   const night=nightPay(overlapNight(start,end),ratePct);
   const holidayBonus=holiday?basicST:0;
   const mptePay=(s.mpte||s.paysMeal)?otPay(20,ratePct):0;
@@ -1994,7 +2001,7 @@ function calculate(s,depth=0){
     comminglePay+classesPay+sheridanPay+terminalPay+runaroundPay+a2+miscPenaltyPay;
   return {actual,payable,holiday,ssot,rd,fullOT,ratePct,
     payType:passengerSpecial?special:(holiday?'Holiday':ssot?'Short Swing':rd?'Relief Day':'Normal'),
-    regular,ot,night,holidayBonus,mptePay,freightMealPay,fuelClaimPay,otCompletionPay,otCompletionMinutes,dailyCertPay,specialPay,
+    regular,ot,earlyReportMinutes,earlyReportPay,night,holidayBonus,mptePay,freightMealPay,fuelClaimPay,otCompletionPay,otCompletionMinutes,dailyCertPay,specialPay,
     traineeCount,ponePay,noCoPay,yardCertCount,certPay,comminglePay,classesPay,sheridanPay,terminalPay,
     runaroundBaseMinutes,runaroundDiffMinutes,runaroundPay,a2mins,a2,miscPenaltyMinutes,miscPenaltyRate,miscPenaltyPay,total};
 }
@@ -2740,7 +2747,7 @@ function formData(){
     timeSlipResolved:$('timeSlipFlag').checked?$('timeSlipResolved').value:'',
     holiday:$('shiftRuleMode').value==='trainee'?false:$('holidayFlag').checked,ssot:$('shiftRuleMode').value==='trainee'?false:$('ssotFlag').checked,rd:$('shiftRuleMode').value==='trainee'?false:$('rdFlag').checked,
     paysMeal:$('paysMealFlag').checked,mpte:$('mpteFlag').checked,freightMeal:$('freightMealFlag').checked,fuelClaim:$('shiftRuleMode').value==='trainee'?false:$('fuelClaimFlag').checked,otCompletion:$('shiftRuleMode').value==='trainee'?false:$('otCompletionFlag').checked,otCompletionTime:$('shiftRuleMode').value==='trainee'?'':($('otCompletionFlag').checked?$('otCompletionTime').value:''),
-    unscheduledOT:$('unscheduledOTFlag').checked,crewBookReleaseTime:$('unscheduledOTFlag').checked?$('crewBookReleaseTime').value:'',
+    unscheduledOT:$('unscheduledOTFlag').checked,unscheduledOTType:$('unscheduledOTFlag').checked?($('unscheduledOTType').value||'after'):'after',crewBookReleaseTime:$('unscheduledOTFlag').checked&&$('unscheduledOTType').value!=='early'?$('crewBookReleaseTime').value:'',scheduledOnDutyTime:$('unscheduledOTFlag').checked&&$('unscheduledOTType').value==='early'?$('scheduledOnDutyTime').value:'',
     pone:$('poneFlag').checked,traineeCount:$('poneFlag').checked?Math.min(2,Math.max(1,Number($('traineeCount').value)||1)):0,
     noCo:$('noCoFlag').checked,cert:$('certFlag').checked,
     yardCertCount:$('certFlag').checked?Math.max(1,Math.round(Number($('yardCertCount').value)||1)):0,
@@ -2830,20 +2837,36 @@ function calculateUnscheduledOTMinutes(startValue,crewBookReleaseValue,actualRel
   const claimStart=Math.max(crewAbs,eightHourPoint);
   return Math.max(0,actualAbs-claimStart);
 }
+function calculateEarlyReportMinutes(actualReportValue,scheduledOnDutyValue){
+  const actual=parseClock(actualReportValue),scheduled=parseClock(scheduledOnDutyValue);
+  if(actual==null||scheduled==null)return null;
+  if(scheduled>actual)return scheduled-actual;
+  if(actual>=1080&&scheduled<=360)return (scheduled+1440)-actual;
+  return 0;
+}
+function calculateStoredUnscheduledOTMinutes(s){
+  if(!s?.unscheduledOT)return 0;
+  return s.unscheduledOTType==='early'?calculateEarlyReportMinutes(s.start,s.scheduledOnDutyTime):calculateUnscheduledOTMinutes(s.start,s.crewBookReleaseTime,s.end);
+}
 function unscheduledOTMinutes(){
   const flag=document.getElementById('unscheduledOTFlag');if(!flag?.checked)return 0;
-  return calculateUnscheduledOTMinutes(
-    document.getElementById('start')?.value,
-    document.getElementById('crewBookReleaseTime')?.value,
-    document.getElementById('end')?.value
-  );
+  if(document.getElementById('unscheduledOTType')?.value==='early')return calculateEarlyReportMinutes(document.getElementById('start')?.value,document.getElementById('scheduledOnDutyTime')?.value);
+  return calculateUnscheduledOTMinutes(document.getElementById('start')?.value,document.getElementById('crewBookReleaseTime')?.value,document.getElementById('end')?.value);
 }
 function updateUnscheduledOTPreview(){
-  const el=document.getElementById('unscheduledOTPreview');if(!el)return;const m=unscheduledOTMinutes();el.textContent=m==null?'—':fmtMinutes(m);
+  const el=document.getElementById('unscheduledOTPreview');if(!el)return;const m=unscheduledOTMinutes(),early=document.getElementById('unscheduledOTType')?.value==='early';el.textContent=m==null?'—':fmtMinutes(m);
+  const label=document.getElementById('unscheduledOTPreviewLabel'),help=document.getElementById('unscheduledOTPreviewHelp');
+  if(label)label.textContent=early?'Early Report OT Claimed':'Unscheduled OT Claimed';
+  if(help)help.textContent=early?'Time from actual report to the scheduled on-duty time. The regular assignment remains anchored to its scheduled on-duty time.':'Time beyond the later of Crew Book release or 8 hours on duty. Write this amount on your time slip.';
+}
+function toggleUnscheduledOTType(){
+  const early=document.getElementById('unscheduledOTType')?.value==='early';
+  const a=document.getElementById('unscheduledOTAfterFields'),e=document.getElementById('unscheduledOTEarlyFields');if(a)a.style.display=early?'none':'block';if(e)e.style.display=early?'block':'none';updateUnscheduledOTPreview();
 }
 function toggleUnscheduledOT(){
   const on=!!document.getElementById('unscheduledOTFlag')?.checked,fields=document.getElementById('unscheduledOTFields');if(fields)fields.style.display=on?'block':'none';
-  if(!on){const t=document.getElementById('crewBookReleaseTime');if(t)t.value=''}updateUnscheduledOTPreview();
+  if(!on){const t=document.getElementById('crewBookReleaseTime'),st=document.getElementById('scheduledOnDutyTime'),ty=document.getElementById('unscheduledOTType');if(t)t.value='';if(st)st.value='';if(ty)ty.value='after'}
+  toggleUnscheduledOTType();updateUnscheduledOTPreview();
 }
 function applyEntryMode(){
   const trainee=document.getElementById('shiftRuleMode').value==='trainee',classDay=trainee&&document.getElementById('classFlag').checked,holidayOff=trainee&&document.getElementById('specialShift').value==='Holiday - Not Worked',simpleDay=classDay||holidayOff;
@@ -3033,7 +3056,7 @@ function newShift(){
   $('formTitle').textContent='Add shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';
   $('date').value=new Date().toISOString().slice(0,10);$('holidayFlag').checked=isContractHoliday($('date').value);
   $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';
-  applyEntryMode();handleSecretUnpaidSick();$('specialShift').value='';$('specialCategory').value='';$('classFlag').checked=false;$('conductorName').value='';$('brakemanName').value='';$('engineerName').value='';$('engineerIBM').value='';$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('unscheduledOTFlag').checked=false;$('crewBookReleaseTime').value='';
+  applyEntryMode();handleSecretUnpaidSick();$('specialShift').value='';$('specialCategory').value='';$('classFlag').checked=false;$('conductorName').value='';$('brakemanName').value='';$('engineerName').value='';$('engineerIBM').value='';$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('unscheduledOTFlag').checked=false;$('unscheduledOTType').value='after';$('crewBookReleaseTime').value='';$('scheduledOnDutyTime').value='';
   $('vacationGrossInput').value='';$('vacationGrossInput').dataset.vacationYear='';$('vacationReliefPair').value='';
   $('traineeCount').value=1;$('yardCertCount').value=1;
   $('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;
@@ -3050,7 +3073,7 @@ function editShift(id){
   $('specialShift').value=s.specialShift||'';$('specialCategory').value=s.specialCategory||'';$('vacationReliefPair').value=s.vacationReliefPair||'';
   $('timeSlipFlag').checked=!!s.timeSlip;$('timeSlipWritten').value=s.timeSlipWritten||'';$('timeSlipSubmitted').value=s.timeSlipSubmitted||'';$('timeSlipLocation').value=s.timeSlipLocation||'';$('timeSlipStatus').value=s.timeSlipStatus||'Pending';$('timeSlipResolved').value=s.timeSlipResolved||'';
   $('holidayFlag').checked=!!s.holiday;$('ssotFlag').checked=!!s.ssot;$('rdFlag').checked=!!s.rd;
-  $('paysMealFlag').checked=!!s.paysMeal;$('mpteFlag').checked=!!s.mpte;$('freightMealFlag').checked=!!s.freightMeal;$('fuelClaimFlag').checked=!!s.fuelClaim;$('otCompletionFlag').checked=!!s.otCompletion;$('otCompletionTime').value=s.otCompletionTime||'';$('unscheduledOTFlag').checked=!!s.unscheduledOT;$('crewBookReleaseTime').value=s.crewBookReleaseTime||'';$('poneFlag').checked=!!s.pone;$('traineeCount').value=Math.min(2,Math.max(1,Number(s.traineeCount)||1));
+  $('paysMealFlag').checked=!!s.paysMeal;$('mpteFlag').checked=!!s.mpte;$('freightMealFlag').checked=!!s.freightMeal;$('fuelClaimFlag').checked=!!s.fuelClaim;$('otCompletionFlag').checked=!!s.otCompletion;$('otCompletionTime').value=s.otCompletionTime||'';$('unscheduledOTFlag').checked=!!s.unscheduledOT;$('unscheduledOTType').value=s.unscheduledOTType||'after';$('crewBookReleaseTime').value=s.crewBookReleaseTime||'';$('scheduledOnDutyTime').value=s.scheduledOnDutyTime||'';$('poneFlag').checked=!!s.pone;$('traineeCount').value=Math.min(2,Math.max(1,Number(s.traineeCount)||1));
   $('noCoFlag').checked=!!s.noCo;$('certFlag').checked=!!s.cert;$('yardCertCount').value=Math.max(1,Number(s.yardCertCount)||1);
   $('commingleFlag').checked=!!s.commingle;$('yardMoveFlag').checked=!!s.yardMove;$('sheridanFlag').checked=!!s.sheridanMove;
   $('terminalFlag').checked=!!s.terminalNotCrewBook;$('runaroundFlag').checked=!!s.runaround;
@@ -3073,7 +3096,7 @@ function duplicateShift(id){
 
   $('notes').value='';
   $('holidayFlag').checked=isContractHoliday($('date').value);$('ssotFlag').checked=false;$('rdFlag').checked=false;
-  $('paysMealFlag').checked=false;$('mpteFlag').checked=false;$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('unscheduledOTFlag').checked=false;$('crewBookReleaseTime').value='';$('poneFlag').checked=false;$('noCoFlag').checked=false;$('certFlag').checked=false;
+  $('paysMealFlag').checked=false;$('mpteFlag').checked=false;$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('unscheduledOTFlag').checked=false;$('unscheduledOTType').value='after';$('crewBookReleaseTime').value='';$('scheduledOnDutyTime').value='';$('poneFlag').checked=false;$('noCoFlag').checked=false;$('certFlag').checked=false;
   $('commingleFlag').checked=false;$('yardMoveFlag').checked=false;$('sheridanFlag').checked=false;$('terminalFlag').checked=false;
   $('runaroundFlag').checked=false;$('a2Flag').checked=false;$('miscPenaltyFlag').checked=false;
   $('traineeCount').value=1;$('yardCertCount').value=1;$('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;$('miscPenaltyDescription').value='';$('miscPenaltyHours').value=0;$('miscPenaltyMinutes').value=0;$('miscPenaltyStraight').checked=true;
@@ -3309,7 +3332,7 @@ function renderHistory(){
   let list=shifts.filter(s=>s.start||s.specialShift||isSecretUnpaidSickShift(s)).filter(s=>[
     s.date,s.assignment,s.location,s.shiftType,s.specialShift,s.specialCategory,s.conductorName,s.brakemanName,s.notes,
     s.paysMeal?'Pays Meal Period':(s.mpte?'Meal Period':''),s.freightMeal?'Freight Meal':'',s.fuelClaim?'Fuel Claim':'',s.otCompletion?'Overtime Upon Completion':'',
-    s.unscheduledOT?`Unscheduled OT ${fmtMinutes(calculateUnscheduledOTMinutes(s.start,s.crewBookReleaseTime,s.end)||0)}`:'',
+    s.unscheduledOT?`Unscheduled OT ${fmtMinutes(calculateStoredUnscheduledOTMinutes(s)||0)}`:'',
     s.pone?'Trainee':'',s.noCo?'Operating Without a Conductor':'',s.cert?'Yard Certification':'',s.commingle?'Commingle':'',
     s.yardMove?'2 Classes of Service':'',s.sheridanMove?'Sheridan Shop House Move':'',s.terminalNotCrewBook?'Terminal Not In Crew Book':'',
     s.runaround?'Runaround Claim':'',s.a2?'Time on Time':'',s.miscPenalty?`Miscellaneous Penalty ${s.miscPenaltyDescription||''}`:'',s.timeSlip?'Time Slip':'',s.timeSlipStatus||''
@@ -3353,7 +3376,7 @@ function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
   return shifts.filter(s=>[
     s.date,s.assignment,s.location,s.shiftType,s.specialShift,s.specialCategory,s.conductorName,s.brakemanName,s.notes,
-    s.paysMeal?'Pays Meal Period':(s.mpte?'Meal Period':''),s.freightMeal?'Freight Meal':'',s.fuelClaim?'Fuel Claim':'',s.otCompletion?'Overtime Upon Completion':'',s.unscheduledOT?`Unscheduled OT ${fmtMinutes(calculateUnscheduledOTMinutes(s.start,s.crewBookReleaseTime,s.end)||0)}`:'',s.pone?'Trainee':'',s.noCo?'Operating Without a Conductor':'',s.cert?'Yard Certification':'',
+    s.paysMeal?'Pays Meal Period':(s.mpte?'Meal Period':''),s.freightMeal?'Freight Meal':'',s.fuelClaim?'Fuel Claim':'',s.otCompletion?'Overtime Upon Completion':'',s.unscheduledOT?`Unscheduled OT ${fmtMinutes(calculateStoredUnscheduledOTMinutes(s)||0)}`:'',s.pone?'Trainee':'',s.noCo?'Operating Without a Conductor':'',s.cert?'Yard Certification':'',
     s.commingle?'Commingle':'',s.yardMove?'2 Classes of Service':'',s.sheridanMove?'Sheridan Shop House Move':'',s.terminalNotCrewBook?'Terminal Not In Crew Book':'',
     s.runaround?'Runaround Claim':'',s.a2?'Time on Time':'',s.miscPenalty?`Miscellaneous Penalty ${s.miscPenaltyDescription||''}`:'',s.timeSlip?'Time Slip':'',s.timeSlipStatus||'',s.timeSlipLocation||''
   ].join(' ').toLowerCase().includes(q)).sort((a,b)=>a.date.localeCompare(b.date));
@@ -3421,7 +3444,7 @@ async function exportPDF(){
       if(c.dailyCertPay)tags.push(['Daily Cert',paleGreen,'0.50 0.76 0.45',green]);
       if(s.paysMeal)tags.push(['Pays Meal Period',paleBlue,'0.52 0.65 0.92',navy]);else if(s.mpte)tags.push(['Meal Period',paleBlue,'0.52 0.65 0.92',navy]);
       if(s.freightMeal)tags.push(['Freight Meal',paleBlue,'0.52 0.65 0.92',navy]);
-      if(s.fuelClaim)tags.push(['Fuel Claim',paleBlue,'0.52 0.65 0.92',navy]);if(s.otCompletion)tags.push([`OT Upon Completion ${fmtMinutes(c.otCompletionMinutes||0)}`,paleBlue,'0.52 0.65 0.92',navy]);if(s.unscheduledOT){const um=calculateUnscheduledOTMinutes(s.start,s.crewBookReleaseTime,s.end)||0;tags.push([`Unscheduled OT ${fmtMinutes(um)}`,paleBlue,'0.52 0.65 0.92',navy]);}
+      if(s.fuelClaim)tags.push(['Fuel Claim',paleBlue,'0.52 0.65 0.92',navy]);if(s.otCompletion)tags.push([`OT Upon Completion ${fmtMinutes(c.otCompletionMinutes||0)}`,paleBlue,'0.52 0.65 0.92',navy]);if(s.unscheduledOT){const um=calculateStoredUnscheduledOTMinutes(s)||0;tags.push([`Unscheduled OT ${fmtMinutes(um)}`,paleBlue,'0.52 0.65 0.92',navy]);}
       if(s.pone)tags.push(['Trainee',paleBlue,'0.52 0.65 0.92',navy]);
       if(s.noCo)tags.push(['No Conductor',paleBlue,'0.52 0.65 0.92',navy]);
       if(s.cert)tags.push(['Yard Cert',paleBlue,'0.52 0.65 0.92',navy]);
@@ -3572,7 +3595,7 @@ initTerminalSelect();
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=8.2.4-test1-20260821').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=8.2.4-early-report-test-20260821').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
