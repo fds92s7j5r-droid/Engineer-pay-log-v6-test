@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#071827" />
+  <meta name="theme-color" content="#082b52" />
   <!-- BRANCH + HOLD DOWN TEST BUILD - LABELS BELOW CHECKBOXES -->
 <title>Engineer Pay Log</title>
   <meta name="application-name" content="Pay Log" />
@@ -659,7 +659,7 @@
     }catch(e){}
   </script>
 
-  <style id="design-lab-railroad_terminal">
+  <style id="design-lab-dashboard_first">
 
 /* DESIGN LAB COMMON: visual-only prototype. No calculation/storage logic changed. */
 .field,.field input,.field textarea,.field select,.terminal-select-wrap,.search{min-width:0;max-width:100%}
@@ -669,51 +669,39 @@ input[type="date"],input[type="time"]{min-width:0!important;max-width:100%!impor
   .field{min-width:0}
 }
 
-/* CONCEPT: RAILROAD TERMINAL — Helvetica + restrained FFVII-menu structure */
-:root{
-  --bg:#071827;--card:#0b2a4b;--ink:#f4f7fb;--muted:#b5c1cf;--line:#8995a3;
-  --brand:#f5f7fa;--brand2:#f0b429;--good:#65d6a6;--warn:#f0b429;--bad:#ff8e87;
-  --shadow:none;--radius:7px;
-}
-html,body{background:#071827!important;color:#f4f7fb!important;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif!important}
-.app{max-width:980px;padding:14px 14px 108px;background:linear-gradient(180deg,#071827 0,#09233d 40%,#071827 100%)}
-.topbar{margin:0 0 12px;padding:16px 12px 14px;border:1px solid #8995a3;border-radius:7px;background:linear-gradient(180deg,#0c3158,#082342);box-shadow:inset 0 0 0 2px rgba(255,255,255,.04)}
-.brand h1{color:#fff!important;font-size:25px;font-weight:800;letter-spacing:.035em;text-transform:uppercase}
-.brand p{color:#9fd8cc!important;letter-spacing:.04em;font-size:12px;text-transform:uppercase}
-.pill{border:1px solid #8995a3!important;background:#071827!important;color:#f0b429!important;border-radius:4px!important;text-transform:uppercase;letter-spacing:.06em;font-size:10px}
-.card,.feature-card,.my-job-card,.my-job-portion,.relief-day,.conditional-panel,.appearance-choice,.readonly-info,.shift,.empty{
-  background:linear-gradient(180deg,#0d3260,#08264a)!important;color:#f4f7fb!important;border:1px solid #9ca8b5!important;border-radius:7px!important;box-shadow:inset 0 0 0 2px rgba(255,255,255,.035)!important
-}
-.grid{gap:10px}
-.section-title{margin-bottom:10px}.section-title h2,.feature-card h3,.my-job-dash-title,.month-title{color:#f0b429!important;text-transform:uppercase;letter-spacing:.045em}
-.notice,.mini,.muted,.shift-sub,.stat .sub,.my-job-dash-sub{color:#bec9d5!important}
-.stat{padding:13px 12px!important;text-align:center}.stat .label{color:#73e3d1!important;font-size:10px;letter-spacing:.08em}.stat .value{font-size:22px;margin-top:4px;color:#fff}.stat .sub{font-size:10px}
-#dashboardView .grid>.stat{grid-column:span 4!important}
-#dashboardView .grid>.calc{grid-column:span 12!important}
-.calc{background:linear-gradient(180deg,#0c3768,#071f3e)!important;border:1px solid #a5afb9!important;color:#fff!important}
-.calc p{color:#c9d6e5!important}.calc .btn.primary{background:#f0b429!important;color:#071827!important;border-color:#f6d271!important}
-.btn{border:1px solid #718093!important;border-radius:5px!important;background:#123b69!important;color:#f4f7fb!important;box-shadow:none!important}
-.btn.primary{background:#1353a0!important;color:#fff!important;border-color:#8aa7c8!important}.btn.good{background:#123e37!important;color:#9ef1d4!important}.btn.danger{background:#47252b!important;color:#ffb3ae!important}
-.field label,.subhead,.my-job-entry .my-job-label,.net-pay-row label{color:#d8e0e8!important;text-transform:uppercase;letter-spacing:.045em;font-size:10px!important}
-.field input,.field textarea,.field select,.search,.net-pay-row input{background:#f5f7fa!important;color:#0b1c31!important;border:1px solid #a7b0ba!important;border-radius:5px!important;-webkit-text-fill-color:#0b1c31}
-.field input::placeholder,.field textarea::placeholder,.search::placeholder{color:#6f7a86!important;-webkit-text-fill-color:#6f7a86}
-.check,.shift-type-choice{background:#0a2748!important;color:#f4f7fb!important;border:1px solid #778797!important;border-radius:5px!important}
-.shift-type-choice:has(input:checked),.check:has(input:checked){border-color:#f0b429!important;box-shadow:inset 0 0 0 1px #f0b429!important;background:#103864!important}
-.time-slip-check,.time-slip-panel,.shift.timeslip{background:#3a3213!important;color:#ffeb9c!important;border-color:#d9b83d!important}.time-slip-panel .subhead{color:#ffe077!important}
-.rate-note,.special-panel,.start-date-prompt,.mode-banner,.backup-reminder{border-radius:5px!important}
-.history{gap:7px}.shift{padding:11px 12px!important}.shift-title,.shift-date,.shift-pay{color:#fff!important}.shift-pay{color:#73e3d1!important}
-.badge{border-radius:4px!important}.badge.ot{background:#4a3510!important;color:#ffd46c!important}.badge.penalty{background:#133d31!important;color:#8ce3bf!important}
-.nav{bottom:8px;width:calc(100% - 16px);max-width:720px;gap:0;padding:3px;background:#071d38!important;border:1px solid #a2acb7!important;border-radius:5px!important;box-shadow:0 8px 25px rgba(0,0,0,.34)!important}
-.nav button{flex:1;border-radius:3px!important;color:#d7e0e9!important;padding:9px 5px!important;text-transform:uppercase;letter-spacing:.035em;font-size:10px!important;border-right:1px solid #3d526b!important}.nav button:last-child{border-right:0!important}.nav button.active{background:#164f99!important;color:#fff!important;box-shadow:inset 0 0 0 1px #6f9dd3}
-.nav button::before{display:block;font-size:18px;line-height:18px;margin-bottom:4px}.nav #nav-dashboard::before{content:"●";color:#64d6a5}.nav #nav-add::before{content:"＋";color:#f0b429}.nav #nav-history::before{content:"▤";color:#dce5ef}.nav #nav-settings::before{content:"⚙";color:#dce5ef}
-.sheet,.modal-card,.modal-head,.modal-body,.modal-foot{background:#082342!important;color:#f4f7fb!important;border-color:#8995a3!important}.sheet{border:1px solid #a0aab4!important;border-radius:7px 7px 0 0!important;box-shadow:0 -12px 40px rgba(0,0,0,.4)!important}.sheet h2,.sheet h3,.modal-card h2{color:#f0b429!important;text-transform:uppercase;letter-spacing:.04em}
-.paycheck-hero{border:1px solid #8995a3;border-radius:6px;background:linear-gradient(180deg,#0d3a70,#08264a)}
-.contact-footer button{color:#98a8ba!important}
+/* CONCEPT: DASHBOARD FIRST — modern mobile dashboard, system typography */
+:root{--bg:#edf3f9;--card:#fff;--ink:#13243b;--muted:#6b7b90;--line:#d8e2ed;--brand:#0b3768;--brand2:#2774c9;--shadow:0 7px 22px rgba(12,49,87,.08);--radius:20px}
+html,body{background:#edf3f9}
+.app{max-width:980px;padding:0 14px 112px}
+.topbar{margin:0 -14px 16px;padding:22px 22px 24px;background:linear-gradient(145deg,#082b52,#0c447e);color:#fff;border-radius:0 0 26px 26px;box-shadow:0 10px 28px rgba(8,43,82,.16)}
+.brand h1{color:#fff;font-size:26px}.brand p{color:#c8dbef}.pill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.24);color:#fff}
+#dashboardView .grid{gap:11px}
+#dashboardView .grid>.stat{grid-column:span 4!important;order:1;background:linear-gradient(150deg,#0b3768,#0e477f);border-color:#1b5488;color:#fff;padding:13px 12px;border-radius:16px;box-shadow:0 8px 20px rgba(8,43,82,.12)}
+#dashboardView .stat .label{color:#a9d7ff;font-size:9px}.stat .value{font-size:21px}.stat .sub{font-size:10px;color:#d2e2f2}
+#dashboardView .grid>.calc{order:2;grid-column:span 12!important;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow)}
+#dashboardView .calc .section-title{grid-column:1;margin:0}#dashboardView .calc .section-title h2{color:var(--brand)}#dashboardView .calc p{grid-column:1;margin:3px 0!important;color:var(--muted)!important;font-size:12px}#dashboardView .calc .btn{grid-column:2;grid-row:1 / span 2;align-self:stretch;min-width:150px;background:var(--brand)!important;color:#fff!important}
+#myJobDashboardCard{order:3;background:linear-gradient(180deg,#f8fbff,#fff)}
+#dashboardView .grid>.span8{order:4;grid-column:span 12!important}
+#dashboardView .grid>.span12:not(#myJobDashboardCard){order:5}
+.card{border-radius:20px;padding:17px;box-shadow:var(--shadow)}
+.feature-card{border-radius:16px;background:#f9fbfd;box-shadow:none}.feature-card .big{color:#0b3768}
+.btn{border-radius:12px}.btn.primary{background:#0b3768}.btn.small{font-weight:800}
+.history .shift{border-radius:14px;background:#fff;box-shadow:none}.shift-pay{color:#0b3768}
+.nav{bottom:8px;width:calc(100% - 16px);max-width:650px;justify-content:space-around;gap:3px;padding:6px;background:rgba(255,255,255,.96);border:1px solid #d5e0eb;border-radius:22px;box-shadow:0 14px 36px rgba(8,43,82,.17)}
+.nav button{flex:1;min-width:0;padding:8px 6px;border-radius:16px;color:#68798d;font-size:10px;font-weight:800}.nav button::before{display:block;font-size:20px;line-height:20px;margin-bottom:4px}.nav #nav-dashboard::before{content:"⌂"}.nav #nav-add::before{content:"＋"}.nav #nav-history::before{content:"≡"}.nav #nav-settings::before{content:"⚙"}.nav button.active{background:#e8f1fb;color:#0b3768}.nav #nav-add{background:#0b3768;color:#fff}.nav #nav-add::before{font-size:24px}
+.section-title h2{letter-spacing:-.015em}.field input,.field textarea,.field select,.search{border-radius:12px}
 @media(max-width:780px){
- .app{padding:10px 10px 100px}.topbar{padding:14px 11px}.brand h1{font-size:21px}.pill{max-width:42%;text-align:center}
- #dashboardView .grid>.stat{grid-column:span 4!important;padding:10px 5px!important}.stat .value{font-size:17px}.stat .label{font-size:8px}.stat .sub{font-size:8px;line-height:1.2}
- .card{padding:13px}.feature-grid{grid-template-columns:1fr!important}
+ .app{padding:0 10px 104px}.topbar{margin:0 -10px 12px;padding:18px 16px 20px;border-radius:0 0 22px 22px}.brand h1{font-size:22px}.brand p{font-size:11px}.pill{font-size:9px;padding:6px 8px;max-width:43%;text-align:center}
+ #dashboardView .grid>.stat{grid-column:span 4!important;padding:10px 6px}.stat .value{font-size:17px;white-space:nowrap}.stat .label{font-size:8px}.stat .sub{font-size:8px;line-height:1.2}
+ #dashboardView .grid>.calc{grid-template-columns:1fr auto;padding:14px}.calc p{display:none}.calc .btn{grid-row:1!important;min-width:126px!important}
+ .feature-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px}.feature-card{padding:11px!important}.feature-card h3{font-size:11px}.feature-card .big{font-size:20px}.feature-card .mini{font-size:9px}.feature-card .btn{font-size:9px;padding:7px 5px;width:100%}
 }
+html[data-theme="dark"] .topbar{background:linear-gradient(145deg,#0a2341,#0d3b68)}
+html[data-theme="dark"] #dashboardView .grid>.stat{background:linear-gradient(150deg,#123b66,#154f83)!important;border-color:#315d87!important}
+html[data-theme="dark"] #dashboardView .grid>.calc{background:#101d2d!important}
+html[data-theme="dark"] #dashboardView .calc .section-title h2{color:#fff!important}
+html[data-theme="dark"] .feature-card{background:#101d2d!important}
+html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!important}
 
   </style>
 </head>
@@ -721,7 +709,7 @@ html,body{background:#071827!important;color:#f4f7fb!important;font-family:"Helv
 <div class="app">
   <div class="topbar">
     <div class="brand"><h1>Engineer Pay Log</h1><p>Private, local shift & earnings tracker</p></div>
-    <div class="pill">Railroad Terminal • Helvetica</div>
+    <div class="pill">Dashboard First • 8.2.4</div>
   </div>
 
   <section id="dashboardView" class="view active">
