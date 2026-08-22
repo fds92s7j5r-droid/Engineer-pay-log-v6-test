@@ -898,6 +898,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
     /* Refined 3: mascot placement + transparent cutout */
     /* Refined 4: pay-scale progression formatting + trainee mascot message */
+    /* Refined 5: content-sized mascot speech bubble */
     .mascot-about-card{
       display:grid!important;
       grid-template-columns:auto minmax(0,1fr) auto;
@@ -932,7 +933,9 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       left:43px!important;
       right:auto!important;
       bottom:69px!important;
-      width:min(245px,66vw)!important;
+      width:max-content!important;
+      max-width:min(245px,66vw)!important;
+      white-space:normal;
     }
     .mascot-bubble::after{
       left:-7px!important;
@@ -950,7 +953,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     @media(max-width:520px){
       .mascot-about-card{grid-template-columns:auto minmax(0,1fr) auto;gap:9px!important;padding-left:12px!important}
       .mascot-easter-egg img{width:44px!important;height:104px!important}
-      .mascot-bubble{left:39px!important;bottom:64px!important;width:min(230px,65vw)!important}
+      .mascot-bubble{left:39px!important;bottom:64px!important;width:max-content!important;max-width:min(230px,65vw)!important}
       .mascot-about-card .about-inline{flex-direction:column!important;gap:3px!important}
       .mascot-about-card .about-inline>div:first-child>strong{font-size:13px}
       .mascot-about-card .about-inline small{font-size:10px}
