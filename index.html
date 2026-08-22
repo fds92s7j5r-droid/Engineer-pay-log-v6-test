@@ -821,9 +821,63 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       .settings-card{padding:15px}
       .settings-row{gap:10px}
       .settings-inline-input{width:min(210px,50%)}
+      .settings-inline-input[type="date"]{width:100%!important;max-width:100%!important}
+      .mascot-about-card{align-items:center}
+      .about-actions{gap:8px}
       .pay-rules-quick{grid-template-columns:1fr 1fr 1fr}
       .about-inline{align-items:flex-start;flex-direction:column;gap:3px}
     }
+
+    /* Refined 2: iPhone native-input hardening */
+    input[type="date"],input[type="time"]{
+      box-sizing:border-box!important;
+      width:100%!important;
+      max-width:100%!important;
+      min-width:0!important;
+      inline-size:100%!important;
+      max-inline-size:100%!important;
+      min-inline-size:0!important;
+      overflow:hidden;
+    }
+    .field input[type="date"],.field input[type="time"],.start-date-prompt input[type="date"],.time-slip-grid input[type="date"],.settings-inline-input[type="date"]{
+      box-sizing:border-box!important;width:100%!important;max-width:100%!important;min-width:0!important;margin-left:0!important;margin-right:0!important;
+    }
+    @supports (-webkit-touch-callout:none){
+      input[type="date"]{-webkit-appearance:none;appearance:none}
+      input[type="date"]::-webkit-date-and-time-value,input[type="time"]::-webkit-date-and-time-value{display:block;width:100%;min-width:0;margin:0;text-align:left}
+      input[type="date"]::-webkit-calendar-picker-indicator,input[type="time"]::-webkit-calendar-picker-indicator{flex:0 0 auto}
+    }
+
+    /* Proper switches for true boolean Settings */
+    .switch-label{position:relative!important;display:inline-flex!important;align-items:center!important;width:46px;height:28px;flex:0 0 46px;cursor:pointer}
+    .switch-label input{position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;pointer-events:none}
+    .switch-ui{display:block;width:46px;height:28px;border-radius:999px;background:#cbd5e1;border:1px solid #b8c4d2;transition:background .18s ease,border-color .18s ease;position:relative}
+    .switch-ui::after{content:"";position:absolute;width:22px;height:22px;left:2px;top:2px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(16,35,63,.28);transition:transform .18s ease}
+    .switch-label input:checked+.switch-ui{background:var(--brand2);border-color:var(--brand2)}
+    .switch-label input:checked+.switch-ui::after{transform:translateX(18px)}
+    .switch-label input:focus-visible+.switch-ui{outline:3px solid rgba(39,116,201,.24);outline-offset:2px}
+    html[data-theme="dark"] .switch-ui{background:#34465d;border-color:#4b607a}
+    html[data-theme="dark"] .switch-label input:checked+.switch-ui{background:#4b86c4;border-color:#5c94cf}
+
+    .my-job-save-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+
+    /* Pay & Claims values need more contrast in dark mode. */
+    html[data-theme="dark"] .pay-claims-card .feature-card .big,
+    html[data-theme="dark"] .pay-claims-card .net-estimate-amount{color:#8fc7ff!important;-webkit-text-fill-color:#8fc7ff!important}
+
+    /* Presenting engineer Easter egg */
+    .about-actions{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+    .mascot-easter-egg{position:relative;border:0;background:transparent;padding:0;margin:-8px 0 -9px;cursor:pointer;overflow:visible}
+    .mascot-easter-egg img{display:block;width:39px;height:86px;object-fit:contain;object-position:center;border-radius:10px;background:#fff;border:1px solid var(--line)}
+    .mascot-bubble{position:absolute;right:45px;bottom:55px;width:min(245px,68vw);padding:10px 12px;border-radius:13px;background:var(--brand);color:#fff;font-size:11px;font-weight:750;line-height:1.35;text-align:left;box-shadow:0 10px 24px rgba(8,43,82,.22);opacity:0;transform:translateY(4px) scale(.98);pointer-events:none;transition:opacity .15s ease,transform .15s ease;z-index:20}
+    .mascot-bubble::after{content:"";position:absolute;right:-7px;bottom:10px;border-width:7px 0 7px 8px;border-style:solid;border-color:transparent transparent transparent var(--brand)}
+    .mascot-bubble.show{opacity:1;transform:translateY(0) scale(1)}
+    html[data-theme="dark"] .mascot-easter-egg img{border-color:#40536d}
+    html[data-theme="dark"] .mascot-bubble{background:#315f91}
+    html[data-theme="dark"] .mascot-bubble::after{border-left-color:#315f91}
+
+    @media(min-width:521px){.settings-row-control .settings-inline-input[type="date"]{width:min(230px,46%)!important;flex:0 1 230px}}
+
     @media(max-width:520px){
       .history-row-right{min-width:96px}
       .history-row-actions{gap:4px}
@@ -842,7 +896,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 <div class="app">
   <div class="topbar">
     <div class="brand"><h1>Engineer Pay Log</h1><p>Private, local shift & earnings tracker</p></div>
-    <div class="pill">Dashboard Refined • 8.2.4</div>
+    <div class="pill">Dashboard Refined 2 • 8.2.4</div>
   </div>
 
   <section id="dashboardView" class="view active">
@@ -851,11 +905,6 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <div class="card span4 stat"><div class="label">This month</div><div class="value" id="monthTotal">$0.00</div><div class="sub" id="monthCount">0 paid shifts</div></div>
       <div class="card span4 stat"><div class="label"><span id="yearTotalLabel">Current year</span> total</div><div class="value" id="yearTotal">$0.00</div><div class="sub" id="yearHours">0:00 actual hours</div></div>
       <div class="card span4 stat"><div class="label">Hours this month</div><div class="value" id="monthHours">0:00</div><div class="sub">Actual time</div></div>
-
-      <div class="card span12 quick-add-compact">
-        <div><div class="quick-add-title">Log a shift</div><div class="quick-add-sub">Start a new daily entry.</div></div>
-        <button class="btn primary" onclick="newShift()">+ Add shift</button>
-      </div>
 
       <div id="myJobDashboardCard" class="card span12 my-job-card">
         <div class="my-job-dash">
@@ -923,7 +972,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         <div id="historyCalendar"></div>
       </div>
     </div>
-    <div class="contact-footer"><button type="button" onclick="openContactSettings()">Questions? Comments?</button></div>
+    <div id="historyContactFooter" class="contact-footer" style="display:none"><button type="button" onclick="openContactSettings()">Questions? Comments?</button></div>
   </section>
 
   <section id="timeslipsView" class="view">
@@ -985,17 +1034,16 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           </div>
           <div class="settings-row settings-toggle-row">
             <div><strong>Engineer Trainee Mode</strong><small>Uses trainee-specific entry and pay behavior.</small></div>
-            <label class="switch-label"><input id="traineeModeToggle" type="checkbox" onchange="requestTraineeModeChange(this.checked)"><span>Enable</span></label>
+            <label class="switch-label" aria-label="Engineer Trainee Mode"><input id="traineeModeToggle" type="checkbox" onchange="requestTraineeModeChange(this.checked)"><span class="switch-ui" aria-hidden="true"></span></label>
           </div>
           <div id="traineeModeStatus" class="mode-banner" style="display:none">Engineer Trainee Mode is active. New shifts use trainee rules.</div>
         </div>
 
         <details id="myJobSettingsCard" class="settings-disclosure settings-myjob">
-          <summary><span><strong id="myJobSettingsSummary">My Job</strong><small>Regular job or relief crew details for faster entry.</small></span><span class="settings-chevron">›</span></summary>
+          <summary><span><strong id="myJobSettingsSummary">My Job</strong><small id="myJobSettingsSub">Not configured • regular job or relief crew details for faster entry.</small></span><span class="settings-chevron">›</span></summary>
           <div class="settings-disclosure-body">
-            
-<label class="check"><input id="myJobEnabled" onchange="requestMyJobToggle(this.checked)" type="checkbox"/> I own a regular job</label>
-<div class="my-job-settings-fields" id="myJobSettingsFields">
+<input id="myJobEnabled" type="checkbox" checked hidden aria-hidden="true"/>
+<div class="my-job-settings-fields show" id="myJobSettingsFields">
 <div class="my-job-type-row">
 <label class="check"><input id="myJobTypeRegular" onchange="chooseMyJobType('regular',this)" type="checkbox"/> Regular Job</label>
 <label class="check"><input id="myJobTypeRelief" onchange="chooseMyJobType('relief',this)" type="checkbox"/> Relief Crew</label>
@@ -1175,7 +1223,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 </div>
 <div class="myjob-week-preview" id="myJobWeekPreview" style="display:none"></div>
 <p class="notice" style="margin-top:12px">Using My Job fills only the assignment, location, scheduled times, and Shift Type = Own. You can freely edit the daily shift afterward without changing this saved template.</p>
-<button class="btn primary" onclick="saveMyJob()" type="button">Save My Job</button>
+<div class="my-job-save-actions"><button class="btn primary" onclick="saveMyJob()" type="button">Save My Job</button><button id="clearMyJobBtn" class="btn danger small" onclick="clearMyJob()" type="button" style="display:none">Remove My Job</button></div>
 </div>
 
           </div>
@@ -1204,13 +1252,13 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         </div>
 
         <div class="settings-pref-section" id="netEstimatorSettingsCard">
-          <div class="settings-row settings-toggle-row borderless-row"><div><strong>Estimated Net Pay</strong><small>Estimate take-home pay using your recent paycheck history.</small></div><label class="switch-label"><input id="netEstimatorToggle" type="checkbox" onchange="requestNetEstimatorToggle(this.checked)"><span>Show</span></label></div>
+          <div class="settings-row settings-toggle-row borderless-row"><div><strong>Estimated Net Pay</strong><small>Estimate take-home pay using your recent paycheck history.</small></div><label class="switch-label" aria-label="Estimated Net Pay"><input id="netEstimatorToggle" type="checkbox" onchange="requestNetEstimatorToggle(this.checked)"><span class="switch-ui" aria-hidden="true"></span></label></div>
           <div id="netEstimatorSummary" class="rate-note" style="margin-top:10px;display:none"></div>
           <div id="netPaySetup" style="display:none;margin-top:14px"><p class="notice">Enter your 10 most recent paychecks. Gross and net amounts can be obtained from the BSC portal.</p><div id="netPayRows" class="net-pay-rows"></div><button class="btn primary" type="button" onclick="saveNetPayHistory()">Save Paycheck History</button></div>
         </div>
 
         <div class="settings-pref-section" id="crewBookAssistSettingsCard">
-          <div class="settings-row settings-toggle-row borderless-row"><div><strong>Crew Book Assistance</strong><small>Optional assignment lookup assistance while entering shifts.</small></div><label class="switch-label"><input id="crewBookAssistToggle" type="checkbox" onchange="requestCrewBookAssistToggle(this.checked)"><span>Enable</span></label></div>
+          <div class="settings-row settings-toggle-row borderless-row"><div><strong>Crew Book Assistance</strong><small>Optional assignment lookup assistance while entering shifts.</small></div><label class="switch-label" aria-label="Crew Book Assistance"><input id="crewBookAssistToggle" type="checkbox" onchange="requestCrewBookAssistToggle(this.checked)"><span class="switch-ui" aria-hidden="true"></span></label></div>
           <div id="crewBookAssistStatus" class="rate-note" style="display:none;margin-top:10px"></div>
           <details class="settings-inline-details"><summary>About Crew Book Assistance</summary><div class="notice details-copy"><strong>Coverage:</strong> Passenger and Yard assignments are supported, with the applicable Crew Book revision selected by shift date.<br><br><strong>Important:</strong> Crew Book information is manually maintained for convenience and reference only. Always verify your assignment using the official Crew Book in Comply365 or the official Service Planning website. Temporary programs, special events, track work, and day-to-day instructions may not be reflected. Auto-filled entries remain editable.</div></details>
         </div>
@@ -1238,9 +1286,9 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         </details>
       </div>
 
-      <div class="card span12 settings-card about-card">
+      <div class="card span12 settings-card about-card mascot-about-card">
         <div class="about-inline"><div><strong>Engineer Pay Log</strong><small>Personal, unofficial pay-tracking tool for locomotive engineers.</small></div><div class="about-version">Version <span id="settingsAppVersion">8.2.4</span></div></div>
-        <button class="btn small" onclick="openWhatsNew(true)">What's New</button>
+        <div class="about-actions"><button class="btn small" onclick="openWhatsNew(true)">What's New</button><button class="mascot-easter-egg" type="button" onclick="showMascotMessage(this)" aria-label="Presenting engineer"><img src="./icons/presenting-engineer.jpg" alt="" aria-hidden="true"><span class="mascot-bubble" role="status">I heard the next Crew Book is supposed to be better</span></button></div>
       </div>
     </div>
   </section>
@@ -1699,8 +1747,8 @@ function setHistoryView(view){
   const list=view==='list';
   const lt=document.getElementById('historyListTab'),ct=document.getElementById('historyCalendarTab');
   if(lt)lt.classList.toggle('active',list);if(ct)ct.classList.toggle('active',!list);
-  const lc=document.getElementById('historyListControls'),hl=document.getElementById('historyList'),cw=document.getElementById('historyCalendarWrap');
-  if(lc)lc.style.display=list?'block':'none';if(hl)hl.style.display=list?'block':'none';if(cw)cw.style.display=list?'none':'block';
+  const lc=document.getElementById('historyListControls'),hl=document.getElementById('historyList'),cw=document.getElementById('historyCalendarWrap'),feedback=document.getElementById('historyContactFooter');
+  if(lc)lc.style.display=list?'block':'none';if(hl)hl.style.display=list?'block':'none';if(cw)cw.style.display=list?'none':'block';if(feedback)feedback.style.display=list?'none':'block';
   if(!list){if(!calendarMonthCursor)calendarMonthCursor=currentCalendarMonth();renderHistoryCalendar()}
   else renderHistory();
 }
@@ -2401,7 +2449,7 @@ function loadMyJobSettings(){
   initRegularLocationSelects();initReliefLocationSelects();
   const j=normalizeMyJob(getMyJob())||{type:'regular',regularDays:{},reliefDays:{}};
   const box=document.getElementById('myJobEnabled'),fields=document.getElementById('myJobSettingsFields');
-  if(box)box.checked=!!j.enabled;if(fields)fields.classList.toggle('show',!!j.enabled);
+  if(box)box.checked=true;if(fields)fields.classList.add('show');
   const type=j.type==='relief'?'relief':'regular';
   const reg=document.getElementById('myJobTypeRegular'),rel=document.getElementById('myJobTypeRelief');
   if(reg)reg.checked=type==='regular';if(rel)rel.checked=type==='relief';updateMyJobTypeUI(type);
@@ -2433,11 +2481,20 @@ function renderMyJobUI(){
   if(title)title.textContent=configured?(j.type==='relief'?`My Relief Crew: ${j.reliefCrewNumber}`:`My Job: ${j.assignment}`):'Own a regular job?';
   if(sub)sub.textContent=configured?(j.type==='relief'?'Assignments, terminals, and times are ready for quick entry.':`${canonicalLocation(j.location||'')} • daily schedule ready for quick entry`):'Add your job details to make daily entry faster.';
   if(btn)btn.textContent=configured?'Edit My Job':'Set up My Job';
-  const settingsSummary=document.getElementById('myJobSettingsSummary');if(settingsSummary)settingsSummary.textContent=configured?(j.type==='relief'?`My Job • Relief Crew ${j.reliefCrewNumber}`:`My Job • ${j.assignment}`):'My Job';
+  const settingsSummary=document.getElementById('myJobSettingsSummary'),settingsSub=document.getElementById('myJobSettingsSub'),clearBtn=document.getElementById('clearMyJobBtn');
+  if(settingsSummary)settingsSummary.textContent='My Job';
+  if(settingsSub)settingsSub.textContent=configured?(j.type==='relief'?`Relief Crew ${j.reliefCrewNumber} • ready for quick entry`:`${j.assignment}${j.location?` • ${canonicalLocation(j.location)}`:''} • ready for quick entry`):'Not configured • regular job or relief crew details for faster entry.';
+  if(clearBtn)clearBtn.style.display=configured?'inline-flex':'none';
   const control=document.getElementById('myJobEntryControl'),label=document.getElementById('myJobEntryLabel');
   if(control)control.classList.toggle('show',configured&&!trainee);
   if(label)label.textContent=configured?(j.type==='relief'?`My Relief Crew: ${j.reliefCrewNumber}`:`My Job: ${j.assignment}`):'';
   toggleSpecialShift();
+}
+function clearMyJob(){
+  if(!myJobConfigured())return;
+  if(!confirm('Remove the saved My Job setup?\n\nThis only removes the quick-entry template. It does not change any saved shifts.'))return;
+  localStorage.removeItem(MY_JOB_KEY);
+  loadMyJobSettings();renderMyJobUI();renderMyJobWeekPreview();
 }
 function openMyJobSettings(){
   showView('settings');
@@ -2730,7 +2787,7 @@ function renderCrewBookAssistUI(){
   if(box){box.checked=on;box.disabled=false}
   if(status){
     status.style.display=(on||trainee)?'block':'none';
-    status.innerHTML=trainee?'<strong>Engineer Trainee Mode:</strong> Crew Book Assistance is unavailable. Engineer Trainees are strongly encouraged to learn how to read and interpret the Crew Book independently.':(on?'<strong>Active:</strong> Passenger GO 201 Rev. 6 through Sept. 7; GO 202 Rev. 7 (DRAFT) automatically begins Sept. 8 based on shift date. Yard assignments are also loaded. Crew Book-assisted fields remain editable.':'');
+    status.innerHTML=trainee?'<strong>Engineer Trainee Mode:</strong> Crew Book Assistance is unavailable. Engineer Trainees are strongly encouraged to learn how to read and interpret the Crew Book independently.':(on?'<strong>Active:</strong> Passenger GO 201 Rev. 6 • GO 202 Rev. 7 (DRAFT) • Yard assignments loaded.':'');
   }
   if(reg)reg.style.display=on?'inline-flex':'none';if(rel)rel.style.display=on?'inline-flex':'none';if(shift)shift.style.display=on?'inline-flex':'none';
 }
@@ -3544,6 +3601,13 @@ function sendContactEmail(event){
   window.location.href=`mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 function updateInstallSettingsVisibility(){const card=document.getElementById('installSettingsCard');if(!card)return;const installed=(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true;card.style.display=installed?'none':''}
+function showMascotMessage(button){
+  if(!button)return;
+  const bubble=button.querySelector('.mascot-bubble');if(!bubble)return;
+  bubble.classList.add('show');
+  clearTimeout(button._mascotTimer);button._mascotTimer=setTimeout(()=>bubble.classList.remove('show'),4200);
+}
+
 function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView());const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview()}
 function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
