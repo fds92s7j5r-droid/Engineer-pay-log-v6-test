@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#10233f" />
+  <meta name="theme-color" content="#071827" />
   <!-- BRANCH + HOLD DOWN TEST BUILD - LABELS BELOW CHECKBOXES -->
 <title>Engineer Pay Log</title>
   <meta name="application-name" content="Pay Log" />
@@ -650,112 +650,6 @@
     html[data-theme="dark"] .myjob-preview-head{background:#0a1727!important;color:#f2f6fb!important;border-color:#3c5069!important}
     html[data-theme="dark"] .myjob-preview-row{border-color:#314158!important}
 
-
-
-/* =========================================================
-   V8.2.4 VISUAL PROTOTYPE — presentation-only modernization
-   No calculation, storage, or workflow logic changes.
-   ========================================================= */
-:root{
-  --bg:#f3f6fa;
-  --card:#ffffff;
-  --ink:#142033;
-  --muted:#68768a;
-  --line:#e3e9f1;
-  --brand:#102c4c;
-  --brand2:#2f6ea8;
-  --shadow:0 7px 24px rgba(19,43,70,.065);
-  --radius:16px;
-}
-html,body{background:var(--bg)}
-body{-webkit-font-smoothing:antialiased}
-.app{max-width:980px;padding:22px 18px 118px}
-.topbar{padding:8px 2px 22px;align-items:flex-start}
-.brand h1{font-size:27px;font-weight:820;letter-spacing:-.035em;color:#102c4c}
-.brand p{font-size:13px;margin-top:5px;color:#778497}
-.pill{background:#e8f0f8;color:#254e78;border:1px solid #d9e5f1;padding:7px 11px;font-size:11px;letter-spacing:.01em}
-.grid{gap:16px}
-.card{border-color:var(--line);box-shadow:var(--shadow);padding:19px}
-.stat{position:relative;overflow:hidden;box-shadow:none;border-color:#dfe7f0}
-.stat:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:#345f8b}
-.stat .label{font-size:10.5px;letter-spacing:.095em;color:#738197}
-.stat .value{font-size:29px;letter-spacing:-.035em;color:#122d4a}
-.stat .sub{font-size:11.5px}
-.section-title{margin-bottom:16px}
-.section-title h2{font-size:17px;letter-spacing:-.018em;color:#172b43}
-.btn{border:1px solid #dce5ee;background:#f5f8fb;color:#244868;border-radius:10px;padding:10px 13px;font-weight:760;box-shadow:0 1px 1px rgba(16,35,63,.025);transition:transform .12s ease,background .12s ease,border-color .12s ease}
-.btn:active{transform:scale(.975)}
-.btn.primary{background:#153b63;border-color:#153b63;color:#fff}
-.btn.small{padding:7px 10px;font-size:11.5px}
-.my-job-card{background:#f8fbfe;border-color:#dce6f0;box-shadow:none}
-.my-job-dash-title{font-size:16px;color:#173a5e}
-.calc{background:linear-gradient(155deg,#102d4c,#194d7e);box-shadow:0 10px 28px rgba(16,45,76,.16)}
-.calc .btn.primary{border:0}
-.feature-grid{gap:12px}
-.feature-card{border-color:#e1e8f0;border-radius:14px;padding:16px;background:#fff;box-shadow:none}
-.feature-card h3{font-size:13px;color:#506177;text-transform:uppercase;letter-spacing:.04em}
-.feature-card .big{font-size:26px;color:#173a5e}
-.field label{font-size:11.5px;color:#536276}
-.field input,.field textarea,.field select,.search{border-color:#dbe3ec;border-radius:10px;background:#fbfcfd;padding:11px 12px}
-.field input:focus,.field textarea:focus,.field select:focus,.search:focus{background:#fff;border-color:#6b94bd;box-shadow:0 0 0 3px rgba(48,105,160,.10)}
-.check,.shift-type-choice,.conditional-panel,.my-job-portion,.relief-day{border-color:#e0e7ef;background:#fbfcfd;border-radius:12px}
-.shift-type-choice{transition:border-color .12s ease,background .12s ease,transform .12s ease}
-.shift-type-choice:has(input:checked){background:#eef5fb;border-color:#89aac9;color:#173f66}
-.history{gap:8px}
-.shift{grid-template-columns:92px 1fr auto;border-color:#e5eaf0;border-radius:11px;padding:13px 14px;box-shadow:none;transition:background .12s ease,border-color .12s ease}
-.shift:hover{background:#fbfcfe;border-color:#d8e1eb}
-.shift-date{font-size:12.5px;color:#38516d}
-.shift-title{font-size:14px;color:#172b43}
-.shift-sub{font-size:11.5px}
-.shift-pay{font-size:14px;color:#173a5e}
-.badge{border-radius:6px;font-size:10px;padding:4px 6px}
-.history-card-shell{box-shadow:none}
-.history-view-toggle{border-radius:10px;background:#f4f7fa;border-color:#e0e7ee}
-.toolbar{margin-top:13px}
-.empty{border-radius:12px;background:#fafbfd}
-.backup-reminder{border-radius:12px}
-.contact-footer{margin-top:20px}
-
-.nav{left:50%;bottom:12px;width:min(560px,calc(100% - 28px));justify-content:space-between;gap:4px;padding:6px;background:rgba(255,255,255,.96);border-color:#dfe6ee;border-radius:16px;box-shadow:0 12px 34px rgba(17,38,63,.16)}
-.nav button{flex:1;min-width:0;padding:10px 8px;color:#69778a;border-radius:10px;font-size:11.5px;font-weight:720;position:relative}
-.nav button:before{display:block;font-size:17px;line-height:18px;margin-bottom:3px;font-weight:500}
-#nav-dashboard:before{content:"⌂"}
-#nav-add:before{content:"＋"}
-#nav-history:before{content:"≡"}
-#nav-settings:before{content:"⚙︎"}
-.nav button.active{background:#eaf1f7;color:#153b63}
-#nav-add{background:#153b63;color:#fff}
-#nav-add.active{background:#153b63;color:#fff}
-
-@media(max-width:700px){
-  .app{padding:14px 13px 110px}
-  .topbar{padding:6px 3px 16px}
-  .brand h1{font-size:23px}
-  .pill{max-width:44%;text-align:center;justify-content:center;line-height:1.25}
-  .grid{gap:11px}
-  .card{padding:15px;border-radius:14px}
-  .span4.stat{grid-column:span 12}
-  #dashboardView .stat{display:grid;grid-template-columns:1fr auto;grid-template-areas:"label value" "sub value";align-items:center;column-gap:12px;padding:14px 15px 14px 18px}
-  #dashboardView .stat .label{grid-area:label}
-  #dashboardView .stat .value{grid-area:value;font-size:23px;margin:0;text-align:right}
-  #dashboardView .stat .sub{grid-area:sub;margin-top:3px}
-  #dashboardView .span8,#dashboardView .span4.calc{grid-column:span 12}
-  .shift{grid-template-columns:70px 1fr auto;gap:8px;padding:12px 10px}
-  .nav{bottom:8px;width:calc(100% - 18px);border-radius:15px}
-}
-
-html[data-theme="dark"]{
-  --bg:#0b1522;--card:#101d2d;--ink:#f1f5fa;--muted:#9dacbe;--line:#2d3d52;--brand:#eaf3fc;--brand2:#79aee2;
-}
-html[data-theme="dark"] .brand h1,html[data-theme="dark"] .section-title h2,html[data-theme="dark"] .stat .value,html[data-theme="dark"] .shift-title,html[data-theme="dark"] .shift-pay,html[data-theme="dark"] .feature-card .big{color:#f0f5fb!important}
-html[data-theme="dark"] .stat,html[data-theme="dark"] .my-job-card,html[data-theme="dark"] .feature-card,html[data-theme="dark"] .history-card-shell{background:#101d2d!important;border-color:#2e4056!important}
-html[data-theme="dark"] .stat:before{background:#6d9ccc}
-html[data-theme="dark"] .nav{background:rgba(12,25,41,.97)!important;border-color:#33465c!important}
-html[data-theme="dark"] .nav button.active{background:#203d5b!important;color:#fff!important}
-html[data-theme="dark"] #nav-add{background:#32618f!important;color:#fff!important}
-html[data-theme="dark"] .field input,html[data-theme="dark"] .field textarea,html[data-theme="dark"] .field select,html[data-theme="dark"] .search{background:#0b1726!important;border-color:#34475e!important}
-html[data-theme="dark"] .shift:hover{background:#132338!important}
-
 </style>
   <script>
     try{
@@ -764,12 +658,70 @@ html[data-theme="dark"] .shift:hover{background:#132338!important}
       document.documentElement.setAttribute('data-theme',m==='dark'?'dark':'light');
     }catch(e){}
   </script>
+
+  <style id="design-lab-railroad_terminal">
+
+/* DESIGN LAB COMMON: visual-only prototype. No calculation/storage logic changed. */
+.field,.field input,.field textarea,.field select,.terminal-select-wrap,.search{min-width:0;max-width:100%}
+input[type="date"],input[type="time"]{min-width:0!important;max-width:100%!important;width:100%!important}
+@media(max-width:780px){
+  .form-grid,.time-slip-grid{min-width:0}
+  .field{min-width:0}
+}
+
+/* CONCEPT: RAILROAD TERMINAL — Helvetica + restrained FFVII-menu structure */
+:root{
+  --bg:#071827;--card:#0b2a4b;--ink:#f4f7fb;--muted:#b5c1cf;--line:#8995a3;
+  --brand:#f5f7fa;--brand2:#f0b429;--good:#65d6a6;--warn:#f0b429;--bad:#ff8e87;
+  --shadow:none;--radius:7px;
+}
+html,body{background:#071827!important;color:#f4f7fb!important;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif!important}
+.app{max-width:980px;padding:14px 14px 108px;background:linear-gradient(180deg,#071827 0,#09233d 40%,#071827 100%)}
+.topbar{margin:0 0 12px;padding:16px 12px 14px;border:1px solid #8995a3;border-radius:7px;background:linear-gradient(180deg,#0c3158,#082342);box-shadow:inset 0 0 0 2px rgba(255,255,255,.04)}
+.brand h1{color:#fff!important;font-size:25px;font-weight:800;letter-spacing:.035em;text-transform:uppercase}
+.brand p{color:#9fd8cc!important;letter-spacing:.04em;font-size:12px;text-transform:uppercase}
+.pill{border:1px solid #8995a3!important;background:#071827!important;color:#f0b429!important;border-radius:4px!important;text-transform:uppercase;letter-spacing:.06em;font-size:10px}
+.card,.feature-card,.my-job-card,.my-job-portion,.relief-day,.conditional-panel,.appearance-choice,.readonly-info,.shift,.empty{
+  background:linear-gradient(180deg,#0d3260,#08264a)!important;color:#f4f7fb!important;border:1px solid #9ca8b5!important;border-radius:7px!important;box-shadow:inset 0 0 0 2px rgba(255,255,255,.035)!important
+}
+.grid{gap:10px}
+.section-title{margin-bottom:10px}.section-title h2,.feature-card h3,.my-job-dash-title,.month-title{color:#f0b429!important;text-transform:uppercase;letter-spacing:.045em}
+.notice,.mini,.muted,.shift-sub,.stat .sub,.my-job-dash-sub{color:#bec9d5!important}
+.stat{padding:13px 12px!important;text-align:center}.stat .label{color:#73e3d1!important;font-size:10px;letter-spacing:.08em}.stat .value{font-size:22px;margin-top:4px;color:#fff}.stat .sub{font-size:10px}
+#dashboardView .grid>.stat{grid-column:span 4!important}
+#dashboardView .grid>.calc{grid-column:span 12!important}
+.calc{background:linear-gradient(180deg,#0c3768,#071f3e)!important;border:1px solid #a5afb9!important;color:#fff!important}
+.calc p{color:#c9d6e5!important}.calc .btn.primary{background:#f0b429!important;color:#071827!important;border-color:#f6d271!important}
+.btn{border:1px solid #718093!important;border-radius:5px!important;background:#123b69!important;color:#f4f7fb!important;box-shadow:none!important}
+.btn.primary{background:#1353a0!important;color:#fff!important;border-color:#8aa7c8!important}.btn.good{background:#123e37!important;color:#9ef1d4!important}.btn.danger{background:#47252b!important;color:#ffb3ae!important}
+.field label,.subhead,.my-job-entry .my-job-label,.net-pay-row label{color:#d8e0e8!important;text-transform:uppercase;letter-spacing:.045em;font-size:10px!important}
+.field input,.field textarea,.field select,.search,.net-pay-row input{background:#f5f7fa!important;color:#0b1c31!important;border:1px solid #a7b0ba!important;border-radius:5px!important;-webkit-text-fill-color:#0b1c31}
+.field input::placeholder,.field textarea::placeholder,.search::placeholder{color:#6f7a86!important;-webkit-text-fill-color:#6f7a86}
+.check,.shift-type-choice{background:#0a2748!important;color:#f4f7fb!important;border:1px solid #778797!important;border-radius:5px!important}
+.shift-type-choice:has(input:checked),.check:has(input:checked){border-color:#f0b429!important;box-shadow:inset 0 0 0 1px #f0b429!important;background:#103864!important}
+.time-slip-check,.time-slip-panel,.shift.timeslip{background:#3a3213!important;color:#ffeb9c!important;border-color:#d9b83d!important}.time-slip-panel .subhead{color:#ffe077!important}
+.rate-note,.special-panel,.start-date-prompt,.mode-banner,.backup-reminder{border-radius:5px!important}
+.history{gap:7px}.shift{padding:11px 12px!important}.shift-title,.shift-date,.shift-pay{color:#fff!important}.shift-pay{color:#73e3d1!important}
+.badge{border-radius:4px!important}.badge.ot{background:#4a3510!important;color:#ffd46c!important}.badge.penalty{background:#133d31!important;color:#8ce3bf!important}
+.nav{bottom:8px;width:calc(100% - 16px);max-width:720px;gap:0;padding:3px;background:#071d38!important;border:1px solid #a2acb7!important;border-radius:5px!important;box-shadow:0 8px 25px rgba(0,0,0,.34)!important}
+.nav button{flex:1;border-radius:3px!important;color:#d7e0e9!important;padding:9px 5px!important;text-transform:uppercase;letter-spacing:.035em;font-size:10px!important;border-right:1px solid #3d526b!important}.nav button:last-child{border-right:0!important}.nav button.active{background:#164f99!important;color:#fff!important;box-shadow:inset 0 0 0 1px #6f9dd3}
+.nav button::before{display:block;font-size:18px;line-height:18px;margin-bottom:4px}.nav #nav-dashboard::before{content:"●";color:#64d6a5}.nav #nav-add::before{content:"＋";color:#f0b429}.nav #nav-history::before{content:"▤";color:#dce5ef}.nav #nav-settings::before{content:"⚙";color:#dce5ef}
+.sheet,.modal-card,.modal-head,.modal-body,.modal-foot{background:#082342!important;color:#f4f7fb!important;border-color:#8995a3!important}.sheet{border:1px solid #a0aab4!important;border-radius:7px 7px 0 0!important;box-shadow:0 -12px 40px rgba(0,0,0,.4)!important}.sheet h2,.sheet h3,.modal-card h2{color:#f0b429!important;text-transform:uppercase;letter-spacing:.04em}
+.paycheck-hero{border:1px solid #8995a3;border-radius:6px;background:linear-gradient(180deg,#0d3a70,#08264a)}
+.contact-footer button{color:#98a8ba!important}
+@media(max-width:780px){
+ .app{padding:10px 10px 100px}.topbar{padding:14px 11px}.brand h1{font-size:21px}.pill{max-width:42%;text-align:center}
+ #dashboardView .grid>.stat{grid-column:span 4!important;padding:10px 5px!important}.stat .value{font-size:17px}.stat .label{font-size:8px}.stat .sub{font-size:8px;line-height:1.2}
+ .card{padding:13px}.feature-grid{grid-template-columns:1fr!important}
+}
+
+  </style>
 </head>
 <body>
 <div class="app">
   <div class="topbar">
     <div class="brand"><h1>Engineer Pay Log</h1><p>Private, local shift & earnings tracker</p></div>
-    <div class="pill">Visual Prototype • based on 8.2.4</div>
+    <div class="pill">Railroad Terminal • Helvetica</div>
   </div>
 
   <section id="dashboardView" class="view active">
@@ -1481,7 +1433,7 @@ html[data-theme="dark"] .shift:hover{background:#132338!important}
 const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.719,2.578,0.03],[2.292,3.437,0.04],[2.864,4.296,0.05],[3.437,5.156,0.059],[4.01,6.015,0.069],[4.583,6.874,0.079],[5.156,7.733,0.089],[5.728,8.592,0.099],[6.301,9.451,0.109],[6.874,10.311,0.118],[7.447,11.17,0.128],[8.019,12.029,0.138],[8.592,12.888,0.148],[9.165,13.747,0.158],[9.738,14.606,0.167],[10.311,15.466,0.177],[10.883,16.325,0.187],[11.456,17.184,0.197],[12.029,18.043,0.207],[12.602,18.902,0.217],[13.174,19.761,0.226],[13.747,20.621,0.236],[14.32,21.48,0.246],[14.893,22.339,0.256],[15.466,23.198,0.266],[16.038,24.057,0.275],[16.611,24.916,0.285],[17.184,25.776,0.295],[17.757,26.635,0.305],[18.329,27.494,0.315],[18.902,28.353,0.325],[19.475,29.212,0.334],[20.048,30.071,0.344],[20.621,30.931,0.354],[21.193,31.79,0.364],[21.766,32.649,0.374],[22.339,33.508,0.383],[22.912,34.367,0.393],[23.485,35.227,0.403],[24.057,36.086,0.413],[24.63,36.945,0.423],[25.203,37.804,0.433],[25.776,38.663,0.442],[26.348,39.522,0.452],[26.921,40.382,0.462],[27.494,41.241,0.472],[28.067,42.1,0.482],[28.64,42.959,0.491],[29.212,43.818,0.501],[29.785,44.677,0.511],[30.358,45.537,0.521],[30.931,46.396,0.531],[31.503,47.255,0.541],[32.076,48.114,0.55],[32.649,48.973,0.56],[33.222,49.832,0.57],[33.795,50.692,0.58],[34.367,51.551,0.59]],"hour":[null,[34.367,51.55,0.589],[68.734,103.1,1.178],[103.1,154.651,1.768],[137.467,206.201,2.357],[171.834,257.751,2.946],[206.201,309.301,3.535],[240.568,360.852,4.124],[274.935,412.402,4.714]]},"80":{"minute":[null,[0.764,1.146,0.014],[1.528,2.292,0.027],[2.292,3.437,0.04],[3.055,4.583,0.053],[3.819,5.728,0.066],[4.583,6.874,0.079],[5.346,8.019,0.092],[6.11,9.165,0.105],[6.874,10.311,0.118],[7.638,11.456,0.131],[8.401,12.602,0.145],[9.165,13.747,0.158],[9.929,14.893,0.171],[10.692,16.038,0.184],[11.456,17.184,0.197],[12.22,18.329,0.21],[12.984,19.475,0.223],[13.747,20.621,0.236],[14.511,21.766,0.249],[15.275,22.912,0.262],[16.038,24.057,0.275],[16.802,25.203,0.289],[17.566,26.348,0.302],[18.329,27.494,0.315],[19.093,28.64,0.328],[19.857,29.785,0.341],[20.621,30.931,0.354],[21.384,32.076,0.367],[22.148,33.222,0.38],[22.912,34.367,0.393],[23.675,35.513,0.406],[24.439,36.658,0.419],[25.203,37.804,0.433],[25.967,38.95,0.446],[26.73,40.095,0.459],[27.494,41.241,0.472],[28.258,42.386,0.485],[29.021,43.532,0.498],[29.785,44.677,0.511],[30.549,45.823,0.524],[31.313,46.969,0.537],[32.076,48.114,0.55],[32.84,49.26,0.564],[33.604,50.405,0.577],[34.367,51.551,0.59],[35.131,52.696,0.603],[35.895,53.842,0.616],[36.658,54.987,0.629],[37.422,56.133,0.642],[38.186,57.279,0.655],[38.95,58.424,0.668],[39.713,59.57,0.681],[40.477,60.715,0.694],[41.241,61.861,0.708],[42.004,63.006,0.721],[42.768,64.152,0.734],[43.532,65.297,0.747],[44.296,66.443,0.76],[45.059,67.589,0.773],[45.823,68.734,0.786]],"hour":[null,[45.822,68.734,0.786],[91.645,137.467,1.571],[137.467,206.201,2.357],[183.29,274.935,3.142],[229.112,343.668,3.928],[274.935,412.402,4.714],[320.757,481.136,5.499],[366.579,549.869,6.285]]},"90":{"minute":[null,[0.86,1.289,0.015],[1.719,2.578,0.03],[2.578,3.867,0.045],[3.437,5.156,0.059],[4.296,6.444,0.074],[5.156,7.733,0.089],[6.015,9.022,0.104],[6.874,10.311,0.118],[7.733,11.599,0.133],[8.592,12.888,0.148],[9.451,14.177,0.163],[10.311,15.466,0.177],[11.17,16.754,0.192],[12.029,18.043,0.207],[12.888,19.332,0.221],[13.747,20.621,0.236],[14.606,21.909,0.251],[15.466,23.198,0.266],[16.325,24.487,0.28],[17.184,25.776,0.295],[18.043,27.064,0.31],[18.902,28.353,0.325],[19.761,29.642,0.339],[20.621,30.931,0.354],[21.48,32.219,0.369],[22.339,33.508,0.383],[23.198,34.797,0.398],[24.057,36.086,0.413],[24.916,37.374,0.428],[25.776,38.663,0.442],[26.635,39.952,0.457],[27.494,41.241,0.472],[28.353,42.529,0.487],[29.212,43.818,0.501],[30.071,45.107,0.516],[30.931,46.396,0.531],[31.79,47.684,0.546],[32.649,48.973,0.56],[33.508,50.262,0.575],[34.367,51.551,0.59],[35.227,52.84,0.604],[36.086,54.128,0.619],[36.945,55.417,0.634],[37.804,56.706,0.649],[38.663,57.995,0.663],[39.522,59.283,0.678],[40.382,60.572,0.693],[41.241,61.861,0.708],[42.1,63.15,0.722],[42.959,64.438,0.737],[43.818,65.727,0.752],[44.677,67.016,0.766],[45.537,68.305,0.781],[46.396,69.593,0.796],[47.255,70.882,0.811],[48.114,72.171,0.825],[48.973,73.46,0.84],[49.832,74.748,0.855],[50.692,76.037,0.87],[51.551,77.326,0.884]],"hour":[null,[51.55,77.325,0.884],[103.1,154.651,1.768],[154.651,231.976,2.651],[206.201,309.301,3.535],[257.751,386.627,4.419],[309.301,463.952,5.303],[360.852,541.278,6.187],[412.402,618.603,7.07]]},"100":{"minute":[null,[0.955,1.432,0.017],[1.91,2.864,0.033],[2.864,4.296,0.05],[3.819,5.728,0.066],[4.774,7.16,0.082],[5.728,8.592,0.099],[6.683,10.024,0.115],[7.638,11.456,0.131],[8.592,12.888,0.148],[9.547,14.32,0.164],[10.501,15.752,0.181],[11.456,17.184,0.197],[12.411,18.616,0.213],[13.365,20.048,0.23],[14.32,21.48,0.246],[15.275,22.912,0.262],[16.229,24.344,0.279],[17.184,25.776,0.295],[18.139,27.208,0.311],[19.093,28.64,0.328],[20.048,30.071,0.344],[21.002,31.503,0.361],[21.957,32.935,0.377],[22.912,34.367,0.393],[23.866,35.799,0.41],[24.821,37.231,0.426],[25.776,38.663,0.442],[26.73,40.095,0.459],[27.685,41.527,0.475],[28.64,42.959,0.491],[29.594,44.391,0.508],[30.549,45.823,0.524],[31.503,47.255,0.541],[32.458,48.687,0.557],[33.413,50.119,0.573],[34.367,51.551,0.59],[35.322,52.983,0.606],[36.277,54.415,0.622],[37.231,55.847,0.639],[38.186,57.279,0.655],[39.141,58.711,0.672],[40.095,60.142,0.688],[41.05,61.574,0.704],[42.004,63.006,0.721],[42.959,64.438,0.737],[43.914,65.87,0.753],[44.868,67.302,0.77],[45.823,68.734,0.786],[46.778,70.166,0.802],[47.732,71.598,0.819],[48.687,73.03,0.835],[49.641,74.462,0.852],[50.596,75.894,0.868],[51.551,77.326,0.884],[52.505,78.758,0.901],[53.46,80.19,0.917],[54.415,81.622,0.933],[55.369,83.054,0.95],[56.324,84.486,0.966],[57.279,85.918,0.982]],"hour":[null,[57.278,85.917,0.982],[114.556,171.834,1.964],[171.834,257.751,2.946],[229.112,343.668,3.928],[286.39,429.585,4.91],[343.668,515.502,5.892],[400.946,601.419,6.874],[458.224,687.337,7.856]]}};
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
-const APP_VERSION='8.2.4 Visual Prototype';
+const APP_VERSION='8.2.4';
 const WHATS_NEW_VERSION='8.2.4';
 const CONTACT_EMAIL='admin@engineerpaylog.com';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
