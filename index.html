@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#f5f6f8" />
+  <meta name="theme-color" content="#082b52" />
   <!-- BRANCH + HOLD DOWN TEST BUILD - LABELS BELOW CHECKBOXES -->
 <title>Engineer Pay Log</title>
   <meta name="application-name" content="Pay Log" />
@@ -659,7 +659,7 @@
     }catch(e){}
   </script>
 
-  <style id="design-lab-utility_pro">
+  <style id="design-lab-dashboard_first">
 
 /* DESIGN LAB COMMON: visual-only prototype. No calculation/storage logic changed. */
 .field,.field input,.field textarea,.field select,.terminal-select-wrap,.search{min-width:0;max-width:100%}
@@ -669,29 +669,39 @@ input[type="date"],input[type="time"]{min-width:0!important;max-width:100%!impor
   .field{min-width:0}
 }
 
-/* CONCEPT: UTILITY PRO — flatter, denser professional tool */
-:root{--bg:#f5f6f8;--card:#fff;--ink:#192538;--muted:#68768a;--line:#d7dee7;--brand:#1d62bf;--brand2:#1d62bf;--shadow:0 2px 9px rgba(26,42,62,.05);--radius:12px}
-html,body{background:#f5f6f8}
-.app{max-width:920px;padding:12px 14px 92px}.topbar{padding:8px 2px 14px;border-bottom:1px solid #dce2e8;margin-bottom:12px}.brand h1{font-size:22px;letter-spacing:-.02em}.brand p{font-size:11px}.pill{background:#eef4fc;color:#1d62bf;border:1px solid #d4e3f5;padding:6px 9px}
-.grid{gap:9px}.card{border-radius:12px;padding:15px;box-shadow:var(--shadow)}.feature-card{border-radius:10px;background:#fbfcfd;padding:13px;box-shadow:none}.section-title{margin-bottom:10px}.section-title h2{font-size:17px}
-.stat{padding:12px!important}.stat .value{font-size:22px}.stat .label{font-size:10px}.stat .sub{font-size:10px}
-.btn{border-radius:8px;padding:10px 12px}.btn.small{padding:7px 9px}.btn.primary{background:#1d62bf}
-.field label,.subhead{font-size:10px!important;text-transform:uppercase;letter-spacing:.055em;color:#526177}.field input,.field textarea,.field select,.search{border-radius:8px;padding:10px 11px;background:#fff;border-color:#cbd5e1}.field input:focus,.field textarea:focus,.field select:focus{border-color:#4d8bd7;box-shadow:0 0 0 2px rgba(29,98,191,.10)}
-.check{border-radius:9px;padding:8px 10px;background:#fff}.shift-type-choice{border-radius:9px;min-height:78px;padding:10px 6px;gap:8px}.shift-type-choice input[type="checkbox"]{width:24px!important;height:24px!important;min-width:24px!important}
-.conditional-panel,.special-panel,.readonly-info,.rate-note,.start-date-prompt{border-radius:9px}.time-slip-panel{background:#f6f9fe;border-color:#aac7eb;border-radius:10px}.time-slip-panel .subhead{color:#1d62bf}.time-slip-check{background:#f0f6ff!important;border-color:#8eb7e8!important;color:#174f92}.shift.timeslip{background:#f7faff;border-color:#aec9ea;box-shadow:inset 3px 0 0 #4385d1}
-.history{gap:6px}.history .shift,.history-card-shell .shift{border-radius:10px;padding:11px 12px}.shift-title{font-size:14px}.shift-pay{font-size:15px;color:#164f96}.badge{border-radius:5px;padding:4px 6px}
-.nav{left:0;right:0;bottom:0;transform:none;width:100%;max-width:none;border:0;border-top:1px solid #d7dee7;border-radius:0;padding:5px calc(6px + env(safe-area-inset-right)) calc(5px + env(safe-area-inset-bottom)) calc(6px + env(safe-area-inset-left));background:rgba(255,255,255,.97);box-shadow:0 -5px 16px rgba(26,42,62,.05);gap:0}.nav button{flex:1;border-radius:7px;padding:6px 4px;color:#647287;font-size:10px}.nav button::before{display:block;font-size:18px;line-height:18px;margin-bottom:3px}.nav #nav-dashboard::before{content:"⌂"}.nav #nav-add::before{content:"＋"}.nav #nav-history::before{content:"◷"}.nav #nav-settings::before{content:"⚙"}.nav button.active{background:#eef4fc;color:#1d62bf}
-#shiftModal{background:rgba(13,28,46,.35)}#shiftModal .sheet{width:min(760px,100%);max-height:96vh;border-radius:14px 14px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -10px 28px rgba(18,36,57,.14)}#shiftModal .section-title{position:sticky;top:-14px;z-index:3;background:#fff;margin:-14px -16px 12px;padding:14px 16px 10px;border-bottom:1px solid #e1e6ec}#shiftModal .section-title h2{font-size:20px}
-#shiftModal .form-grid{gap:9px}.calc{border-radius:10px}.calc-row{padding:6px 0}.calc-total{font-size:18px}
+/* CONCEPT: DASHBOARD FIRST — modern mobile dashboard, system typography */
+:root{--bg:#edf3f9;--card:#fff;--ink:#13243b;--muted:#6b7b90;--line:#d8e2ed;--brand:#0b3768;--brand2:#2774c9;--shadow:0 7px 22px rgba(12,49,87,.08);--radius:20px}
+html,body{background:#edf3f9}
+.app{max-width:980px;padding:0 14px 112px}
+.topbar{margin:0 -14px 16px;padding:22px 22px 24px;background:linear-gradient(145deg,#082b52,#0c447e);color:#fff;border-radius:0 0 26px 26px;box-shadow:0 10px 28px rgba(8,43,82,.16)}
+.brand h1{color:#fff;font-size:26px}.brand p{color:#c8dbef}.pill{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.24);color:#fff}
+#dashboardView .grid{gap:11px}
+#dashboardView .grid>.stat{grid-column:span 4!important;order:1;background:linear-gradient(150deg,#0b3768,#0e477f);border-color:#1b5488;color:#fff;padding:13px 12px;border-radius:16px;box-shadow:0 8px 20px rgba(8,43,82,.12)}
+#dashboardView .stat .label{color:#a9d7ff;font-size:9px}.stat .value{font-size:21px}.stat .sub{font-size:10px;color:#d2e2f2}
+#dashboardView .grid>.calc{order:2;grid-column:span 12!important;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:#fff;color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow)}
+#dashboardView .calc .section-title{grid-column:1;margin:0}#dashboardView .calc .section-title h2{color:var(--brand)}#dashboardView .calc p{grid-column:1;margin:3px 0!important;color:var(--muted)!important;font-size:12px}#dashboardView .calc .btn{grid-column:2;grid-row:1 / span 2;align-self:stretch;min-width:150px;background:var(--brand)!important;color:#fff!important}
+#myJobDashboardCard{order:3;background:linear-gradient(180deg,#f8fbff,#fff)}
+#dashboardView .grid>.span8{order:4;grid-column:span 12!important}
+#dashboardView .grid>.span12:not(#myJobDashboardCard){order:5}
+.card{border-radius:20px;padding:17px;box-shadow:var(--shadow)}
+.feature-card{border-radius:16px;background:#f9fbfd;box-shadow:none}.feature-card .big{color:#0b3768}
+.btn{border-radius:12px}.btn.primary{background:#0b3768}.btn.small{font-weight:800}
+.history .shift{border-radius:14px;background:#fff;box-shadow:none}.shift-pay{color:#0b3768}
+.nav{bottom:8px;width:calc(100% - 16px);max-width:650px;justify-content:space-around;gap:3px;padding:6px;background:rgba(255,255,255,.96);border:1px solid #d5e0eb;border-radius:22px;box-shadow:0 14px 36px rgba(8,43,82,.17)}
+.nav button{flex:1;min-width:0;padding:8px 6px;border-radius:16px;color:#68798d;font-size:10px;font-weight:800}.nav button::before{display:block;font-size:20px;line-height:20px;margin-bottom:4px}.nav #nav-dashboard::before{content:"⌂"}.nav #nav-add::before{content:"＋"}.nav #nav-history::before{content:"≡"}.nav #nav-settings::before{content:"⚙"}.nav button.active{background:#e8f1fb;color:#0b3768}.nav #nav-add{background:#0b3768;color:#fff}.nav #nav-add::before{font-size:24px}
+.section-title h2{letter-spacing:-.015em}.field input,.field textarea,.field select,.search{border-radius:12px}
 @media(max-width:780px){
- .app{padding:10px 10px 86px}.card{padding:13px}.topbar{padding:6px 1px 12px}.brand h1{font-size:20px}.pill{font-size:9px}
- #shiftModal{align-items:stretch!important;background:#f5f6f8}#shiftModal .sheet{max-height:100vh;height:100%;border-radius:0;padding:12px 12px calc(88px + env(safe-area-inset-bottom));box-shadow:none}#shiftModal .section-title{top:-12px;margin:-12px -12px 10px;padding:13px 12px 9px}
- #shiftModal .field:not(.full){grid-column:span 6!important}#shiftModal .time-slip-grid{grid-template-columns:1fr 1fr!important;gap:8px}#shiftModal .crew-grid{grid-template-columns:1fr 1fr!important}
- .shift-type-choice{font-size:10px;min-height:72px}.shift-type-choice:nth-child(n+4){min-height:70px}
- .feature-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px}.feature-card{padding:10px}.feature-card h3{font-size:11px}.feature-card .big{font-size:19px}.feature-card .mini{font-size:9px}.feature-card .btn{width:100%;font-size:9px;padding:6px 4px}
+ .app{padding:0 10px 104px}.topbar{margin:0 -10px 12px;padding:18px 16px 20px;border-radius:0 0 22px 22px}.brand h1{font-size:22px}.brand p{font-size:11px}.pill{font-size:9px;padding:6px 8px;max-width:43%;text-align:center}
+ #dashboardView .grid>.stat{grid-column:span 4!important;padding:10px 6px}.stat .value{font-size:17px;white-space:nowrap}.stat .label{font-size:8px}.stat .sub{font-size:8px;line-height:1.2}
+ #dashboardView .grid>.calc{grid-template-columns:1fr auto;padding:14px}.calc p{display:none}.calc .btn{grid-row:1!important;min-width:126px!important}
+ .feature-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px}.feature-card{padding:11px!important}.feature-card h3{font-size:11px}.feature-card .big{font-size:20px}.feature-card .mini{font-size:9px}.feature-card .btn{font-size:9px;padding:7px 5px;width:100%}
 }
-html[data-theme="dark"] .nav{background:rgba(10,23,39,.98)!important;border-top-color:#34465e!important}
-html[data-theme="dark"] #shiftModal{background:#091321!important}html[data-theme="dark"] #shiftModal .section-title{background:#0f1c2c!important}
+html[data-theme="dark"] .topbar{background:linear-gradient(145deg,#0a2341,#0d3b68)}
+html[data-theme="dark"] #dashboardView .grid>.stat{background:linear-gradient(150deg,#123b66,#154f83)!important;border-color:#315d87!important}
+html[data-theme="dark"] #dashboardView .grid>.calc{background:#101d2d!important}
+html[data-theme="dark"] #dashboardView .calc .section-title h2{color:#fff!important}
+html[data-theme="dark"] .feature-card{background:#101d2d!important}
+html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!important}
 
   </style>
 </head>
@@ -699,7 +709,7 @@ html[data-theme="dark"] #shiftModal{background:#091321!important}html[data-theme
 <div class="app">
   <div class="topbar">
     <div class="brand"><h1>Engineer Pay Log</h1><p>Private, local shift & earnings tracker</p></div>
-    <div class="pill">Utility Pro • 8.2.4</div>
+    <div class="pill">Dashboard First • 8.2.4</div>
   </div>
 
   <section id="dashboardView" class="view active">
