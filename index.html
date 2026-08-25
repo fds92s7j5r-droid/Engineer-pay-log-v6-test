@@ -114,6 +114,7 @@
     .modal-foot{flex:0 0 auto;padding:12px 20px calc(12px + env(safe-area-inset-bottom));border-top:1px solid #e3e9f0;background:#fff}
     .modal-foot .btn.primary{width:100%;min-height:48px}
     #whatsNewModal .modal-card{max-height:78vh}
+    #twoClassesPromptModal{z-index:40}
     #whatsNewModal .whats-new-list{font-size:15px;line-height:1.45;margin:4px 0 0;padding-left:21px}
     #whatsNewModal .whats-new-list li{margin:0 0 10px}
     #whatsNewModal .whats-new-list li:last-child{margin-bottom:0}
@@ -1467,6 +1468,17 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <p class="notice" style="margin-top:14px"><strong>No pay calculation rules were changed in this update.</strong></p>
     </div>
     <div class="modal-foot"><button class="btn primary" onclick="closeWhatsNew()">Got It</button></div>
+  </div>
+</div>
+
+<div id="twoClassesPromptModal" class="modal">
+  <div class="modal-card" style="max-width:520px">
+    <div class="modal-head"><div><h2 style="margin:0">2 Classes of Service</h2><div class="muted" style="margin-top:4px">Pull information</div></div></div>
+    <div class="modal-body">
+      <div class="field full"><label>What time did you get pulled?</label><input id="twoClassesPromptTime" type="time"></div>
+      <div class="rate-note" style="margin-top:12px">This lets Engineer Pay Log compare the 2 Classes day with overtime caused by the pull and automatically use the greater payment.</div>
+    </div>
+    <div class="modal-foot" style="display:flex;gap:8px"><button class="btn" type="button" style="flex:1" onclick="cancelTwoClassesPrompt()">Cancel</button><button class="btn primary" type="button" style="flex:2" onclick="confirmTwoClassesPrompt()">Use Pull Time</button></div>
   </div>
 </div>
 
@@ -3388,10 +3400,41 @@ function toggleYardCert(){
   const $=id=>document.getElementById(id);
   $('yardCertWrap').classList.toggle('show',$('certFlag').checked);
 }
+function openTwoClassesPrompt(){
+  const existing=document.getElementById('twoClassesPullTime')?.value||'';
+  const promptTime=document.getElementById('twoClassesPromptTime');
+  if(promptTime)promptTime.value=existing;
+  document.getElementById('twoClassesPromptModal')?.classList.add('open');
+  setTimeout(()=>promptTime?.focus(),50);
+}
+function cancelTwoClassesPrompt(){
+  const $=id=>document.getElementById(id);
+  $('twoClassesPromptModal')?.classList.remove('open');
+  if(!$('twoClassesPullTime').value){
+    $('yardMoveFlag').checked=false;
+    $('twoClassesWrap').classList.remove('show');
+  }
+  calculatePreview();
+}
+function confirmTwoClassesPrompt(){
+  const $=id=>document.getElementById(id),value=$('twoClassesPromptTime').value;
+  if(!value){alert('Enter the time you were pulled.');$('twoClassesPromptTime').focus();return;}
+  $('twoClassesPullTime').value=value;
+  $('twoClassesPromptModal').classList.remove('open');
+  $('twoClassesWrap').classList.add('show');
+  calculatePreview();
+}
 function toggleTwoClasses(){
   const $=id=>document.getElementById(id),on=$('yardMoveFlag').checked;
   $('twoClassesWrap').classList.toggle('show',on);
-  if(!on){$('twoClassesPullTime').value='';$('twoClassesComparisonPreview').textContent='Enter pull time';}
+  if(!on){
+    $('twoClassesPromptModal')?.classList.remove('open');
+    $('twoClassesPullTime').value='';
+    $('twoClassesPromptTime').value='';
+    $('twoClassesComparisonPreview').textContent='Enter pull time';
+  }else if(!$('twoClassesPullTime').value){
+    openTwoClassesPrompt();
+  }
 }
 function toggleRunaround(){
   const $=id=>document.getElementById(id);
