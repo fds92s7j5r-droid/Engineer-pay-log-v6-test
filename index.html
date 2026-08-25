@@ -1347,7 +1347,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <summary><span><strong>Pay Rules & Rates</strong><small>Rate table Jul 29, 2026 • 8-hour minimum • reference details</small></span><span class="settings-chevron">›</span></summary>
           <div class="settings-disclosure-body">
             <div class="pay-rules-quick"><span><strong>Minimum</strong>8 hours</span><span><strong>Night Diff.</strong>8:00 PM–5:59 AM</span><span><strong>Daily Cert</strong>$10 normal shift</span></div>
-            <details class="settings-inline-details"><summary>View full pay rules</summary><div class="rate-note details-copy"><strong>Pay scale:</strong> Automatically determined from Employment Start Date using the BLET rate tables effective July 29, 2026 (60%, 80%, 90%, 100%).<br><strong>Minimum:</strong> 8 hours per paid shift.<br><strong>Normal OT:</strong> actual time over 8 hours.<br><strong>Full-shift OT:</strong> Holiday, Short Swing, or Relief Day.<br><strong>Night differential:</strong> actual time between 8:00 PM and 5:59 AM.<br><strong>Meal Period:</strong> 20 minutes at time-and-one-half.<br><strong>Freight Meal:</strong> 40 minutes at time-and-one-half.<br><strong>Fuel Claim:</strong> 30 minutes at time-and-one-half.<br><strong>Daily Cert:</strong> $10 once per normal worked shift; excluded from Special Shifts.<br><strong>Trainee:</strong> 1 hour straight time per trainee, maximum 2.<br><strong>Operating Without a Conductor:</strong> 8 hours straight time.<br><strong>Yard Certification:</strong> 1 hour straight time per certification.<br><strong>Commingle / 2 Classes of Service / Sheridan-Shop-House Move:</strong> each adds 8 hours straight time.<br><strong>Terminal Not In Crew Book:</strong> 2 hours straight time.<br><strong>Runaround Claim:</strong> 2 hours straight time plus the entered difference in earnings, all straight time.<br><strong>Time on Time:</strong> variable additional straight-time payment, maximum 8:00 per shift.<br><strong>Miscellaneous Penalty:</strong> user-entered description and duration paid at the selected straight-time or overtime rate.<br><strong>Vacation Week:</strong> 1/52 of previous year gross earnings, minimum five basic days.<br><strong>Single Vacation Day:</strong> 1/5 of the vacation-week value, minimum one basic day.</div></details>
+            <details class="settings-inline-details"><summary>View full pay rules</summary><div class="rate-note details-copy"><strong>Pay scale:</strong> Automatically determined from Employment Start Date using the BLET rate tables effective July 29, 2026 (60%, 80%, 90%, 100%).<br><strong>Minimum:</strong> 8 hours per paid shift.<br><strong>Normal OT:</strong> actual time over 8 hours.<br><strong>Full-shift OT:</strong> Holiday, Short Swing, or Relief Day.<br><strong>Night differential:</strong> actual time between 8:00 PM and 5:59 AM.<br><strong>Meal Period:</strong> 20 minutes at time-and-one-half.<br><strong>Freight Meal:</strong> 40 minutes at time-and-one-half.<br><strong>Fuel Claim:</strong> 30 minutes at time-and-one-half.<br><strong>Daily Cert:</strong> $10 once per normal worked shift; excluded from Special Shifts.<br><strong>Trainee:</strong> 1 hour straight time per trainee, maximum 2.<br><strong>Operating Without a Conductor:</strong> 8 hours straight time.<br><strong>Yard Certification:</strong> 1 hour straight time per certification.<br><strong>Commingle / Sheridan-Shop-House Move:</strong> each adds 8 hours straight time.<br><strong>2 Classes of Service:</strong> compares the 8-hour straight-time payment with ordinary overtime attributable to the pull and uses the greater payment; the same pull is not paid both ways.<br><strong>Terminal Not In Crew Book:</strong> 2 hours straight time.<br><strong>Runaround Claim:</strong> 2 hours straight time plus the entered difference in earnings, all straight time.<br><strong>Time on Time:</strong> variable additional straight-time payment, maximum 8:00 per shift.<br><strong>Miscellaneous Penalty:</strong> user-entered description and duration paid at the selected straight-time or overtime rate.<br><strong>Vacation Week:</strong> 1/52 of previous year gross earnings, minimum five basic days.<br><strong>Single Vacation Day:</strong> 1/5 of the vacation-week value, minimum one basic day.</div></details>
           </div>
         </details>
 
@@ -1605,7 +1605,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <label class="check"><input id="noCoFlag" type="checkbox" onchange="calculatePreview()"> Operating Without a Conductor</label>
           <label class="check"><input id="certFlag" type="checkbox" onchange="toggleYardCert();calculatePreview()"> Yard Certification</label>
           <label class="check"><input id="commingleFlag" type="checkbox" onchange="calculatePreview()"> Commingle</label>
-          <label class="check"><input id="yardMoveFlag" type="checkbox" onchange="calculatePreview()"> 2 Classes of Service</label>
+          <label class="check"><input id="yardMoveFlag" type="checkbox" onchange="toggleTwoClasses();calculatePreview()"> 2 Classes of Service</label>
           <label class="check"><input id="sheridanFlag" type="checkbox" onchange="calculatePreview()"> Sheridan / Shop / House Move</label>
           <label class="check"><input id="terminalFlag" type="checkbox" onchange="calculatePreview()"> Terminal Not In Crew Book</label>
           <label class="check"><input id="runaroundFlag" type="checkbox" onchange="toggleRunaround();calculatePreview()"> Runaround Claim</label>
@@ -1619,6 +1619,11 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <div id="yardCertWrap" class="conditional-panel">
             <div class="subhead">Number of yard certifications</div>
             <input id="yardCertCount" type="number" inputmode="numeric" min="1" step="1" value="1" oninput="calculatePreview()">
+          </div>
+          <div id="twoClassesWrap" class="conditional-panel">
+            <div class="subhead">Two Classes of Service</div>
+            <div class="field full"><label>What time did you get pulled?</label><input id="twoClassesPullTime" type="time" onchange="calculatePreview()"></div>
+            <div class="readonly-info" style="margin-top:8px"><div class="muted">Pay comparison</div><strong id="twoClassesComparisonPreview">Enter pull time</strong><div class="muted" style="margin-top:2px">Engineer Pay Log compares the 8-hour Two Classes payment with overtime attributable to the pull and uses the greater payment. The same pull is never paid both ways.</div></div>
           </div>
           <div id="runaroundWrap" class="conditional-panel">
             <div class="subhead">Difference in earnings (2 hours straight time is added automatically)</div>
@@ -2027,6 +2032,7 @@ function upgradeShift(s){
   if(s.terminalNotCrewBook===undefined)s.terminalNotCrewBook=false;
   if(s.unscheduledOT===undefined)s.unscheduledOT=false;
   if(s.crewBookReleaseTime===undefined)s.crewBookReleaseTime='';
+  if(s.twoClassesPullTime===undefined)s.twoClassesPullTime='';
   if(s.runaround===undefined)s.runaround=false;
   if(s.runaroundDiffMinutes===undefined)s.runaroundDiffMinutes=0;
   const legacy2A=parse2A(claims);
@@ -2264,7 +2270,8 @@ function calculate(s,depth=0){
   const payable=traineeMode?Math.max(480,actual-30):Math.max(480,baseActual);
   const holiday=traineeMode?false:(!!s.holiday||isContractHoliday(s.date)),ssot=traineeMode?false:!!s.ssot,rd=traineeMode?false:!!s.rd,fullOT=holiday||ssot||rd;
   const regular=fullOT?0:basicST;
-  const ot=traineeMode?otPay(Math.max(0,actual-510),ratePct):(fullOT?otPay(payable,ratePct):otPay(Math.max(0,baseActual-480),ratePct));
+  let ot=traineeMode?otPay(Math.max(0,actual-510),ratePct):(fullOT?otPay(payable,ratePct):otPay(Math.max(0,baseActual-480),ratePct));
+  const ordinaryOTBeforeTwoClasses=ot;
   const night=nightPay(overlapNight(start,end),ratePct);
   const holidayBonus=holiday?basicST:0;
   const mptePay=(s.mpte||s.paysMeal)?otPay(20,ratePct):0;
@@ -2286,7 +2293,33 @@ function calculate(s,depth=0){
   const yardCertCount=!traineeMode&&s.cert?Math.max(1,Math.round(Number(s.yardCertCount)||1)):0;
   const certPay=straightPay(60*yardCertCount,ratePct);
   const comminglePay=!traineeMode&&s.commingle?basicST:0;
-  const classesPay=!traineeMode&&s.yardMove?basicST:0;
+  let classesPay=!traineeMode&&s.yardMove?basicST:0;
+  let twoClassesDecision='';
+  let twoClassesPullRelatedOTMinutes=0,twoClassesPullRelatedOTPay=0,twoClassesPrePullOTMinutes=0;
+  let twoClassesComparisonAvailable=false;
+  if(!traineeMode&&s.yardMove&&s.twoClassesPullTime&&!fullOT){
+    const pullClock=parseClock(s.twoClassesPullTime);
+    if(pullClock!=null){
+      const baseEndAbs=start+baseActual;
+      let pullAbs=pullClock;while(pullAbs<start)pullAbs+=1440;
+      if(pullAbs<=baseEndAbs){
+        const ordinaryOTStart=start+480;
+        const ordinaryOTMinutes=Math.max(0,baseActual-480);
+        twoClassesPullRelatedOTMinutes=Math.max(0,baseEndAbs-Math.max(ordinaryOTStart,pullAbs));
+        twoClassesPrePullOTMinutes=Math.max(0,ordinaryOTMinutes-twoClassesPullRelatedOTMinutes);
+        twoClassesPullRelatedOTPay=otPay(twoClassesPullRelatedOTMinutes,ratePct);
+        twoClassesComparisonAvailable=true;
+        if(classesPay>=twoClassesPullRelatedOTPay){
+          twoClassesDecision='classes';
+          ot=otPay(twoClassesPrePullOTMinutes,ratePct);
+        }else{
+          twoClassesDecision='overtime';
+          classesPay=0;
+          ot=ordinaryOTBeforeTwoClasses;
+        }
+      }
+    }
+  }
   const sheridanPay=!traineeMode&&s.sheridanMove?basicST:0;
   const terminalPay=!traineeMode&&s.terminalNotCrewBook?straightPay(120,ratePct):0;
   const runaroundDiffMinutes=!traineeMode&&s.runaround?Math.max(0,Math.round(Number(s.runaroundDiffMinutes)||0)):0;
@@ -2306,6 +2339,7 @@ function calculate(s,depth=0){
     payType:passengerSpecial?special:(holiday?'Holiday':ssot?'Short Swing':rd?'Relief Day':'Normal'),
     regular,ot,night,holidayBonus,mptePay,freightMealPay,fuelClaimPay,otCompletionPay,otCompletionMinutes,dailyCertPay,specialPay,
     traineeCount,ponePay,noCoPay,yardCertCount,certPay,comminglePay,classesPay,sheridanPay,terminalPay,
+    twoClassesDecision,twoClassesComparisonAvailable,twoClassesPullRelatedOTMinutes,twoClassesPullRelatedOTPay,twoClassesPrePullOTMinutes,twoClassesDayPay:basicST,
     runaroundBaseMinutes,runaroundDiffMinutes,runaroundPay,a2mins,a2,miscPenaltyMinutes,miscPenaltyRate,miscPenaltyPay,total};
 }
 const TERMINALS=[
@@ -3062,6 +3096,7 @@ function formData(){
     holiday:$('shiftRuleMode').value==='trainee'?false:$('holidayFlag').checked,ssot:$('shiftRuleMode').value==='trainee'?false:$('ssotFlag').checked,rd:$('shiftRuleMode').value==='trainee'?false:$('rdFlag').checked,
     paysMeal:$('paysMealFlag').checked,mpte:$('mpteFlag').checked,freightMeal:$('freightMealFlag').checked,fuelClaim:$('shiftRuleMode').value==='trainee'?false:$('fuelClaimFlag').checked,otCompletion:$('shiftRuleMode').value==='trainee'?false:$('otCompletionFlag').checked,otCompletionTime:$('shiftRuleMode').value==='trainee'?'':($('otCompletionFlag').checked?$('otCompletionTime').value:''),
     unscheduledOT:$('unscheduledOTFlag').checked,crewBookReleaseTime:$('unscheduledOTFlag').checked?$('crewBookReleaseTime').value:'',
+    twoClassesPullTime:$('yardMoveFlag').checked?$('twoClassesPullTime').value:'',
     pone:$('poneFlag').checked,traineeCount:$('poneFlag').checked?Math.min(2,Math.max(1,Number($('traineeCount').value)||1)):0,
     noCo:$('noCoFlag').checked,cert:$('certFlag').checked,
     yardCertCount:$('certFlag').checked?Math.max(1,Math.round(Number($('yardCertCount').value)||1)):0,
@@ -3108,7 +3143,20 @@ function calculatePreview(){
   setCalcRow('pPONE',c.ponePay,`${money(c.ponePay)}${c.traineeCount?` (${c.traineeCount})`:''}`);
   setCalcRow('pNOCO',c.noCoPay);
   setCalcRow('pCERT',c.certPay,`${money(c.certPay)}${c.yardCertCount?` (${c.yardCertCount})`:''}`);
-  setCalcRow('pCommingle',c.comminglePay);setCalcRow('pClasses',c.classesPay);setCalcRow('pSheridan',c.sheridanPay);setCalcRow('pTerminal',c.terminalPay);
+  setCalcRow('pCommingle',c.comminglePay);
+  const classesLabel=c.twoClassesDecision==='overtime'?`${money(c.classesPay)} (OT pays more)`:c.twoClassesDecision==='classes'?`${money(c.classesPay)} (greater payment)`:money(c.classesPay);
+  setCalcRow('pClasses',c.classesPay,classesLabel);setCalcRow('pSheridan',c.sheridanPay);setCalcRow('pTerminal',c.terminalPay);
+  const twoClassesPreview=$('twoClassesComparisonPreview');
+  if(twoClassesPreview&&s.yardMove){
+    if(!s.twoClassesPullTime)twoClassesPreview.textContent='Enter pull time';
+    else if(!c.twoClassesComparisonAvailable)twoClassesPreview.textContent='Pull time must fall within this tour';
+    else if(c.twoClassesDecision==='classes')twoClassesPreview.textContent=`2 Classes pays more: ${money(c.twoClassesDayPay)} vs ${money(c.twoClassesPullRelatedOTPay)} (${fmtMinutes(c.twoClassesPullRelatedOTMinutes)} pull-related OT)`;
+    else twoClassesPreview.textContent=`Overtime pays more: ${money(c.twoClassesPullRelatedOTPay)} (${fmtMinutes(c.twoClassesPullRelatedOTMinutes)}) vs ${money(c.twoClassesDayPay)} for 2 Classes`;
+  }
+  if(s.unscheduledOT&&c.twoClassesDecision==='classes'){
+    const raw=unscheduledOTMinutes(),u=$('unscheduledOTPreview');
+    if(u&&raw!=null)u.textContent=`${fmtMinutes(raw)} generated • superseded by 2 Classes`;
+  }
   setCalcRow('pRunaround',c.runaroundPay,`${money(c.runaroundPay)}${c.runaroundBaseMinutes?` (2:00 + ${fmtMinutes(c.runaroundDiffMinutes)})`:''}`);
   setCalcRow('p2a',c.a2,`${money(c.a2)}${c.a2mins?` (${fmtMinutes(c.a2mins)})`:''}`);
   setCalcRow('pMiscPenalty',c.miscPenaltyPay,`${money(c.miscPenaltyPay)}${c.miscPenaltyMinutes?` (${fmtMinutes(c.miscPenaltyMinutes)} ${c.miscPenaltyRate==='overtime'?'OT':'ST'})`:''}`);
@@ -3340,6 +3388,11 @@ function toggleYardCert(){
   const $=id=>document.getElementById(id);
   $('yardCertWrap').classList.toggle('show',$('certFlag').checked);
 }
+function toggleTwoClasses(){
+  const $=id=>document.getElementById(id),on=$('yardMoveFlag').checked;
+  $('twoClassesWrap').classList.toggle('show',on);
+  if(!on){$('twoClassesPullTime').value='';$('twoClassesComparisonPreview').textContent='Enter pull time';}
+}
 function toggleRunaround(){
   const $=id=>document.getElementById(id);
   $('runaroundWrap').classList.toggle('show',$('runaroundFlag').checked);
@@ -3354,12 +3407,12 @@ function newShift(){
   $('formTitle').textContent='Add shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';
   $('date').value=new Date().toISOString().slice(0,10);$('holidayFlag').checked=isContractHoliday($('date').value);
   $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';
-  applyEntryMode();handleSecretUnpaidSick();$('specialShift').value='';$('specialCategory').value='';$('classFlag').checked=false;$('conductorName').value='';$('brakemanName').value='';$('engineerName').value='';$('engineerIBM').value='';$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('unscheduledOTFlag').checked=false;$('crewBookReleaseTime').value='';
+  applyEntryMode();handleSecretUnpaidSick();$('specialShift').value='';$('specialCategory').value='';$('classFlag').checked=false;$('conductorName').value='';$('brakemanName').value='';$('engineerName').value='';$('engineerIBM').value='';$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('unscheduledOTFlag').checked=false;$('crewBookReleaseTime').value='';$('twoClassesPullTime').value='';
   $('vacationGrossInput').value='';$('vacationGrossInput').dataset.vacationYear='';$('vacationReliefPair').value='';
   $('traineeCount').value=1;$('yardCertCount').value=1;
   $('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;
   $('miscPenaltyFlag').checked=false;$('miscPenaltyDescription').value='';$('miscPenaltyHours').value=0;$('miscPenaltyMinutes').value=0;$('miscPenaltyStraight').checked=true;
-  applyEntryMode();toggleSpecialShift();toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleRunaround();toggleA2();toggleMiscPenalty();
+  applyEntryMode();toggleSpecialShift();toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleTwoClasses();toggleRunaround();toggleA2();toggleMiscPenalty();
   renderMyJobUI();$('shiftModal').classList.add('open');calculatePreview();
 }
 function editShift(id){
@@ -3373,12 +3426,12 @@ function editShift(id){
   $('holidayFlag').checked=!!s.holiday;$('ssotFlag').checked=!!s.ssot;$('rdFlag').checked=!!s.rd;
   $('paysMealFlag').checked=!!s.paysMeal;$('mpteFlag').checked=!!s.mpte;$('freightMealFlag').checked=!!s.freightMeal;$('fuelClaimFlag').checked=!!s.fuelClaim;$('otCompletionFlag').checked=!!s.otCompletion;$('otCompletionTime').value=s.otCompletionTime||'';$('unscheduledOTFlag').checked=!!s.unscheduledOT;$('crewBookReleaseTime').value=s.crewBookReleaseTime||'';$('poneFlag').checked=!!s.pone;$('traineeCount').value=Math.min(2,Math.max(1,Number(s.traineeCount)||1));
   $('noCoFlag').checked=!!s.noCo;$('certFlag').checked=!!s.cert;$('yardCertCount').value=Math.max(1,Number(s.yardCertCount)||1);
-  $('commingleFlag').checked=!!s.commingle;$('yardMoveFlag').checked=!!s.yardMove;$('sheridanFlag').checked=!!s.sheridanMove;
+  $('commingleFlag').checked=!!s.commingle;$('yardMoveFlag').checked=!!s.yardMove;$('twoClassesPullTime').value=s.twoClassesPullTime||'';$('sheridanFlag').checked=!!s.sheridanMove;
   $('terminalFlag').checked=!!s.terminalNotCrewBook;$('runaroundFlag').checked=!!s.runaround;
   const rr=Math.max(0,Number(s.runaroundDiffMinutes)||0);$('runaroundHours').value=Math.floor(rr/60);$('runaroundMinutes').value=rr%60;
   $('a2Flag').checked=!!s.a2;const mins=Math.max(0,Number(s.a2Minutes)||0);$('a2Hours').value=Math.floor(mins/60);$('a2Minutes').value=mins%60;
   $('miscPenaltyFlag').checked=!!s.miscPenalty;$('miscPenaltyDescription').value=s.miscPenaltyDescription||'';const miscMins=Math.max(0,Number(s.miscPenaltyMinutes)||0);$('miscPenaltyHours').value=Math.floor(miscMins/60);$('miscPenaltyMinutes').value=miscMins%60;$('miscPenaltyOvertime').checked=s.miscPenaltyRate==='overtime';$('miscPenaltyStraight').checked=s.miscPenaltyRate!=='overtime';
-  applyEntryMode();toggleSpecialShift();handleSecretUnpaidSick();if(isVacationSpecial(s.specialShift))updateVacationUI(s.vacationGross||getVacationGrossForYear(Number(s.date.slice(0,4))));toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleRunaround();toggleA2();toggleMiscPenalty();
+  applyEntryMode();toggleSpecialShift();handleSecretUnpaidSick();if(isVacationSpecial(s.specialShift))updateVacationUI(s.vacationGross||getVacationGrossForYear(Number(s.date.slice(0,4))));toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleTwoClasses();toggleRunaround();toggleA2();toggleMiscPenalty();
   $('formTitle').textContent='Edit shift';$('deleteBtn').style.display='block';$('duplicateBtn').style.display='inline-flex';$('favoriteBtn').style.display='inline-flex';$('shiftModal').classList.add('open');calculatePreview();
 }
 function duplicateShift(id){
@@ -3395,14 +3448,14 @@ function duplicateShift(id){
   $('notes').value='';
   $('holidayFlag').checked=isContractHoliday($('date').value);$('ssotFlag').checked=false;$('rdFlag').checked=false;
   $('paysMealFlag').checked=false;$('mpteFlag').checked=false;$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('unscheduledOTFlag').checked=false;$('crewBookReleaseTime').value='';$('poneFlag').checked=false;$('noCoFlag').checked=false;$('certFlag').checked=false;
-  $('commingleFlag').checked=false;$('yardMoveFlag').checked=false;$('sheridanFlag').checked=false;$('terminalFlag').checked=false;
+  $('commingleFlag').checked=false;$('yardMoveFlag').checked=false;$('twoClassesPullTime').value='';$('sheridanFlag').checked=false;$('terminalFlag').checked=false;
   $('runaroundFlag').checked=false;$('a2Flag').checked=false;$('miscPenaltyFlag').checked=false;
   $('traineeCount').value=1;$('yardCertCount').value=1;$('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;$('miscPenaltyDescription').value='';$('miscPenaltyHours').value=0;$('miscPenaltyMinutes').value=0;$('miscPenaltyStraight').checked=true;
 
   $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';
   $('vacationGrossInput').value='';$('vacationGrossInput').dataset.vacationYear='';$('vacationReliefPair').value=s.specialShift==='Vacation Week'?(s.vacationReliefPair||vacationReliefPairFromMyJob()):'';
 
-  applyEntryMode();toggleSpecialShift();handleSecretUnpaidSick();toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleRunaround();toggleA2();toggleMiscPenalty();
+  applyEntryMode();toggleSpecialShift();handleSecretUnpaidSick();toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleTwoClasses();toggleRunaround();toggleA2();toggleMiscPenalty();
   $('shiftModal').classList.add('open');calculatePreview();
 }
 function duplicateCurrentShift(){
@@ -3413,6 +3466,7 @@ function closeModal(){document.getElementById('shiftModal').classList.remove('op
 function saveShift(e){
   e.preventDefault();const s=formData();
   if(s.miscPenalty&&(!s.miscPenaltyDescription||!(s.miscPenaltyMinutes>0))){alert('For a Miscellaneous Penalty, enter the nature of the claim and a duration greater than 0:00.');document.getElementById(!s.miscPenaltyDescription?'miscPenaltyDescription':'miscPenaltyHours')?.focus();return}
+  if(s.yardMove&&!s.twoClassesPullTime){alert('For a 2 Classes of Service claim, enter the time you were pulled so Engineer Pay Log can compare the 2 Classes payment with pull-related overtime.');document.getElementById('twoClassesPullTime')?.focus();return}
   if(isVacationSpecial(s.specialShift)){
     const year=Number(String(s.date||'').slice(0,4));
     if(s.specialShift==='Vacation Week'&&!isMondayISO(s.date)){alert('Vacation Weeks run Monday through Sunday. Please select the Monday that begins the vacation week.');return}
@@ -3700,10 +3754,10 @@ function getFilteredHistoryShifts(){
   ].join(' ').toLowerCase().includes(q)).sort((a,b)=>a.date.localeCompare(b.date));
 }
 function exportCSV(){
-  let rows=[['Date','Mode','Class','Engineer Name','Engineer IBM','Assignment','Location','Shift Type','Special Shift','Special Category','Vacation End Date','Previous Year Gross Earnings','Vacation Relief Days','Conductor','Brakeman','Start','End','Actual Time','Payable Time','Pay Scale','Pay Type','Regular Pay','OT Pay','Night Differential','Holiday Pay','Daily Cert','Meal Period','Freight Meal','Fuel Claim','OT Upon Completion Time','OT Upon Completion Pay','Trainees','Trainee Pay','Operating Without a Conductor','Yard Certifications','Yard Certification Pay','Commingle','2 Classes of Service','Sheridan / Shop / House Move','Terminal Not In Crew Book','Runaround Difference','Runaround Pay','Time on Time','Time on Time Pay','Miscellaneous Penalty Description','Miscellaneous Penalty Time','Miscellaneous Penalty Rate','Miscellaneous Penalty Pay','Special Shift Pay','Time Slip','Time Slip Date Written','Time Slip Date Submitted','Time Slip Location','Time Slip Status','Time Slip Date Paid/Denied','Total','Notes']];
+  let rows=[['Date','Mode','Class','Engineer Name','Engineer IBM','Assignment','Location','Shift Type','Special Shift','Special Category','Vacation End Date','Previous Year Gross Earnings','Vacation Relief Days','Conductor','Brakeman','Start','End','Actual Time','Payable Time','Pay Scale','Pay Type','Regular Pay','OT Pay','Night Differential','Holiday Pay','Daily Cert','Meal Period','Freight Meal','Fuel Claim','OT Upon Completion Time','OT Upon Completion Pay','Trainees','Trainee Pay','Operating Without a Conductor','Yard Certifications','Yard Certification Pay','Commingle','2 Classes of Service','2 Classes Pull Time','2 Classes Selection','Pull-Related OT Time','Pull-Related OT Pay','Sheridan / Shop / House Move','Terminal Not In Crew Book','Runaround Difference','Runaround Pay','Time on Time','Time on Time Pay','Miscellaneous Penalty Description','Miscellaneous Penalty Time','Miscellaneous Penalty Rate','Miscellaneous Penalty Pay','Special Shift Pay','Time Slip','Time Slip Date Written','Time Slip Date Submitted','Time Slip Location','Time Slip Status','Time Slip Date Paid/Denied','Total','Notes']];
   for(const s of getFilteredHistoryShifts()){
     const c=calculate(s);if(!c||c.rateMissing)continue;
-    rows.push([s.date,s.traineeMode?'Trainee':'Engineer',s.classDay?'Yes':'No',s.engineerName||'',s.engineerIBM||'',s.assignment,s.location,s.shiftType||'',s.specialShift||'',s.specialCategory||'',s.vacationEndDate||'',s.vacationGross||'',s.vacationReliefPair||'',s.conductorName||'',s.brakemanName||'',s.start||'',s.end||'',fmtMinutes(c.actual),fmtMinutes(c.payable),c.ratePct+'%',c.payType,c.regular.toFixed(3),c.ot.toFixed(3),c.night.toFixed(3),c.holidayBonus.toFixed(3),(c.dailyCertPay||0).toFixed(2),c.mptePay.toFixed(3),(c.freightMealPay||0).toFixed(3),(c.fuelClaimPay||0).toFixed(3),fmtMinutes(c.otCompletionMinutes||0),(c.otCompletionPay||0).toFixed(3),c.traineeCount,c.ponePay.toFixed(3),c.noCoPay.toFixed(3),c.yardCertCount,c.certPay.toFixed(3),c.comminglePay.toFixed(3),c.classesPay.toFixed(3),c.sheridanPay.toFixed(3),c.terminalPay.toFixed(3),fmtMinutes(c.runaroundDiffMinutes),c.runaroundPay.toFixed(3),fmtMinutes(c.a2mins),c.a2.toFixed(3),s.miscPenaltyDescription||'',fmtMinutes(c.miscPenaltyMinutes||0),c.miscPenaltyRate==='overtime'?'Overtime':'Straight Time',(c.miscPenaltyPay||0).toFixed(3),(c.specialPay||0).toFixed(3),s.timeSlip?'Yes':'No',s.timeSlipWritten||'',s.timeSlipSubmitted||'',s.timeSlipLocation||'',s.timeSlipStatus||'',s.timeSlipResolved||'',c.total.toFixed(3),s.notes||''])
+    rows.push([s.date,s.traineeMode?'Trainee':'Engineer',s.classDay?'Yes':'No',s.engineerName||'',s.engineerIBM||'',s.assignment,s.location,s.shiftType||'',s.specialShift||'',s.specialCategory||'',s.vacationEndDate||'',s.vacationGross||'',s.vacationReliefPair||'',s.conductorName||'',s.brakemanName||'',s.start||'',s.end||'',fmtMinutes(c.actual),fmtMinutes(c.payable),c.ratePct+'%',c.payType,c.regular.toFixed(3),c.ot.toFixed(3),c.night.toFixed(3),c.holidayBonus.toFixed(3),(c.dailyCertPay||0).toFixed(2),c.mptePay.toFixed(3),(c.freightMealPay||0).toFixed(3),(c.fuelClaimPay||0).toFixed(3),fmtMinutes(c.otCompletionMinutes||0),(c.otCompletionPay||0).toFixed(3),c.traineeCount,c.ponePay.toFixed(3),c.noCoPay.toFixed(3),c.yardCertCount,c.certPay.toFixed(3),c.comminglePay.toFixed(3),c.classesPay.toFixed(3),s.twoClassesPullTime||'',c.twoClassesDecision==='classes'?'2 Classes':c.twoClassesDecision==='overtime'?'Overtime':s.yardMove?'Legacy / pull time not recorded':'',fmtMinutes(c.twoClassesPullRelatedOTMinutes||0),(c.twoClassesPullRelatedOTPay||0).toFixed(3),c.sheridanPay.toFixed(3),c.terminalPay.toFixed(3),fmtMinutes(c.runaroundDiffMinutes),c.runaroundPay.toFixed(3),fmtMinutes(c.a2mins),c.a2.toFixed(3),s.miscPenaltyDescription||'',fmtMinutes(c.miscPenaltyMinutes||0),c.miscPenaltyRate==='overtime'?'Overtime':'Straight Time',(c.miscPenaltyPay||0).toFixed(3),(c.specialPay||0).toFixed(3),s.timeSlip?'Yes':'No',s.timeSlipWritten||'',s.timeSlipSubmitted||'',s.timeSlipLocation||'',s.timeSlipStatus||'',s.timeSlipResolved||'',c.total.toFixed(3),s.notes||''])
   }
   const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\n');
   download('Engineer_Pay_Log.csv',csv,'text/csv')
@@ -3762,12 +3816,12 @@ async function exportPDF(){
       if(c.dailyCertPay)tags.push(['Daily Cert',paleGreen,'0.50 0.76 0.45',green]);
       if(s.paysMeal)tags.push(['Pays Meal Period',paleBlue,'0.52 0.65 0.92',navy]);else if(s.mpte)tags.push(['Meal Period',paleBlue,'0.52 0.65 0.92',navy]);
       if(s.freightMeal)tags.push(['Freight Meal',paleBlue,'0.52 0.65 0.92',navy]);
-      if(s.fuelClaim)tags.push(['Fuel Claim',paleBlue,'0.52 0.65 0.92',navy]);if(s.otCompletion)tags.push([`OT Upon Completion ${fmtMinutes(c.otCompletionMinutes||0)}`,paleBlue,'0.52 0.65 0.92',navy]);if(s.unscheduledOT){const um=calculateUnscheduledOTMinutes(s.start,s.crewBookReleaseTime,s.end)||0;tags.push([`Unscheduled OT ${fmtMinutes(um)}`,paleBlue,'0.52 0.65 0.92',navy]);}
+      if(s.fuelClaim)tags.push(['Fuel Claim',paleBlue,'0.52 0.65 0.92',navy]);if(s.otCompletion)tags.push([`OT Upon Completion ${fmtMinutes(c.otCompletionMinutes||0)}`,paleBlue,'0.52 0.65 0.92',navy]);if(s.unscheduledOT){const um=calculateUnscheduledOTMinutes(s.start,s.crewBookReleaseTime,s.end)||0;tags.push([`Unscheduled OT ${fmtMinutes(um)}${c.twoClassesDecision==='classes'?' - superseded':''}`,paleBlue,'0.52 0.65 0.92',navy]);}
       if(s.pone)tags.push(['Trainee',paleBlue,'0.52 0.65 0.92',navy]);
       if(s.noCo)tags.push(['No Conductor',paleBlue,'0.52 0.65 0.92',navy]);
       if(s.cert)tags.push(['Yard Cert',paleBlue,'0.52 0.65 0.92',navy]);
       if(s.commingle)tags.push(['Commingle',paleBlue,'0.52 0.65 0.92',navy]);
-      if(s.yardMove)tags.push(['2 Classes',paleBlue,'0.52 0.65 0.92',navy]);
+      if(s.yardMove)tags.push([c.twoClassesDecision==='overtime'?`2 Classes - OT elected${s.twoClassesPullTime?' - pulled '+s.twoClassesPullTime:''}`:`2 Classes${s.twoClassesPullTime?' - pulled '+s.twoClassesPullTime:''}`,paleBlue,'0.52 0.65 0.92',navy]);
       if(s.sheridanMove)tags.push(['Sheridan/Shop/House',paleBlue,'0.52 0.65 0.92',navy]);
       if(s.terminalNotCrewBook)tags.push(['Terminal Claim',paleBlue,'0.52 0.65 0.92',navy]);
       if(s.runaround)tags.push(['Runaround',paleBlue,'0.52 0.65 0.92',navy]);
@@ -3913,7 +3967,7 @@ initTerminalSelect();
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=8.3-production-20260822a').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=8.3-two-classes-test-20260825a').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
