@@ -3687,7 +3687,7 @@ function renderSavedJobs(){
 
 
 /* ---------- Time Slip Assistance Preview ---------- */
-let timeSlipAssistState={shift:null,source:''};
+let timeSlipAssistState={shift:null,source:'',lastAutoStart:'',lastAutoEnd:''};
 const TSA_ENDPOINT_PRESETS={
   '':{label:'No endpoint check',minutes:null,anchor:'Anchor time',help:'Optional cross-check only'},
   'station5':{label:'Station — secure / tie down (5 min total)',minutes:5,anchor:'Train arrival',help:'Standard station secure / tie-down allowance.'},
@@ -3723,11 +3723,11 @@ function tsaInitEndpointPresets(){const sel=document.getElementById('tsaEndpoint
 function tsaPopulateShiftSelect(){const sel=document.getElementById('tsaShiftSelect');if(!sel)return;const list=[...shifts].filter(s=>!s.traineeMode).sort((a,b)=>(b.date||'').localeCompare(a.date||''));sel.innerHTML='<option value="">Choose a saved shift…</option>'+list.map(s=>`<option value="${escapeHTML(s.id)}">${escapeHTML(dateLabel(s.date))} • Job ${escapeHTML(s.assignment||'—')} • ${escapeHTML(s.location||'—')}</option>`).join('')}
 function openTimeSlipAssistant(mode){tsaInitEndpointPresets();tsaPopulateShiftSelect();document.getElementById('timeSlipAssistModal').classList.add('open');document.getElementById('tsaStartPanel').style.display='block';document.getElementById('tsaBuilderPanel').style.display='none';document.getElementById('tsaModalFoot').style.display='none';if(mode==='demo164')tsaLoadDemo('164')}
 function closeTimeSlipAssistant(){document.getElementById('timeSlipAssistModal')?.classList.remove('open')}
-function tsaBackToStart(){timeSlipAssistState={shift:null,source:''};document.getElementById('tsaStartPanel').style.display='block';document.getElementById('tsaBuilderPanel').style.display='none';document.getElementById('tsaModalFoot').style.display='none';tsaPopulateShiftSelect()}
+function tsaBackToStart(){timeSlipAssistState={shift:null,source:'',lastAutoStart:'',lastAutoEnd:''};document.getElementById('tsaStartPanel').style.display='block';document.getElementById('tsaBuilderPanel').style.display='none';document.getElementById('tsaModalFoot').style.display='none';tsaPopulateShiftSelect()}
 function tsaUseSelectedShift(){const id=document.getElementById('tsaShiftSelect')?.value;if(!id){alert('Choose a saved shift first.');return}const s=shifts.find(x=>x.id===id);if(!s)return;tsaLoadShift(s,'Saved shift')}
 function tsaSet(id,val){const el=document.getElementById(id);if(el)el.value=val??''}
 function tsaLoadShift(s,source='Saved shift'){
-  timeSlipAssistState={shift:s,source};
+  timeSlipAssistState={shift:s,source,lastAutoStart:s.start||'',lastAutoEnd:s.end||''};
   document.getElementById('tsaStartPanel').style.display='none';document.getElementById('tsaBuilderPanel').style.display='block';document.getElementById('tsaModalFoot').style.display='flex';
   tsaSet('tsaDate',s.date||'');tsaSet('tsaAssignment',s.assignment||'');tsaSet('tsaLocation',s.location||'');tsaSet('tsaStart',s.start||'');tsaSet('tsaBookRelease',s.crewBookReleaseTime||'');tsaSet('tsaEnd',s.end||'');tsaSet('tsaConductor',s.conductorName||'');
   tsaSet('tsaServiceDetails',s.start&&s.end?`${tsaClock12(s.start)}\n${tsaClock12(s.end)}`:'');tsaSet('tsaReason','');tsaSet('tsaClaimEvents','');tsaSet('tsaEndpointPreset','');tsaSet('tsaEndpointAnchor','');tsaEndpointPresetChanged();
@@ -3747,7 +3747,7 @@ function tsaLoadDemo(which){
     source:'Validated example • Job 164 • 08/11/2026',unscheduledOT:true
   };
   const pseudo={id:d.id,date:d.date,assignment:d.assignment,location:d.location,start:d.start,end:d.end,crewBookReleaseTime:d.book,conductorName:d.conductor,unscheduledOT:true,timeSlip:true,mpte:false,a2:false,runaround:false,noCo:false,cert:false,commingle:false,yardMove:false,sheridanMove:false,terminalNotCrewBook:false,miscPenalty:false};
-  timeSlipAssistState={shift:pseudo,source:d.source};
+  timeSlipAssistState={shift:pseudo,source:d.source,lastAutoStart:d.start||'',lastAutoEnd:d.end||''};
   document.getElementById('tsaStartPanel').style.display='none';document.getElementById('tsaBuilderPanel').style.display='block';document.getElementById('tsaModalFoot').style.display='flex';
   tsaSet('tsaDate',d.date);tsaSet('tsaAssignment',d.assignment);tsaSet('tsaLocation',d.location);tsaSet('tsaStart',d.start);tsaSet('tsaBookRelease',d.book);tsaSet('tsaEnd',d.end);tsaSet('tsaConductor',d.conductor);tsaSet('tsaServiceDetails',d.service);tsaSet('tsaReason',d.reason);tsaSet('tsaClaimEvents',d.events);tsaSet('tsaEndpointPreset',d.preset);tsaSet('tsaEndpointAnchor',d.anchor);tsaEndpointPresetChanged();
   document.getElementById('tsaBuilderTitle').textContent=`Job ${d.assignment} Time Slip Draft`;document.getElementById('tsaBuilderSource').textContent=d.source;tsaUpdate();
@@ -3760,8 +3760,19 @@ function tsaSentence(t){t=(t||'').trim();if(!t)return '';return /[.!?]$/.test(t)
 function tsaNightApplies(start,end){const dur=tsaMinutesFrom(start,end);const sm=parseClock(start);if(dur===null||sm===null)return false;for(let i=0;i<=dur;i++){const c=(sm+i)%1440;if(c>=20*60||c<6*60)return true}return false}
 function tsaUnsupportedClaims(s){if(!s)return[];const x=[];if(s.mpte)x.push('Code 03 / Meal');if(s.a2)x.push('Code 04 / Time on Time');if(s.runaround)x.push('Code 08 / Runaround');if(s.yardMove)x.push('Code 09 / 2 Classes');if(s.noCo||s.cert||s.commingle||s.sheridanMove||s.miscPenalty)x.push('Code 11 / Miscellaneous');return [...new Set(x)]}
 function tsaEndpointPresetChanged(){tsaInitEndpointPresets();const key=document.getElementById('tsaEndpointPreset')?.value||'',p=TSA_ENDPOINT_PRESETS[key]||TSA_ENDPOINT_PRESETS[''];document.getElementById('tsaEndpointAnchorLabel').textContent=p.anchor;document.getElementById('tsaEndpointAllowance').textContent=p.minutes==null?'—':`${p.minutes} minutes`;document.getElementById('tsaEndpointHelp').textContent=p.help}
+function tsaSyncServiceBoundaryLines(start,end){
+  const ta=document.getElementById('tsaServiceDetails');if(!ta)return;
+  const lines=ta.value.split(/\n/);let first=-1,last=-1;
+  for(let i=0;i<lines.length;i++){if(lines[i].trim()){if(first<0)first=i;last=i}}
+  const prevStart=timeSlipAssistState.lastAutoStart||'',prevEnd=timeSlipAssistState.lastAutoEnd||'';
+  if(first>=0&&prevStart&&start&&start!==prevStart&&lines[first].trim()===tsaClock12(prevStart))lines[first]=tsaClock12(start);
+  if(last>=0&&prevEnd&&end&&end!==prevEnd&&lines[last].trim()===tsaClock12(prevEnd))lines[last]=tsaClock12(end);
+  if(lines.join('\n')!==ta.value)ta.value=lines.join('\n');
+  timeSlipAssistState.lastAutoStart=start||'';timeSlipAssistState.lastAutoEnd=end||'';
+}
 function tsaUpdate(){
   const get=id=>document.getElementById(id)?.value||'',date=get('tsaDate'),assignment=get('tsaAssignment'),location=get('tsaLocation'),start=get('tsaStart'),book=get('tsaBookRelease'),end=get('tsaEnd'),conductor=get('tsaConductor');
+  tsaSyncServiceBoundaryLines(start,end);
   const duty=tsaMinutesFrom(start,end),bookFrom=tsaMinutesFrom(start,book),endFrom=tsaMinutesFrom(start,end),claimStart=(bookFrom===null?null:Math.max(480,bookFrom)),claim=(claimStart===null||endFrom===null)?null:Math.max(0,endFrom-claimStart),night=tsaNightApplies(start,end);
   const crossesMidnight=start&&end&&parseClock(end)<parseClock(start),releaseDate=date?(crossesMidnight?addDaysISO(date,1):date):'';
   const codes=[];if(claim!==null&&claim>0)codes.push('05');if(night)codes.push('13');
