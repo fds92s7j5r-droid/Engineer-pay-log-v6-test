@@ -970,45 +970,44 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     }
 
 
-    /* Time Slip Assistance Preview */
+    /* Time Slip Assistance Preview 2 — guided card-writing flow */
     .tsa-launch{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0 16px}
     .tsa-preview-banner{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-radius:14px;background:#eef6ff;border:1px solid #bdd8f2;margin-bottom:14px;color:#244a6f}
     .tsa-preview-banner strong{display:block;margin-bottom:2px}
     .tsa-preview-banner .badge{flex:0 0 auto;margin-top:1px}
     .tsa-choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .tsa-choice{border:1px solid var(--line);border-radius:14px;padding:14px;background:var(--card);text-align:left;cursor:pointer}
-    .tsa-choice strong{display:block;font-size:14px;margin-bottom:4px}
-    .tsa-choice small{display:block;color:var(--muted);line-height:1.35}
-    .tsa-shift-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
-    .tsa-shift-summary .item{border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--bg)}
-    .tsa-shift-summary .item span{display:block;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.03em}
-    .tsa-shift-summary .item strong{display:block;margin-top:3px;font-size:14px}
-    .tsa-section{border-top:1px solid var(--line);padding-top:14px;margin-top:14px}
-    .tsa-section h3{font-size:15px;margin:0 0 10px}
-    .tsa-code-row{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 4px}
-    .tsa-code{display:inline-flex;align-items:center;border-radius:999px;padding:6px 9px;font-size:12px;font-weight:900;background:#e9f3ff;color:#245784;border:1px solid #bcd5ed}
-    .tsa-code.claim{background:#fff3bf;color:#6a5100;border-color:#e1c65c}
-    .tsa-output{border:1px solid var(--line);border-radius:14px;padding:13px;background:var(--bg);margin-top:10px}
-    .tsa-output-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
-    .tsa-output-head strong{font-size:13px}
-    .tsa-output pre{white-space:pre-wrap;word-break:break-word;margin:0;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--ink)}
-    .tsa-validation{margin-top:10px;display:grid;gap:7px}
-    .tsa-validation .ok,.tsa-validation .warn,.tsa-validation .info{padding:9px 11px;border-radius:11px;font-size:12px;line-height:1.4}
-    .tsa-validation .ok{background:#e9f7ef;border:1px solid #b9dfc8;color:#235c3b}
-    .tsa-validation .warn{background:#fff3dc;border:1px solid #ebcf98;color:#725116}
-    .tsa-validation .info{background:#eef4fb;border:1px solid #c8d7e8;color:#36536f}
-    .tsa-total-claim{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-    .tsa-total-claim .box{min-width:76px;padding:8px 10px;border:1px solid var(--line);border-radius:11px;background:var(--card);text-align:center}
-    .tsa-total-claim .box strong{display:block;font-size:18px}.tsa-total-claim .box span{font-size:10px;color:var(--muted);text-transform:uppercase}
-    .tsa-endpoint-result{margin-top:8px;font-size:12px;color:var(--muted)}
+    .tsa-choice strong{display:block;font-size:14px;margin-bottom:4px}.tsa-choice small{display:block;color:var(--muted);line-height:1.35}
+    .tsa-wizard-head{padding:2px 0 12px;border-bottom:1px solid var(--line);margin-bottom:14px}
+    .tsa-wizard-headline{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .tsa-progress{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:12px}
+    .tsa-progress-step{min-width:0;padding:7px 4px;border-radius:9px;background:var(--bg);border:1px solid var(--line);font-size:10px;font-weight:800;color:var(--muted);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .tsa-progress-step.active{background:#e9f3ff;border-color:#94bfe4;color:#245784}.tsa-progress-step.done{border-color:#a8d4b8;color:#2f6846}
+    .tsa-step-panel{display:none}.tsa-step-panel.active{display:block}
+    .tsa-step-title{margin:0 0 4px;font-size:19px}.tsa-step-sub{color:var(--muted);font-size:12px;line-height:1.45;margin-bottom:14px}
+    .tsa-group{border:1px solid var(--line);border-radius:15px;padding:14px;background:var(--card);margin-bottom:12px}
+    .tsa-group h3{font-size:14px;margin:0 0 10px}.tsa-group .mini{font-size:11px;color:var(--muted)}
+    .tsa-readonly-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .tsa-readonly{border:1px solid var(--line);background:var(--bg);border-radius:11px;padding:9px 10px}.tsa-readonly span{display:block;font-size:10px;text-transform:uppercase;font-weight:800;color:var(--muted);letter-spacing:.03em}.tsa-readonly strong{display:block;margin-top:3px;font-size:14px}
+    .tsa-code-row{display:flex;gap:7px;flex-wrap:wrap;margin:8px 0 4px}.tsa-code{display:inline-flex;align-items:center;border-radius:999px;padding:6px 9px;font-size:12px;font-weight:900;background:#e9f3ff;color:#245784;border:1px solid #bcd5ed}.tsa-code.claim{background:#fff3bf;color:#6a5100;border-color:#e1c65c}
+    .tsa-total-claim{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.tsa-total-claim .box{min-width:76px;padding:8px 10px;border:1px solid var(--line);border-radius:11px;background:var(--card);text-align:center}.tsa-total-claim .box strong{display:block;font-size:18px}.tsa-total-claim .box span{font-size:10px;color:var(--muted);text-transform:uppercase}
+    .tsa-service-timeline{display:grid;gap:0;margin:4px 0 14px}.tsa-timeline-row{display:grid;grid-template-columns:18px minmax(0,1fr);gap:9px;position:relative}.tsa-timeline-row:not(:last-child)::before{content:'';position:absolute;left:8px;top:20px;bottom:-6px;width:2px;background:var(--line)}.tsa-timeline-dot{width:16px;height:16px;border-radius:50%;background:var(--card);border:3px solid #7aa9d2;margin-top:12px;z-index:1}.tsa-timeline-row.boundary .tsa-timeline-dot{border-color:#6c8a72}.tsa-timeline-card{border:1px solid var(--line);border-radius:13px;padding:10px 11px;background:var(--bg);margin-bottom:8px}.tsa-timeline-card strong{font-size:13px}.tsa-timeline-card .line{font-size:12px;line-height:1.45;margin-top:3px}.tsa-timeline-card .meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:6px}.tsa-source-chip{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px 6px;font-size:9px;font-weight:800;color:var(--muted);background:var(--card)}
+    .tsa-type-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:8px 0}.tsa-type-btn{padding:9px 7px;border:1px solid var(--line);border-radius:11px;background:var(--card);font-weight:800;font-size:11px;cursor:pointer}.tsa-type-btn.active{border-color:#80acd2;background:#eaf4fd;color:#245784}
+    .tsa-suggestion{padding:10px 11px;border-radius:12px;background:#eef6ff;border:1px solid #bdd8f2;color:#315676;font-size:12px;line-height:1.4;margin-bottom:10px}.tsa-suggestion strong{display:block;margin-bottom:2px}
+    .tsa-service-editor{border:1px solid var(--line);border-radius:14px;padding:12px;background:var(--bg);margin-top:9px}.tsa-service-editor-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.tsa-service-editor-actions .btn.primary{flex:1;min-width:150px}
+    .tsa-claim-detail-list{display:grid;gap:7px;margin:8px 0}.tsa-claim-detail{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;border:1px solid var(--line);background:var(--bg);border-radius:11px;padding:9px 10px;font-size:12px;line-height:1.4}
+    .tsa-context-help{border:1px solid #bdd8f2;background:#eef6ff;border-radius:13px;padding:11px;margin-top:10px}.tsa-context-help strong{display:block;font-size:12px;margin-bottom:4px}.tsa-endpoint-result{margin-top:8px;font-size:12px;color:var(--muted)}
+    .tsa-output{border:1px solid var(--line);border-radius:14px;padding:13px;background:var(--bg);margin-top:10px}.tsa-output-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}.tsa-output-head strong{font-size:13px}.tsa-output pre{white-space:pre-wrap;word-break:break-word;margin:0;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color:var(--ink)}
+    .tsa-validation{margin-top:10px;display:grid;gap:7px}.tsa-validation .ok,.tsa-validation .warn,.tsa-validation .info{padding:9px 11px;border-radius:11px;font-size:12px;line-height:1.4}.tsa-validation .ok{background:#e9f7ef;border:1px solid #b9dfc8;color:#235c3b}.tsa-validation .warn{background:#fff3dc;border:1px solid #ebcf98;color:#725116}.tsa-validation .info{background:#eef4fb;border:1px solid #c8d7e8;color:#36536f}
+    .tsa-final-card{border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}.tsa-final-card-head{display:grid;grid-template-columns:1.15fr .85fr;gap:0;border-bottom:1px solid var(--line)}.tsa-final-card-head>div{padding:13px}.tsa-final-card-head>div+div{border-left:1px solid var(--line)}.tsa-final-title{font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:900;color:var(--muted);margin-bottom:7px}.tsa-final-lines{display:grid;gap:5px;font-size:12px;line-height:1.4}.tsa-final-section{padding:13px;border-bottom:1px solid var(--line)}.tsa-final-section:last-child{border-bottom:0}.tsa-final-section h4{margin:0 0 7px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}.tsa-signature-line{height:28px;border-bottom:1px solid var(--ink);margin-top:14px;max-width:260px}.tsa-signature-caption{font-size:10px;color:var(--muted);margin-top:4px}
+    .tsa-foot-inner{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}.tsa-foot-actions{display:flex;gap:7px;margin-left:auto}.tsa-foot-step{font-size:11px;color:var(--muted);font-weight:800}
     .tsa-disabled-note{font-size:11px;color:var(--muted);margin-top:10px}
-    html[data-theme="dark"] .tsa-preview-banner{background:#172b3f;border-color:#315c83;color:#cfe6fb}
-    html[data-theme="dark"] .tsa-code{background:#17304a;border-color:#315a7c;color:#cbe7ff}
-    html[data-theme="dark"] .tsa-code.claim{background:#3e3417;border-color:#76652d;color:#ffe991}
-    html[data-theme="dark"] .tsa-validation .ok{background:#183325;border-color:#2e5d42;color:#c5efd4}
-    html[data-theme="dark"] .tsa-validation .warn{background:#3a2d15;border-color:#6f5526;color:#f6dda5}
-    html[data-theme="dark"] .tsa-validation .info{background:#1b2b3b;border-color:#354d65;color:#d4e3f2}
-    @media(max-width:680px){.tsa-choice-grid,.tsa-shift-summary{grid-template-columns:1fr}.tsa-launch>.btn{flex:1;min-width:150px}}
+    html[data-theme="dark"] .tsa-preview-banner,html[data-theme="dark"] .tsa-suggestion,html[data-theme="dark"] .tsa-context-help{background:#172b3f;border-color:#315c83;color:#cfe6fb}
+    html[data-theme="dark"] .tsa-code{background:#17304a;border-color:#315a7c;color:#cbe7ff}html[data-theme="dark"] .tsa-code.claim{background:#3e3417;border-color:#76652d;color:#ffe991}
+    html[data-theme="dark"] .tsa-type-btn.active,html[data-theme="dark"] .tsa-progress-step.active{background:#17304a;border-color:#315a7c;color:#cbe7ff}
+    html[data-theme="dark"] .tsa-validation .ok{background:#183325;border-color:#2e5d42;color:#c5efd4}html[data-theme="dark"] .tsa-validation .warn{background:#3a2d15;border-color:#6f5526;color:#f6dda5}html[data-theme="dark"] .tsa-validation .info{background:#1b2b3b;border-color:#354d65;color:#d4e3f2}
+    @media(max-width:680px){.tsa-choice-grid,.tsa-readonly-grid,.tsa-final-card-head{grid-template-columns:1fr}.tsa-final-card-head>div+div{border-left:0;border-top:1px solid var(--line)}.tsa-type-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tsa-progress-step{font-size:0}.tsa-progress-step::first-letter{font-size:10px}.tsa-launch>.btn{flex:1;min-width:150px}}
+
 
   </style>
 </head>
@@ -1097,8 +1096,8 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
   <section id="timeslipsView" class="view">
     <div class="card">
       <div class="section-title"><div><h2>Time Slip Center</h2><div class="muted" style="margin-top:3px">Tracking + guided claim assistance</div></div><button class="btn small" onclick="showView('dashboard')">Dashboard</button></div>
-      <div class="tsa-preview-banner"><span class="badge">TEST PREVIEW</span><div><strong>Time Slip Assistance is ready for an early workflow test.</strong><div>This build fully exercises the Code 05 unscheduled-overtime path and Code 13 night differential. Other claim types remain in the normal Pay Log but are intentionally not written by this preview yet.</div></div></div>
-      <div class="tsa-launch"><button class="btn primary" type="button" onclick="openTimeSlipAssistant()">Build Time Slip (Preview)</button><button class="btn" type="button" onclick="openTimeSlipAssistant('demo164')">Try validated Job 164 example</button></div>
+      <div class="tsa-preview-banner"><span class="badge">TEST PREVIEW</span><div><strong>Time Slip Assistance Preview 2 is ready for a guided workflow test.</strong><div>This build keeps the proven Code 05 / Code 13 engine and redesigns the experience around the order an engineer actually writes the physical card.</div></div></div>
+      <div class="tsa-launch"><button class="btn primary" type="button" onclick="openTimeSlipAssistant()">Build Time Slip (Preview)</button><button class="btn" type="button" onclick="openTimeSlipAssistant('demo272')">Try guided Job 272 demo</button></div>
       <p class="notice">Existing Time Slip tracking still works normally below. The preview builder does not change earnings or overwrite a saved shift.</p>
       <div id="timeSlipCenter"></div>
     </div>
@@ -1526,50 +1525,88 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
 
 <div id="timeSlipAssistModal" class="modal" onclick="if(event.target===this)closeTimeSlipAssistant()">
-  <div class="modal-card" style="max-width:780px">
+  <div class="modal-card" style="max-width:760px">
     <div class="modal-head">
-      <div><h2 style="margin:0">Time Slip Assistance <span class="badge" style="vertical-align:middle">Preview</span></h2><div class="muted" style="margin-top:4px">Build the claim from what actually happened. Everything remains editable.</div></div>
+      <div><h2 style="margin:0">Time Slip Assistance <span class="badge" style="vertical-align:middle">Preview 2</span></h2><div class="muted" style="margin-top:4px">Fill the card in the same order you would on paper — one piece at a time.</div></div>
       <button class="btn small" type="button" onclick="closeTimeSlipAssistant()">Close</button>
     </div>
     <div class="modal-body">
       <div id="tsaStartPanel">
-        <div class="tsa-preview-banner"><div><strong>This is deliberately a partial build.</strong><div>For this first test, the assistant can calculate and write Code 05 and add Code 13 when applicable. It will flag other claim types rather than guessing.</div></div></div>
-        <div class="field full"><label>Start from a saved shift</label><select id="tsaShiftSelect"></select></div>
+        <div class="tsa-preview-banner"><span class="badge">GUIDED TEST</span><div><strong>This preview is about the experience, not adding more claim types.</strong><div>The proven Code 05 / Code 13 engine is still underneath. Preview 2 changes how you build the slip: identification → duty & claim summary → service one line at a time → claim wording → final review.</div></div></div>
+        <div class="field full"><label>Start from a saved shift</label><select id="tsaShiftSelect"></select><div class="muted" style="font-size:11px;margin-top:5px">Trainee shifts are allowed here too. Crew Book information is helpful when available, but it is never required to build a time slip.</div></div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn primary" type="button" onclick="tsaUseSelectedShift()">Use Selected Shift</button></div>
-        <div class="tsa-section"><h3>Or use a validated example</h3><div class="tsa-choice-grid"><button class="tsa-choice" type="button" onclick="tsaLoadDemo('164')"><strong>Job 164 • Complex Code 05</strong><small>GCM protect, Train 202, Babylon layup, walk, next available deadhead, walk back to GCM. Expected claim: 5:52.</small></button><button class="tsa-choice" type="button" onclick="tsaLoadDemo('272')"><strong>Job 272 • Simple Code 05</strong><small>Delayed entering Babylon Yard. Signal clear + 10-minute layup. Expected claim: 0:22.</small></button></div></div>
+        <div class="tsa-group" style="margin-top:14px"><h3>Validated examples</h3><div class="tsa-choice-grid"><button class="tsa-choice" type="button" onclick="tsaLoadDemo('272')"><strong>Job 272 • Recommended first demo</strong><small>Simple Code 05. Includes guided Crew Book service suggestions, Babylon endpoint help, and the full new workflow.</small></button><button class="tsa-choice" type="button" onclick="tsaLoadDemo('164')"><strong>Job 164 • Complex Code 05</strong><small>GCM protect, Train 202, Babylon layup, walk, deadhead and return to GCM. Expected claim: 5:52.</small></button></div></div>
       </div>
 
       <div id="tsaBuilderPanel" style="display:none">
-        <div style="display:flex;justify-content:space-between;gap:8px;align-items:center;flex-wrap:wrap"><div><strong id="tsaBuilderTitle">Time Slip Draft</strong><div id="tsaBuilderSource" class="muted" style="font-size:11px;margin-top:2px"></div></div><button class="btn small" type="button" onclick="tsaBackToStart()">Choose another shift</button></div>
-
-        <div class="tsa-shift-summary" id="tsaSummary"></div>
-        <div class="tsa-code-row" id="tsaCodes"></div>
-
-        <div class="tsa-section"><h3>Shift facts</h3><div class="form-grid">
-          <div class="field"><label>Date</label><input id="tsaDate" type="date" oninput="tsaUpdate()"></div>
-          <div class="field"><label>Crew / Job No.</label><input id="tsaAssignment" oninput="tsaUpdate()"></div>
-          <div class="field full"><label>Report / Release Location</label><input id="tsaLocation" oninput="tsaUpdate()"></div>
-          <div class="field"><label>Reported for Duty</label><input id="tsaStart" type="time" oninput="tsaUpdate()"></div>
-          <div class="field"><label>Crew Book Release</label><input id="tsaBookRelease" type="time" oninput="tsaUpdate()"></div>
-          <div class="field"><label>Actual Release</label><input id="tsaEnd" type="time" oninput="tsaUpdate()"></div>
-          <div class="field"><label>With Conductor</label><input id="tsaConductor" placeholder="First initial + last name" oninput="tsaUpdate()"></div>
-        </div></div>
-
-        <div class="tsa-section"><h3>Details of Service</h3><div class="field full"><label>Chronological service lines</label><textarea id="tsaServiceDetails" rows="6" placeholder="Actual train numbers and times only. Keep the on-duty time first and off-duty time last." oninput="tsaUpdate()"></textarea><div class="muted" style="font-size:11px;margin-top:5px">The assistant will not substitute scheduled train times for actual times.</div></div></div>
-
-        <div class="tsa-section"><h3>Code 05 — what happened?</h3><div class="field full"><label>Reason / instruction</label><textarea id="tsaReason" rows="2" placeholder="Example: Delayed entering the yard due to train traffic." oninput="tsaUpdate()"></textarea></div><div class="field full"><label>Claim details, one event per line</label><textarea id="tsaClaimEvents" rows="6" placeholder="Example: Cleared the signal at 12:11 AM + 10 minutes to lay up train." oninput="tsaUpdate()"></textarea></div></div>
-
-        <div class="tsa-section"><h3>Endpoint helper <span class="muted" style="font-weight:500">(optional check)</span></h3><div class="form-grid"><div class="field full"><label>Known terminal handling</label><select id="tsaEndpointPreset" onchange="tsaEndpointPresetChanged();tsaUpdate()"></select></div><div class="field"><label id="tsaEndpointAnchorLabel">Anchor time</label><input id="tsaEndpointAnchor" type="time" oninput="tsaUpdate()"></div><div class="field"><label>Allowance</label><div class="readonly-info"><strong id="tsaEndpointAllowance">—</strong><div class="muted" id="tsaEndpointHelp" style="margin-top:2px">Optional cross-check only</div></div></div></div><div id="tsaEndpointResult" class="tsa-endpoint-result"></div></div>
-
-        <div class="tsa-section"><h3>Generated card preview</h3><div class="tsa-shift-summary" id="tsaCardFields"></div><div class="tsa-total-claim" id="tsaClaimBoxes"></div>
-          <div class="tsa-output"><div class="tsa-output-head"><strong>Details of Service</strong><button class="btn small" type="button" onclick="tsaCopy('tsaServiceOutput')">Copy</button></div><pre id="tsaServiceOutput"></pre></div>
-          <div class="tsa-output"><div class="tsa-output-head"><strong>Details of Claim</strong><button class="btn small" type="button" onclick="tsaCopy('tsaClaimOutput')">Copy</button></div><pre id="tsaClaimOutput"></pre></div>
-          <div class="tsa-validation" id="tsaValidation"></div>
-          <div class="tsa-disabled-note">Preview behavior: soft warnings only. You can edit every fact and every narrative line; the assistant does not silently “correct” the engineer.</div>
+        <div class="tsa-wizard-head">
+          <div class="tsa-wizard-headline"><div><strong id="tsaBuilderTitle">Time Slip Draft</strong><div id="tsaBuilderSource" class="muted" style="font-size:11px;margin-top:2px"></div></div><button class="btn small" type="button" onclick="tsaBackToStart()">Choose another shift</button></div>
+          <div class="tsa-progress" id="tsaProgress"></div>
         </div>
+
+        <section id="tsaStep1" class="tsa-step-panel">
+          <h3 class="tsa-step-title">1. Identification</h3><div class="tsa-step-sub">Start with the top-right corner of the card. Saved shift data is filled when we already know it; everything can be changed.</div>
+          <div class="tsa-group"><div class="form-grid">
+            <div class="field"><label>Crew / Job No.</label><input id="tsaAssignment" oninput="tsaUpdate()"></div>
+            <div class="field"><label>Date</label><input id="tsaDate" type="date" oninput="tsaUpdate()"></div>
+            <div class="field full"><label>Type of Service</label><select id="tsaServiceClass" onchange="tsaUpdate()"><option value="Passenger">Passenger</option><option value="Yard">Yard</option><option value="Freight">Freight</option></select></div>
+            <div class="field"><label>Name</label><input id="tsaEmployeeName" placeholder="Name as written on card" oninput="tsaProfileChanged();tsaUpdate()"></div>
+            <div class="field"><label>IBM</label><input id="tsaEmployeeIBM" inputmode="numeric" placeholder="IBM" oninput="tsaProfileChanged();tsaUpdate()"></div>
+          </div></div>
+        </section>
+
+        <section id="tsaStep2" class="tsa-step-panel">
+          <h3 class="tsa-step-title">2. Duty & claim summary</h3><div class="tsa-step-sub">Now fill the top-left section. Total Time on Duty, Total Time Claimed and supported codes calculate as the facts change.</div>
+          <div class="tsa-group"><h3>Reported for Duty</h3><div class="form-grid"><div class="field"><label>Place</label><input id="tsaReportLocation" oninput="tsaUpdate()"></div><div class="field"><label>Time</label><input id="tsaStart" type="time" oninput="tsaUpdate()"></div><div class="field full"><label>With Conductor</label><input id="tsaConductor" placeholder="First initial + last name" oninput="tsaUpdate()"></div></div></div>
+          <div class="tsa-group"><h3>Actual Release from Duty</h3><div class="form-grid"><div class="field"><label>Place</label><input id="tsaReleaseLocation" oninput="tsaUpdate()"></div><div class="field"><label>Time</label><input id="tsaEnd" type="time" oninput="tsaUpdate()"></div><div class="field full"><label>Crew Book Release <span class="muted">(calculation reference)</span></label><input id="tsaBookRelease" type="time" oninput="tsaUpdate()"></div></div></div>
+          <div class="tsa-group"><h3>What goes on the card</h3><div class="tsa-readonly-grid" id="tsaDutySummary"></div><div class="tsa-code-row" id="tsaCodes"></div><div class="tsa-total-claim" id="tsaClaimBoxes"></div></div>
+        </section>
+
+        <section id="tsaStep3" class="tsa-step-panel">
+          <h3 class="tsa-step-title">3. Details of Service</h3><div class="tsa-step-sub">Build the service section one line at a time. On-duty and off-duty times come from the duty section automatically.</div>
+          <div id="tsaServiceSourceNote"></div>
+          <div class="tsa-service-timeline" id="tsaServiceTimeline"></div>
+          <div class="tsa-group"><h3 id="tsaServiceEditorTitle">Add next service step</h3><div id="tsaServiceSuggestion"></div>
+            <div class="tsa-type-grid" id="tsaServiceTypeGrid">
+              <button class="tsa-type-btn" type="button" data-type="train" onclick="tsaChooseServiceType('train')">Train</button>
+              <button class="tsa-type-btn" type="button" data-type="deadhead" onclick="tsaChooseServiceType('deadhead')">Deadhead</button>
+              <button class="tsa-type-btn" type="button" data-type="directed" onclick="tsaChooseServiceType('directed')">Worked as Directed</button>
+              <button class="tsa-type-btn" type="button" data-type="equipment" onclick="tsaChooseServiceType('equipment')">Equipment / Extra</button>
+              <button class="tsa-type-btn" type="button" data-type="other" onclick="tsaChooseServiceType('other')">Other</button>
+            </div>
+            <div id="tsaServiceEditor" class="tsa-service-editor" style="display:none">
+              <div id="tsaMovementFields" class="form-grid">
+                <div class="field full"><label id="tsaServiceNumberLabel">Train No.</label><input id="tsaServiceNumber"></div>
+                <div class="field"><label>From</label><input id="tsaServiceFrom"></div><div class="field"><label>Departed</label><input id="tsaServiceDepart" type="time"></div>
+                <div class="field"><label>To</label><input id="tsaServiceTo"></div><div class="field"><label>Arrived</label><input id="tsaServiceArrive" type="time"></div>
+              </div>
+              <div id="tsaTextStepFields" class="field full" style="display:none"><label>Line text</label><input id="tsaServiceText" placeholder="Worked as directed"></div>
+              <div class="tsa-service-editor-actions"><button class="btn" type="button" onclick="tsaCancelServiceEdit()">Cancel</button><button id="tsaSkipSuggestionBtn" class="btn" type="button" style="display:none" onclick="tsaSkipSuggestion()">Skip suggested line</button><button id="tsaSaveServiceBtn" class="btn primary" type="button" onclick="tsaSaveServiceStep()">Add to service</button></div>
+            </div>
+          </div>
+        </section>
+
+        <section id="tsaStep4" class="tsa-step-panel">
+          <h3 class="tsa-step-title">4. Details of Claim</h3><div class="tsa-step-sub">The factual timeline is done. Now tell the assistant why the supported claim exists; the wording is assembled for you and remains editable.</div>
+          <div class="tsa-group"><h3>What caused the overtime?</h3><div class="field full"><label>Reason / instruction</label><input id="tsaReason" placeholder="Example: Delayed entering the yard due to train traffic." oninput="tsaClaimFactsChanged()"></div></div>
+          <div class="tsa-group"><h3>Claim details</h3><div class="tsa-claim-detail-list" id="tsaClaimDetailList"></div><div style="display:flex;gap:7px"><input id="tsaClaimDetailInput" style="flex:1" placeholder="Add one factual claim detail"><button class="btn small" type="button" onclick="tsaAddClaimDetail()">Add detail</button></div></div>
+          <div id="tsaEndpointOffer" style="margin-bottom:12px"><button class="btn small" type="button" onclick="tsaEnableEndpointHelper()">+ Add terminal handling / disposal help</button><div class="muted" style="font-size:11px;margin-top:5px">Only use this when terminal handling actually affects the claim or release. The app will show only choices for the relevant location.</div></div><div class="tsa-group" id="tsaEndpointGroup" style="display:none"><h3>Release handling <span class="muted">(context only)</span></h3><div class="tsa-context-help"><strong id="tsaEndpointContextTitle">Terminal-specific options</strong><div id="tsaEndpointContextCopy">Only handling choices relevant to this location are shown.</div></div><div class="form-grid" style="margin-top:10px"><div class="field full"><label>What happened?</label><select id="tsaEndpointPreset" onchange="tsaEndpointPresetChanged();tsaClaimFactsChanged()"></select></div><div class="field"><label id="tsaEndpointAnchorLabel">Anchor time</label><input id="tsaEndpointAnchor" type="time" oninput="tsaClaimFactsChanged()"></div><div class="field"><label>Allowance</label><div class="readonly-info"><strong id="tsaEndpointAllowance">—</strong><div class="muted" id="tsaEndpointHelp" style="margin-top:2px"></div></div></div></div><div id="tsaEndpointResult" class="tsa-endpoint-result"></div></div>
+          <div class="tsa-group"><div class="tsa-output-head"><strong>Final Details of Claim</strong><button class="btn small" type="button" onclick="tsaRegenerateClaimNarrative()">Regenerate from facts</button></div><textarea id="tsaClaimNarrative" rows="8" oninput="tsaClaimNarrativeEdited()"></textarea><div class="muted" style="font-size:11px;margin-top:5px">You can edit the final wording directly. Once you do, the assistant will stop overwriting it unless you choose Regenerate.</div></div>
+        </section>
+
+        <section id="tsaStep5" class="tsa-step-panel">
+          <h3 class="tsa-step-title">5. Review the card</h3><div class="tsa-step-sub">This is the payoff: the pieces you entered are assembled in the order they belong on the physical time slip.</div>
+          <div class="tsa-final-card">
+            <div class="tsa-final-card-head"><div><div class="tsa-final-title">Reported / Released</div><div class="tsa-final-lines" id="tsaFinalDuty"></div></div><div><div class="tsa-final-title">Identification</div><div class="tsa-final-lines" id="tsaFinalIdentity"></div></div></div>
+            <div class="tsa-final-section"><h4>Claim Summary</h4><div class="tsa-readonly-grid" id="tsaFinalClaimSummary"></div><div class="tsa-code-row" id="tsaFinalCodes"></div></div>
+            <div class="tsa-final-section"><h4>Details of Service</h4><pre id="tsaServiceOutput" style="white-space:pre-wrap;margin:0;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"></pre></div>
+            <div class="tsa-final-section"><h4>Details of Claim</h4><pre id="tsaClaimOutput" style="white-space:pre-wrap;margin:0;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace"></pre><div class="tsa-signature-line"></div><div class="tsa-signature-caption">Engineer signature</div></div>
+          </div>
+          <div class="tsa-validation" id="tsaValidation"></div><div class="tsa-disabled-note">Preview behavior: guidance and soft warnings only. Time Slip Assistance never requires Crew Book Assistance and does not silently correct the engineer.</div>
+        </section>
       </div>
     </div>
-    <div class="modal-foot" id="tsaModalFoot" style="display:none"><button class="btn" type="button" onclick="closeTimeSlipAssistant()">Done</button></div>
+    <div class="modal-foot" id="tsaModalFoot" style="display:none"><div class="tsa-foot-inner"><div class="tsa-foot-step" id="tsaFootStep">Step 1 of 5</div><div class="tsa-foot-actions"><button id="tsaBackBtn" class="btn" type="button" onclick="tsaPreviousStep()">Back</button><button id="tsaNextBtn" class="btn primary" type="button" onclick="tsaNextStep()">Continue</button><button id="tsaDoneBtn" class="btn primary" type="button" style="display:none" onclick="closeTimeSlipAssistant()">Done</button></div></div></div>
   </div>
 </div>
 
@@ -3686,116 +3723,129 @@ function renderSavedJobs(){
 }
 
 
-/* ---------- Time Slip Assistance Preview ---------- */
-let timeSlipAssistState={shift:null,source:'',lastAutoStart:'',lastAutoEnd:''};
+/* ---------- Time Slip Assistance Preview 2 ---------- */
+const TSA_PROFILE_KEY='engineerPayLog.timeSlipProfile.v1';
+let timeSlipAssistState={shift:null,source:'',step:1,serviceSteps:[],serviceSuggestions:[],suggestionIndex:0,editingServiceIndex:-1,pendingServiceType:'',pendingIsSuggestion:false,claimDetails:[],claimManual:false,lastGeneratedClaim:'',endpointPreset:'',endpointEnabled:false,serviceSourceLabel:''};
 const TSA_ENDPOINT_PRESETS={
-  '':{label:'No endpoint check',minutes:null,anchor:'Anchor time',help:'Optional cross-check only'},
-  'station5':{label:'Station — secure / tie down (5 min total)',minutes:5,anchor:'Train arrival',help:'Standard station secure / tie-down allowance.'},
-  'babylon10':{label:'Babylon Yard — signal cleared + layup (10 min)',minutes:10,anchor:'Signal cleared',help:'Add 10 minutes after clearing the signal for the layup.'},
-  'farrock20':{label:'Far Rockaway — passenger train to yard (20 min total)',minutes:20,anchor:'Train arrival',help:'5 clear + 15 yard = 20 total.'},
-  'farrock15eq':{label:'Far Rockaway — equipment train direct to yard (15 min total)',minutes:15,anchor:'Equipment arrival',help:'No passenger-clear component.'},
-  'freeport15':{label:'Freeport — west-end yard (15 min total)',minutes:15,anchor:'Train arrival',help:'5-minute clear is included.'},
-  'freeport20':{label:'Freeport — east-end yard (20 min total)',minutes:20,anchor:'Train arrival',help:'5-minute clear is included.'},
-  'gcm15':{label:'GCM — tail track (15 min total)',minutes:15,anchor:'Train arrival',help:'5-minute station baseline + 10-minute tail-track handling.'},
-  'hempstead15':{label:'Hempstead — yard track (15 min total)',minutes:15,anchor:'Train arrival',help:'5-minute clear is included.'},
-  'huntington25':{label:'Huntington — standard siding / yard (25 min total)',minutes:25,anchor:'Train arrival',help:'5-minute clear is included.'},
-  'huntington35':{label:'Huntington — east-end south siding extension (35 min total)',minutes:35,anchor:'Train arrival',help:'5-minute clear is included.'},
-  'jsy20':{label:'Jamaica Storage Yard — normal yard move (20 min total)',minutes:20,anchor:'Train arrival',help:'5 clear + 15 normal yard move.'},
-  'jsy35':{label:'Jamaica Storage Yard — Receiving / Advance type move (35 min total)',minutes:35,anchor:'Train arrival',help:'5 clear + 30-minute published yard allowance.'},
-  'longbeach20':{label:'Long Beach — normal yard layup (20 min total)',minutes:20,anchor:'Train arrival',help:'The 20-minute figure already includes the initial 5.'},
-  'longbeach5direct':{label:'Long Beach — direct yard layup (5 min total)',minutes:5,anchor:'Direct layup arrival',help:'Direct layup without first entering a station track.'},
-  'mds20':{label:'Midday Storage Yard — layup (20 min total)',minutes:20,anchor:'Yard arrival',help:'No station exists here, so there is no separate 5-minute clear.'},
-  'montauk20':{label:'Montauk — yard + walk back (20 min total)',minutes:20,anchor:'Train arrival',help:'5 clear + 10 yard + 5 walk back to station.'},
-  'oyster15':{label:'Oyster Bay — yard (15 min total)',minutes:15,anchor:'Train arrival',help:'5 clear + 10 yard.'},
-  'patch20':{label:'Patchogue — Schoolhouse / Fence Track (20 min total)',minutes:20,anchor:'Train arrival',help:'5 clear + 15 yard allowance.'},
-  'patch25':{label:'Patchogue — Freight / North Sidetrack (25 min total)',minutes:25,anchor:'Train arrival',help:'5 clear + 20 yard allowance.'},
-  'portjeff20':{label:'Port Jefferson — lay up in yard (20 min total)',minutes:20,anchor:'Train arrival',help:'5 clear + 15 yard.'},
-  'portjeff25':{label:'Port Jefferson — secure station + walk to yard (25 min total)',minutes:25,anchor:'Train arrival',help:'Station secure plus walk to yard.'},
-  'portwash15':{label:'Port Washington — reverse move to yard (15 min total)',minutes:15,anchor:'Train arrival',help:'5-minute component is included.'},
-  'portwash20':{label:'Port Washington — #1 Yard (20 min total)',minutes:20,anchor:'Train arrival',help:'5-minute component is included.'},
-  'ronk20':{label:'Ronkonkoma — MU layup in yard (20 min total)',minutes:20,anchor:'Train arrival',help:'MU yard layup.'},
-  'ronk30':{label:'Ronkonkoma — diesel layup in yard (30 min total)',minutes:30,anchor:'Train arrival',help:'Diesel yard layup.'},
-  'speonk15':{label:'Speonk — yard layup (15 min total)',minutes:15,anchor:'Train arrival',help:'5 clear + 10 yard.'},
-  'westhemp15':{label:'West Hempstead — yard track (15 min total)',minutes:15,anchor:'Train arrival',help:'5-minute component is included.'},
-  'westhemp20':{label:'West Hempstead — west-end long siding (20 min total)',minutes:20,anchor:'Train arrival',help:'Rare alternate disposal; 5-minute component included.'}
+  '':{label:'No handling helper',minutes:null,anchor:'Anchor time',help:'Use the actual operation; this helper is optional.'},
+  'station5':{label:'Left / secured in station — 5 min total',minutes:5,anchor:'Train arrival',help:'Standard station secure / tie-down allowance.'},
+  'babylon10':{label:'Babylon Yard — signal cleared + 10 min layup',minutes:10,anchor:'Signal cleared',help:'Add 10 minutes after clearing the signal for the layup.'},
+  'farrock20':{label:'Passenger train to Far Rockaway Yard — 20 min total',minutes:20,anchor:'Train arrival',help:'5 clear + 15 yard = 20 total.'},
+  'farrock15eq':{label:'Equipment train direct to Far Rockaway Yard — 15 min total',minutes:15,anchor:'Equipment arrival',help:'No passenger-clear component.'},
+  'freeport15':{label:'Freeport west-end yard — 15 min total',minutes:15,anchor:'Train arrival',help:'The 5-minute clear is included.'},
+  'freeport20':{label:'Freeport east-end yard — 20 min total',minutes:20,anchor:'Train arrival',help:'The 5-minute clear is included.'},
+  'gcm15':{label:'GCM tail track — 15 min total',minutes:15,anchor:'Train arrival',help:'5-minute station baseline + 10-minute tail-track handling.'},
+  'hempstead15':{label:'Hempstead yard track — 15 min total',minutes:15,anchor:'Train arrival',help:'The 5-minute clear is included.'},
+  'huntington25':{label:'Huntington standard siding / yard — 25 min total',minutes:25,anchor:'Train arrival',help:'The 5-minute clear is included.'},
+  'huntington35':{label:'Huntington east-end south siding extension — 35 min total',minutes:35,anchor:'Train arrival',help:'The 5-minute clear is included.'},
+  'jsy20':{label:'Jamaica Storage Yard normal move — 20 min total',minutes:20,anchor:'Train arrival',help:'5 clear + 15 normal yard move.'},
+  'jsy35':{label:'Jamaica Storage Yard Receiving / Advance — 35 min total',minutes:35,anchor:'Train arrival',help:'5 clear + 30-minute yard allowance.'},
+  'longbeach20':{label:'Long Beach normal yard layup — 20 min total',minutes:20,anchor:'Train arrival',help:'The 20-minute figure already includes the initial 5.'},
+  'longbeach5direct':{label:'Long Beach direct yard layup — 5 min total',minutes:5,anchor:'Direct layup arrival',help:'Direct layup without first entering a station track.'},
+  'mds20':{label:'Midday Storage Yard layup — 20 min total',minutes:20,anchor:'Yard arrival',help:'No station exists here, so there is no separate 5-minute clear.'},
+  'montauk20':{label:'Montauk yard + walk back — 20 min total',minutes:20,anchor:'Train arrival',help:'5 clear + 10 yard + 5 walk back.'},
+  'oyster15':{label:'Oyster Bay yard — 15 min total',minutes:15,anchor:'Train arrival',help:'5 clear + 10 yard.'},
+  'patch20':{label:'Patchogue Schoolhouse / Fence Track — 20 min total',minutes:20,anchor:'Train arrival',help:'5 clear + 15 yard.'},
+  'patch25':{label:'Patchogue Freight / North Sidetrack — 25 min total',minutes:25,anchor:'Train arrival',help:'5 clear + 20 yard.'},
+  'portjeff20':{label:'Port Jefferson yard — 20 min total',minutes:20,anchor:'Train arrival',help:'5 clear + 15 yard.'},
+  'portjeff25':{label:'Port Jefferson station + walk to yard — 25 min total',minutes:25,anchor:'Train arrival',help:'Secure in station plus walk to yard.'},
+  'portwash15':{label:'Port Washington reverse move to yard — 15 min total',minutes:15,anchor:'Train arrival',help:'The 5-minute component is included.'},
+  'portwash20':{label:'Port Washington #1 Yard — 20 min total',minutes:20,anchor:'Train arrival',help:'The 5-minute component is included.'},
+  'ronk20':{label:'Ronkonkoma MU layup — 20 min total',minutes:20,anchor:'Train arrival',help:'MU yard layup.'},
+  'ronk30':{label:'Ronkonkoma diesel layup — 30 min total',minutes:30,anchor:'Train arrival',help:'Diesel yard layup.'},
+  'speonk15':{label:'Speonk yard layup — 15 min total',minutes:15,anchor:'Train arrival',help:'5 clear + 10 yard.'},
+  'westhemp15':{label:'West Hempstead yard track — 15 min total',minutes:15,anchor:'Train arrival',help:'The 5-minute component is included.'},
+  'westhemp20':{label:'West Hempstead west-end long siding — 20 min total',minutes:20,anchor:'Train arrival',help:'Rare alternate; 5-minute component included.'}
 };
-function tsaInitEndpointPresets(){const sel=document.getElementById('tsaEndpointPreset');if(!sel||sel.options.length)return;sel.innerHTML=Object.entries(TSA_ENDPOINT_PRESETS).map(([v,x])=>`<option value="${v}">${escapeHTML(x.label)}</option>`).join('')}
-function tsaPopulateShiftSelect(){const sel=document.getElementById('tsaShiftSelect');if(!sel)return;const list=[...shifts].filter(s=>!s.traineeMode).sort((a,b)=>(b.date||'').localeCompare(a.date||''));sel.innerHTML='<option value="">Choose a saved shift…</option>'+list.map(s=>`<option value="${escapeHTML(s.id)}">${escapeHTML(dateLabel(s.date))} • Job ${escapeHTML(s.assignment||'—')} • ${escapeHTML(s.location||'—')}</option>`).join('')}
-function openTimeSlipAssistant(mode){tsaInitEndpointPresets();tsaPopulateShiftSelect();document.getElementById('timeSlipAssistModal').classList.add('open');document.getElementById('tsaStartPanel').style.display='block';document.getElementById('tsaBuilderPanel').style.display='none';document.getElementById('tsaModalFoot').style.display='none';if(mode==='demo164')tsaLoadDemo('164')}
-function closeTimeSlipAssistant(){document.getElementById('timeSlipAssistModal')?.classList.remove('open')}
-function tsaBackToStart(){timeSlipAssistState={shift:null,source:'',lastAutoStart:'',lastAutoEnd:''};document.getElementById('tsaStartPanel').style.display='block';document.getElementById('tsaBuilderPanel').style.display='none';document.getElementById('tsaModalFoot').style.display='none';tsaPopulateShiftSelect()}
-function tsaUseSelectedShift(){const id=document.getElementById('tsaShiftSelect')?.value;if(!id){alert('Choose a saved shift first.');return}const s=shifts.find(x=>x.id===id);if(!s)return;tsaLoadShift(s,'Saved shift')}
+const TSA_TERMINAL_ENDPOINTS={
+  babylon:['station5','babylon10'],gcm:['station5','gcm15'],huntington:['station5','huntington25','huntington35'],ronkonkoma:['station5','ronk20','ronk30'],
+  portwashington:['station5','portwash15','portwash20'],farrockaway:['station5','farrock20','farrock15eq'],longbeach:['station5','longbeach20','longbeach5direct'],
+  mds:['mds20'],montauk:['station5','montauk20'],jsy:['station5','jsy20','jsy35'],portjefferson:['portjeff20','portjeff25'],speonk:['station5','speonk15'],
+  freeport:['freeport15','freeport20'],hempstead:['station5','hempstead15'],westhempstead:['station5','westhemp15','westhemp20'],oysterbay:['station5','oyster15'],patchogue:['station5','patch20','patch25']
+};
+const TSA_KNOWN_CREWBOOK_SERVICE={
+  '272':{
+    weekday:[
+      {type:'train',number:'169',from:'Babylon',depart:'15:44',to:'Penn Station',arrive:'16:54'},
+      {type:'train',number:'1364',from:'Penn Station',depart:'17:11',to:'Great Neck',arrive:'17:46'},
+      {type:'train',number:'4459',from:'Great Neck',depart:'18:09',to:'GCM',arrive:'18:40'},
+      {type:'train',number:'2776',from:'GCM',depart:'18:57',to:'Far Rockaway',arrive:'19:51'},
+      {type:'train',number:'5759',from:'Far Rockaway',depart:'20:25',to:'Penn Station',arrive:'21:12'},
+      {type:'train',number:'192',from:'Penn Station',depart:'22:24',to:'Babylon',arrive:'23:39'}
+    ],
+    weekend:[
+      {type:'train',number:'6165',from:'Babylon',depart:'15:47',to:'Penn Station',arrive:'17:00'},
+      {type:'train',number:'7974',from:'Penn Station',depart:'17:55',to:'Ronkonkoma',arrive:'19:16'},
+      {type:'train',number:'7987',from:'Ronkonkoma',depart:'20:32',to:'Penn Station',arrive:'21:54'},
+      {type:'train',number:'6194',from:'Penn Station',depart:'22:46',to:'Babylon',arrive:'00:00'}
+    ]
+  }
+};
 function tsaSet(id,val){const el=document.getElementById(id);if(el)el.value=val??''}
-function tsaLoadShift(s,source='Saved shift'){
-  timeSlipAssistState={shift:s,source,lastAutoStart:s.start||'',lastAutoEnd:s.end||''};
-  document.getElementById('tsaStartPanel').style.display='none';document.getElementById('tsaBuilderPanel').style.display='block';document.getElementById('tsaModalFoot').style.display='flex';
-  tsaSet('tsaDate',s.date||'');tsaSet('tsaAssignment',s.assignment||'');tsaSet('tsaLocation',s.location||'');tsaSet('tsaStart',s.start||'');tsaSet('tsaBookRelease',s.crewBookReleaseTime||'');tsaSet('tsaEnd',s.end||'');tsaSet('tsaConductor',s.conductorName||'');
-  tsaSet('tsaServiceDetails',s.start&&s.end?`${tsaClock12(s.start)}\n${tsaClock12(s.end)}`:'');tsaSet('tsaReason','');tsaSet('tsaClaimEvents','');tsaSet('tsaEndpointPreset','');tsaSet('tsaEndpointAnchor','');tsaEndpointPresetChanged();
-  document.getElementById('tsaBuilderTitle').textContent=`Job ${s.assignment||'—'} Time Slip Draft`;document.getElementById('tsaBuilderSource').textContent=source;
-  tsaUpdate();
-}
-function tsaLoadDemo(which){
-  const d=which==='272'?{
-    id:'demo-272',date:'2026-06-01',assignment:'272',location:'Babylon Yard',start:'15:19',book:'23:59',end:'00:21',conductor:'C. Strife',
-    service:`3:19 PM\n12:21 AM`,
-    reason:'Delayed entering the yard due to train traffic.',events:'Cleared the signal at 12:11 AM + 10 minutes to lay up train.',preset:'babylon10',anchor:'00:11',
-    source:'Validated example • Job 272 • 06/01/2026',unscheduledOT:true
-  }:{
-    id:'demo-164',date:'2026-08-11',assignment:'164',location:'GCM',start:'15:00',book:'23:00',end:'04:52',conductor:'R. Guidice',
-    service:`3:00 PM\nWorked as directed\nTrain 202 GCM 12:17 AM → Babylon 1:32 AM\nDH on Train 107 Babylon 3:14 AM → Penn Station 4:12 AM\n4:52 AM`,
-    reason:'Instructed by GCM Stationmaster to cover Train 202.',events:`Operated Train 202 from GCM to Babylon, arriving 1:32 AM.\nCleared the signal leaving Babylon Yard at 1:41 AM + 10 minutes to lay up train.\n35 minute walk from Babylon Yard to Babylon Station.\nNext available deadhead was Train 107, Babylon 3:14 AM to Penn Station 4:12 AM.\n40 minute walk to GCM.`,preset:'',anchor:'',
-    source:'Validated example • Job 164 • 08/11/2026',unscheduledOT:true
-  };
-  const pseudo={id:d.id,date:d.date,assignment:d.assignment,location:d.location,start:d.start,end:d.end,crewBookReleaseTime:d.book,conductorName:d.conductor,unscheduledOT:true,timeSlip:true,mpte:false,a2:false,runaround:false,noCo:false,cert:false,commingle:false,yardMove:false,sheridanMove:false,terminalNotCrewBook:false,miscPenalty:false};
-  timeSlipAssistState={shift:pseudo,source:d.source,lastAutoStart:d.start||'',lastAutoEnd:d.end||''};
-  document.getElementById('tsaStartPanel').style.display='none';document.getElementById('tsaBuilderPanel').style.display='block';document.getElementById('tsaModalFoot').style.display='flex';
-  tsaSet('tsaDate',d.date);tsaSet('tsaAssignment',d.assignment);tsaSet('tsaLocation',d.location);tsaSet('tsaStart',d.start);tsaSet('tsaBookRelease',d.book);tsaSet('tsaEnd',d.end);tsaSet('tsaConductor',d.conductor);tsaSet('tsaServiceDetails',d.service);tsaSet('tsaReason',d.reason);tsaSet('tsaClaimEvents',d.events);tsaSet('tsaEndpointPreset',d.preset);tsaSet('tsaEndpointAnchor',d.anchor);tsaEndpointPresetChanged();
-  document.getElementById('tsaBuilderTitle').textContent=`Job ${d.assignment} Time Slip Draft`;document.getElementById('tsaBuilderSource').textContent=d.source;tsaUpdate();
-}
 function tsaClock12(v){if(!v)return '—';let [h,m]=v.split(':').map(Number);const ap=h>=12?'PM':'AM';h=h%12||12;return `${h}:${pad(m)} ${ap}`}
 function tsaMinutesFrom(start,time){const a=parseClock(start),b=parseClock(time);if(a===null||b===null)return null;let d=b-a;if(d<0)d+=1440;return d}
 function tsaClockAdd(v,mins){const b=parseClock(v);if(b===null)return '';const x=(b+Number(mins)+1440*4)%1440;return `${pad(Math.floor(x/60))}:${pad(x%60)}`}
 function tsaDurationWords(mins){mins=Math.max(0,Math.round(mins||0));const h=Math.floor(mins/60),m=mins%60,parts=[];if(h)parts.push(`${h} hour${h===1?'':'s'}`);if(m||!h)parts.push(`${m} minute${m===1?'':'s'}`);return parts.join(' ')}
 function tsaSentence(t){t=(t||'').trim();if(!t)return '';return /[.!?]$/.test(t)?t:t+'.'}
-function tsaNightApplies(start,end){const dur=tsaMinutesFrom(start,end);const sm=parseClock(start);if(dur===null||sm===null)return false;for(let i=0;i<=dur;i++){const c=(sm+i)%1440;if(c>=20*60||c<6*60)return true}return false}
+function tsaNightApplies(start,end){const dur=tsaMinutesFrom(start,end),sm=parseClock(start);if(dur===null||sm===null)return false;for(let i=0;i<=dur;i++){const c=(sm+i)%1440;if(c>=20*60||c<6*60)return true}return false}
 function tsaUnsupportedClaims(s){if(!s)return[];const x=[];if(s.mpte)x.push('Code 03 / Meal');if(s.a2)x.push('Code 04 / Time on Time');if(s.runaround)x.push('Code 08 / Runaround');if(s.yardMove)x.push('Code 09 / 2 Classes');if(s.noCo||s.cert||s.commingle||s.sheridanMove||s.miscPenalty)x.push('Code 11 / Miscellaneous');return [...new Set(x)]}
-function tsaEndpointPresetChanged(){tsaInitEndpointPresets();const key=document.getElementById('tsaEndpointPreset')?.value||'',p=TSA_ENDPOINT_PRESETS[key]||TSA_ENDPOINT_PRESETS[''];document.getElementById('tsaEndpointAnchorLabel').textContent=p.anchor;document.getElementById('tsaEndpointAllowance').textContent=p.minutes==null?'—':`${p.minutes} minutes`;document.getElementById('tsaEndpointHelp').textContent=p.help}
-function tsaSyncServiceBoundaryLines(start,end){
-  const ta=document.getElementById('tsaServiceDetails');if(!ta)return;
-  const lines=ta.value.split(/\n/);let first=-1,last=-1;
-  for(let i=0;i<lines.length;i++){if(lines[i].trim()){if(first<0)first=i;last=i}}
-  const prevStart=timeSlipAssistState.lastAutoStart||'',prevEnd=timeSlipAssistState.lastAutoEnd||'';
-  if(first>=0&&prevStart&&start&&start!==prevStart&&lines[first].trim()===tsaClock12(prevStart))lines[first]=tsaClock12(start);
-  if(last>=0&&prevEnd&&end&&end!==prevEnd&&lines[last].trim()===tsaClock12(prevEnd))lines[last]=tsaClock12(end);
-  if(lines.join('\n')!==ta.value)ta.value=lines.join('\n');
-  timeSlipAssistState.lastAutoStart=start||'';timeSlipAssistState.lastAutoEnd=end||'';
+function tsaInferServiceClass(assignment){return isYardCrewKey?.(assignment)?'Yard':'Passenger'}
+function tsaProfile(){try{return JSON.parse(localStorage.getItem(TSA_PROFILE_KEY)||'{}')}catch(e){return {}}}
+function tsaProfileChanged(){try{localStorage.setItem(TSA_PROFILE_KEY,JSON.stringify({name:document.getElementById('tsaEmployeeName')?.value||'',ibm:document.getElementById('tsaEmployeeIBM')?.value||''}))}catch(e){}}
+function tsaPopulateShiftSelect(){const sel=document.getElementById('tsaShiftSelect');if(!sel)return;const list=[...shifts].sort((a,b)=>(b.date||'').localeCompare(a.date||''));sel.innerHTML='<option value="">Choose a saved shift…</option>'+list.map(s=>`<option value="${escapeHTML(s.id)}">${escapeHTML(dateLabel(s.date))} • Job ${escapeHTML(s.assignment||'—')} • ${escapeHTML(s.location||'—')}${s.traineeMode?' • Trainee':''}</option>`).join('')}
+function openTimeSlipAssistant(mode){tsaPopulateShiftSelect();document.getElementById('timeSlipAssistModal').classList.add('open');document.getElementById('tsaStartPanel').style.display='block';document.getElementById('tsaBuilderPanel').style.display='none';document.getElementById('tsaModalFoot').style.display='none';if(mode==='demo164')tsaLoadDemo('164');if(mode==='demo272')tsaLoadDemo('272')}
+function closeTimeSlipAssistant(){document.getElementById('timeSlipAssistModal')?.classList.remove('open')}
+function tsaBackToStart(){timeSlipAssistState={shift:null,source:'',step:1,serviceSteps:[],serviceSuggestions:[],suggestionIndex:0,editingServiceIndex:-1,pendingServiceType:'',pendingIsSuggestion:false,claimDetails:[],claimManual:false,lastGeneratedClaim:'',endpointPreset:'',endpointEnabled:false,serviceSourceLabel:''};document.getElementById('tsaStartPanel').style.display='block';document.getElementById('tsaBuilderPanel').style.display='none';document.getElementById('tsaModalFoot').style.display='none';tsaPopulateShiftSelect()}
+function tsaUseSelectedShift(){const id=document.getElementById('tsaShiftSelect')?.value;if(!id){alert('Choose a saved shift first.');return}const s=shifts.find(x=>x.id===id);if(!s)return;tsaLoadShift(s,'Saved shift')}
+function tsaKnownServiceForShift(s){if(!s||s.traineeMode)return null;const key=normalizeCrewBookKey(s.assignment||''),known=TSA_KNOWN_CREWBOOK_SERVICE[key];if(!known)return null;const day=crewBookDayForDate(s.date||todayISO());return (day==='saturday'||day==='sunday')?known.weekend:known.weekday}
+function tsaResetStateForShift(s,source){const profile=tsaProfile(),known=tsaKnownServiceForShift(s);timeSlipAssistState={shift:s,source,step:1,serviceSteps:[],serviceSuggestions:known?known.map(x=>({...x,source:'crewbook'})):[],suggestionIndex:0,editingServiceIndex:-1,pendingServiceType:'',pendingIsSuggestion:false,claimDetails:[],claimManual:false,lastGeneratedClaim:'',endpointPreset:'',endpointEnabled:false,serviceSourceLabel:known?'Known assignment movement snapshot':'Manual service entry'};return profile}
+function tsaLoadShift(s,source='Saved shift'){
+  const profile=tsaResetStateForShift(s,source);document.getElementById('tsaStartPanel').style.display='none';document.getElementById('tsaBuilderPanel').style.display='block';document.getElementById('tsaModalFoot').style.display='flex';
+  tsaSet('tsaDate',s.date||'');tsaSet('tsaAssignment',s.assignment||'');tsaSet('tsaServiceClass',tsaInferServiceClass(s.assignment||''));tsaSet('tsaEmployeeName',profile.name||'');tsaSet('tsaEmployeeIBM',profile.ibm||'');tsaSet('tsaReportLocation',s.location||'');tsaSet('tsaReleaseLocation',s.location||'');tsaSet('tsaStart',s.start||'');tsaSet('tsaBookRelease',s.crewBookReleaseTime||'');tsaSet('tsaEnd',s.end||'');tsaSet('tsaConductor',s.conductorName||'');tsaSet('tsaReason','');tsaSet('tsaEndpointAnchor','');tsaSet('tsaClaimNarrative','');tsaSet('tsaClaimDetailInput','');
+  document.getElementById('tsaBuilderTitle').textContent=`Job ${s.assignment||'—'} Time Slip`;document.getElementById('tsaBuilderSource').textContent=source+(s.traineeMode?' • Manual service workflow available in Trainee Mode':'');
+  tsaGoStep(1);tsaUpdate();
 }
-function tsaUpdate(){
-  const get=id=>document.getElementById(id)?.value||'',date=get('tsaDate'),assignment=get('tsaAssignment'),location=get('tsaLocation'),start=get('tsaStart'),book=get('tsaBookRelease'),end=get('tsaEnd'),conductor=get('tsaConductor');
-  tsaSyncServiceBoundaryLines(start,end);
-  const duty=tsaMinutesFrom(start,end),bookFrom=tsaMinutesFrom(start,book),endFrom=tsaMinutesFrom(start,end),claimStart=(bookFrom===null?null:Math.max(480,bookFrom)),claim=(claimStart===null||endFrom===null)?null:Math.max(0,endFrom-claimStart),night=tsaNightApplies(start,end);
-  const crossesMidnight=start&&end&&parseClock(end)<parseClock(start),releaseDate=date?(crossesMidnight?addDaysISO(date,1):date):'';
-  const codes=[];if(claim!==null&&claim>0)codes.push('05');if(night)codes.push('13');
-  const sum=document.getElementById('tsaSummary');if(sum)sum.innerHTML=[['Date',date?formatDateShort(date):'—'],['Job',assignment||'—'],['Location',location||'—'],['Report',tsaClock12(start)],['Book release',tsaClock12(book)],['Actual release',tsaClock12(end)],['Time on duty',duty===null?'—':fmtMinutes(duty)],['Code 05 start',claimStart===null?'—':tsaClock12(tsaClockAdd(start,claimStart))],['Code 05 claim',claim===null?'—':fmtMinutes(claim)]].map(([a,b])=>`<div class="item"><span>${a}</span><strong>${escapeHTML(String(b))}</strong></div>`).join('');
-  const codeEl=document.getElementById('tsaCodes');if(codeEl)codeEl.innerHTML=codes.length?codes.map(c=>`<span class="tsa-code ${c==='05'?'claim':''}">Code ${c}</span>`).join(''):'<span class="muted">No supported claim code detected yet.</span>';
-  const card=document.getElementById('tsaCardFields');if(card)card.innerHTML=[['Crew No.',assignment||'—'],['Date',date?formatDateShort(date):'—'],['Reported for Duty',`${location||'—'} • ${date?formatDateShort(date):'—'} • ${tsaClock12(start)}`],['Actual Release',`${location||'—'} • ${releaseDate?formatDateShort(releaseDate):'—'} • ${tsaClock12(end)}`],['With Conductor',conductor||'—'],['Total Time on Duty',duty===null?'—':fmtMinutes(duty)],['Claim Code(s)',codes.join(', ')||'—']].map(([a,b])=>`<div class="item"><span>${a}</span><strong>${escapeHTML(String(b))}</strong></div>`).join('');
-  const cb=document.getElementById('tsaClaimBoxes');if(cb){const mins=claim===null?0:claim;cb.innerHTML=`<div class="box"><strong>—</strong><span>Days</span></div><div class="box"><strong>${Math.floor(mins/60)||'—'}</strong><span>Hours</span></div><div class="box"><strong>${mins%60||'—'}</strong><span>Minutes</span></div>`}
-  const service=(get('tsaServiceDetails')||'').trim();document.getElementById('tsaServiceOutput').textContent=service||[tsaClock12(start),tsaClock12(end)].filter(x=>x!=='—').join('\n');
-  const reason=tsaSentence(get('tsaReason')),events=(get('tsaClaimEvents')||'').split(/\n+/).map(tsaSentence).filter(Boolean);let lines=[];
-  if(claim!==null&&claim>0){let body=`05 - Claiming ${tsaDurationWords(claim)} at overtime.`;if(reason)body+=' '+reason;if(events.length)body+=' '+events.join(' ');if(end)body+=` Adjusted release time: ${tsaClock12(end)}.`;lines.push(body)}
-  if(night)lines.push('13 - Claiming all applicable night differential.');document.getElementById('tsaClaimOutput').textContent=lines.join('\n\n')||'Enter the shift facts needed to calculate the supported claim.';
-  const v=[];
-  if(!book)v.push(['warn','Crew Book release is blank, so Code 05 cannot be calculated yet.']);
-  if(duty!==null)v.push(['ok',`Total Time on Duty calculates to ${fmtMinutes(duty)}.`]);
-  if(claim!==null&&claim>0)v.push(['ok',`Code 05 starts at the later of the 8th hour and booked release, producing ${fmtMinutes(claim)} overtime.`]);
-  if(night)v.push(['info','The tour overlaps 8:00 PM–5:59 AM, so Code 13 is included without adding minutes to Total Time Claimed.']);
-  if(service&&service.split(/\n+/).filter(Boolean).length<=2)v.push(['warn','Details of Service currently has only the on/off-duty lines. Add actual train numbers and times before using a physical card.']);
-  const unsupported=tsaUnsupportedClaims(timeSlipAssistState.shift);if(unsupported.length)v.push(['warn',`This saved shift also contains ${unsupported.join(', ')}. This preview intentionally does not write those claims yet.`]);
-  const ep=TSA_ENDPOINT_PRESETS[get('tsaEndpointPreset')]||TSA_ENDPOINT_PRESETS[''],anchor=get('tsaEndpointAnchor'),epResult=document.getElementById('tsaEndpointResult');
-  if(ep.minutes!=null&&anchor){const expected=tsaClockAdd(anchor,ep.minutes),match=end&&expected===end;epResult.textContent=`Endpoint check: ${tsaClock12(anchor)} + ${ep.minutes} min = ${tsaClock12(expected)}${end?` • actual release ${tsaClock12(end)}`:''}`;if(end)v.push([match?'ok':'warn',match?'Endpoint helper agrees with the entered Actual Release.':'Endpoint helper does not match the entered Actual Release. Review the actual operation; do not change it just to satisfy the helper.'])}else if(epResult)epResult.textContent=ep.minutes!=null?'Enter the anchor time to cross-check the expected endpoint.':'';
-  if(!reason&&claim>0)v.push(['warn','Code 05 reason/instruction is blank. Add what caused the overtime.']);
-  document.getElementById('tsaValidation').innerHTML=v.map(([c,t])=>`<div class="${c}">${escapeHTML(t)}</div>`).join('');
+function tsaLoadDemo(which){
+  const d=which==='272'?{id:'demo-272',date:'2026-06-01',assignment:'272',location:'Babylon Yard',start:'15:19',book:'23:59',end:'00:21',conductor:'C. Strife',reason:'Delayed entering the yard due to train traffic.',details:['Cleared the signal at 12:11 AM + 10 minutes to lay up train.'],preset:'babylon10',anchor:'00:11',source:'Validated example • Job 272 • 06/01/2026'}:{id:'demo-164',date:'2026-08-11',assignment:'164',location:'GCM',start:'15:00',book:'23:00',end:'04:52',conductor:'R. Guidice',reason:'Instructed by GCM Stationmaster to cover Train 202.',details:['Operated Train 202 from GCM to Babylon, arriving 1:32 AM.','Cleared the signal leaving Babylon Yard at 1:41 AM + 10 minutes to lay up train.','35 minute walk from Babylon Yard to Babylon Station.','Next available deadhead was Train 107, Babylon 3:14 AM to Penn Station 4:12 AM.','40 minute walk to GCM.'],preset:'',anchor:'',source:'Validated example • Job 164 • 08/11/2026'};
+  const pseudo={id:d.id,date:d.date,assignment:d.assignment,location:d.location,start:d.start,end:d.end,crewBookReleaseTime:d.book,conductorName:d.conductor,unscheduledOT:true,timeSlip:true,mpte:false,a2:false,runaround:false,noCo:false,cert:false,commingle:false,yardMove:false,sheridanMove:false,terminalNotCrewBook:false,miscPenalty:false,traineeMode:false};
+  const profile=tsaResetStateForShift(pseudo,d.source);if(which==='164'){timeSlipAssistState.serviceSuggestions=[];timeSlipAssistState.serviceSteps=[{type:'directed',text:'Worked as directed',source:'actual'},{type:'train',number:'202',from:'GCM',depart:'00:17',to:'Babylon',arrive:'01:32',source:'actual'},{type:'deadhead',number:'107',from:'Babylon',depart:'03:14',to:'Penn Station',arrive:'04:12',source:'actual'}];timeSlipAssistState.serviceSourceLabel='Validated actual-service example'}timeSlipAssistState.claimDetails=[...d.details];timeSlipAssistState.endpointPreset=d.preset;timeSlipAssistState.endpointEnabled=!!d.preset;
+  document.getElementById('tsaStartPanel').style.display='none';document.getElementById('tsaBuilderPanel').style.display='block';document.getElementById('tsaModalFoot').style.display='flex';
+  tsaSet('tsaDate',d.date);tsaSet('tsaAssignment',d.assignment);tsaSet('tsaServiceClass','Passenger');tsaSet('tsaEmployeeName',profile.name||'J. McKinley');tsaSet('tsaEmployeeIBM',profile.ibm||'60445');tsaSet('tsaReportLocation',d.location);tsaSet('tsaReleaseLocation',d.location);tsaSet('tsaStart',d.start);tsaSet('tsaBookRelease',d.book);tsaSet('tsaEnd',d.end);tsaSet('tsaConductor',d.conductor);tsaSet('tsaReason',d.reason);tsaSet('tsaEndpointAnchor',d.anchor);tsaSet('tsaClaimNarrative','');tsaSet('tsaClaimDetailInput','');document.getElementById('tsaBuilderTitle').textContent=`Job ${d.assignment} Time Slip`;document.getElementById('tsaBuilderSource').textContent=d.source;tsaGoStep(1);tsaUpdate();
 }
+function tsaProgressLabels(){return ['Identification','Duty','Service','Claim','Review']}
+function tsaGoStep(n){n=Math.max(1,Math.min(5,n));timeSlipAssistState.step=n;for(let i=1;i<=5;i++)document.getElementById(`tsaStep${i}`)?.classList.toggle('active',i===n);const prog=document.getElementById('tsaProgress');if(prog)prog.innerHTML=tsaProgressLabels().map((x,i)=>`<div class="tsa-progress-step ${i+1===n?'active':i+1<n?'done':''}">${i+1}. ${x}</div>`).join('');document.getElementById('tsaFootStep').textContent=`Step ${n} of 5 • ${tsaProgressLabels()[n-1]}`;document.getElementById('tsaBackBtn').style.display=n===1?'none':'';document.getElementById('tsaNextBtn').style.display=n===5?'none':'';document.getElementById('tsaDoneBtn').style.display=n===5?'':'none';if(n===3)tsaPrepareServiceEditor();if(n===4){tsaPopulateEndpointChoices();tsaRefreshClaimNarrative()}if(n===5)tsaRenderFinal();tsaUpdate()}
+function tsaNextStep(){tsaGoStep(timeSlipAssistState.step+1)}function tsaPreviousStep(){tsaGoStep(timeSlipAssistState.step-1)}
+function tsaServiceLine(step){if(!step)return '';if(step.type==='directed'||step.type==='other')return step.text||'';const prefix=step.type==='deadhead'?'DH on Train ':step.type==='equipment'?'': 'Train ';const n=step.number||'';let line=`${prefix}${n}`.trim();if(step.from||step.to){line+=(line?' ':'')+`${step.from||'—'}${step.depart?' '+tsaClock12(step.depart):''} → ${step.to||'—'}${step.arrive?' '+tsaClock12(step.arrive):''}`}return line}
+function tsaServiceOutputText(){const start=document.getElementById('tsaStart')?.value||'',end=document.getElementById('tsaEnd')?.value||'';return [tsaClock12(start),...timeSlipAssistState.serviceSteps.map(tsaServiceLine).filter(Boolean),tsaClock12(end)].filter(x=>x&&x!=='—').join('\n')}
+function tsaRenderServiceTimeline(){const el=document.getElementById('tsaServiceTimeline');if(!el)return;const start=document.getElementById('tsaStart')?.value||'',end=document.getElementById('tsaEnd')?.value||'';let html=`<div class="tsa-timeline-row boundary"><div class="tsa-timeline-dot"></div><div class="tsa-timeline-card"><strong>${tsaClock12(start)} — On duty</strong></div></div>`;timeSlipAssistState.serviceSteps.forEach((st,i)=>{html+=`<div class="tsa-timeline-row"><div class="tsa-timeline-dot"></div><div class="tsa-timeline-card"><strong>${escapeHTML(tsaServiceTypeLabel(st.type))}</strong><div class="line">${escapeHTML(tsaServiceLine(st))}</div><div class="meta">${st.source==='crewbook'?'<span class="tsa-source-chip">Crew Book snapshot • confirmed</span>':''}<button class="btn small" type="button" onclick="tsaEditServiceStep(${i})">Edit</button><button class="btn small" type="button" onclick="tsaDeleteServiceStep(${i})">Delete</button></div></div></div>`});html+=`<div class="tsa-timeline-row boundary"><div class="tsa-timeline-dot"></div><div class="tsa-timeline-card"><strong>${tsaClock12(end)} — Off duty</strong></div></div>`;el.innerHTML=html}
+function tsaServiceTypeLabel(t){return ({train:'Train',deadhead:'Deadhead',directed:'Worked as Directed',equipment:'Equipment / Extra Train',other:'Other'})[t]||'Service'}
+function tsaServiceSourceNote(){const el=document.getElementById('tsaServiceSourceNote');if(!el)return;const s=timeSlipAssistState.shift;if(s?.traineeMode){el.innerHTML='<div class="tsa-suggestion"><strong>Manual service entry</strong>Trainee Mode does not need Crew Book Assistance here. Add the trains / deadheads / work you actually performed one step at a time.</div>';return}if(timeSlipAssistState.serviceSuggestions.length){el.innerHTML='<div class="tsa-suggestion"><strong>Known assignment details are available.</strong>Each scheduled movement will be offered one at a time as a starting point. Confirm or edit the actual train and times before adding it. Once added, it becomes this draft\'s snapshot.</div>';return}el.innerHTML='<div class="tsa-suggestion"><strong>No movement list is available for this assignment.</strong>That is okay — temporary track-work jobs, extra programs and unknown assignments can be entered manually one service step at a time.</div>'}
+function tsaClearServiceEditor(){['tsaServiceNumber','tsaServiceFrom','tsaServiceDepart','tsaServiceTo','tsaServiceArrive','tsaServiceText'].forEach(id=>tsaSet(id,''));timeSlipAssistState.pendingServiceType='';timeSlipAssistState.pendingIsSuggestion=false;document.getElementById('tsaServiceEditor').style.display='none';document.querySelectorAll('#tsaServiceTypeGrid .tsa-type-btn').forEach(b=>b.classList.remove('active'));timeSlipAssistState.editingServiceIndex=-1}
+function tsaPrepareServiceEditor(){tsaServiceSourceNote();tsaRenderServiceTimeline();if(timeSlipAssistState.editingServiceIndex>=0)return;const idx=timeSlipAssistState.suggestionIndex,sug=timeSlipAssistState.serviceSuggestions[idx];if(sug){tsaLoadServiceIntoEditor(sug,true);return}tsaClearServiceEditor();document.getElementById('tsaServiceSuggestion').innerHTML='';document.getElementById('tsaServiceEditorTitle').textContent='Add next service step'}
+function tsaLoadServiceIntoEditor(st,isSuggestion=false){timeSlipAssistState.pendingServiceType=st.type||'train';timeSlipAssistState.pendingIsSuggestion=!!isSuggestion;document.querySelectorAll('#tsaServiceTypeGrid .tsa-type-btn').forEach(b=>b.classList.toggle('active',b.dataset.type===timeSlipAssistState.pendingServiceType));document.getElementById('tsaServiceEditor').style.display='block';const movement=['train','deadhead','equipment'].includes(timeSlipAssistState.pendingServiceType);document.getElementById('tsaMovementFields').style.display=movement?'grid':'none';document.getElementById('tsaTextStepFields').style.display=movement?'none':'block';document.getElementById('tsaServiceNumberLabel').textContent=timeSlipAssistState.pendingServiceType==='equipment'?'Train / Equipment ID':'Train No.';tsaSet('tsaServiceNumber',st.number||'');tsaSet('tsaServiceFrom',st.from||'');tsaSet('tsaServiceDepart',st.depart||'');tsaSet('tsaServiceTo',st.to||'');tsaSet('tsaServiceArrive',st.arrive||'');tsaSet('tsaServiceText',st.text|| (timeSlipAssistState.pendingServiceType==='directed'?'Worked as directed':''));const sugEl=document.getElementById('tsaServiceSuggestion'),skip=document.getElementById('tsaSkipSuggestionBtn');if(isSuggestion){const n=timeSlipAssistState.suggestionIndex+1,total=timeSlipAssistState.serviceSuggestions.length;sugEl.innerHTML=`<div class="tsa-suggestion"><strong>Crew Book suggestion ${n} of ${total}</strong>The fields below are scheduled/reference details. Confirm or change them to what actually happened, then add this line.</div>`;skip.style.display='';document.getElementById('tsaSaveServiceBtn').textContent='Confirm & add this line';document.getElementById('tsaServiceEditorTitle').textContent='Review the next service line'}else{sugEl.innerHTML='';skip.style.display='none';document.getElementById('tsaSaveServiceBtn').textContent=timeSlipAssistState.editingServiceIndex>=0?'Save change':'Add to service';document.getElementById('tsaServiceEditorTitle').textContent=timeSlipAssistState.editingServiceIndex>=0?'Edit service step':'Add next service step'}}
+function tsaChooseServiceType(type){timeSlipAssistState.pendingIsSuggestion=false;if(timeSlipAssistState.serviceSuggestions[timeSlipAssistState.suggestionIndex]&&timeSlipAssistState.editingServiceIndex<0){document.getElementById('tsaServiceSuggestion').innerHTML='<div class="tsa-suggestion"><strong>Adding something different</strong>The scheduled suggestion is still waiting. Add this manual line, then you can return to the suggested movement.</div>'}timeSlipAssistState.pendingServiceType=type;tsaLoadServiceIntoEditor({type,text:type==='directed'?'Worked as directed':''},false)}
+function tsaReadServiceEditor(){const t=timeSlipAssistState.pendingServiceType;if(['train','deadhead','equipment'].includes(t))return {type:t,number:document.getElementById('tsaServiceNumber').value.trim(),from:document.getElementById('tsaServiceFrom').value.trim(),depart:document.getElementById('tsaServiceDepart').value,to:document.getElementById('tsaServiceTo').value.trim(),arrive:document.getElementById('tsaServiceArrive').value,source:'actual'};return {type:t,text:document.getElementById('tsaServiceText').value.trim()||(t==='directed'?'Worked as directed':''),source:'actual'}}
+function tsaSaveServiceStep(){if(!timeSlipAssistState.pendingServiceType){alert('Choose the type of service step first.');return}const waiting=timeSlipAssistState.serviceSuggestions[timeSlipAssistState.suggestionIndex],st=tsaReadServiceEditor();if(waiting&&timeSlipAssistState.pendingIsSuggestion&&timeSlipAssistState.editingServiceIndex<0){st.source='crewbook';timeSlipAssistState.serviceSteps.push(st);timeSlipAssistState.suggestionIndex++}else if(timeSlipAssistState.editingServiceIndex>=0){st.source=timeSlipAssistState.serviceSteps[timeSlipAssistState.editingServiceIndex]?.source||'actual';timeSlipAssistState.serviceSteps[timeSlipAssistState.editingServiceIndex]=st;timeSlipAssistState.editingServiceIndex=-1}else timeSlipAssistState.serviceSteps.push(st);tsaClearServiceEditor();tsaRenderServiceTimeline();tsaPrepareServiceEditor();tsaUpdate()}
+function tsaSkipSuggestion(){if(timeSlipAssistState.suggestionIndex<timeSlipAssistState.serviceSuggestions.length)timeSlipAssistState.suggestionIndex++;tsaClearServiceEditor();tsaPrepareServiceEditor();tsaUpdate()}
+function tsaCancelServiceEdit(){tsaClearServiceEditor();tsaPrepareServiceEditor()}
+function tsaEditServiceStep(i){const st=timeSlipAssistState.serviceSteps[i];if(!st)return;timeSlipAssistState.editingServiceIndex=i;tsaLoadServiceIntoEditor(st,false)}
+function tsaDeleteServiceStep(i){timeSlipAssistState.serviceSteps.splice(i,1);tsaRenderServiceTimeline();tsaUpdate()}
+function tsaRenderClaimDetails(){const el=document.getElementById('tsaClaimDetailList');if(!el)return;el.innerHTML=timeSlipAssistState.claimDetails.length?timeSlipAssistState.claimDetails.map((x,i)=>`<div class="tsa-claim-detail"><span>${escapeHTML(x)}</span><button class="btn small" type="button" onclick="tsaDeleteClaimDetail(${i})">Remove</button></div>`).join(''):'<div class="muted" style="font-size:11px">No additional claim details yet.</div>'}
+function tsaAddClaimDetail(){const inp=document.getElementById('tsaClaimDetailInput'),v=inp?.value.trim();if(!v)return;timeSlipAssistState.claimDetails.push(v);inp.value='';tsaRenderClaimDetails();tsaClaimFactsChanged()}
+function tsaDeleteClaimDetail(i){timeSlipAssistState.claimDetails.splice(i,1);tsaRenderClaimDetails();tsaClaimFactsChanged()}
+function tsaTerminalKey(loc){const x=String(loc||'').toLowerCase();if(x.includes('babylon'))return'babylon';if(x.includes('grand central')||x==='gcm'||x.includes('gcm'))return'gcm';if(x.includes('huntington'))return'huntington';if(x.includes('ronkonkoma'))return'ronkonkoma';if(x.includes('port wash'))return'portwashington';if(x.includes('far rock'))return'farrockaway';if(x.includes('long beach'))return'longbeach';if(x.includes('midday')||x==='mds')return'mds';if(x.includes('montauk'))return'montauk';if(x.includes('jamaica storage')||x==='jsy')return'jsy';if(x.includes('port jeff'))return'portjefferson';if(x.includes('speonk'))return'speonk';if(x.includes('freeport'))return'freeport';if(x.includes('west hemp'))return'westhempstead';if(x.includes('hempstead'))return'hempstead';if(x.includes('oyster'))return'oysterbay';if(x.includes('patchogue'))return'patchogue';return''}
+function tsaPopulateEndpointChoices(){const sel=document.getElementById('tsaEndpointPreset'),grp=document.getElementById('tsaEndpointGroup'),offer=document.getElementById('tsaEndpointOffer');if(!sel||!grp)return;if(!timeSlipAssistState.endpointEnabled&&!timeSlipAssistState.endpointPreset){grp.style.display='none';if(offer)offer.style.display='';return}const loc=document.getElementById('tsaReleaseLocation')?.value||'',key=tsaTerminalKey(loc),opts=key?TSA_TERMINAL_ENDPOINTS[key]||[]:[];if(!opts.length){grp.style.display='none';if(offer)offer.style.display='';sel.innerHTML='';return}grp.style.display='block';if(offer)offer.style.display='none';const list=['',...opts];sel.innerHTML=list.map(v=>`<option value="${v}">${escapeHTML(TSA_ENDPOINT_PRESETS[v].label)}</option>`).join('');const wanted=timeSlipAssistState.endpointPreset||'';sel.value=list.includes(wanted)?wanted:'';document.getElementById('tsaEndpointContextTitle').textContent=`${loc||'This terminal'} handling`;document.getElementById('tsaEndpointContextCopy').textContent='Only handling choices relevant to this release location are shown. If the actual operation was different, choose no helper and enter the facts manually.';tsaEndpointPresetChanged()}
+function tsaEnableEndpointHelper(){timeSlipAssistState.endpointEnabled=true;tsaPopulateEndpointChoices();const grp=document.getElementById('tsaEndpointGroup');if(grp&&getComputedStyle(grp).display==='none')alert('No terminal-specific helper is loaded for this release location yet. You can still enter the actual claim details manually.')}
+function tsaEndpointPresetChanged(){const key=document.getElementById('tsaEndpointPreset')?.value||'',p=TSA_ENDPOINT_PRESETS[key]||TSA_ENDPOINT_PRESETS[''];timeSlipAssistState.endpointPreset=key;document.getElementById('tsaEndpointAnchorLabel').textContent=p.anchor;document.getElementById('tsaEndpointAllowance').textContent=p.minutes==null?'—':`${p.minutes} minutes`;document.getElementById('tsaEndpointHelp').textContent=p.help}
+function tsaClaimFactsChanged(){tsaUpdate();tsaRefreshClaimNarrative()}
+function tsaClaimNarrativeEdited(){timeSlipAssistState.claimManual=true}
+function tsaGeneratedClaimText(){const start=document.getElementById('tsaStart')?.value||'',book=document.getElementById('tsaBookRelease')?.value||'',end=document.getElementById('tsaEnd')?.value||'',reason=tsaSentence(document.getElementById('tsaReason')?.value||''),bookFrom=tsaMinutesFrom(start,book),endFrom=tsaMinutesFrom(start,end),claimStart=bookFrom===null?null:Math.max(480,bookFrom),claim=claimStart===null||endFrom===null?null:Math.max(0,endFrom-claimStart),night=tsaNightApplies(start,end);const lines=[];if(claim!==null&&claim>0){let body=`05 - Claiming ${tsaDurationWords(claim)} at overtime.`;if(reason)body+=' '+reason;if(timeSlipAssistState.claimDetails.length)body+=' '+timeSlipAssistState.claimDetails.map(tsaSentence).join(' ');if(end)body+=` Adjusted release time: ${tsaClock12(end)}.`;lines.push(body)}if(night)lines.push('13 - Claiming all applicable night differential.');return lines.join('\n\n')||'No supported claim wording has been generated yet.'}
+function tsaRefreshClaimNarrative(force=false){const ta=document.getElementById('tsaClaimNarrative');if(!ta)return;const txt=tsaGeneratedClaimText();timeSlipAssistState.lastGeneratedClaim=txt;if(force||!timeSlipAssistState.claimManual)ta.value=txt}
+function tsaRegenerateClaimNarrative(){timeSlipAssistState.claimManual=false;tsaRefreshClaimNarrative(true);tsaUpdate()}
+function tsaRenderFinal(){const get=id=>document.getElementById(id)?.value||'',date=get('tsaDate'),assignment=get('tsaAssignment'),serviceClass=get('tsaServiceClass'),name=get('tsaEmployeeName'),ibm=get('tsaEmployeeIBM'),reportLoc=get('tsaReportLocation'),releaseLoc=get('tsaReleaseLocation'),start=get('tsaStart'),end=get('tsaEnd'),conductor=get('tsaConductor'),book=get('tsaBookRelease');const duty=tsaMinutesFrom(start,end),bookFrom=tsaMinutesFrom(start,book),endFrom=tsaMinutesFrom(start,end),claimStart=bookFrom===null?null:Math.max(480,bookFrom),claim=claimStart===null||endFrom===null?null:Math.max(0,endFrom-claimStart),night=tsaNightApplies(start,end),codes=[];if(claim>0)codes.push('05');if(night)codes.push('13');const crosses=start&&end&&parseClock(end)<parseClock(start),releaseDate=date?(crosses?addDaysISO(date,1):date):'';document.getElementById('tsaFinalIdentity').innerHTML=`<div><strong>Job:</strong> ${escapeHTML(assignment||'—')}</div><div><strong>Date:</strong> ${escapeHTML(date?formatDateShort(date):'—')}</div><div><strong>Service:</strong> ${escapeHTML(serviceClass||'—')}</div><div><strong>${escapeHTML(name||'—')}</strong>${ibm?' • IBM '+escapeHTML(ibm):''}</div>`;document.getElementById('tsaFinalDuty').innerHTML=`<div><strong>Reported:</strong> ${escapeHTML(reportLoc||'—')} • ${escapeHTML(date?formatDateShort(date):'—')} • ${escapeHTML(tsaClock12(start))}</div><div><strong>Conductor:</strong> ${escapeHTML(conductor||'—')}</div><div><strong>Released:</strong> ${escapeHTML(releaseLoc||'—')} • ${escapeHTML(releaseDate?formatDateShort(releaseDate):'—')} • ${escapeHTML(tsaClock12(end))}</div><div><strong>Total on duty:</strong> ${escapeHTML(duty===null?'—':fmtMinutes(duty))}</div>`;document.getElementById('tsaFinalClaimSummary').innerHTML=`<div class="tsa-readonly"><span>Total Time Claimed</span><strong>${escapeHTML(claim===null?'—':fmtMinutes(claim))}</strong></div><div class="tsa-readonly"><span>Claim Code(s)</span><strong>${escapeHTML(codes.join(', ')||'—')}</strong></div>`;document.getElementById('tsaFinalCodes').innerHTML=codes.map(c=>`<span class="tsa-code ${c==='05'?'claim':''}">Code ${c}</span>`).join('');document.getElementById('tsaServiceOutput').textContent=tsaServiceOutputText();document.getElementById('tsaClaimOutput').textContent=document.getElementById('tsaClaimNarrative')?.value||tsaGeneratedClaimText();tsaRenderValidation()}
+function tsaRenderEndpointResult(){const get=id=>document.getElementById(id)?.value||'',p=TSA_ENDPOINT_PRESETS[get('tsaEndpointPreset')]||TSA_ENDPOINT_PRESETS[''],anchor=get('tsaEndpointAnchor'),end=get('tsaEnd'),ep=document.getElementById('tsaEndpointResult');if(!ep)return;if(p.minutes!=null&&anchor){const expected=tsaClockAdd(anchor,p.minutes);ep.textContent=`Check: ${tsaClock12(anchor)} + ${p.minutes} min = ${tsaClock12(expected)}${end?` • entered release ${tsaClock12(end)}`:''}`}else ep.textContent=p.minutes!=null?'Enter the anchor time to cross-check the endpoint.':''}
+function tsaRenderValidation(){const get=id=>document.getElementById(id)?.value||'',start=get('tsaStart'),book=get('tsaBookRelease'),end=get('tsaEnd'),duty=tsaMinutesFrom(start,end),bookFrom=tsaMinutesFrom(start,book),endFrom=tsaMinutesFrom(start,end),claimStart=bookFrom===null?null:Math.max(480,bookFrom),claim=claimStart===null||endFrom===null?null:Math.max(0,endFrom-claimStart),night=tsaNightApplies(start,end),v=[];if(!book)v.push(['warn','Crew Book release is blank, so Code 05 cannot be calculated yet.']);if(duty!==null)v.push(['ok',`Total Time on Duty calculates to ${fmtMinutes(duty)}.`]);if(claim!==null&&claim>0)v.push(['ok',`Code 05 starts at the later of the 8th hour and booked release, producing ${fmtMinutes(claim)} overtime.`]);if(night)v.push(['info','The tour overlaps 8:00 PM–5:59 AM, so Code 13 is included without adding minutes to Total Time Claimed.']);if(!timeSlipAssistState.serviceSteps.length)v.push(['warn','Details of Service has no committed service steps yet. Add the trains / deadheads / work you actually performed before using a physical card.']);if(timeSlipAssistState.suggestionIndex<timeSlipAssistState.serviceSuggestions.length)v.push(['info',`${timeSlipAssistState.serviceSuggestions.length-timeSlipAssistState.suggestionIndex} Crew Book service suggestion(s) have not been reviewed yet.`]);const unsupported=tsaUnsupportedClaims(timeSlipAssistState.shift);if(unsupported.length)v.push(['warn',`This saved shift also contains ${unsupported.join(', ')}. Preview 2 intentionally does not write those claims yet.`]);const p=TSA_ENDPOINT_PRESETS[get('tsaEndpointPreset')]||TSA_ENDPOINT_PRESETS[''],anchor=get('tsaEndpointAnchor'),ep=document.getElementById('tsaEndpointResult');if(p.minutes!=null&&anchor){const expected=tsaClockAdd(anchor,p.minutes),match=end&&expected===end;ep.textContent=`Check: ${tsaClock12(anchor)} + ${p.minutes} min = ${tsaClock12(expected)}${end?` • entered release ${tsaClock12(end)}`:''}`;if(end)v.push([match?'ok':'warn',match?'Terminal handling helper agrees with the entered Actual Release.':'Terminal handling helper does not match the entered Actual Release. Review what actually happened; do not change it merely to satisfy the helper.'])}else if(ep)ep.textContent=p.minutes!=null?'Enter the anchor time to cross-check the endpoint.':'';if(!get('tsaReason')&&claim>0)v.push(['warn','Code 05 reason / instruction is blank.']);const el=document.getElementById('tsaValidation');if(el)el.innerHTML=v.map(([c,t])=>`<div class="${c}">${escapeHTML(t)}</div>`).join('')}
+function tsaUpdate(){const get=id=>document.getElementById(id)?.value||'',start=get('tsaStart'),book=get('tsaBookRelease'),end=get('tsaEnd'),duty=tsaMinutesFrom(start,end),bookFrom=tsaMinutesFrom(start,book),endFrom=tsaMinutesFrom(start,end),claimStart=bookFrom===null?null:Math.max(480,bookFrom),claim=claimStart===null||endFrom===null?null:Math.max(0,endFrom-claimStart),night=tsaNightApplies(start,end),codes=[];if(claim!==null&&claim>0)codes.push('05');if(night)codes.push('13');const dutySummary=document.getElementById('tsaDutySummary');if(dutySummary)dutySummary.innerHTML=`<div class="tsa-readonly"><span>Total Time on Duty</span><strong>${escapeHTML(duty===null?'—':fmtMinutes(duty))}</strong></div><div class="tsa-readonly"><span>Code 05 Starts</span><strong>${escapeHTML(claimStart===null?'—':tsaClock12(tsaClockAdd(start,claimStart)))}</strong></div>`;const codeEl=document.getElementById('tsaCodes');if(codeEl)codeEl.innerHTML=codes.length?codes.map(c=>`<span class="tsa-code ${c==='05'?'claim':''}">Code ${c}</span>`).join(''):'<span class="muted">No supported claim code detected yet.</span>';const cb=document.getElementById('tsaClaimBoxes');if(cb){const mins=claim===null?0:claim;cb.innerHTML=`<div class="box"><strong>—</strong><span>Days</span></div><div class="box"><strong>${Math.floor(mins/60)||'—'}</strong><span>Hours</span></div><div class="box"><strong>${mins%60||'—'}</strong><span>Minutes</span></div>`}tsaRenderServiceTimeline();tsaRenderClaimDetails();if(timeSlipAssistState.step===4){tsaPopulateEndpointChoices();tsaRenderEndpointResult();tsaRefreshClaimNarrative()}if(timeSlipAssistState.step===5)tsaRenderFinal()}
 async function tsaCopy(id){const text=document.getElementById(id)?.textContent||'';if(!text)return;try{await navigator.clipboard.writeText(text);alert('Copied.')}catch(e){prompt('Copy this text:',text)}}
 /* ---------- End Time Slip Assistance Preview ---------- */
 
