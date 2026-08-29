@@ -1064,6 +1064,12 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .job-compare-dev-badge{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;background:#fff4cf;color:#694900;border:1px solid #d79a16;font-size:10px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;margin-bottom:10px}
     .job-compare-intro{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.5}
     .job-compare-controls{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(170px,.7fr);gap:12px;align-items:end}
+    .job-compare-job-rows{display:grid;gap:8px}
+    .job-compare-job-row{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:8px;align-items:center}
+    .job-compare-row-label{font-size:10px;font-weight:850;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+    .job-compare-job-row input{min-width:0}
+    .job-compare-remove-job{min-width:72px;padding:9px 10px}
+    .job-compare-add-job{margin-top:8px}
     .job-compare-paymode{margin-top:12px}
     .job-compare-paymode-label{display:block;font-size:12px;font-weight:750;color:#445066;margin-bottom:6px}
     .job-compare-toggle{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:5px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
@@ -1110,6 +1116,8 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     @media(max-width:620px){
       .job-compare-controls{grid-template-columns:1fr}
       .job-compare-card{flex-basis:min(292px,88vw)}
+      .job-compare-job-row{grid-template-columns:42px minmax(0,1fr) auto}
+      .job-compare-remove-job{min-width:auto;padding:9px 10px}
       .job-compare-actions .btn.primary{flex:1}
     }
 </style>
@@ -1327,8 +1335,9 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <p class="job-compare-intro">Enter two or more Crew Book assignments. The selected date determines the applicable revision and schedule. Swipe across the result cards to compare jobs quickly on a phone.</p>
       <div class="job-compare-controls">
         <div class="field full">
-          <label>Job Numbers</label>
-          <input id="jobCompareInput" type="text" autocomplete="off" autocapitalize="characters" placeholder="Example: 271, 277, 354, 359" onkeydown="if(event.key==='Enter'){event.preventDefault();runJobComparison()}">
+          <label>Jobs to Compare</label>
+          <div id="jobCompareJobRows" class="job-compare-job-rows"></div>
+          <button class="btn small job-compare-add-job" type="button" onclick="addJobCompareRow()">+ Add another job</button>
         </div>
         <div class="field full">
           <label>Comparison Date</label>
@@ -2184,7 +2193,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.719,2.578,0.03],[2.292,3.437,0.04],[2.864,4.296,0.05],[3.437,5.156,0.059],[4.01,6.015,0.069],[4.583,6.874,0.079],[5.156,7.733,0.089],[5.728,8.592,0.099],[6.301,9.451,0.109],[6.874,10.311,0.118],[7.447,11.17,0.128],[8.019,12.029,0.138],[8.592,12.888,0.148],[9.165,13.747,0.158],[9.738,14.606,0.167],[10.311,15.466,0.177],[10.883,16.325,0.187],[11.456,17.184,0.197],[12.029,18.043,0.207],[12.602,18.902,0.217],[13.174,19.761,0.226],[13.747,20.621,0.236],[14.32,21.48,0.246],[14.893,22.339,0.256],[15.466,23.198,0.266],[16.038,24.057,0.275],[16.611,24.916,0.285],[17.184,25.776,0.295],[17.757,26.635,0.305],[18.329,27.494,0.315],[18.902,28.353,0.325],[19.475,29.212,0.334],[20.048,30.071,0.344],[20.621,30.931,0.354],[21.193,31.79,0.364],[21.766,32.649,0.374],[22.339,33.508,0.383],[22.912,34.367,0.393],[23.485,35.227,0.403],[24.057,36.086,0.413],[24.63,36.945,0.423],[25.203,37.804,0.433],[25.776,38.663,0.442],[26.348,39.522,0.452],[26.921,40.382,0.462],[27.494,41.241,0.472],[28.067,42.1,0.482],[28.64,42.959,0.491],[29.212,43.818,0.501],[29.785,44.677,0.511],[30.358,45.537,0.521],[30.931,46.396,0.531],[31.503,47.255,0.541],[32.076,48.114,0.55],[32.649,48.973,0.56],[33.222,49.832,0.57],[33.795,50.692,0.58],[34.367,51.551,0.59]],"hour":[null,[34.367,51.55,0.589],[68.734,103.1,1.178],[103.1,154.651,1.768],[137.467,206.201,2.357],[171.834,257.751,2.946],[206.201,309.301,3.535],[240.568,360.852,4.124],[274.935,412.402,4.714]]},"80":{"minute":[null,[0.764,1.146,0.014],[1.528,2.292,0.027],[2.292,3.437,0.04],[3.055,4.583,0.053],[3.819,5.728,0.066],[4.583,6.874,0.079],[5.346,8.019,0.092],[6.11,9.165,0.105],[6.874,10.311,0.118],[7.638,11.456,0.131],[8.401,12.602,0.145],[9.165,13.747,0.158],[9.929,14.893,0.171],[10.692,16.038,0.184],[11.456,17.184,0.197],[12.22,18.329,0.21],[12.984,19.475,0.223],[13.747,20.621,0.236],[14.511,21.766,0.249],[15.275,22.912,0.262],[16.038,24.057,0.275],[16.802,25.203,0.289],[17.566,26.348,0.302],[18.329,27.494,0.315],[19.093,28.64,0.328],[19.857,29.785,0.341],[20.621,30.931,0.354],[21.384,32.076,0.367],[22.148,33.222,0.38],[22.912,34.367,0.393],[23.675,35.513,0.406],[24.439,36.658,0.419],[25.203,37.804,0.433],[25.967,38.95,0.446],[26.73,40.095,0.459],[27.494,41.241,0.472],[28.258,42.386,0.485],[29.021,43.532,0.498],[29.785,44.677,0.511],[30.549,45.823,0.524],[31.313,46.969,0.537],[32.076,48.114,0.55],[32.84,49.26,0.564],[33.604,50.405,0.577],[34.367,51.551,0.59],[35.131,52.696,0.603],[35.895,53.842,0.616],[36.658,54.987,0.629],[37.422,56.133,0.642],[38.186,57.279,0.655],[38.95,58.424,0.668],[39.713,59.57,0.681],[40.477,60.715,0.694],[41.241,61.861,0.708],[42.004,63.006,0.721],[42.768,64.152,0.734],[43.532,65.297,0.747],[44.296,66.443,0.76],[45.059,67.589,0.773],[45.823,68.734,0.786]],"hour":[null,[45.822,68.734,0.786],[91.645,137.467,1.571],[137.467,206.201,2.357],[183.29,274.935,3.142],[229.112,343.668,3.928],[274.935,412.402,4.714],[320.757,481.136,5.499],[366.579,549.869,6.285]]},"90":{"minute":[null,[0.86,1.289,0.015],[1.719,2.578,0.03],[2.578,3.867,0.045],[3.437,5.156,0.059],[4.296,6.444,0.074],[5.156,7.733,0.089],[6.015,9.022,0.104],[6.874,10.311,0.118],[7.733,11.599,0.133],[8.592,12.888,0.148],[9.451,14.177,0.163],[10.311,15.466,0.177],[11.17,16.754,0.192],[12.029,18.043,0.207],[12.888,19.332,0.221],[13.747,20.621,0.236],[14.606,21.909,0.251],[15.466,23.198,0.266],[16.325,24.487,0.28],[17.184,25.776,0.295],[18.043,27.064,0.31],[18.902,28.353,0.325],[19.761,29.642,0.339],[20.621,30.931,0.354],[21.48,32.219,0.369],[22.339,33.508,0.383],[23.198,34.797,0.398],[24.057,36.086,0.413],[24.916,37.374,0.428],[25.776,38.663,0.442],[26.635,39.952,0.457],[27.494,41.241,0.472],[28.353,42.529,0.487],[29.212,43.818,0.501],[30.071,45.107,0.516],[30.931,46.396,0.531],[31.79,47.684,0.546],[32.649,48.973,0.56],[33.508,50.262,0.575],[34.367,51.551,0.59],[35.227,52.84,0.604],[36.086,54.128,0.619],[36.945,55.417,0.634],[37.804,56.706,0.649],[38.663,57.995,0.663],[39.522,59.283,0.678],[40.382,60.572,0.693],[41.241,61.861,0.708],[42.1,63.15,0.722],[42.959,64.438,0.737],[43.818,65.727,0.752],[44.677,67.016,0.766],[45.537,68.305,0.781],[46.396,69.593,0.796],[47.255,70.882,0.811],[48.114,72.171,0.825],[48.973,73.46,0.84],[49.832,74.748,0.855],[50.692,76.037,0.87],[51.551,77.326,0.884]],"hour":[null,[51.55,77.325,0.884],[103.1,154.651,1.768],[154.651,231.976,2.651],[206.201,309.301,3.535],[257.751,386.627,4.419],[309.301,463.952,5.303],[360.852,541.278,6.187],[412.402,618.603,7.07]]},"100":{"minute":[null,[0.955,1.432,0.017],[1.91,2.864,0.033],[2.864,4.296,0.05],[3.819,5.728,0.066],[4.774,7.16,0.082],[5.728,8.592,0.099],[6.683,10.024,0.115],[7.638,11.456,0.131],[8.592,12.888,0.148],[9.547,14.32,0.164],[10.501,15.752,0.181],[11.456,17.184,0.197],[12.411,18.616,0.213],[13.365,20.048,0.23],[14.32,21.48,0.246],[15.275,22.912,0.262],[16.229,24.344,0.279],[17.184,25.776,0.295],[18.139,27.208,0.311],[19.093,28.64,0.328],[20.048,30.071,0.344],[21.002,31.503,0.361],[21.957,32.935,0.377],[22.912,34.367,0.393],[23.866,35.799,0.41],[24.821,37.231,0.426],[25.776,38.663,0.442],[26.73,40.095,0.459],[27.685,41.527,0.475],[28.64,42.959,0.491],[29.594,44.391,0.508],[30.549,45.823,0.524],[31.503,47.255,0.541],[32.458,48.687,0.557],[33.413,50.119,0.573],[34.367,51.551,0.59],[35.322,52.983,0.606],[36.277,54.415,0.622],[37.231,55.847,0.639],[38.186,57.279,0.655],[39.141,58.711,0.672],[40.095,60.142,0.688],[41.05,61.574,0.704],[42.004,63.006,0.721],[42.959,64.438,0.737],[43.914,65.87,0.753],[44.868,67.302,0.77],[45.823,68.734,0.786],[46.778,70.166,0.802],[47.732,71.598,0.819],[48.687,73.03,0.835],[49.641,74.462,0.852],[50.596,75.894,0.868],[51.551,77.326,0.884],[52.505,78.758,0.901],[53.46,80.19,0.917],[54.415,81.622,0.933],[55.369,83.054,0.95],[56.324,84.486,0.966],[57.279,85.918,0.982]],"hour":[null,[57.278,85.917,0.982],[114.556,171.834,1.964],[171.834,257.751,2.946],[229.112,343.668,3.928],[286.39,429.585,4.91],[343.668,515.502,5.892],[400.946,601.419,6.874],[458.224,687.337,7.856]]}};
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
-const APP_VERSION='8.3.1 Job Comparison Dev 1';
+const APP_VERSION='8.3.1 Job Comparison Dev 2';
 const WHATS_NEW_VERSION='8.3.1-20260829-labor-day-2026';
 const DEVELOPER_MESSAGE_VERSION='8.3.1-20260829-developer-message';
 const CONTACT_EMAIL='admin@engineerpaylog.com';
@@ -3246,10 +3255,14 @@ function requestCrewBookAssistToggle(enable){
 }
 
 let JOB_COMPARE_PAY_MODE='regular';
+let JOB_COMPARE_ROW_SEQ=0;
 function openJobComparison(){showView('comparison');initJobComparison()}
 function initJobComparison(){
   const date=document.getElementById('jobCompareDate');
   if(date&&!date.value)date.value=isoLocal(new Date());
+  const rows=document.getElementById('jobCompareJobRows');
+  if(rows&&!rows.children.length)addJobCompareRow('',false)
+  updateJobCompareRowControls();
   renderJobComparePayMode();
 }
 function setJobComparePayMode(mode){JOB_COMPARE_PAY_MODE=mode==='relief'?'relief':'regular';renderJobComparePayMode();runJobComparison(false)}
@@ -3257,13 +3270,35 @@ function renderJobComparePayMode(){
   document.getElementById('jobCompareRegularBtn')?.classList.toggle('active',JOB_COMPARE_PAY_MODE==='regular');
   document.getElementById('jobCompareReliefBtn')?.classList.toggle('active',JOB_COMPARE_PAY_MODE==='relief');
 }
+function addJobCompareRow(value='',focus=true){
+  const host=document.getElementById('jobCompareJobRows');if(!host)return;
+  JOB_COMPARE_ROW_SEQ+=1;
+  const row=document.createElement('div');row.className='job-compare-job-row';row.dataset.rowId=String(JOB_COMPARE_ROW_SEQ);
+  row.innerHTML=`<span class="job-compare-row-label"></span><input class="job-compare-job-input" type="text" autocomplete="off" autocapitalize="characters" placeholder="e.g. 271 or 474"><button class="btn small job-compare-remove-job" type="button" aria-label="Remove job">Remove</button>`;
+  const input=row.querySelector('input'),remove=row.querySelector('button');if(input)input.value=value||'';
+  input?.addEventListener('keydown',event=>{if(event.key!=='Enter')return;event.preventDefault();const inputs=[...document.querySelectorAll('.job-compare-job-input')],idx=inputs.indexOf(input);if(idx===inputs.length-1){addJobCompareRow('',true)}else inputs[idx+1]?.focus()});
+  remove?.addEventListener('click',()=>removeJobCompareRow(row));
+  host.appendChild(row);updateJobCompareRowControls();if(focus)setTimeout(()=>input?.focus(),0);
+}
+function removeJobCompareRow(row){
+  const host=document.getElementById('jobCompareJobRows');if(!host||host.children.length<=1)return;row?.remove();updateJobCompareRowControls();runJobComparison(false);
+}
+function updateJobCompareRowControls(){
+  const rows=[...document.querySelectorAll('#jobCompareJobRows .job-compare-job-row')],canRemove=rows.length>1;
+  rows.forEach((row,i)=>{const label=row.querySelector('.job-compare-row-label'),btn=row.querySelector('.job-compare-remove-job');if(label)label.textContent=`Job ${i+1}`;if(btn){btn.style.display=canRemove?'':'none';btn.disabled=!canRemove}});
+}
 function clearJobComparison(){
-  const input=document.getElementById('jobCompareInput');if(input)input.value='';
-  const host=document.getElementById('jobCompareResults');if(host)host.innerHTML='<div class="job-compare-empty">Enter at least two assignments to begin.</div>';
+  const host=document.getElementById('jobCompareJobRows');if(host){host.innerHTML='';addJobCompareRow('',false)}
+  const results=document.getElementById('jobCompareResults');if(results)results.innerHTML='<div class="job-compare-empty">Enter at least two assignments to begin.</div>';
 }
 function jobCompareParseKeys(value){
   const seen=new Set(),keys=[];
   String(value||'').split(/[\s,;]+/).map(normalizeCrewBookKey).filter(Boolean).forEach(key=>{if(!seen.has(key)){seen.add(key);keys.push(key)}});
+  return keys;
+}
+function jobCompareEnteredKeys(){
+  const seen=new Set(),keys=[];
+  document.querySelectorAll('.job-compare-job-input').forEach(input=>jobCompareParseKeys(input.value).forEach(key=>{if(!seen.has(key)){seen.add(key);keys.push(key)}}));
   return keys;
 }
 function jobCompareTimeLabel(v){
@@ -3275,7 +3310,22 @@ function jobCompareSourceLabel(hit){
   if(!hit)return '';
   if(hit.source==='holiday')return 'Labor Day 2026';
   if(hit.source==='yard')return 'Yard Crew Book';
-  const r=hit.revision;return r?`GO ${r.go} Rev. ${r.revision}${r.draft?' · DRAFT':''}`:'Passenger Crew Book';
+  if(hit.source==='yard-relief')return 'Yard Relief Crew';
+  const r=hit.revision;return r?`GO ${r.go} Rev. ${r.revision}${r.draft?' · DRAFT':''}`:(hit.source==='passenger-relief'?'Passenger Relief Crew':'Passenger Crew Book');
+}
+function jobCompareReliefCrewDefinition(key,date){
+  key=normalizeCrewBookKey(key);
+  if(isYardReliefKey(key)){const map=CREW_BOOK_YARD_RELIEF?.[key];return map?{key,map,type:'yard',source:'yard-relief',revision:{go:'201',revision:'Yard current',effective:'2026-07-06'}}:null}
+  if(!/^\d+$/.test(key))return null;
+  const rev=crewBookPassengerRevision(date),map=rev.relief?.[key];
+  return map?{key,map,type:'passenger',source:'passenger-relief',revision:rev}:null;
+}
+function jobCompareResolveReliefCrewForDay(key,date){
+  const info=jobCompareReliefCrewDefinition(key,date);if(!info)return null;
+  const day=crewBookDayForDate(date),coveredKey=info.map?.[day]||null;
+  if(!coveredKey)return {hit:{key:info.key,day,source:info.source,revision:info.revision,reliefCrew:true,reliefMap:info.map,coveredKey:null,job:null},schedule:null,state:'off'};
+  if(info.type==='yard'){const normalized=normalizeCrewBookKey(coveredKey),job=CREW_BOOK_YARD_JOBS[normalized],schedule=resolveYardReliefCoveredJobV8(normalized,day);return {hit:{key:info.key,day,source:info.source,revision:info.revision,reliefCrew:true,reliefMap:info.map,coveredKey:normalized,job},schedule,state:schedule?'active':'off'}}
+  const job=info.revision.jobs?.[String(coveredKey)],schedule=resolvePassengerJobV8(String(coveredKey),date,day);return {hit:{key:info.key,day,source:info.source,revision:info.revision,reliefCrew:true,reliefMap:info.map,coveredKey:String(coveredKey),job},schedule,state:schedule?'active':'off'};
 }
 function jobCompareReliefCoverage(key,date){
   key=normalizeCrewBookKey(key);const result={};
@@ -3294,6 +3344,11 @@ function jobCompareReliefText(key,hit,date){
   const coverage=jobCompareReliefCoverage(key,date);
   return days.map(day=>{const crews=coverage[day]||[];return `${jobCompareDayLabel(day)}${crews.length?` — covered by ${crews.join(', ')}`:''}`}).join(' • ');
 }
+function jobCompareReliefCrewDaysOffText(hit){
+  if(!hit?.reliefCrew||!hit.reliefMap)return '—';
+  const days=CREW_BOOK_DAYS.filter(day=>!hit.reliefMap?.[day]);
+  return days.length?days.map(jobCompareDayLabel).join(' • '):'No published relief days';
+}
 function jobComparePayForSchedule(key,date,schedule){
   if(!schedule)return null;
   const ratePct=payScaleForDate(date);if(!ratePct||!rateTableFor(ratePct))return {rateMissing:true};
@@ -3301,6 +3356,8 @@ function jobComparePayForSchedule(key,date,schedule){
   return calculate(s);
 }
 function jobCompareResolveForDay(key,date){
+  key=normalizeCrewBookKey(key);
+  if(!crewBookIsLaborDay2026(date)){const relief=jobCompareResolveReliefCrewForDay(key,date);if(relief)return relief}
   const hit=crewBookLookupJobV8(key,date);if(!hit)return {hit:null,schedule:null,state:'missing'};
   if(hit.source==='holiday'){
     if(hit.state==='assignment')return {hit,schedule:hit.schedule,state:'active'};
@@ -3316,10 +3373,11 @@ function jobCompareWeekRows(key,anchorDate){
     const d=new Date(mon);d.setDate(mon.getDate()+i);const date=isoLocal(d),day=CREW_BOOK_DAYS[i],resolved=jobCompareResolveForDay(key,date),x=resolved.schedule,hit=resolved.hit;
     let main='Off / no active schedule',sub='';
     if(x){
-      main=`${jobCompareTimeLabel(x.start)} – ${jobCompareTimeLabel(x.end)}`;
-      const duration=jobCompareDuration(x.start,x.end),ownerRelief=!!hit?.job?.relief?.includes(day);
-      sub=`${fmtMinutes(duration)}${ownerRelief?' • Owner relief day':''}${x.paysMeal?' • Pays meal':''}`;
-    }else if(hit?.source==='holiday'){
+      const time=`${jobCompareTimeLabel(x.start)} – ${jobCompareTimeLabel(x.end)}`,duration=jobCompareDuration(x.start,x.end);
+      if(hit?.reliefCrew){main=`Job ${hit.coveredKey} • ${time}`;sub=`${hit.job?.terminal||'Covered assignment'} • ${fmtMinutes(duration)}${x.paysMeal?' • Pays meal':''}`}
+      else{const ownerRelief=!!hit?.job?.relief?.includes(day);main=time;sub=`${fmtMinutes(duration)}${ownerRelief?' • Owner relief day':''}${x.paysMeal?' • Pays meal':''}`}
+    }else if(hit?.reliefCrew){main='Relief Day / Off';sub='No covered assignment'}
+    else if(hit?.source==='holiday'){
       if(hit.state==='off')main='Off / To Be Assigned'; else if(hit.state==='none')main='No published holiday assignment'; else main='Holiday assignment unavailable';
     }
     const pay=x?jobComparePayForSchedule(key,date,x):null,payText=pay?.rateMissing?'Rate —':pay?money(pay.total):'—';
@@ -3329,38 +3387,43 @@ function jobCompareWeekRows(key,anchorDate){
 }
 function jobCompareCardHTML(key,date){
   const resolved=jobCompareResolveForDay(key,date),hit=resolved.hit,x=resolved.schedule;
-  if(!hit)return `<div class="job-compare-card"><div class="job-compare-error"><strong>${escapeHTML(key)}</strong><br>This assignment is not in the verified Crew Book dataset for ${escapeHTML(date)}.</div></div>`;
-  let displayKey=key,terminal=hit.job?.terminal||'—',dateState='',reliefKey=key;
+  if(!hit)return `<div class="job-compare-card"><div class="job-compare-error"><strong>${escapeHTML(key)}</strong><br>This assignment or relief crew is not in the verified Crew Book dataset for ${escapeHTML(date)}.</div></div>`;
+  let displayKey=key,terminal=hit.job?.terminal||'—',dateState='',reliefKey=key,reliefLabel='Relief Days',reliefText='—';
   if(hit.source==='holiday'){
     if(hit.ownerCrew){displayKey=`${hit.ownerCrew} → ${hit.key}`;reliefKey=hit.ownerCrew}
     if(hit.state==='assignment')dateState=`Holiday Crew ${hit.key} • Sunday schedule of Job ${hit.h}${hit.cover?` • Crew ${hit.cover}`:''}`;
     else if(hit.state==='off')dateState='Off / To Be Assigned for Labor Day 2026';
     else if(hit.state==='none')dateState='No published Labor Day assignment';
     else dateState='Holiday assignment could not be resolved';
+    reliefText=jobCompareReliefText(reliefKey,hit,date);
+  }else if(hit.reliefCrew){
+    terminal=hit.job?.terminal||'Relief Crew';
+    dateState=`${jobCompareDayLabel(hit.day)} • ${hit.coveredKey?`Covers Job ${hit.coveredKey}`:'Relief Day / Off'}`;
+    reliefLabel='Relief Crew Days Off';reliefText=jobCompareReliefCrewDaysOffText(hit);
   }else{
     const ownerRelief=!!hit.job?.relief?.includes(hit.day);
     dateState=`${jobCompareDayLabel(hit.day)}${ownerRelief?' • Regular owner relief day':''}${!x?' • No active schedule':''}`;
+    reliefText=jobCompareReliefText(reliefKey,hit,date);
   }
   const pay=x?jobComparePayForSchedule(key,date,x):null,duration=x?jobCompareDuration(x.start,x.end):0;
   const payText=pay?.rateMissing?'Set hire date':pay?money(pay.total):'—';
-  const paySub=pay?.rateMissing?'A hire date is needed to determine your pay scale.':pay?`${pay.ratePct}% rate • ${JOB_COMPARE_PAY_MODE==='relief'?'entire assignment at overtime':'normal assignment pay'}${x.paysMeal?' • meal allowance included':''}`:'No active schedule to price for this date.';
-  const source=jobCompareSourceLabel(hit),relief=jobCompareReliefText(reliefKey,hit,date);
-  const weekKey=hit.source==='holiday'&&hit.h?hit.h:reliefKey;
+  const paySub=pay?.rateMissing?'A hire date is needed to determine your pay scale.':pay?`${pay.ratePct}% rate • ${JOB_COMPARE_PAY_MODE==='relief'?'entire assignment at overtime':'normal assignment pay'}${x.paysMeal?' • meal allowance included':''}`:(hit.reliefCrew?'Relief crew is off on this date.':'No active schedule to price for this date.');
+  const source=jobCompareSourceLabel(hit),weekKey=hit.source==='holiday'&&hit.h?hit.h:reliefKey;
   return `<article class="job-compare-card">
     <div class="job-compare-card-head"><div class="job-compare-card-titleline"><div class="job-compare-job">${escapeHTML(displayKey)}</div><div class="job-compare-source">${escapeHTML(source)}</div></div><div class="job-compare-terminal">${escapeHTML(terminal)}</div><div class="job-compare-date-state">${escapeHTML(dateState)}</div></div>
     <div class="job-compare-money"><div class="label">Estimated Earnings</div><div class="amount">${escapeHTML(payText)}</div><div class="sub">${escapeHTML(paySub)}</div></div>
     <div class="job-compare-facts"><div class="job-compare-fact"><div class="label">Report</div><div class="value">${x?escapeHTML(jobCompareTimeLabel(x.start)):'—'}</div></div><div class="job-compare-fact"><div class="label">Release</div><div class="value">${x?escapeHTML(jobCompareTimeLabel(x.end)):'—'}</div></div><div class="job-compare-fact"><div class="label">Duration</div><div class="value">${x?escapeHTML(fmtMinutes(duration)):'—'}</div></div><div class="job-compare-fact"><div class="label">Meal</div><div class="value">${x?(x.paysMeal?'Pays Meal':'No'):'—'}</div></div></div>
-    <div class="job-compare-relief"><strong>Relief Days</strong><span>${escapeHTML(relief)}</span></div>
+    <div class="job-compare-relief"><strong>${escapeHTML(reliefLabel)}</strong><span>${escapeHTML(reliefText)}</span></div>
     <details class="job-compare-details"><summary>Weekly schedule & pay</summary><div class="job-compare-week">${jobCompareWeekRows(weekKey,date)}</div></details>
   </article>`;
 }
 function runJobComparison(showValidation=true){
-  initJobComparison();const input=document.getElementById('jobCompareInput'),date=document.getElementById('jobCompareDate')?.value,host=document.getElementById('jobCompareResults'),note=document.getElementById('jobCompareSourceNote');if(!host)return;
-  const keys=jobCompareParseKeys(input?.value||'');
-  if(keys.length<2){if(showValidation)host.innerHTML='<div class="job-compare-error"><strong>Enter at least two assignments.</strong><br>Separate job numbers with spaces or commas.</div>';return}
+  initJobComparison();const date=document.getElementById('jobCompareDate')?.value,host=document.getElementById('jobCompareResults'),note=document.getElementById('jobCompareSourceNote');if(!host)return;
+  const keys=jobCompareEnteredKeys();
+  if(keys.length<2){if(showValidation)host.innerHTML='<div class="job-compare-error"><strong>Enter at least two assignments.</strong><br>Use one job field for each regular job or relief crew you want to compare.</div>';return}
   if(!date){if(showValidation)host.innerHTML='<div class="job-compare-error"><strong>Select a comparison date.</strong><br>The date is required so Engineer Pay Log can choose the correct Crew Book revision and day-specific schedule.</div>';return}
   host.innerHTML=`<div class="job-compare-strip">${keys.map(key=>jobCompareCardHTML(key,date)).join('')}</div>`;
-  if(note){const rev=crewBookPassengerRevision(date),pct=payScaleForDate(date);note.innerHTML=`<strong>${escapeHTML(date)}</strong> • Passenger GO ${escapeHTML(rev.go)} Rev. ${escapeHTML(rev.revision)}${rev.draft?' (DRAFT)':''}${pct?` • Your rate: ${pct}%`:' • Hire date needed for dollar estimates'}<br>Swipe cards horizontally to compare. Open <strong>Weekly schedule & pay</strong> on any card to see Monday–Sunday differences around the selected date.`}
+  if(note){const rev=crewBookPassengerRevision(date),pct=payScaleForDate(date);note.innerHTML=`<strong>${escapeHTML(date)}</strong> • Passenger GO ${escapeHTML(rev.go)} Rev. ${escapeHTML(rev.revision)}${rev.draft?' (DRAFT)':''}${pct?` • Your rate: ${pct}%`:' • Hire date needed for dollar estimates'}<br>Regular assignments and relief crews are supported. Swipe cards horizontally to compare. Open <strong>Weekly schedule & pay</strong> to see each job's Monday–Sunday pattern.`}
 }
 
 function renderCrewBookAssistUI(){
