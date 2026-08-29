@@ -3291,7 +3291,32 @@ const CREW_BOOK_REV7_AUDITED_JOBS=(()=>{
   return x;
 })();
 function crewBookPassengerRevision(date){return date>=CREW_BOOK_REV7_EFFECTIVE?{go:'202',revision:'7',effective:CREW_BOOK_REV7_EFFECTIVE,draft:true,jobs:CREW_BOOK_REV7_AUDITED_JOBS,relief:CREW_BOOK_RELIEF_REV7}:{go:'201',revision:'6',effective:'2026-07-06',draft:false,jobs:CREW_BOOK_REV6_AUDITED_JOBS,relief:CREW_BOOK_RELIEF}}
-function normalizeCrewBookKey(v){v=String(v||'').trim().toUpperCase();if(/^\d+$/.test(v))return v;v=v.replace(/\s+/g,'').replace(/-/g,'');const m=v.match(/^(YER|YPR|YPD|YFD|HMP|CER|YE|CE|RF)(\d+)$/);return m?`${m[1]}-${m[2]}`:v}
+
+// 2026 Labor Day holiday coverage (GO 201 Rev. 6 Holiday Crews H-2 through H-6).
+// Values are the regular/relief crew assigned to each H assignment on Monday, Sept. 7, 2026.
+// Per developer rule for this Labor Day build, published '+' (To be Assigned) H jobs are treated as Off.
+const CREW_BOOK_LABOR_DAY_2026='2026-09-07';
+const CREW_BOOK_LABOR_DAY_H_COVERAGE={"1":"10","2":"4","3":"2","4":"3","5":"402","6":"13","7":"7","8":"15","9":"9","10":"14","11":"11","12":"12","13":"404","14":"17","17":"16","25":"23","28":"28","31":"30","34":"401","38":"+","39":"37","40":"41","42":"42","46":"46","47":"405","48":"48","49":"50","52":"+","53":"53","66":"51","67":"+","68":"27","69":"24","82":"83","83":"439","84":"450","85":"84","86":"126","87":"449","88":"125","91":"92","93":"430","94":"88","95":"89","96":"433","97":"96","98":"436","99":"86","100":"93","101":"109","102":"102","103":"103","104":"461","105":"105","106":"106","107":"107","108":"108","110":"110","111":"112","113":"113","114":"114","115":"115","116":"470","117":"117","125":"127","127":"128","128":"424","132":"+","134":"132","135":"437","136":"131","138":"137","150":"150","152":"155","153":"156","154":"435","155":"457","156":"159","157":"157","158":"467","159":"462","161":"160","163":"162","166":"165","168":"167","169":"463","175":"175","176":"176","177":"195","178":"459","179":"180","180":"425","181":"181","182":"182","183":"183","191":"193","196":"196","197":"197","198":"198","199":"201","200":"200","227":"229","231":"230","233":"170","234":"233","238":"240","239":"443","241":"471","242":"243","243":"442","247":"246","255":"253","256":"252","261":"259","262":"260","265":"264","271":"474","272":"444","273":"465","274":"269","275":"275","276":"270","277":"271","289":"431","291":"290","293":"292","294":"171","297":"297","298":"299","300":"133","305":"306","307":"308","310":"446","311":"311","315":"432","316":"317","317":"456","318":"318","320":"319","321":"321","322":"322","324":"448","325":"323","326":"267","327":"327","328":"326","332":"466","333":"333","339":"336","341":"340","342":"347","343":"346","344":"351","345":"345","349":"406","352":"469","353":"355","354":"+","356":"356","357":"357","358":"358","359":"359","369":"+","370":"139","380":"194","381":"190","382":"178"};
+const CREW_BOOK_LABOR_DAY_EXPLICIT_OFF_CREWS=new Set(['18','43','151']);
+const CREW_BOOK_LABOR_DAY_CREW_TO_H=Object.freeze(Object.fromEntries(Object.entries(CREW_BOOK_LABOR_DAY_H_COVERAGE).filter(([,crew])=>crew!=='+').map(([h,crew])=>[crew,`H-${h}`])));
+function crewBookIsLaborDay2026(date){return date===CREW_BOOK_LABOR_DAY_2026}
+function isHolidayCrewKey(v){return /^H-\d+$/.test(normalizeCrewBookKey(v))}
+function crewBookLaborDayHolidayKeyForCrew(crew){return CREW_BOOK_LABOR_DAY_CREW_TO_H[String(crew||'').replace(/\D/g,'')]||null}
+function crewBookLaborDaySundayDate(){return '2026-09-06'}
+function crewBookLookupLaborDayH(key){
+  const normalized=normalizeCrewBookKey(key),m=normalized.match(/^H-(\d+)$/);if(!m)return null;
+  const h=m[1],cover=CREW_BOOK_LABOR_DAY_H_COVERAGE[h];
+  if(cover===undefined)return {key:normalized,state:'unknown',h};
+  if(cover==='+')return {key:normalized,state:'off',h};
+  const rev=crewBookPassengerRevision(CREW_BOOK_LABOR_DAY_2026),job=rev.jobs[h];
+  if(!job||job.status==='abolished')return {key:normalized,state:'unresolved',h,cover};
+  // Labor Day is Monday. H assignments use the Sunday variant of the underlying weekend job,
+  // so a tour extending past midnight follows the weekday-after-Sunday pattern.
+  const schedule=resolvePassengerJobV8(h,crewBookLaborDaySundayDate(),'sunday');
+  return {key:normalized,state:schedule?'assignment':'unresolved',h,cover,job,schedule,day:'sunday',revision:rev,source:'holiday'};
+}
+
+function normalizeCrewBookKey(v){v=String(v||'').trim().toUpperCase();if(/^\d+$/.test(v))return v;v=v.replace(/\s+/g,'').replace(/-/g,'');const m=v.match(/^(YER|YPR|YPD|YFD|HMP|CER|YE|CE|RF|H)(\d+)$/);return m?`${m[1]}-${m[2]}`:v}
 function isYardCrewKey(v){return /^(YE|YPD|YFD|HMP|CE|RF)-\d+$/.test(normalizeCrewBookKey(v))}
 function isYardReliefKey(v){return /^(YER|YPR|CER)-\d+$/.test(normalizeCrewBookKey(v))}
 function crewBookExtraActiveV8(n,date,day){
@@ -3421,7 +3446,22 @@ function resolveYardReliefCoveredJobV8(key,day){
   // so use assignment-operating logic rather than owner-workday logic.
   return resolveYardJobV8(key,day);
 }
-function crewBookLookupJobV8(input,date){const key=normalizeCrewBookKey(input),day=crewBookDayForDate(date);if(/^\d+$/.test(key)){const rev=crewBookPassengerRevision(date),job=rev.jobs[key],schedule=resolvePassengerJobV8(key,date,day);return job?{key,day,source:'passenger',revision:rev,job,schedule}:null}if(isYardCrewKey(key)){const job=CREW_BOOK_YARD_JOBS[key],schedule=resolveYardJobV8(key,day);return job?{key,day,source:'yard',revision:{go:'201',revision:'Yard current',effective:'2026-07-06'},job,schedule}:null}return null}
+function crewBookLookupJobV8(input,date){
+  const key=normalizeCrewBookKey(input),day=crewBookDayForDate(date);
+  if(crewBookIsLaborDay2026(date)){
+    if(isHolidayCrewKey(key))return crewBookLookupLaborDayH(key);
+    if(/^\d+$/.test(key)){
+      if(CREW_BOOK_LABOR_DAY_EXPLICIT_OFF_CREWS.has(key))return {key,state:'off',source:'holiday',day:'sunday',holidayDate:date};
+      const hKey=crewBookLaborDayHolidayKeyForCrew(key);
+      if(hKey){const hit=crewBookLookupLaborDayH(hKey);if(hit)return {...hit,ownerCrew:key};}
+      return {key,state:'none',source:'holiday',day:'sunday',holidayDate:date};
+    }
+  }
+  if(isHolidayCrewKey(key))return null;
+  if(/^\d+$/.test(key)){const rev=crewBookPassengerRevision(date),job=rev.jobs[key],schedule=resolvePassengerJobV8(key,date,day);return job?{key,day,source:'passenger',revision:rev,job,schedule}:null}
+  if(isYardCrewKey(key)){const job=CREW_BOOK_YARD_JOBS[key],schedule=resolveYardJobV8(key,day);return job?{key,day,source:'yard',revision:{go:'201',revision:'Yard current',effective:'2026-07-06'},job,schedule}:null}
+  return null
+}
 function renderCrewBookAssistUI(){
   const trainee=isTraineeMode(),box=document.getElementById('crewBookAssistToggle'),status=document.getElementById('crewBookAssistStatus'),reg=document.getElementById('crewBookFillRegularBtn'),rel=document.getElementById('crewBookFillReliefBtn'),shift=document.getElementById('crewBookFillShiftBtn');
   const on=!trainee&&getCrewBookAssistPreference()==='on';
@@ -3487,13 +3527,46 @@ function fillReliefMyJobFromCrewBook(){
   }
   alert(`Relief Crew ${key} filled from the ${source==='yard'?'Yard':`Passenger GO ${rev.go} Rev. ${rev.revision}`} Crew Book dataset. Daily terminal and times inherit from the covered assignment.`);
 }
-function fillShiftFromCrewBook(){if(!crewBookAssistEnabled())return;const raw=(document.getElementById('assignment')?.value||'').trim(),date=document.getElementById('date')?.value;if(!raw){alert('Enter the job number first.');return}if(!date){alert('Select the date first.');return}const key=normalizeCrewBookKey(raw),hit=crewBookLookupJobV8(key,date);if(!hit){alert(`Assignment ${key} is not in the verified Crew Book dataset.`);return}if(hit.job.status==='abolished'){alert(`Job ${key} is abolished for this Crew Book revision.`);return}if(!hit.schedule){alert(`Assignment ${key} does not have an active ${hit.day} schedule for ${date}.`);return}document.getElementById('assignment').value=key;setLocationUI(hit.job.terminal);document.getElementById('start').value=hit.schedule.start||'';document.getElementById('end').value=hit.schedule.end||'';const pm=document.getElementById('paysMealFlag');if(pm)pm.checked=!!hit.schedule.paysMeal;const mp=document.getElementById('mpteFlag');if(mp&&hit.schedule.paysMeal)mp.checked=false;calculatePreview()}
+function fillShiftFromCrewBook(){
+  if(!crewBookAssistEnabled())return;const raw=(document.getElementById('assignment')?.value||'').trim(),date=document.getElementById('date')?.value;
+  if(!raw){alert('Enter the job number first.');return}if(!date){alert('Select the date first.');return}
+  const key=normalizeCrewBookKey(raw),hit=crewBookLookupJobV8(key,date);
+  if(!hit){alert(isHolidayCrewKey(key)?`Holiday assignment ${key} is only available for a supported holiday date.`:`Assignment ${key} is not in the verified Crew Book dataset.`);return}
+  if(hit.source==='holiday'){
+    if(hit.state==='off'){alert(isHolidayCrewKey(key)?`${key} is marked To Be Assigned (+) in the Labor Day Crew Book table and is treated as Off for Labor Day 2026.`:`Crew ${key} is explicitly Off for Labor Day 2026.`);return}
+    if(hit.state==='none'){alert(`Crew ${key} has no published Labor Day holiday assignment in the verified table.`);return}
+    if(hit.state!=='assignment'||!hit.job||!hit.schedule){alert(`Holiday assignment ${hit.key||key} could not be resolved to a verified Sunday schedule.`);return}
+    document.getElementById('assignment').value=hit.key;setLocationUI(hit.job.terminal);
+    document.getElementById('start').value=hit.schedule.start||'';document.getElementById('end').value=hit.schedule.end||'';
+    const pm=document.getElementById('paysMealFlag');if(pm)pm.checked=!!hit.schedule.paysMeal;const mp=document.getElementById('mpteFlag');if(mp&&hit.schedule.paysMeal)mp.checked=false;
+    calculatePreview();
+    if(hit.ownerCrew)alert(`Labor Day: Crew ${hit.ownerCrew} covers ${hit.key}. ${hit.key} uses the Sunday schedule of Job ${hit.h}.`);
+    return
+  }
+  if(hit.job.status==='abolished'){alert(`Job ${key} is abolished for this Crew Book revision.`);return}if(!hit.schedule){alert(`Assignment ${key} does not have an active ${hit.day} schedule for ${date}.`);return}
+  document.getElementById('assignment').value=key;setLocationUI(hit.job.terminal);document.getElementById('start').value=hit.schedule.start||'';document.getElementById('end').value=hit.schedule.end||'';const pm=document.getElementById('paysMealFlag');if(pm)pm.checked=!!hit.schedule.paysMeal;const mp=document.getElementById('mpteFlag');if(mp&&hit.schedule.paysMeal)mp.checked=false;calculatePreview()
+}
 function applyMyJob(){
   const j=normalizeMyJob(getMyJob());
   if(!j||!j.enabled)return;
   const date=document.getElementById('date')?.value;
   if(!date){alert('Select a date first.');return}
   const day=crewBookDayForDate(date),dayLabel=day[0].toUpperCase()+day.slice(1);
+
+  if(crewBookAssistEnabled()&&crewBookIsLaborDay2026(date)){
+    const ownerKey=normalizeCrewBookKey(j.type==='relief'?j.reliefCrewNumber:j.assignment);
+    if(/^\d+$/.test(ownerKey)){
+      if(CREW_BOOK_LABOR_DAY_EXPLICIT_OFF_CREWS.has(ownerKey)){alert(`Crew ${ownerKey} is explicitly Off for Labor Day 2026.`);return}
+      const hKey=crewBookLaborDayHolidayKeyForCrew(ownerKey);
+      if(!hKey){alert(`Crew ${ownerKey} has no published Labor Day holiday assignment in the verified table.`);return}
+      const hit=crewBookLookupLaborDayH(hKey);
+      if(!hit||hit.state!=='assignment'||!hit.job||!hit.schedule){alert(`${hKey} could not be resolved to a verified Sunday schedule.`);return}
+      document.getElementById('assignment').value=hKey;setLocationUI(hit.job.terminal);
+      document.getElementById('start').value=hit.schedule.start||'';document.getElementById('end').value=hit.schedule.end||'';
+      const pay=document.getElementById('paysMealFlag');if(pay)pay.checked=!!hit.schedule.paysMeal;const pen=document.getElementById('mpteFlag');if(pen&&hit.schedule.paysMeal)pen.checked=false;
+      setShiftTypeUI('Own');calculatePreview();alert(`Labor Day: Crew ${ownerKey} covers ${hKey}. ${hKey} uses the Sunday schedule of Job ${hit.h}.`);return;
+    }
+  }
 
   if(crewBookAssistEnabled()){
     if(j.type==='relief'){
