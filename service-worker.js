@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v8-3-1-labor-day-2026-test-plus-off-fix';
+const CACHE_NAME='engineer-pay-log-v8-3-1-labor-day-2026-production-20260829';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(
