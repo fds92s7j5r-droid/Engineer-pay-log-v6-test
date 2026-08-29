@@ -3123,7 +3123,7 @@ function crewBookLookupLaborDayH(key){
   const normalized=normalizeCrewBookKey(key),m=normalized.match(/^H-(\d+)$/);if(!m)return null;
   const h=m[1],cover=CREW_BOOK_LABOR_DAY_H_COVERAGE[h];
   if(cover===undefined)return {key:normalized,state:'unknown',h};
-  if(cover==='+')return {key:normalized,state:'off',h};
+  if(cover==='+')return {key:normalized,state:'off',h,cover,day:'sunday',holidayDate:CREW_BOOK_LABOR_DAY_2026,source:'holiday'};
   const rev=crewBookPassengerRevision(CREW_BOOK_LABOR_DAY_2026),job=rev.jobs[h];
   if(!job||job.status==='abolished')return {key:normalized,state:'unresolved',h,cover};
   // Labor Day is Monday. H assignments use the Sunday variant of the underlying weekend job,
