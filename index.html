@@ -3217,7 +3217,7 @@ function resolveCrewBookJob(n,date,day){
     case '271':if(day==='saturday')x.end='02:51';else if(day==='sunday'||['2026-05-26','2026-09-08'].includes(date))x.end='02:36';break;
     case '273':if(day==='friday'||day==='saturday')x.end='01:51';else x.end='01:52';break;
     case '275':if(day==='saturday')x.end='04:37';else if(day==='sunday')x.end='03:57';break;
-    case '277':if(day==='saturday')x.end='02:29';else if(day==='sunday')x.end='02:19';break;
+    case '277':if(day==='saturday')x.end='02:19';else if(day==='sunday')x.end='02:29';break;
     case '285':x.start='05:04';break;
     case '286':x.start='05:44';break;
     case '289':if(!['saturday','sunday'].includes(day))x.start='06:30';break;
@@ -3337,7 +3337,7 @@ function resolvePassengerJobV8(n,date,day){
   case '271':if(day==='sunday')x.end='02:51';else if(day==='monday'||date==='2026-09-08')x.end='02:36';break;
   case '273':if(day==='sunday')x.end='01:51';break;
   case '275':if(day==='sunday')x.end='04:37';break;
-  case '277':if(day==='saturday'||day==='sunday')x.end='02:29';break;
+  case '277':if(day==='saturday')x.end='02:19';else if(day==='sunday')x.end='02:29';break;
   case '293':if(day==='friday')x.end='23:46';else if(day==='saturday')x.end='00:22';break;
   case '311':if(day==='friday')x.end='00:37';break;
   case '312':if(day==='friday')x.end='00:22';break;
