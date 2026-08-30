@@ -4302,7 +4302,7 @@ function billingModalButton(label,cls,onclick){return `<button class="btn${cls?'
 function billingShowModal(kind='status'){
   const modal=document.getElementById('billingModal'),title=document.getElementById('billingModalTitle'),sub=document.getElementById('billingModalSubtitle'),body=document.getElementById('billingModalBody'),foot=document.getElementById('billingModalFoot');
   if(!(modal&&title&&body&&foot))return;
-  const e=billingState.entitlement||{},days=Number(billingState.days_remaining||0),trialEnd=billingDate(e.trial_ends_at),price=billingMoney(billingState.monthly_price_cents),payment=!!e.payment_method_on_file;
+  const e=billingState.entitlement||{},days=Number(billingState.days_remaining||0),trialEnd=billingDate(e.trial_ends_at),periodEnd=billingDate(e.current_period_end),price=billingMoney(billingState.monthly_price_cents),payment=!!e.payment_method_on_file,trialing=String(e.stripe_subscription_status||'')==='trialing'&&!!e.trial_ends_at&&new Date(e.trial_ends_at)>new Date();
   sub.textContent='';
   if(kind==='intro'){
     title.textContent='Try Engineer Pay Log free for 30 days';
@@ -4317,8 +4317,10 @@ function billingShowModal(kind='status'){
     body.innerHTML=`<p>Engineer Pay Log is now in read-only mode.</p><p>Your data is safe. You can continue to view your existing shifts and history, review saved records, and export your data.</p><p>To add or edit shifts and use Engineer Pay Log’s tools again, subscribe for $5/month.</p>`;
     foot.innerHTML=billingModalButton('Continue Read-Only','','billingCloseModal()')+billingModalButton('Restore Full Access — $5/month','primary','billingStartCheckout()');
   }else if(kind==='success'){
-    title.textContent='You’re subscribed';
-    body.innerHTML=`<p>Thank you for supporting Engineer Pay Log.</p>${e.trial_ends_at?`<p>Your full 30-day free trial will still be honored. You will not be charged until the trial ends on <strong>${trialEnd}</strong>.</p>`:'<p>Your Engineer Pay Log subscription is active.</p>'}<p>After that, your subscription will be $5/month until canceled.</p>`;
+    title.textContent=trialing?'You’re subscribed':'Full access restored';
+    body.innerHTML=trialing
+      ?`<p>Thank you for supporting Engineer Pay Log.</p><p>Your full 30-day free trial will still be honored. You will not be charged until the trial ends on <strong>${trialEnd}</strong>.</p><p>After your trial, your subscription will be $5/month until canceled.</p>`
+      :`<p>Thank you for supporting Engineer Pay Log.</p><p>Your $5/month subscription is active and full access has been restored.</p>${periodEnd?`<p>Your next billing date is <strong>${periodEnd}</strong>.</p>`:''}<p>Your subscription will continue at $5/month until canceled.</p>`;
     foot.innerHTML=billingModalButton('Done','primary','billingCloseModal()');
   }else if(kind==='trial-reminder'){
     const tomorrow=days<=1;
