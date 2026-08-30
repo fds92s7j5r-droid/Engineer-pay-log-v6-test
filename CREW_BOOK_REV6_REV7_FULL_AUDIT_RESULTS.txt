@@ -1,0 +1,13 @@
+Crew Book Audit Result
+======================
+GO 201 Rev. 6: remaining flagged discrepancy set rechecked; no new unresolved defect after corrected Job 277.
+GO 202 Rev. 7 effective 2026-09-08: full audit pass completed for standard passenger schedules, Extra Crews, and Relief Crews.
+
+Regression results:
+114 combined Rev6/Rev7 schedule cases — 0 failures
+28 Rev7 Extra Crew date/branch cases — 0 failures
+49 Rev7 Relief Crew maps — 0 mismatches
+Standard passenger source-candidate comparison — 0 unresolved report/release mismatches
+Syntax checks — PASS
+
+This is a TEST candidate pending manual validation in the user's GitHub test environment.

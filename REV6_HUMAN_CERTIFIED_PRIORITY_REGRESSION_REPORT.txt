@@ -1,0 +1,42 @@
+REV. 6 HUMAN-CERTIFIED PRIORITY HOTFIX — REGRESSION REPORT
+Date: 2026-08-29
+Source JSON SHA-256: 11faedee06f66aeb5751b1295bd043319caf976dbba51c1bd8b41b71a551f8ad
+
+Source validation:
+- Schema: epl-crew-revision-verifier-v2
+- Per-period meal schema: per-period
+- Certified records: 9 / 56
+- Priority jobs: 9, 12, 51, 134, 161, 200, 216, 293, 358
+- All 9 records complete and corrected_and_certified
+- All 9 records have report, relief, weekday, weekend, exceptions, footnotes, trainDays,
+  weekdayMeal, and weekendMeal verification flags = true
+
+Runtime assertions:
+- 36 representative Rev. 6 schedule assertions: PASS
+- Job 9 legacy Thursday 2026-07-02 does NOT receive the removed 2:59 PM Friday-only report: PASS
+- Job 51 weekend resolves to no assignment: PASS
+- Job 200 Mon-Thu 1:07 AM / Friday 12:25 AM / Sat 1:25 AM / Sun 12:20 AM: PASS
+- Job 293 weekday meal Yes / weekend meal No: PASS
+- Job 358 Sat->Sun 1:52 AM / Sun->Mon 2:12 AM: PASS
+- Job 358 weekday meal No / weekend meal Yes: PASS
+
+Relief coverage assertions:
+- 18 certified relief-day coverage assertions: PASS
+- Job 358 Thursday = Relief Crew 420: PASS
+- Job 358 Friday = Extra Crew (no relief map holder): PASS
+- No replacement coverage for displaced non-certified Job 357 was guessed.
+
+Isolation:
+- Full Rev. 6 date-range comparison vs baseline found runtime differences only in jobs 9, 12, and 200.
+  Other certified jobs were already resolving to the human-certified schedule values; their canonical base data
+  and/or relief metadata were still normalized to the certified record.
+- Rev. 7 overrides: unchanged
+- Rev. 7 relief map: unchanged
+- Rev. 7 resolver function: unchanged
+- Labor Day H-coverage map: unchanged
+- JavaScript syntax: PASS for index.html and demo.html
+- Service worker cache: bumped
+
+Final post-export human correction:
+- Job 358 Thursday = Relief Crew 420: PASS
+- Job 358 Friday = Extra Crew: PASS

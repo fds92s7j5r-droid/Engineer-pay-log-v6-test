@@ -1,7 +1,7 @@
 {
   "name": "Engineer Pay Log",
   "short_name": "Pay Log",
-  "description": "Unofficial personal shift and earnings tracker for locomotive engineers with automatic seniority-based pay scales.",
+  "description": "Unofficial personal shift and earnings tracker for locomotive engineers with date-aware Passenger and Yard Crew Book Assistance.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

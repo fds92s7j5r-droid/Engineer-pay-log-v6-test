@@ -670,6 +670,21 @@
     html[data-theme="dark"] .myjob-preview-head{background:#0a1727!important;color:#f2f6fb!important;border-color:#3c5069!important}
     html[data-theme="dark"] .myjob-preview-row{border-color:#314158!important}
 
+
+    /* SUBSCRIPTION PAYWALL SANDBOX PREVIEW */
+    .billing-test-badge{display:inline-flex;align-items:center;gap:5px;margin-left:7px;padding:3px 7px;border:1px solid #c7d8ec;border-radius:999px;background:#edf5ff;color:#0b4e8b;font-size:9px;font-weight:900;letter-spacing:.04em;text-transform:uppercase;vertical-align:middle}
+    .billing-status-box{margin-top:8px;padding:12px 13px;border:1px solid var(--line);border-radius:14px;background:#f7f9fc}
+    .billing-status-title{font-size:14px;font-weight:900;color:var(--ink)}
+    .billing-status-copy{margin-top:4px;font-size:11px;line-height:1.45;color:var(--muted)}
+    .billing-status-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .billing-readonly-banner{display:none;margin:0 0 12px;padding:12px 14px;border:1px solid #d9c99f;border-radius:14px;background:#fff9e9;color:#654d13;font-size:11.5px;line-height:1.45}
+    .billing-readonly-banner.show{display:block}
+    body.billing-read-only #nav-add{opacity:.48}
+    .billing-modal-note{margin-top:12px;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:#f7f9fc;color:var(--muted);font-size:10.5px;line-height:1.45}
+    html[data-theme="dark"] .billing-status-box,html[data-theme="dark"] .billing-modal-note{background:#142131;border-color:#314158}
+    html[data-theme="dark"] .billing-readonly-banner{background:#2a2415;border-color:#6a592d;color:#f2dfaa}
+    html[data-theme="dark"] .billing-test-badge{background:#14283a;border-color:#315f91;color:#b8d9ff}
+
 </style>
   <script>
     try{
@@ -1220,6 +1235,9 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     <div class="brand"><h1>Engineer Pay Log</h1><p>Digital time book for LIRR Engineers</p></div>
   </div>
 
+
+  <div id="billingReadOnlyBanner" class="billing-readonly-banner"><strong>Read-only mode.</strong> Your existing records remain available to view and export. Subscribe for $5/month to restore adding and editing shifts.</div>
+
   <section id="dashboardView" class="view active">
     <div class="grid dashboard-grid">
       <div class="card span4 stat"><div class="label">This month</div><div class="value" id="monthTotal">$0.00</div><div class="sub" id="monthCount">0 paid shifts</div></div>
@@ -1368,6 +1386,19 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <button class="btn primary" type="button" onclick="accountSyncNow()">Sync Now</button>
           <button id="accountReviewBtn" class="btn" type="button" style="display:none" onclick="accountReviewIssues()">Review Sync Issue</button>
           <button class="btn" type="button" onclick="cloudSignOut()">Sign Out</button>
+        </div>
+      </div>
+
+
+      <div class="card span12 settings-card" id="billingSettingsCard">
+        <div class="section-title settings-heading"><div><h2>Subscription <span class="billing-test-badge">Sandbox Preview</span></h2><p>30 days free, then $5/month. No card is required to begin the trial.</p></div></div>
+        <div id="billingSettingsStatus" class="billing-status-box">
+          <div class="billing-status-title">Checking subscription…</div>
+          <div class="billing-status-copy">Your billing status is being verified securely.</div>
+        </div>
+        <div class="billing-status-actions">
+          <button id="billingPrimaryBtn" class="btn primary" type="button" onclick="billingPrimaryAction()" style="display:none">Subscribe for $5/month</button>
+          <button id="billingManageBtn" class="btn" type="button" onclick="billingManageSubscription()" style="display:none">Manage Subscription</button>
         </div>
       </div>
 
@@ -1683,6 +1714,15 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
   <button id="nav-settings" onclick="showView('settings')">Settings</button>
 </nav>
 
+
+
+<div id="billingModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="billingModalTitle" style="z-index:80" onclick="if(event.target===this)billingCloseModal()">
+  <div class="modal-card" style="max-width:560px">
+    <div class="modal-head"><div><h2 id="billingModalTitle" style="margin:0">Engineer Pay Log Subscription</h2><div id="billingModalSubtitle" class="muted" style="margin-top:4px"></div></div></div>
+    <div id="billingModalBody" class="modal-body"></div>
+    <div id="billingModalFoot" class="modal-foot" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+  </div>
+</div>
 
 <div id="welcomeModal" class="modal">
   <div class="modal-card" style="max-width:640px">
@@ -2146,7 +2186,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.719,2.578,0.03],[2.292,3.437,0.04],[2.864,4.296,0.05],[3.437,5.156,0.059],[4.01,6.015,0.069],[4.583,6.874,0.079],[5.156,7.733,0.089],[5.728,8.592,0.099],[6.301,9.451,0.109],[6.874,10.311,0.118],[7.447,11.17,0.128],[8.019,12.029,0.138],[8.592,12.888,0.148],[9.165,13.747,0.158],[9.738,14.606,0.167],[10.311,15.466,0.177],[10.883,16.325,0.187],[11.456,17.184,0.197],[12.029,18.043,0.207],[12.602,18.902,0.217],[13.174,19.761,0.226],[13.747,20.621,0.236],[14.32,21.48,0.246],[14.893,22.339,0.256],[15.466,23.198,0.266],[16.038,24.057,0.275],[16.611,24.916,0.285],[17.184,25.776,0.295],[17.757,26.635,0.305],[18.329,27.494,0.315],[18.902,28.353,0.325],[19.475,29.212,0.334],[20.048,30.071,0.344],[20.621,30.931,0.354],[21.193,31.79,0.364],[21.766,32.649,0.374],[22.339,33.508,0.383],[22.912,34.367,0.393],[23.485,35.227,0.403],[24.057,36.086,0.413],[24.63,36.945,0.423],[25.203,37.804,0.433],[25.776,38.663,0.442],[26.348,39.522,0.452],[26.921,40.382,0.462],[27.494,41.241,0.472],[28.067,42.1,0.482],[28.64,42.959,0.491],[29.212,43.818,0.501],[29.785,44.677,0.511],[30.358,45.537,0.521],[30.931,46.396,0.531],[31.503,47.255,0.541],[32.076,48.114,0.55],[32.649,48.973,0.56],[33.222,49.832,0.57],[33.795,50.692,0.58],[34.367,51.551,0.59]],"hour":[null,[34.367,51.55,0.589],[68.734,103.1,1.178],[103.1,154.651,1.768],[137.467,206.201,2.357],[171.834,257.751,2.946],[206.201,309.301,3.535],[240.568,360.852,4.124],[274.935,412.402,4.714]]},"80":{"minute":[null,[0.764,1.146,0.014],[1.528,2.292,0.027],[2.292,3.437,0.04],[3.055,4.583,0.053],[3.819,5.728,0.066],[4.583,6.874,0.079],[5.346,8.019,0.092],[6.11,9.165,0.105],[6.874,10.311,0.118],[7.638,11.456,0.131],[8.401,12.602,0.145],[9.165,13.747,0.158],[9.929,14.893,0.171],[10.692,16.038,0.184],[11.456,17.184,0.197],[12.22,18.329,0.21],[12.984,19.475,0.223],[13.747,20.621,0.236],[14.511,21.766,0.249],[15.275,22.912,0.262],[16.038,24.057,0.275],[16.802,25.203,0.289],[17.566,26.348,0.302],[18.329,27.494,0.315],[19.093,28.64,0.328],[19.857,29.785,0.341],[20.621,30.931,0.354],[21.384,32.076,0.367],[22.148,33.222,0.38],[22.912,34.367,0.393],[23.675,35.513,0.406],[24.439,36.658,0.419],[25.203,37.804,0.433],[25.967,38.95,0.446],[26.73,40.095,0.459],[27.494,41.241,0.472],[28.258,42.386,0.485],[29.021,43.532,0.498],[29.785,44.677,0.511],[30.549,45.823,0.524],[31.313,46.969,0.537],[32.076,48.114,0.55],[32.84,49.26,0.564],[33.604,50.405,0.577],[34.367,51.551,0.59],[35.131,52.696,0.603],[35.895,53.842,0.616],[36.658,54.987,0.629],[37.422,56.133,0.642],[38.186,57.279,0.655],[38.95,58.424,0.668],[39.713,59.57,0.681],[40.477,60.715,0.694],[41.241,61.861,0.708],[42.004,63.006,0.721],[42.768,64.152,0.734],[43.532,65.297,0.747],[44.296,66.443,0.76],[45.059,67.589,0.773],[45.823,68.734,0.786]],"hour":[null,[45.822,68.734,0.786],[91.645,137.467,1.571],[137.467,206.201,2.357],[183.29,274.935,3.142],[229.112,343.668,3.928],[274.935,412.402,4.714],[320.757,481.136,5.499],[366.579,549.869,6.285]]},"90":{"minute":[null,[0.86,1.289,0.015],[1.719,2.578,0.03],[2.578,3.867,0.045],[3.437,5.156,0.059],[4.296,6.444,0.074],[5.156,7.733,0.089],[6.015,9.022,0.104],[6.874,10.311,0.118],[7.733,11.599,0.133],[8.592,12.888,0.148],[9.451,14.177,0.163],[10.311,15.466,0.177],[11.17,16.754,0.192],[12.029,18.043,0.207],[12.888,19.332,0.221],[13.747,20.621,0.236],[14.606,21.909,0.251],[15.466,23.198,0.266],[16.325,24.487,0.28],[17.184,25.776,0.295],[18.043,27.064,0.31],[18.902,28.353,0.325],[19.761,29.642,0.339],[20.621,30.931,0.354],[21.48,32.219,0.369],[22.339,33.508,0.383],[23.198,34.797,0.398],[24.057,36.086,0.413],[24.916,37.374,0.428],[25.776,38.663,0.442],[26.635,39.952,0.457],[27.494,41.241,0.472],[28.353,42.529,0.487],[29.212,43.818,0.501],[30.071,45.107,0.516],[30.931,46.396,0.531],[31.79,47.684,0.546],[32.649,48.973,0.56],[33.508,50.262,0.575],[34.367,51.551,0.59],[35.227,52.84,0.604],[36.086,54.128,0.619],[36.945,55.417,0.634],[37.804,56.706,0.649],[38.663,57.995,0.663],[39.522,59.283,0.678],[40.382,60.572,0.693],[41.241,61.861,0.708],[42.1,63.15,0.722],[42.959,64.438,0.737],[43.818,65.727,0.752],[44.677,67.016,0.766],[45.537,68.305,0.781],[46.396,69.593,0.796],[47.255,70.882,0.811],[48.114,72.171,0.825],[48.973,73.46,0.84],[49.832,74.748,0.855],[50.692,76.037,0.87],[51.551,77.326,0.884]],"hour":[null,[51.55,77.325,0.884],[103.1,154.651,1.768],[154.651,231.976,2.651],[206.201,309.301,3.535],[257.751,386.627,4.419],[309.301,463.952,5.303],[360.852,541.278,6.187],[412.402,618.603,7.07]]},"100":{"minute":[null,[0.955,1.432,0.017],[1.91,2.864,0.033],[2.864,4.296,0.05],[3.819,5.728,0.066],[4.774,7.16,0.082],[5.728,8.592,0.099],[6.683,10.024,0.115],[7.638,11.456,0.131],[8.592,12.888,0.148],[9.547,14.32,0.164],[10.501,15.752,0.181],[11.456,17.184,0.197],[12.411,18.616,0.213],[13.365,20.048,0.23],[14.32,21.48,0.246],[15.275,22.912,0.262],[16.229,24.344,0.279],[17.184,25.776,0.295],[18.139,27.208,0.311],[19.093,28.64,0.328],[20.048,30.071,0.344],[21.002,31.503,0.361],[21.957,32.935,0.377],[22.912,34.367,0.393],[23.866,35.799,0.41],[24.821,37.231,0.426],[25.776,38.663,0.442],[26.73,40.095,0.459],[27.685,41.527,0.475],[28.64,42.959,0.491],[29.594,44.391,0.508],[30.549,45.823,0.524],[31.503,47.255,0.541],[32.458,48.687,0.557],[33.413,50.119,0.573],[34.367,51.551,0.59],[35.322,52.983,0.606],[36.277,54.415,0.622],[37.231,55.847,0.639],[38.186,57.279,0.655],[39.141,58.711,0.672],[40.095,60.142,0.688],[41.05,61.574,0.704],[42.004,63.006,0.721],[42.959,64.438,0.737],[43.914,65.87,0.753],[44.868,67.302,0.77],[45.823,68.734,0.786],[46.778,70.166,0.802],[47.732,71.598,0.819],[48.687,73.03,0.835],[49.641,74.462,0.852],[50.596,75.894,0.868],[51.551,77.326,0.884],[52.505,78.758,0.901],[53.46,80.19,0.917],[54.415,81.622,0.933],[55.369,83.054,0.95],[56.324,84.486,0.966],[57.279,85.918,0.982]],"hour":[null,[57.278,85.917,0.982],[114.556,171.834,1.964],[171.834,257.751,2.946],[229.112,343.668,3.928],[286.39,429.585,4.91],[343.668,515.502,5.892],[400.946,601.419,6.874],[458.224,687.337,7.856]]}};
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
-const APP_VERSION='8.3.1 Labor Day 2026';
+const APP_VERSION='8.3.1 Paywall Sandbox Preview 1';
 const WHATS_NEW_VERSION='8.3.1-20260829-labor-day-2026';
 const DEVELOPER_MESSAGE_VERSION='8.3.1-20260829-developer-message';
 const CONTACT_EMAIL='admin@engineerpaylog.com';
@@ -4137,7 +4177,7 @@ function toggleMiscPenalty(){
   const $=id=>document.getElementById(id);
   $('miscPenaltyWrap').classList.toggle('show',$('miscPenaltyFlag').checked);
 }
-function newShift(){
+function newShift(){if(!billingRequireWriteAccess())return;
   const $=id=>document.getElementById(id);
   $('shiftForm').reset();setLocationUI('');setShiftTypeUI('');$('editId').value='';$('shiftRuleMode').value=isTraineeMode()?'trainee':'engineer';$('legacyExtras').value='';$('legacyClaims').value='';
   $('formTitle').textContent='Add shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';
@@ -4151,7 +4191,7 @@ function newShift(){
   applyEntryMode();toggleSpecialShift();toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleTwoClasses();toggleRunaround();toggleA2();toggleMiscPenalty();
   renderMyJobUI();$('shiftModal').classList.add('open');calculatePreview();
 }
-function editShift(id){
+function editShift(id){if(!billingRequireWriteAccess())return;
   const $=id=>document.getElementById(id);
   const s=shifts.find(x=>x.id===id);if(!s)return;upgradeShift(s);
   $('editId').value=s.id;$('shiftRuleMode').value=s.traineeMode?'trainee':'engineer';applyEntryMode();$('date').value=s.date;$('start').value=s.start;$('end').value=s.end;$('assignment').value=s.assignment||'';
@@ -4170,7 +4210,7 @@ function editShift(id){
   applyEntryMode();toggleSpecialShift();handleSecretUnpaidSick();if(isVacationSpecial(s.specialShift))updateVacationUI(s.vacationGross||getVacationGrossForYear(Number(s.date.slice(0,4))));toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleTwoClasses();toggleRunaround();toggleA2();toggleMiscPenalty();
   $('formTitle').textContent='Edit shift';$('deleteBtn').style.display='block';$('duplicateBtn').style.display='inline-flex';$('favoriteBtn').style.display='inline-flex';$('shiftModal').classList.add('open');calculatePreview();
 }
-function duplicateShift(id){
+function duplicateShift(id){if(!billingRequireWriteAccess())return;
   const $=id=>document.getElementById(id);
   const s=shifts.find(x=>x.id===id);if(!s)return;
   upgradeShift(s);
@@ -4238,6 +4278,143 @@ const CLOUD_NET_ESTIMATOR_SETTING='net_estimator';
 const CLOUD_SETTINGS_BASELINE_PREFIX='engineerPayLogSettingsBaseline_v1:';
 let accountSettingsReviewCount=0;
 let lastCloudStatusMessage='';
+
+
+const BILLING_PREVIEW_MODE=true;
+const BILLING_CACHE_KEY='engineerPayLogBillingPreview_v1';
+const BILLING_INTRO_SEEN_KEY='engineerPayLogBillingIntroSeen_v1';
+let billingState={loaded:false,full_access:true,enforcement_enabled:false,preview:true,entitlement:null,days_remaining:0};
+let billingRefreshPromise=null;
+
+function billingDate(value){
+  if(!value)return '';
+  const d=new Date(value);if(Number.isNaN(d.getTime()))return '';
+  return d.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+}
+function billingMoney(cents){return `$${(Number(cents||500)/100).toFixed(0)}/month`}
+function billingCacheState(state){try{localStorage.setItem(BILLING_CACHE_KEY,JSON.stringify(state))}catch{}}
+function billingLoadCached(){try{const raw=localStorage.getItem(BILLING_CACHE_KEY);return raw?JSON.parse(raw):null}catch{return null}}
+function billingIsReadOnly(){return billingState.loaded&&billingState.full_access===false}
+function billingCanWrite(){return !billingIsReadOnly()}
+function billingRequireWriteAccess(){if(billingCanWrite())return true;billingShowModal('required');return false}
+
+function billingModalButton(label,cls,onclick){return `<button class="btn${cls?' '+cls:''}" type="button" style="flex:1;min-width:150px" onclick="${onclick}">${label}</button>`}
+function billingShowModal(kind='status'){
+  const modal=document.getElementById('billingModal'),title=document.getElementById('billingModalTitle'),sub=document.getElementById('billingModalSubtitle'),body=document.getElementById('billingModalBody'),foot=document.getElementById('billingModalFoot');
+  if(!(modal&&title&&body&&foot))return;
+  const e=billingState.entitlement||{},days=Number(billingState.days_remaining||0),trialEnd=billingDate(e.trial_ends_at),price=billingMoney(billingState.monthly_price_cents),payment=!!e.payment_method_on_file;
+  sub.textContent='';
+  if(kind==='intro'){
+    title.textContent='Try Engineer Pay Log free for 30 days';
+    body.innerHTML=`<p>You’ll receive full access to Engineer Pay Log for 30 days.</p><p><strong>No credit card is required to start your trial.</strong></p><p>During your trial, you can use all available features, enter shifts, use pay and claim tools, and keep your data synced to your account.</p><p>After your trial, Engineer Pay Log is $5 per month.</p><div class="billing-modal-note"><strong>Your data is always yours.</strong><br>If you decide not to subscribe after your free trial, your information will not be deleted. Engineer Pay Log will switch to read-only mode, where you can still view existing records and export your data.</div>`;
+    foot.innerHTML=billingModalButton('Start 30-Day Free Trial','primary','billingAcknowledgeIntro()');
+  }else if(kind==='required'){
+    title.textContent='Subscription required';
+    body.innerHTML=`<p>This feature is unavailable while Engineer Pay Log is in read-only mode.</p><p>Your existing data remains available to view and export.</p><p>Subscribe for $5/month to restore full access.</p>`;
+    foot.innerHTML=billingModalButton('Cancel','','billingCloseModal()')+billingModalButton('Subscribe','primary','billingStartCheckout()');
+  }else if(kind==='expired'){
+    title.textContent='Your free trial has ended';
+    body.innerHTML=`<p>Engineer Pay Log is now in read-only mode.</p><p>Your data is safe. You can continue to view your existing shifts and history, review saved records, and export your data.</p><p>To add or edit shifts and use Engineer Pay Log’s tools again, subscribe for $5/month.</p>`;
+    foot.innerHTML=billingModalButton('Continue Read-Only','','billingCloseModal()')+billingModalButton('Restore Full Access — $5/month','primary','billingStartCheckout()');
+  }else if(kind==='success'){
+    title.textContent='You’re subscribed';
+    body.innerHTML=`<p>Thank you for supporting Engineer Pay Log.</p>${e.trial_ends_at?`<p>Your full 30-day free trial will still be honored. You will not be charged until the trial ends on <strong>${trialEnd}</strong>.</p>`:'<p>Your Engineer Pay Log subscription is active.</p>'}<p>After that, your subscription will be $5/month until canceled.</p>`;
+    foot.innerHTML=billingModalButton('Done','primary','billingCloseModal()');
+  }else if(kind==='trial-reminder'){
+    const tomorrow=days<=1;
+    title.textContent=tomorrow?'Your free trial ends tomorrow':days<=3?'3 days remaining in your free trial':'Your free trial ends soon';
+    body.innerHTML=`<p>Your free trial ends on <strong>${trialEnd}</strong>.</p><p>You can continue using the app with full access for the remainder of your trial. Afterward, a subscription is $5/month.</p><p>If you choose not to subscribe, your existing data will remain available in read-only mode and can still be exported.</p>`;
+    foot.innerHTML=billingModalButton('Not Now','','billingCloseModal()')+billingModalButton('Subscribe for $5/month','primary','billingStartCheckout()');
+  }else{
+    title.textContent='Engineer Pay Log Subscription';
+    body.innerHTML=`<p>${payment?'Your payment details are on file.':'Your subscription status is shown in Settings.'}</p>`;
+    foot.innerHTML=billingModalButton('Done','primary','billingCloseModal()');
+  }
+  modal.classList.add('open');
+}
+function billingCloseModal(){document.getElementById('billingModal')?.classList.remove('open')}
+function billingAcknowledgeIntro(){localStorage.setItem(BILLING_INTRO_SEEN_KEY,'1');billingCloseModal()}
+
+function billingRenderUI(){
+  const status=document.getElementById('billingSettingsStatus'),primary=document.getElementById('billingPrimaryBtn'),manage=document.getElementById('billingManageBtn'),banner=document.getElementById('billingReadOnlyBanner');
+  document.body.classList.toggle('billing-read-only',billingIsReadOnly());
+  banner?.classList.toggle('show',billingIsReadOnly());
+  if(!status)return;
+  const e=billingState.entitlement||{},state=e.access_state||'',days=Number(billingState.days_remaining||0),trialEnd=billingDate(e.trial_ends_at),periodEnd=billingDate(e.current_period_end),payment=!!e.payment_method_on_file;
+  let title='Billing preview ready',copy='Sandbox billing is connected. Production enforcement remains off.',showPrimary=false,showManage=false;
+  if(state==='complimentary'){title='Complimentary access';copy=e.permanent_access?'Permanent full access is enabled for this account.':'Complimentary full access is active.';}
+  else if(state==='trial_active'){
+    title=`Free Trial · ${days} day${days===1?'':'s'} remaining`;
+    copy=payment?`You’re all set. Your free trial ends on ${trialEnd}. Your first $5 monthly payment will be charged after the full trial is complete.`:`Your 30-day free trial is active. Engineer Pay Log is $5/month after your trial. No payment information is required until you decide to subscribe.`;
+    showPrimary=!payment;showManage=payment;
+  }else if(state==='active'){title='Engineer Pay Log Subscription · $5/month';copy=`Your subscription is active.${periodEnd?` Next billing date: ${periodEnd}.`:''}`;showManage=true;}
+  else if(state==='canceled_active'){title='Subscription canceled · Full access remains active';copy=`You’ll continue to have full access${periodEnd?` through ${periodEnd}`:''}. After that, Engineer Pay Log will switch to read-only mode unless you re-subscribe.`;showManage=true;}
+  else if(state==='grace'){title='Payment needs attention';copy='Your account still has full access while Stripe retries the payment. Please review or update your payment details.';showManage=true;}
+  else if(state==='read_only'){title='Read-only mode';copy='Your existing data is safe and can still be viewed and exported. Subscribe for $5/month to restore adding and editing shifts.';showPrimary=true;}
+  status.innerHTML=`<div class="billing-status-title">${escapeHTML(title)}</div><div class="billing-status-copy">${escapeHTML(copy)}</div>`;
+  if(primary){primary.style.display=showPrimary?'inline-flex':'none';primary.textContent=state==='read_only'?'Restore Full Access — $5/month':'Subscribe for $5/month'}
+  if(manage)manage.style.display=showManage?'inline-flex':'none';
+}
+
+async function billingRefresh({force=false}={}){
+  if(billingRefreshPromise&&!force)return billingRefreshPromise;
+  billingRefreshPromise=(async()=>{
+    const client=getCloudClient();if(!client)return billingState;
+    const user=await cloudCurrentUser(client);if(!user)return billingState;
+    const previous=billingLoadCached();
+    try{
+      const {data,error}=await client.functions.invoke('ensure-billing-entitlement',{body:{preview:BILLING_PREVIEW_MODE}});
+      if(error)throw error;
+      billingState={...data,loaded:true};billingCacheState(billingState);billingRenderUI();
+      const e=billingState.entitlement||{};
+      if(e.access_state==='trial_active'&&!e.payment_method_on_file&&!localStorage.getItem(BILLING_INTRO_SEEN_KEY)){billingShowModal('intro')}
+      else if(e.access_state==='read_only'&&previous?.entitlement?.access_state!=='read_only')billingShowModal('expired');
+      else if(e.access_state==='trial_active'&&!e.payment_method_on_file&&Number(billingState.days_remaining||0)<=7&&Number(billingState.days_remaining||0)>0){
+        const key=`engineerPayLogBillingReminder:${e.trial_ends_at}:${billingState.days_remaining}`;
+        if(!sessionStorage.getItem(key)){sessionStorage.setItem(key,'1');billingShowModal('trial-reminder')}
+      }
+      return billingState;
+    }catch(err){
+      console.warn('Billing status refresh failed:',err);
+      const cached=billingLoadCached();if(cached)billingState={...cached,loaded:true};else billingState={...billingState,loaded:true,full_access:true};
+      billingRenderUI();return billingState;
+    }finally{billingRefreshPromise=null}
+  })();
+  return billingRefreshPromise;
+}
+async function billingStartCheckout(){
+  billingCloseModal();
+  const client=getCloudClient();if(!client){alert('Could not connect to Engineer Pay Log. Check your internet connection.');return}
+  const btn=document.getElementById('billingPrimaryBtn');if(btn){btn.disabled=true;btn.textContent='Opening secure checkout…'}
+  try{
+    const returnUrl=window.location.origin+window.location.pathname;
+    const {data,error}=await client.functions.invoke('create-billing-checkout',{body:{return_url:returnUrl}});
+    if(error)throw error;if(!data?.url)throw new Error(data?.error||'Checkout URL was not returned');
+    window.location.assign(data.url);
+  }catch(err){alert(`Could not open Stripe Checkout: ${err?.message||err}`);if(btn){btn.disabled=false;btn.textContent='Subscribe for $5/month'}}
+}
+async function billingManageSubscription(){
+  const client=getCloudClient();if(!client){alert('Could not connect to Engineer Pay Log.');return}
+  try{
+    const returnUrl=window.location.origin+window.location.pathname;
+    const {data,error}=await client.functions.invoke('create-billing-portal',{body:{return_url:returnUrl}});
+    if(error)throw error;if(!data?.url)throw new Error(data?.error||'Portal URL was not returned');
+    window.location.assign(data.url);
+  }catch(err){alert(`Could not open subscription management: ${err?.message||err}`)}
+}
+function billingPrimaryAction(){const state=billingState.entitlement?.access_state;if(state==='active'||state==='canceled_active'||state==='grace'||(state==='trial_active'&&billingState.entitlement?.payment_method_on_file))return billingManageSubscription();return billingStartCheckout()}
+async function billingHandleReturn(){
+  const params=new URLSearchParams(window.location.search),result=params.get('billing'),sessionId=params.get('session_id');
+  if(!result)return;
+  try{history.replaceState({},'',window.location.pathname)}catch{}
+  if(result==='cancel'){setTimeout(()=>billingRefresh({force:true}),250);return}
+  if(result==='success'&&sessionId){
+    const client=getCloudClient();if(!client)return;
+    try{await client.functions.invoke('confirm-billing-checkout',{body:{session_id:sessionId}})}catch(err){console.warn('Checkout confirmation refresh failed:',err)}
+    await billingRefresh({force:true});billingShowModal('success');
+  }
+}
+
 
 function cloudSettingsBaselineKey(user){return `${CLOUD_SETTINGS_BASELINE_PREFIX}${String(user?.id||'')}`}
 function cloudLoadSettingsBaseline(user){
@@ -5166,7 +5343,7 @@ function accountShowGate(message='Sign in to access your Engineer Pay Log accoun
   const form=document.getElementById('accountGateForm');if(form)form.style.display='block';
   accountShowSignIn(message);
 }
-function accountHideGate(){const gate=document.getElementById('accountGate');if(gate)gate.style.display='none';scheduleInstallOnboarding(1200)}
+function accountHideGate(){const gate=document.getElementById('accountGate');if(gate)gate.style.display='none';scheduleInstallOnboarding(1200);setTimeout(()=>{void billingRefresh().then(()=>billingHandleReturn())},350)}
 function accountUpdateIdentity(user){
   const value=user?.email||'';
   const email=document.getElementById('accountEmailDisplay');if(email)email.textContent=value||'Signed out';
@@ -6618,7 +6795,7 @@ async function initCloudBridgeTest(){
 }
 
 
-function saveShift(e){
+function saveShift(e){if(!billingRequireWriteAccess()){if(e?.preventDefault)e.preventDefault();return;}
   e.preventDefault();const s=formData();
   if(s.miscPenalty&&(!s.miscPenaltyDescription||!(s.miscPenaltyMinutes>0))){alert('For a Miscellaneous Penalty, enter the nature of the claim and a duration greater than 0:00.');document.getElementById(!s.miscPenaltyDescription?'miscPenaltyDescription':'miscPenaltyHours')?.focus();return}
   if(s.yardMove&&!s.twoClassesPullTime){alert('For a 2 Classes of Service claim, enter the time you were pulled so Engineer Pay Log can compare the 2 Classes payment with pull-related overtime.');document.getElementById('twoClassesPullTime')?.focus();return}
@@ -6632,7 +6809,7 @@ function saveShift(e){
   }
   const idx=shifts.findIndex(x=>x.id===s.id);if(idx>=0)shifts[idx]=s;else shifts.push(s);persist();void cloudMirrorShift(s);closeModal();renderAll();showView('dashboard')
 }
-function deleteCurrent(){const id=document.getElementById('editId').value;if(!id)return;const deletedShift=shifts.find(x=>x.id===id);if(confirm('Delete this shift?')){shifts=shifts.filter(x=>x.id!==id);persist();if(deletedShift)void cloudTombstoneShift(deletedShift);closeModal();renderAll()}}
+function deleteCurrent(){if(!billingRequireWriteAccess())return;const id=document.getElementById('editId').value;if(!id)return;const deletedShift=shifts.find(x=>x.id===id);if(confirm('Delete this shift?')){shifts=shifts.filter(x=>x.id!==id);persist();if(deletedShift)void cloudTombstoneShift(deletedShift);closeModal();renderAll()}}
 function persist(){localStorage.setItem('lirrPayShifts',JSON.stringify(shifts));if(activeWorkspaceUserId)accountSaveWorkspace(activeWorkspaceUserId)}
 function dateLabel(iso){if(!iso)return'';return new Date(iso+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}
 function fullDateLabel(iso){return new Date(iso+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})}
@@ -6660,7 +6837,7 @@ function renderShiftWarnings(s){
 function persistSavedJobs(){localStorage.setItem(SAVED_JOBS_KEY,JSON.stringify(savedJobs));if(activeWorkspaceUserId)accountSaveWorkspace(activeWorkspaceUserId);void cloudMirrorSavedJobs()}
 function favoriteFromShift(s,name){return {id:createUniqueId(),name:name||s.assignment||'Saved Job',assignment:s.assignment||'',location:s.location||'',shiftType:s.shiftType||'',start:s.start||'',end:s.end||''}}
 let pendingFavoriteShiftId='';
-function saveCurrentShiftAsFavorite(){
+function saveCurrentShiftAsFavorite(){if(!billingRequireWriteAccess())return;
   const id=document.getElementById('editId').value,s=shifts.find(x=>x.id===id);if(!s)return;
   pendingFavoriteShiftId=id;
   const modal=document.getElementById('favoriteNameModal'),input=document.getElementById('favoriteNameInput'),error=document.getElementById('favoriteNameError');
@@ -6676,7 +6853,7 @@ function closeFavoriteNameModal(){
   if(error)error.style.display='none';
   pendingFavoriteShiftId='';
 }
-function confirmFavoriteNameModal(){
+function confirmFavoriteNameModal(){if(!billingRequireWriteAccess())return;
   const input=document.getElementById('favoriteNameInput'),error=document.getElementById('favoriteNameError');
   const name=(input?.value||'').trim();
   if(!name){if(error)error.style.display='block';input?.focus();return}
@@ -6684,7 +6861,7 @@ function confirmFavoriteNameModal(){
   if(!s){closeFavoriteNameModal();return}
   savedJobs.push(favoriteFromShift(s,name));persistSavedJobs();renderSavedJobs();renderDashboard();closeFavoriteNameModal();
 }
-function openCreateFavoriteModal(){
+function openCreateFavoriteModal(){if(!billingRequireWriteAccess())return;
   const modal=document.getElementById('createFavoriteModal'),name=document.getElementById('createFavoriteName'),error=document.getElementById('createFavoriteError');
   if(!modal||!name)return;
   document.getElementById('createFavoriteAssignment').value='';
@@ -6702,7 +6879,7 @@ function closeCreateFavoriteModal(){
   if(modal)modal.classList.remove('open');
   if(error)error.style.display='none';
 }
-function confirmCreateFavoriteModal(){
+function confirmCreateFavoriteModal(){if(!billingRequireWriteAccess())return;
   const name=(document.getElementById('createFavoriteName')?.value||'').trim(),error=document.getElementById('createFavoriteError');
   if(!name){if(error)error.style.display='block';document.getElementById('createFavoriteName')?.focus();return}
   const assignment=(document.getElementById('createFavoriteAssignment')?.value||'').trim();
@@ -6714,8 +6891,8 @@ function confirmCreateFavoriteModal(){
   persistSavedJobs();renderSavedJobs();renderDashboard();closeCreateFavoriteModal();
 }
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.getElementById('createFavoriteModal')?.classList.contains('open')){event.preventDefault();closeCreateFavoriteModal()}});
-function deleteFavorite(id){if(!confirm('Delete this saved job?'))return;savedJobs=savedJobs.filter(j=>j.id!==id);persistSavedJobs();renderSavedJobs();renderDashboard()}
-function useFavorite(id){
+function deleteFavorite(id){if(!billingRequireWriteAccess())return;if(!confirm('Delete this saved job?'))return;savedJobs=savedJobs.filter(j=>j.id!==id);persistSavedJobs();renderSavedJobs();renderDashboard()}
+function useFavorite(id){if(!billingRequireWriteAccess())return;
   const j=savedJobs.find(x=>x.id===id);if(!j)return;newShift();const $=id=>document.getElementById(id);
   $('assignment').value=j.assignment||'';setLocationUI(j.location||'');setShiftTypeUI(j.shiftType||'');$('start').value=j.start||'';$('end').value=j.end||'';$('formTitle').textContent=`Add shift • ${j.name||'Favorite'}`;calculatePreview();
 }
@@ -6948,7 +7125,7 @@ function renderMyJobWeekPreview(){
     return `<div class="myjob-preview-row"><div class="myjob-preview-day">${r.day.slice(0,3).toUpperCase()}${dateLabel?`<span class="myjob-preview-date">${escapeHTML(dateLabel)}</span>`:''}</div><div class="myjob-preview-main"><div class="myjob-preview-title">${escapeHTML(r.title)}</div><div class="myjob-preview-sub">${escapeHTML(sub)}</div></div><div class="myjob-preview-time">${escapeHTML(tm)}</div></div>`;
   }).join('')}`;
 }
-function addShiftForCalendarDate(dateStr){
+function addShiftForCalendarDate(dateStr){if(!billingRequireWriteAccess())return;
   newShift();
   const d=document.getElementById('date');
   if(d){d.value=dateStr;handleShiftDateChange()}
@@ -7022,7 +7199,7 @@ function showMascotMessage(button){
   clearTimeout(button._mascotTimer);button._mascotTimer=setTimeout(()=>bubble.classList.remove('show'),4200);
 }
 
-function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview()}
+function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI()}
 function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
@@ -7249,7 +7426,7 @@ void initCloudBridgeTest();
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=8.3.1-install-onboarding-test3-ios-chrome-20260830').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=8.3.1-install-onboarding-production-20260830').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
