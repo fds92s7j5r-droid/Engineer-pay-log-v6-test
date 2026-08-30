@@ -1658,7 +1658,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
         <details id="installSettingsCard" class="settings-disclosure">
           <summary><span><strong>Install Engineer Pay Log</strong><small>Add the app to your Home Screen or desktop.</small></span><span class="settings-chevron">›</span></summary>
-          <div class="settings-disclosure-body"><div class="rate-note"><strong>iPhone / iPad — Safari:</strong> Open Engineer Pay Log in Safari → ••• More → Share → Add to Home Screen → keep Open as Web App on → Add. If Share is already visible, tap it directly.<br><br><strong>Android — Chrome:</strong> Browser menu → Install app or Add to Home screen → confirm.<br><br><strong>Android — Firefox:</strong> Browser menu → Install or Add to Home screen → confirm.<br><br><strong>Desktop — Chrome / Edge:</strong> Use the Install option in the address bar or browser menu when available.</div><p class="notice"><strong>Installing only changes how you open Engineer Pay Log.</strong> Your account, saved shifts, and normal cloud-sync behavior stay the same.</p></div>
+          <div class="settings-disclosure-body"><div class="rate-note"><strong>iPhone / iPad — Safari:</strong> Open Engineer Pay Log in Safari → ••• More → Share → Add to Home Screen → keep Open as Web App on → Add. If Share is already visible, tap it directly.<br><br><strong>iPhone / iPad — Chrome:</strong> Open Chrome’s Share menu → Add to Home Screen → Add.<br><br><strong>Android — Chrome:</strong> Browser menu → Install app or Add to Home screen → confirm.<br><br><strong>Android — Firefox:</strong> Browser menu → Install or Add to Home screen → confirm.<br><br><strong>Desktop — Chrome / Edge:</strong> Use the Install option in the address bar or browser menu when available.</div><p class="notice"><strong>Installing only changes how you open Engineer Pay Log.</strong> Your account, saved shifts, and normal cloud-sync behavior stay the same.</p></div>
         </details>
 
         <details id="contactFeedbackCard" class="settings-disclosure">
@@ -1737,11 +1737,21 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <div class="rate-note install-onboarding-benefit"><strong>Your account and data do not change.</strong> Installing Engineer Pay Log only changes how you open it. Your saved shifts and normal cloud sync continue to work the same way.</div>
 
       <div id="installOnboardingIOS" style="display:none">
-        <strong>On iPhone or iPad using Safari:</strong>
-        <div class="install-onboarding-steps">
-          <div class="install-onboarding-step"><div class="install-onboarding-step-num">1</div><div><strong>Tap •••, then Share</strong><span>Tap Safari’s <em>More</em> button, then choose <em>Share</em>. If Share is already visible in your Safari layout, tap it directly.</span></div></div>
-          <div class="install-onboarding-step"><div class="install-onboarding-step-num">2</div><div><strong>Choose Add to Home Screen</strong><span>Scroll through the Share menu and tap <em>Add to Home Screen</em>.</span></div></div>
-          <div class="install-onboarding-step"><div class="install-onboarding-step-num">3</div><div><strong>Keep Open as Web App on, then tap Add</strong><span>Engineer Pay Log will appear on your Home Screen like your other apps.</span></div></div>
+        <div id="installOnboardingIOSSafari">
+          <strong>On iPhone or iPad using Safari:</strong>
+          <div class="install-onboarding-steps">
+            <div class="install-onboarding-step"><div class="install-onboarding-step-num">1</div><div><strong>Tap •••, then Share</strong><span>Tap Safari’s <em>More</em> button, then choose <em>Share</em>. If Share is already visible in your Safari layout, tap it directly.</span></div></div>
+            <div class="install-onboarding-step"><div class="install-onboarding-step-num">2</div><div><strong>Choose Add to Home Screen</strong><span>Scroll through the Share menu and tap <em>Add to Home Screen</em>.</span></div></div>
+            <div class="install-onboarding-step"><div class="install-onboarding-step-num">3</div><div><strong>Keep Open as Web App on, then tap Add</strong><span>Engineer Pay Log will appear on your Home Screen like your other apps.</span></div></div>
+          </div>
+        </div>
+        <div id="installOnboardingIOSChrome" style="display:none">
+          <strong>On iPhone or iPad using Chrome:</strong>
+          <div class="install-onboarding-steps">
+            <div class="install-onboarding-step"><div class="install-onboarding-step-num">1</div><div><strong>Open Share</strong><span>Open Chrome’s menu if needed, then choose <em>Share</em>.</span></div></div>
+            <div class="install-onboarding-step"><div class="install-onboarding-step-num">2</div><div><strong>Choose Add to Home Screen</strong><span>In the Share menu, tap <em>Add to Home Screen</em>.</span></div></div>
+            <div class="install-onboarding-step"><div class="install-onboarding-step-num">3</div><div><strong>Tap Add</strong><span>Engineer Pay Log will appear on your Home Screen like your other apps.</span></div></div>
+          </div>
         </div>
         <p class="install-onboarding-footnote">You only need to do this once on each device. You can always find these instructions again under Settings → Install Engineer Pay Log.</p>
       </div>
@@ -6767,6 +6777,9 @@ function isIOSDevice(){
   const ua=String(navigator.userAgent||'');
   return /iPad|iPhone|iPod/i.test(ua)||(navigator.platform==='MacIntel'&&Number(navigator.maxTouchPoints)>1);
 }
+function isIOSChrome(){
+  return isIOSDevice()&&/CriOS/i.test(String(navigator.userAgent||''));
+}
 function installOnboardingDismissed(){
   try{return localStorage.getItem(INSTALL_ONBOARDING_DISMISSED_KEY)==='yes'}catch{return false}
 }
@@ -6783,12 +6796,17 @@ function installOnboardingCanOpen(){
 }
 function configureInstallOnboarding(){
   const ios=document.getElementById('installOnboardingIOS');
+  const iosSafari=document.getElementById('installOnboardingIOSSafari');
+  const iosChrome=document.getElementById('installOnboardingIOSChrome');
   const native=document.getElementById('installOnboardingNative');
   const generic=document.getElementById('installOnboardingGeneric');
   const primary=document.getElementById('installOnboardingPrimaryBtn');
   const useIOS=isIOSDevice();
+  const useIOSChrome=useIOS&&isIOSChrome();
   const useNative=!useIOS&&!!deferredInstallPrompt;
   if(ios)ios.style.display=useIOS?'block':'none';
+  if(iosSafari)iosSafari.style.display=useIOS&&!useIOSChrome?'block':'none';
+  if(iosChrome)iosChrome.style.display=useIOSChrome?'block':'none';
   if(native)native.style.display=useNative?'block':'none';
   if(generic)generic.style.display=!useIOS&&!useNative?'block':'none';
   if(primary)primary.textContent=useNative?'Install App':'Got It';
@@ -7231,7 +7249,7 @@ void initCloudBridgeTest();
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=8.3.1-install-onboarding-test1-20260830').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=8.3.1-install-onboarding-test3-ios-chrome-20260830').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });

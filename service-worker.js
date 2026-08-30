@@ -1,9 +1,9 @@
-const CACHE_NAME='engineer-pay-log-v8-3-1-install-onboarding-test2-20260830';
+const CACHE_NAME='engineer-pay-log-v8-3-1-install-onboarding-test3-ios-chrome-20260830';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(
   caches.open(CACHE_NAME)
-    .then(c=>c.addAll(APP_SHELL))
+    .then(c=>Promise.all(APP_SHELL.map(path=>fetch(new Request(path,{cache:'reload'})).then(r=>{if(!r.ok)throw new Error('Cache fetch failed: '+path);return c.put(path,r)}))))
     .then(()=>self.skipWaiting())
 ));
 
@@ -21,7 +21,7 @@ self.addEventListener('fetch',e=>{
   if(e.request.mode==='navigate'){
     const navKey=requestUrl.pathname.endsWith('/demo.html')?'./demo.html':'./index.html';
     e.respondWith(
-      fetch(e.request)
+      fetch(e.request,{cache:'reload'})
         .then(r=>{const copy=r.clone();caches.open(CACHE_NAME).then(c=>c.put(navKey,copy));return r})
         .catch(()=>caches.match(navKey))
     );
