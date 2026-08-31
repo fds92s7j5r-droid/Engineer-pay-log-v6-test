@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v8-3-1-paywall-sandbox-preview2-20260830';
+const CACHE_NAME='engineer-pay-log-v8-3-1-rev6-certified-20260831';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(

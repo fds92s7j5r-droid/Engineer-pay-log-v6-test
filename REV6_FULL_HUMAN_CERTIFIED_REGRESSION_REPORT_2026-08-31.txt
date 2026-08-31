@@ -1,0 +1,64 @@
+ENGINEER PAY LOG — GO 201 REV. 6 FULL HUMAN-CERTIFIED PATCH
+AUTOMATED REGRESSION REPORT
+Date: 2026-08-31
+
+SOURCE
+Schema: epl-crew-revision-verifier-v2
+Revision: GO 201 Rev. 6
+Effective: 2026-07-06
+Certified records: 56 / 56
+allCertified: true
+Corrected source SHA-256: 50a145705dc54e1bcb8aec16dd724244bfff771f3631ea7fcc367466b6f4c4d8
+Post-export correction: Job 358 Thursday = Relief Crew 420; Friday = Extra Crew.
+
+SOURCE / CANONICAL DATA VALIDATION
+- 56/56 records complete and corrected_and_certified: PASS
+- All certified verification flags true: PASS
+- Canonical Rev. 6 base data checks: 224 field assertions, 0 failures — PASS
+  (terminal, relief days, weekday base schedule/meal, weekend base schedule/meal)
+
+RELIEF COVERAGE VALIDATION
+- Certified relief coverage checks: 112 assertions, 0 failures — PASS
+- No certified job appeared under a relief crew on a non-relief day — PASS
+- Job 358 Thursday = Relief Crew 420 — PASS
+- Job 358 Friday = Extra Crew / no relief holder — PASS
+
+DAY / DATE EXCEPTION VALIDATION
+- Certified exception day/date tests: 66
+- Exception field assertions: 120
+- Failures: 0 — PASS
+- Includes report/release variations and per-exception meal overrides.
+- Job 51 Friday 12:41 PM release note is preserved and separately represented in runtime behavior.
+
+REPRESENTATIVE WEEK VALIDATION
+Representative pre-Rev.7 dates tested: 2026-08-24 through 2026-08-30.
+- Schedule resolutions tested: 392
+- Field assertions: 1,128
+- Failures: 0 — PASS
+- Job 51 Friday note-based 12:41 PM release included in expected behavior.
+
+FULL REV. 6 RANGE ISOLATION CHECK
+Date range: 2026-07-06 through 2026-09-07 inclusive.
+- Passenger job/date runtime comparisons against the current paywall production baseline: 18,560
+- Runtime differences: 302 rows
+- Changed jobs: 2, 10, 14, 17, 18, 43, 47, 52, 53, 127, 179, 352
+- All changed jobs are inside the 56-job human-certified set: PASS
+- Non-certified Rev. 6 jobs changed at runtime: 0 — PASS
+
+REV. 7 / OTHER FEATURE ISOLATION
+- Raw CREW_BOOK_JOBS source used by the separate Rev. 7 branch: unchanged.
+- GO 202 Rev. 7 override data: unchanged.
+- GO 202 Rev. 7 relief map: unchanged.
+- GO 202 Rev. 7 day-specific resolver switch: unchanged.
+- Labor Day H-assignment logic: unchanged.
+- demo.html: unchanged from current paywall production.
+- Paywall/cloud/subscription code outside the Crew Book patch: no intentional changes.
+
+SYNTAX / PACKAGE
+- index.html inline JavaScript syntax: PASS
+- demo.html inline JavaScript syntax: PASS
+- Service worker cache bump only: engineer-pay-log-v8-3-1-rev6-certified-20260831
+- Final ZIP integrity: verify after packaging.
+
+CONCLUSION
+The candidate applies the completed 56/56 human-certified Rev. 6 exception set while isolating changes to certified Rev. 6 behavior. Manual mobile spot checks are still required before Cloudflare production deployment.
