@@ -1,0 +1,102 @@
+{
+  "schema": "epl-crew-paper-revision-overlay-v1",
+  "book": "202",
+  "baseRevision": "7",
+  "paperRevision": "8",
+  "dated": "2026-08-31",
+  "effective": "2026-09-08",
+  "supersedes": "GO 202 Rev. 7 only for the listed items",
+  "affectedCrews": [
+    "14",
+    "28",
+    "108",
+    "113",
+    "157",
+    "165",
+    "270",
+    "356",
+    "357",
+    "367",
+    "370"
+  ],
+  "changes": {
+    "14": {
+      "portion": "s-s",
+      "change": "Train *3021 departs Montauk 12:50 AM, arrives Jamaica 3:15 AM; cover balance of assignment.",
+      "modeledImpact": "No report/release/meal/location change in current app model."
+    },
+    "28": {
+      "portion": "m-f",
+      "change": "Add meal dot after DH to Penn Station.",
+      "modeledImpact": {
+        "weekdayPaysMeal": false
+      }
+    },
+    "108": {
+      "portion": "m-f",
+      "change": "Remove meal dot.",
+      "modeledImpact": {
+        "weekdayPaysMeal": true
+      }
+    },
+    "113": {
+      "portion": "m-f",
+      "change": "Report Penn Station 5:01 PM.",
+      "modeledImpact": {
+        "weekdayReport": "17:01",
+        "weekdayReportLocation": "Penn Station"
+      }
+    },
+    "157": {
+      "portion": "s-s",
+      "change": "After train 7761, will not cover trains 6266 & 6269. Release 6:56 PM.",
+      "modeledImpact": {
+        "weekendRelease": "18:56"
+      }
+    },
+    "165": {
+      "portion": "m-f",
+      "change": "After train 4663: *DH to GCM; DH to Brooklyn; cover balance. Note: *Friday Report only.",
+      "modeledImpact": {
+        "monThuRelease": "01:08",
+        "fridayRelease": "22:52"
+      }
+    },
+    "270": {
+      "portion": "m-f",
+      "change": "After train 867, will not cover train 366. DH to GCM; cover train 290 and balance.",
+      "modeledImpact": "No report/release/meal/location change in current app model."
+    },
+    "356": {
+      "portion": "s-s",
+      "change": "Add * to Release 1:47 AM.",
+      "modeledImpact": {
+        "saturdayRelease": "01:47",
+        "sundayRelease": "01:50"
+      }
+    },
+    "357": {
+      "portion": "m-f",
+      "change": "After train 1967w, operate train 366, DH to Penn Station, cover train 1986 and balance.",
+      "modeledImpact": "No report/release/meal/location change in current app model."
+    },
+    "367": {
+      "portion": "saturday",
+      "change": "Saturday only \u2014 Report Hempstead 5:35 PM; DH GCM; 6266/6269; DH Penn; 3782w to Hempstead; Release 1:41 AM.",
+      "modeledImpact": {
+        "terminal": "Hempstead",
+        "saturdayReport": "17:35",
+        "saturdayRelease": "01:41"
+      }
+    },
+    "370": {
+      "portion": "sunday",
+      "change": "Sunday only \u2014 Report Penn Station 6:06 PM; DH GCM; 6266/6269; DH Penn; 9002w to Hillside; DH Penn; Release 1:38 AM.",
+      "modeledImpact": {
+        "terminal": "Penn Station",
+        "sundayReport": "18:06",
+        "sundayRelease": "01:38"
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+GO 202 REV. 7 + PAPER REV. 8 REGRESSION REPORT
+2026-09-01
+
+Base: Engineer_Pay_Log_V8_3_1_GO202_REV7_HUMAN_CERTIFIED_PRODUCTION_CANDIDATE_2026-09-01.zip
+
+Paper Revision No. 8:
+- Dated 2026-08-31
+- Effective 2026-09-08
+- 11 affected crews: 14, 28, 108, 113, 157, 165, 270, 356, 357, 367, 370
+
+Automated results:
+- index.html inline JavaScript syntax: PASS (4/4 script blocks)
+- demo.html inline JavaScript syntax: PASS (7/7 script blocks)
+- Full Rev. 7 schedule regression, index.html: 865 passed / 0 failed
+- Full Rev. 7 schedule regression, demo.html: 865 passed / 0 failed
+- Paper Rev. 8 focused resolver assertions, index.html: 19 passed / 0 failed
+- Paper Rev. 8 focused resolver assertions, demo.html: 19 passed / 0 failed
+- Paper Rev. 8 metadata contains exactly 11 affected crew keys: PASS
+- Sept. 8 revision object reports GO 202 Rev. 7 + paperRevision 8: PASS
+
+Important modeled interpretation:
+Job 165 Paper Rev. 8 changes the note to '*Friday Report only'.
+The printed assignment contains starred Release 10:52 PM and unstarred Release 1:08 AM.
+Therefore the resolver uses:
+- Mon-Thu: 1:08 AM
+- Friday report: 10:52 PM
+
+Job 113 Paper Rev. 8 changes Mon-Fri report to Penn Station at 5:01 PM.
+A schedule-level location override was added so Sat-Sun can continue using the
+underlying job terminal without forcing the weekday report location onto weekends.
+
+Movement-only paper changes for Jobs 14, 270, and 357 are retained in metadata but
+do not alter report/release/meal/location fields because current Crew Book Assistance
+does not model full train-movement sequences.

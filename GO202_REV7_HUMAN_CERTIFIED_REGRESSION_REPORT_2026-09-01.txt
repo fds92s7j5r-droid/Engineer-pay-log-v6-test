@@ -1,0 +1,65 @@
+ENGINEER PAY LOG — GO 202 REVISION 7 HUMAN-CERTIFIED REGRESSION REPORT
+Generated: 2026-09-01
+Effective date: 2026-09-08
+
+SOURCE OF TRUTH
+- Human-certified delta export: CREW_BOOK_GO202_REV7_HUMAN_CERTIFIED_SOURCE_2026-09-01.json
+- Certification: 173 / 173
+- Manifest: 170 revised, 2 added (203, 329), 1 abolished (18)
+- SHA-256: dd583d8667833aa70a81cf3e420f21f3a189fb21046848b81ab4b6e323e4426c
+- Post-export clarification incorporated:
+  Job 358 Saturday report -> Sunday release 1:52 AM
+  Job 358 Sunday report -> Monday release 2:22 AM
+
+PATCH SCOPE
+- Started from the deployed Rev. 6 R2 production package.
+- GO 201 Rev. 6 remains the pre-2026-09-08 branch.
+- GO 202 Rev. 7 becomes active on 2026-09-08.
+- Existing draft Rev. 7 values were treated only as prefill/candidate data.
+- 39 Rev. 7 jobs had at least one structured draft value changed by the final human-certified record.
+- 43 structured leaf fields differed from the old draft candidate and were replaced.
+- Rev. 7 is no longer labeled DRAFT in the candidate.
+
+AUTOMATED CHECKS
+PASS — Certification summary: 173/173, allCertified=true.
+PASS — Manifest count: 170 revised + 2 added + 1 abolished = 173.
+PASS — Rev. 7 structured override count: 173.
+PASS — Relief coverage: 344 day/coverage assertions, 0 mismatches.
+PASS — Rev. 7 resolver matrix (index.html): 865 representative date/day assertions, 0 failures.
+PASS — Rev. 7 resolver matrix (demo.html): 865 representative date/day assertions, 0 failures.
+      Matrix covers Sep. 8 Tuesday, ordinary Wednesday, Friday exceptions,
+      Saturday variants, and Sunday variants for all 173 manifest jobs.
+PASS — Date gate:
+      2026-09-07 -> GO 201 Rev. 6
+      2026-09-08 -> GO 202 Rev. 7
+      2026-09-09 -> GO 202 Rev. 7
+PASS — JavaScript syntax: all inline index.html scripts.
+PASS — JavaScript syntax: all inline demo.html scripts.
+PASS — service-worker.js syntax.
+PASS — Job 18 is abolished in Rev. 7.
+PASS — Jobs 203 and 329 are present in Rev. 7.
+PASS — Job 203 remains Sunday-through-Thursday and cannot be owned.
+PASS — Job 202 remains ownable in Rev. 7.
+PASS — Job 358 day-specific releases:
+      Friday report -> 11:11 PM
+      Saturday report -> 1:52 AM Sunday
+      Sunday report -> 2:22 AM Monday
+
+CACHE
+- Service worker cache bumped to:
+  engineer-pay-log-v8-3-1-go202-rev7-certified-20260901
+
+RECOMMENDED MANUAL GITHUB TEST BEFORE CLOUDFLARE
+1. Sep. 7 vs Sep. 8 date boundary on a changed job (Job 1 is ideal).
+2. Job 18 on Sep. 8 should be unavailable/abolished.
+3. Job 203: available Sun-Thu, unavailable Fri-Sat, and not ownable.
+4. Job 329 loads normally.
+5. Job 12 Friday release = 9:26 PM.
+6. Job 52 Sunday report = 2:42 PM.
+7. Job 271 on Tue Sep. 8 release = 2:36 AM.
+8. Job 293: Fri 11:46 PM; Sat 12:07 AM; Sun 12:22 AM.
+9. Job 358: Fri 11:11 PM; Sat 1:52 AM; Sun 2:22 AM.
+10. Verify one meal correction that changed from the old draft (e.g. Job 4 weekend meal No).
+
+DO NOT DEPLOY DIRECTLY FROM THIS REPORT.
+Use the accompanying production-candidate ZIP, test in GitHub first, then promote to Cloudflare after manual acceptance.

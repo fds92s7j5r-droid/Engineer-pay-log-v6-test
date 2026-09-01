@@ -1,5 +1,5 @@
 ENGINEER PAY LOG — GO 201 REV. 6 FULL HUMAN-CERTIFIED PATCH
-AUTOMATED REGRESSION REPORT
+AUTOMATED REGRESSION REPORT — R2
 Date: 2026-08-31
 
 SOURCE
@@ -8,8 +8,14 @@ Revision: GO 201 Rev. 6
 Effective: 2026-07-06
 Certified records: 56 / 56
 allCertified: true
-Corrected source SHA-256: 50a145705dc54e1bcb8aec16dd724244bfff771f3631ea7fcc367466b6f4c4d8
-Post-export correction: Job 358 Thursday = Relief Crew 420; Friday = Extra Crew.
+Corrected source: Crew_Book_GO201_Rev6_EXCEPTION_RECERT_FINAL_56_OF_56_USER_CORRECTIONS_2026-08-31.json
+Corrected source SHA-256: 78d89189e94afa3abb207a7bb4c6f6315647b6ab6e261d799a18e32b275c184d
+
+POST-EXPORT DEVELOPER CORRECTIONS CONFIRMED BEFORE DEPLOYMENT
+- Job 358: Thursday = Relief Crew 420; Friday = Extra Crew.
+- Job 14: Sunday release = 6:52 AM (corrected from 6:42 AM).
+- Job 52: Friday report = 2:47 PM (corrected from 2:47 AM).
+- Job 352: weekend meal = Yes on both Saturday and Sunday.
 
 SOURCE / CANONICAL DATA VALIDATION
 - 56/56 records complete and corrected_and_certified: PASS
@@ -19,7 +25,7 @@ SOURCE / CANONICAL DATA VALIDATION
 
 RELIEF COVERAGE VALIDATION
 - Certified relief coverage checks: 112 assertions, 0 failures — PASS
-- No certified job appeared under a relief crew on a non-relief day — PASS
+- No certified job appeared under a relief crew on a certified Extra Crew relief day — PASS
 - Job 358 Thursday = Relief Crew 420 — PASS
 - Job 358 Friday = Extra Crew / no relief holder — PASS
 
@@ -28,37 +34,48 @@ DAY / DATE EXCEPTION VALIDATION
 - Exception field assertions: 120
 - Failures: 0 — PASS
 - Includes report/release variations and per-exception meal overrides.
-- Job 51 Friday 12:41 PM release note is preserved and separately represented in runtime behavior.
+- Corrected Job 14 Sunday 6:52 AM release: PASS
+- Corrected Job 52 Friday 2:47 PM report: PASS
 
 REPRESENTATIVE WEEK VALIDATION
 Representative pre-Rev.7 dates tested: 2026-08-24 through 2026-08-30.
 - Schedule resolutions tested: 392
 - Field assertions: 1,128
 - Failures: 0 — PASS
-- Job 51 Friday note-based 12:41 PM release included in expected behavior.
+- Job 352 Saturday meal Yes: PASS
+- Job 352 Sunday meal Yes: PASS
 
 FULL REV. 6 RANGE ISOLATION CHECK
 Date range: 2026-07-06 through 2026-09-07 inclusive.
-- Passenger job/date runtime comparisons against the current paywall production baseline: 18,560
-- Runtime differences: 302 rows
-- Changed jobs: 2, 10, 14, 17, 18, 43, 47, 52, 53, 127, 179, 352
+- Passenger job/date runtime comparisons against current paywall production baseline: 18,560
+- Runtime differences: 293 rows
+- Changed jobs: 2, 10, 14, 17, 18, 43, 47, 52, 53, 127, 179
 - All changed jobs are inside the 56-job human-certified set: PASS
 - Non-certified Rev. 6 jobs changed at runtime: 0 — PASS
+- Job 352 now matches the already-correct production runtime meal behavior while the certified source is corrected to Yes/Yes.
 
 REV. 7 / OTHER FEATURE ISOLATION
-- Raw CREW_BOOK_JOBS source used by the separate Rev. 7 branch: unchanged.
-- GO 202 Rev. 7 override data: unchanged.
-- GO 202 Rev. 7 relief map: unchanged.
-- GO 202 Rev. 7 day-specific resolver switch: unchanged.
-- Labor Day H-assignment logic: unchanged.
-- demo.html: unchanged from current paywall production.
+- Raw CREW_BOOK_JOBS source used by the separate Rev. 7 branch: unchanged — PASS
+- GO 202 Rev. 7 override data: unchanged — PASS
+- GO 202 Rev. 7 relief map: unchanged — PASS
+- GO 202 Rev. 7 extras: unchanged — PASS
+- GO 202 Rev. 7 day-specific resolver tail: unchanged — PASS
+- Labor Day H-assignment logic: unchanged — PASS
+- demo.html: unchanged from the paywall production baseline — PASS
 - Paywall/cloud/subscription code outside the Crew Book patch: no intentional changes.
 
 SYNTAX / PACKAGE
 - index.html inline JavaScript syntax: PASS
 - demo.html inline JavaScript syntax: PASS
-- Service worker cache bump only: engineer-pay-log-v8-3-1-rev6-certified-20260831
-- Final ZIP integrity: verify after packaging.
+- Service worker cache: engineer-pay-log-v8-3-1-rev6-certified-r2-20260831
+- ZIP integrity: PASS after packaging.
+
+MANUAL SPOT CHECKS BEFORE CLOUDFLARE
+1. Job 14 — Sunday 2026-08-30: 9:18 PM → 6:52 AM, meal No.
+2. Job 52 — Friday 2026-08-28: 2:47 PM → 6:31 PM, meal No.
+3. Job 352 — Saturday: 5:12 PM → 1:46 AM, meal Yes.
+4. Job 352 — Sunday: 5:12 PM → 1:47 AM, meal Yes.
+5. Job 358 — Thursday Relief Crew 420; Friday Extra Crew; Saturday 1:52 AM release; Sunday 2:12 AM release.
 
 CONCLUSION
-The candidate applies the completed 56/56 human-certified Rev. 6 exception set while isolating changes to certified Rev. 6 behavior. Manual mobile spot checks are still required before Cloudflare production deployment.
+The R2 candidate incorporates the developer-corrected human-certified Rev. 6 source and passes the full automated regression suite. Manual phone spot checks remain the final gate before Cloudflare production deployment.
