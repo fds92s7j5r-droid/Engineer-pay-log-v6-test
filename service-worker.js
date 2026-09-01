@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v9-0-20260901g';
+const CACHE_NAME='engineer-pay-log-v9-0-20260901h-v9-release-candidate';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(

@@ -1020,7 +1020,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
   demoStorage.setItem('engineerPayLogSavedJobs',JSON.stringify(sourceSavedJobs));
   demoStorage.setItem('engineerPayLogVacationGrossByYear',JSON.stringify({[String(now.getFullYear())]:114241.0}));
   demoStorage.setItem('engineerPayLogWelcomeSeen_v2','yes');
-  demoStorage.setItem('engineerPayLogLastSeenVersion','8.3.1');
+  demoStorage.setItem('engineerPayLogLastSeenVersion','9.0-20260901-job-tools-rev7-paper8');
   demoStorage.setItem('engineerPayLogMyJobIntroSeen','yes');
   demoStorage.setItem('engineerPayLogCrewBookAssistSeen','yes');
   demoStorage.setItem('engineerPayLogCrewBookAssistPreferenceV1','on');
@@ -4610,7 +4610,7 @@ function previewRestore(data){
 }
 function cancelRestore(){pendingRestoreData=null;document.getElementById('restorePreviewModal').classList.remove('open')}
 function confirmRestore(){const data=pendingRestoreData;if(!data)return;shifts=data.shifts.map(upgradeShift);if(data.hireDate)demoStorage.setItem(HIRE_DATE_KEY,data.hireDate);if(data.traineeMode!==undefined)demoStorage.setItem(TRAINEE_MODE_KEY,data.traineeMode?'on':'off');if(data.myJob!==undefined){if(data.myJob)demoStorage.setItem(MY_JOB_KEY,JSON.stringify(data.myJob));else demoStorage.removeItem(MY_JOB_KEY)}if(data.vacationGrossByYear&&typeof data.vacationGrossByYear==='object')demoStorage.setItem(VACATION_GROSS_KEY,JSON.stringify(data.vacationGrossByYear));if(data.appearanceMode)demoStorage.setItem(APPEARANCE_KEY,data.appearanceMode);if(data.crewBookAssistEnabled!==undefined)setCrewBookAssistPreference(!!data.crewBookAssistEnabled);if(data.netEstimatorEnabled!==undefined)demoStorage.setItem(NET_ESTIMATOR_ENABLED_KEY,data.netEstimatorEnabled?'1':'0');if(Array.isArray(data.netPayHistory))demoStorage.setItem(NET_PAY_HISTORY_KEY,JSON.stringify(data.netPayHistory.slice(0,10)));if(Array.isArray(data.savedJobs)){savedJobs=data.savedJobs;persistSavedJobs()}persist();cancelRestore();updateRateDisplays();renderAll();alert('Backup restored.')}
-function openWhatsNew(force=false){if(!force)return;document.getElementById('whatsNewModal')?.classList.add('open')}
+function openWhatsNew(force=false){if(!force&&demoStorage.getItem(LAST_SEEN_VERSION_KEY)===WHATS_NEW_VERSION)return;document.getElementById('whatsNewModal')?.classList.add('open')}
 function closeWhatsNew(){demoStorage.setItem(LAST_SEEN_VERSION_KEY,WHATS_NEW_VERSION);document.getElementById('whatsNewModal')?.classList.remove('open');void 0}
 function historyAccentColor(s){
   if(isSecretUnpaidSickShift(s))return '#687386';
