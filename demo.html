@@ -3719,20 +3719,26 @@ function fillReliefMyJobFromCrewBook(){
 
 function clearCrewBookShiftAutofillFields(){
   setLocationUI('');
-  const start=document.getElementById('start'),end=document.getElementById('end'),meal=document.getElementById('paysMealFlag');
-  if(start)start.value='';if(end)end.value='';if(meal)meal.checked=false;
+  const start=document.getElementById('start'),end=document.getElementById('end'),meal=document.getElementById('paysMealFlag'),mealPenalty=document.getElementById('mpteFlag');
+  if(start)start.value='';if(end)end.value='';if(meal)meal.checked=false;if(mealPenalty)mealPenalty.checked=false;
   calculatePreview();
+}
+function showCrewBookLookupWarning(message){
+  // Safari/iOS native alert() blocks paint. Give the cleared Crew Book fields
+  // one rendering frame before opening the warning so stale values are never
+  // visible behind the modal.
+  requestAnimationFrame(()=>setTimeout(()=>alert(message),0));
 }
 
 function fillShiftFromCrewBook(){
   if(!crewBookAssistEnabled())return;const raw=(document.getElementById('assignment')?.value||'').trim(),date=document.getElementById('date')?.value;
   if(!raw){alert('Enter the job number first.');return}if(!date){alert('Select the date first.');return}
   const key=normalizeCrewBookKey(raw),hit=crewBookLookupJobV8(key,date);
-  if(!hit){clearCrewBookShiftAutofillFields();alert(isHolidayCrewKey(key)?`Holiday assignment ${key} is only available for a supported holiday date.`:`Assignment ${key} is not in the verified Crew Book dataset.`);return}
+  if(!hit){clearCrewBookShiftAutofillFields();showCrewBookLookupWarning(isHolidayCrewKey(key)?`Holiday assignment ${key} is only available for a supported holiday date.`:`Assignment ${key} is not in the verified Crew Book dataset.`);return}
   if(hit.source==='holiday'){
-    if(hit.state==='off'){clearCrewBookShiftAutofillFields();alert(isHolidayCrewKey(key)?`${key} is marked To Be Assigned (+) in the Labor Day Crew Book table and is treated as Off for Labor Day 2026.`:`Crew ${key} is explicitly Off for Labor Day 2026.`);return}
-    if(hit.state==='none'){clearCrewBookShiftAutofillFields();alert(`Crew ${key} has no published Labor Day holiday assignment in the verified table.`);return}
-    if(hit.state!=='assignment'||!hit.job||!hit.schedule){clearCrewBookShiftAutofillFields();alert(`Holiday assignment ${hit.key||key} could not be resolved to a verified Sunday schedule.`);return}
+    if(hit.state==='off'){clearCrewBookShiftAutofillFields();showCrewBookLookupWarning(isHolidayCrewKey(key)?`${key} is marked To Be Assigned (+) in the Labor Day Crew Book table and is treated as Off for Labor Day 2026.`:`Crew ${key} is explicitly Off for Labor Day 2026.`);return}
+    if(hit.state==='none'){clearCrewBookShiftAutofillFields();showCrewBookLookupWarning(`Crew ${key} has no published Labor Day holiday assignment in the verified table.`);return}
+    if(hit.state!=='assignment'||!hit.job||!hit.schedule){clearCrewBookShiftAutofillFields();showCrewBookLookupWarning(`Holiday assignment ${hit.key||key} could not be resolved to a verified Sunday schedule.`);return}
     document.getElementById('assignment').value=hit.key;setLocationUI(hit.job.terminal);
     document.getElementById('start').value=hit.schedule.start||'';document.getElementById('end').value=hit.schedule.end||'';
     const pm=document.getElementById('paysMealFlag');if(pm)pm.checked=!!hit.schedule.paysMeal;const mp=document.getElementById('mpteFlag');if(mp&&hit.schedule.paysMeal)mp.checked=false;
@@ -3740,7 +3746,7 @@ function fillShiftFromCrewBook(){
     if(hit.ownerCrew)alert(`Labor Day: Crew ${hit.ownerCrew} covers ${hit.key}. ${hit.key} uses the Sunday schedule of Job ${hit.h}.`);
     return
   }
-  if(hit.job.status==='abolished'){clearCrewBookShiftAutofillFields();alert(`Job ${key} is abolished for this Crew Book revision.`);return}if(!hit.schedule){clearCrewBookShiftAutofillFields();alert(`Assignment ${key} does not have an active ${hit.day} schedule for ${date}.`);return}
+  if(hit.job.status==='abolished'){clearCrewBookShiftAutofillFields();showCrewBookLookupWarning(`Job ${key} is abolished for this Crew Book revision.`);return}if(!hit.schedule){clearCrewBookShiftAutofillFields();showCrewBookLookupWarning(`Assignment ${key} does not have an active ${hit.day} schedule for ${date}.`);return}
   document.getElementById('assignment').value=key;setLocationUI(hit.schedule.location||hit.job.terminal);document.getElementById('start').value=hit.schedule.start||'';document.getElementById('end').value=hit.schedule.end||'';const pm=document.getElementById('paysMealFlag');if(pm)pm.checked=!!hit.schedule.paysMeal;const mp=document.getElementById('mpteFlag');if(mp&&hit.schedule.paysMeal)mp.checked=false;calculatePreview()
 }
 function applyMyJob(){
