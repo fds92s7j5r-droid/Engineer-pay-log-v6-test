@@ -1093,6 +1093,78 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .demo-mascot-row img{height:77px}
     .demo-tour-panel{bottom:calc(86px + env(safe-area-inset-bottom))}
   }
+
+
+    /* JOB COMPARISON + QUICK JOB LOOKUP */
+    .crew-tool-dashboard-card{border:1px solid #b9d2ea;background:linear-gradient(180deg,#f3f9ff,#ffffff)}
+    .crew-tool-dashboard-card.lookup{border-color:#b9dfd6;background:linear-gradient(180deg,#f2fbf8,#ffffff)}
+    .crew-tool-dashboard{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+    .crew-tool-dashboard-title{font-size:17px;font-weight:850;color:var(--brand);margin-bottom:3px}
+    .crew-tool-dashboard-sub{font-size:12px;color:var(--muted);line-height:1.45;max-width:650px}
+    .job-compare-intro,.quick-lookup-intro{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.5}
+    .job-compare-controls,.quick-lookup-controls{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(170px,.7fr);gap:12px;align-items:end}
+    .job-compare-job-rows{display:grid;gap:8px}
+    .job-compare-job-row{display:grid;grid-template-columns:46px minmax(0,1fr) auto;gap:8px;align-items:center}
+    .job-compare-row-label{font-size:10px;font-weight:850;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+    .job-compare-job-row input{min-width:0}
+    .job-compare-remove-job{min-width:72px;padding:9px 10px}
+    .job-compare-add-job{margin-top:8px}
+    .job-compare-paymode{margin-top:12px}
+    .job-compare-paymode-label{display:block;font-size:12px;font-weight:750;color:#445066;margin-bottom:6px}
+    .job-compare-toggle{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:5px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+    .job-compare-toggle button{border:0;border-radius:10px;padding:10px 9px;background:transparent;color:var(--muted);font-size:11px;font-weight:850;line-height:1.2}
+    .job-compare-toggle button.active{background:var(--card);color:var(--brand);box-shadow:0 2px 10px rgba(16,35,63,.10)}
+    .job-compare-actions,.quick-lookup-actions{display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap}
+    .job-compare-note,.quick-lookup-note{margin-top:12px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);font-size:11px;line-height:1.45;color:var(--muted)}
+    .job-compare-results{margin-top:14px;padding-bottom:104px}
+    .job-compare-position{display:flex;justify-content:center;align-items:center;gap:7px;margin:0 0 9px;color:var(--muted);font-size:10px;font-weight:800}
+    .job-compare-position-dot{width:6px;height:6px;border-radius:999px;background:var(--line);transition:transform .15s ease,background .15s ease}
+    .job-compare-position-dot.active{background:var(--brand);transform:scale(1.35)}
+    .job-compare-strip{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 10px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+    .job-compare-strip::-webkit-scrollbar{height:7px}.job-compare-strip::-webkit-scrollbar-thumb{background:#c7d2df;border-radius:999px}
+    .job-compare-card{flex:0 0 min(310px,88vw);scroll-snap-align:start;border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden;box-shadow:0 6px 18px rgba(16,35,63,.06)}
+    .job-compare-card-head{padding:14px 14px 12px;border-bottom:1px solid var(--line);background:var(--bg)}
+    .job-compare-card-titleline{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .job-compare-job{font-size:22px;font-weight:900;color:var(--brand);letter-spacing:-.02em}
+    .job-compare-source{font-size:9px;font-weight:850;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;text-align:right;line-height:1.25}
+    .job-compare-terminal{margin-top:4px;font-size:12px;font-weight:800;color:var(--ink)}
+    .job-compare-date-state{margin-top:6px;font-size:10.5px;color:var(--muted);line-height:1.35}
+    .job-compare-money{padding:13px 14px;border-bottom:1px solid var(--line)}
+    .job-compare-money .label{font-size:10px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+    .job-compare-money .amount{font-size:25px;font-weight:900;color:var(--ink);margin-top:2px}
+    .job-compare-money .sub{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.35}
+    .job-compare-facts{display:grid;grid-template-columns:1fr 1fr}
+    .job-compare-fact{padding:12px 13px;border-bottom:1px solid var(--line)}
+    .job-compare-fact:nth-child(odd){border-right:1px solid var(--line)}
+    .job-compare-fact .label{font-size:9.5px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+    .job-compare-fact .value{font-size:14px;font-weight:850;margin-top:3px;color:var(--ink);line-height:1.25}
+    .job-compare-relief{padding:12px 14px;border-bottom:1px solid var(--line)}
+    .job-compare-relief strong{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:5px}
+    .job-compare-relief span{font-size:11px;line-height:1.45;color:var(--ink)}
+    .job-compare-details{border:0;margin:0}.job-compare-details>summary{list-style:none;padding:12px 14px;font-size:11px;font-weight:850;color:var(--brand);cursor:pointer}.job-compare-details>summary::-webkit-details-marker{display:none}
+    .job-compare-details>summary::after{content:'+';float:right;font-size:16px;line-height:12px;color:var(--muted)}.job-compare-details[open]>summary::after{content:'–'}
+    .job-compare-week{border-top:1px solid var(--line)}
+    .job-compare-week-row{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:8px;align-items:center;padding:9px 12px;border-bottom:1px solid var(--line);font-size:10.5px}
+    .job-compare-week-row:last-child{border-bottom:0}.job-compare-week-row.selected{background:#edf6ff}
+    .job-compare-week-day{font-weight:900;color:var(--muted)}.job-compare-week-main{min-width:0}.job-compare-week-main strong{display:block;font-size:11px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.job-compare-week-main span{display:block;color:var(--muted);font-size:9.5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.job-compare-week-pay{font-weight:850;color:var(--ink);white-space:nowrap;text-align:right}
+    .job-compare-error,.quick-lookup-error{padding:14px;border:1px solid #efc4c0;border-radius:14px;background:#fff4f3;color:#7d251f;font-size:12px;line-height:1.45}
+    .job-compare-empty,.quick-lookup-empty{padding:18px 14px;text-align:center;color:var(--muted);font-size:12px;border:1px dashed var(--line);border-radius:14px}
+    .quick-lookup-result{margin-top:14px}
+    .quick-lookup-card{border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden;box-shadow:0 6px 18px rgba(16,35,63,.06)}
+    .quick-lookup-head{padding:15px;border-bottom:1px solid var(--line);background:var(--bg)}
+    .quick-lookup-titleline{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.quick-lookup-job{font-size:24px;font-weight:900;color:var(--brand)}.quick-lookup-source{font-size:9px;text-align:right;text-transform:uppercase;letter-spacing:.05em;font-weight:850;color:var(--muted)}
+    .quick-lookup-terminal{font-size:13px;font-weight:850;margin-top:4px}.quick-lookup-state{font-size:10.5px;color:var(--muted);margin-top:5px;line-height:1.4}
+    .quick-lookup-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.quick-lookup-fact{padding:13px 14px;border-bottom:1px solid var(--line)}.quick-lookup-fact:nth-child(odd){border-right:1px solid var(--line)}.quick-lookup-fact .label{font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;font-weight:800;color:var(--muted)}.quick-lookup-fact .value{font-size:15px;font-weight:850;margin-top:3px}
+    .quick-lookup-relief,.quick-lookup-exception{padding:12px 14px;border-bottom:1px solid var(--line);font-size:11px;line-height:1.5}.quick-lookup-relief strong,.quick-lookup-exception strong{display:block;font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
+    .quick-lookup-exception{background:#fff9e9}.quick-lookup-exception.none{background:transparent;color:var(--muted)}
+    html[data-theme="dark"] .crew-tool-dashboard-card{background:linear-gradient(180deg,#12253a,#101d2d);border-color:#315f91}html[data-theme="dark"] .crew-tool-dashboard-card.lookup{background:linear-gradient(180deg,#12302c,#101d2d);border-color:#316f64}
+    html[data-theme="dark"] .job-compare-toggle button.active{background:#1b2b3f;color:#fff}
+    html[data-theme="dark"] .job-compare-card-head,html[data-theme="dark"] .job-compare-note,html[data-theme="dark"] .quick-lookup-head,html[data-theme="dark"] .quick-lookup-note{background:#0a1727}
+    html[data-theme="dark"] .job-compare-week-row.selected{background:#14283a}
+    html[data-theme="dark"] .job-compare-error,html[data-theme="dark"] .quick-lookup-error{background:#351b1b;border-color:#713636;color:#ffd1cc}
+    html[data-theme="dark"] .quick-lookup-exception{background:#2a2415;color:#f2dfaa}
+    @media(max-width:620px){.job-compare-controls,.quick-lookup-controls{grid-template-columns:1fr}.job-compare-card{flex-basis:min(292px,88vw)}.job-compare-job-row{grid-template-columns:42px minmax(0,1fr) auto}.job-compare-remove-job{min-width:auto;padding:9px 10px}.job-compare-actions .btn.primary,.quick-lookup-actions .btn.primary{flex:1}}
+
 </style>
 
 </head>
@@ -1128,6 +1200,27 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         </div>
       </div>
 
+
+      <div class="card span6 crew-tool-dashboard-card">
+        <div class="crew-tool-dashboard">
+          <div>
+            <div class="crew-tool-dashboard-title">Job Comparison</div>
+            <div class="crew-tool-dashboard-sub">Compare multiple Crew Book assignments by date, schedule, relief days, and estimated earnings.</div>
+          </div>
+          <button class="btn primary small" type="button" onclick="openJobComparison()">Compare Jobs</button>
+        </div>
+      </div>
+
+      <div class="card span6 crew-tool-dashboard-card lookup">
+        <div class="crew-tool-dashboard">
+          <div>
+            <div class="crew-tool-dashboard-title">Quick Job Lookup</div>
+            <div class="crew-tool-dashboard-sub">Enter one assignment and date for a fast Crew Book summary, including day-specific exceptions.</div>
+          </div>
+          <button class="btn primary small" type="button" onclick="openQuickJobLookup()">Look Up Job</button>
+        </div>
+      </div>
+
       <div class="card span12 recent-dashboard-card">
         <div class="section-title"><h2>Recent shifts</h2><button class="btn small" onclick="showView('history')">View all</button></div>
         <div id="recentShifts" class="history"></div>
@@ -1153,6 +1246,38 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         </div>
       </div>
     </div>
+  </section>
+
+
+  <section id="comparisonView" class="view">
+    <div class="card">
+      <div class="section-title"><h2>Job Comparison</h2><button class="btn small" type="button" onclick="showView('dashboard')">Dashboard</button></div>
+      <p class="job-compare-intro">Enter two or more Crew Book assignments. The selected date automatically chooses the correct Crew Book revision and day-specific schedule. Swipe across the result cards to compare jobs quickly on a phone.</p>
+      <div class="job-compare-controls">
+        <div class="field full"><label>Jobs to Compare</label><div id="jobCompareJobRows" class="job-compare-job-rows"></div><button class="btn small job-compare-add-job" type="button" onclick="addJobCompareRow()">+ Add another job</button></div>
+        <div class="field full"><label>Comparison Date</label><input id="jobCompareDate" type="date" onchange="runJobComparison(false)"></div>
+      </div>
+      <div class="job-compare-paymode"><span class="job-compare-paymode-label">Pay Mode</span><div class="job-compare-toggle" role="group" aria-label="Job comparison pay mode"><button id="jobCompareRegularBtn" class="active" type="button" onclick="setJobComparePayMode('regular')">Regular Pay</button><button id="jobCompareReliefBtn" type="button" onclick="setJobComparePayMode('relief')">Relief Day — All OT</button></div></div>
+      <div class="job-compare-actions"><button class="btn primary" type="button" onclick="runJobComparison()">Compare</button><button class="btn" type="button" onclick="clearJobComparison()">Clear</button></div>
+      <div id="jobCompareSourceNote" class="job-compare-note">Comparison results use the same human-reviewed, date-aware Crew Book data used by Crew Book Assistance. Earnings use your Engineer Pay Log pay scale and existing pay calculation engine.</div>
+      <div id="jobCompareResults" class="job-compare-results"><div class="job-compare-empty">Enter at least two assignments to begin.</div></div>
+    </div>
+    <div class="contact-footer"><button type="button" onclick="openContactSettings()">Questions? Comments?</button></div>
+  </section>
+
+  <section id="lookupView" class="view">
+    <div class="card">
+      <div class="section-title"><h2>Quick Job Lookup</h2><button class="btn small" type="button" onclick="showView('dashboard')">Dashboard</button></div>
+      <p class="quick-lookup-intro">Look up one regular assignment, relief crew, Yard assignment, or supported holiday assignment. The selected date applies the correct revision and any day-specific Crew Book exception automatically.</p>
+      <div class="quick-lookup-controls">
+        <div class="field full"><label>Assignment</label><input id="quickLookupJob" type="text" autocomplete="off" autocapitalize="characters" placeholder="e.g. 293, 470, YE-1" onkeydown="if(event.key==='Enter'){event.preventDefault();runQuickJobLookup()}"></div>
+        <div class="field full"><label>Date</label><input id="quickLookupDate" type="date" onchange="runQuickJobLookup(false)"></div>
+      </div>
+      <div class="quick-lookup-actions"><button class="btn primary" type="button" onclick="runQuickJobLookup()">Look Up</button><button class="btn" type="button" onclick="clearQuickJobLookup()">Clear</button></div>
+      <div id="quickLookupSourceNote" class="quick-lookup-note">Quick Job Lookup uses the same verified Crew Book resolver as Crew Book Assistance and Job Comparison.</div>
+      <div id="quickLookupResult" class="quick-lookup-result"><div class="quick-lookup-empty">Enter an assignment and date to begin.</div></div>
+    </div>
+    <div class="contact-footer"><button type="button" onclick="openContactSettings()">Questions? Comments?</button></div>
   </section>
 
   <section id="historyView" class="view">
@@ -1588,39 +1713,19 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 </div>
 
 <div id="whatsNewModal" class="modal">
-  <div class="modal-card" style="max-width:600px">
-    <div class="modal-head"><div><h2 style="margin:0">Engineer Pay Log Update</h2><div class="muted" style="margin-top:4px">Labor Day Crew Book Support</div></div></div>
+  <div class="modal-card" style="max-width:620px">
+    <div class="modal-head"><div><h2 style="margin:0">What's New in Engineer Pay Log</h2><div class="muted" style="margin-top:4px">September 2026 Update</div></div></div>
     <div class="modal-body">
-      <p style="margin-top:0"><strong>Crew Book Assistance has been updated to support the Labor Day assignments for September 7, 2026.</strong></p>
+      <p style="margin-top:0"><strong>New Crew Book tools and a fully reviewed September 8 revision.</strong></p>
       <ul class="whats-new-list">
-        <li>Enter your regular crew number and Crew Book Assistance will identify your Labor Day <strong>H-assignment</strong> automatically.</li>
-        <li>Holiday assignments can also be entered directly — for example, <strong>H-179</strong> or <strong>H179</strong>.</li>
-        <li>Report and release information will automatically use the appropriate Labor Day schedule.</li>
+        <li><strong>Job Comparison:</strong> compare multiple assignments side-by-side by date, terminal, report/release times, relief days, duration, meal status, and estimated earnings.</li>
+        <li><strong>Quick Job Lookup:</strong> enter one assignment and date for a fast Crew Book summary with date-specific exceptions applied automatically.</li>
+        <li><strong>Crew Book Assistance:</strong> updated for GO 202 Revision 7, effective September 8, 2026, including the Paper Revision published to Comply365 on August 31.</li>
       </ul>
-      <div class="notice" style="margin-top:18px"><strong>Also included:</strong> the latest verified Crew Book corrections and revisions.</div>
-      <p style="margin-bottom:0;margin-top:18px">Have a safe Labor Day!</p>
+      <div class="notice" style="margin-top:18px"><strong>Crew Book verification:</strong> every engineer assignment revised for the September 8 revision was manually reviewed against the official Crew Book before inclusion in Engineer Pay Log. The August 31 Paper Revision was also incorporated and manually checked.</div>
+      <p style="margin-bottom:0;margin-top:18px">As always, Crew Book Assistance is provided for convenience. Please verify your assignment against the official Crew Book and current railroad instructions.</p>
     </div>
     <div class="modal-foot"><button class="btn primary" onclick="closeWhatsNew()">Got It</button></div>
-  </div>
-</div>
-
-<div id="developerMessageModal" class="modal">
-  <div class="modal-card" style="max-width:650px;max-height:82vh">
-    <div class="modal-head"><div><h2 style="margin:0">Message from the Developer</h2></div></div>
-    <div class="modal-body" style="line-height:1.5">
-      <p style="margin-top:0">Hello everyone,</p>
-      <p>Over the last two days, it was discovered that some of the Crew Book data entered into Engineer Pay Log was incorrect. I apologize for that. It’s not the standard I want for this app.</p>
-      <p>Until now, my process was to upload the Crew Book into the system and, after performing several spot checks, trust that the imported data was correct. I won’t be doing that anymore. Evidently AI can write our Crew Books, but it can’t always read them. 😂</p>
-      <p>To correct that problem, I’ve built a separate Crew Book revision system. Going forward, when a new revision is released, I’ll upload it into that system, review what was interpreted, and then manually verify and correct the assignment information before it is added to Engineer Pay Log. All future Crew Book revisions will be handled this way.</p>
-      <p>You may also have noticed that Engineer Pay Log now has a login screen. That’s because the app has been upgraded to a cloud-based system. Your data can now be saved to your account and kept in sync, and the new system gives me the ability to build features that simply weren’t practical before. One example is the highly requested ability to attach photos of your time slips for future reference.</p>
-      <p>In the coming days, Engineer Pay Log will also be moving to a <strong>$5 per month subscription</strong>.</p>
-      <p>Part of that subscription will help offset the ongoing cost of the servers and other services required to operate the new cloud-based system. I also want to be transparent with everyone: Engineer Pay Log has grown far beyond the small project it started as. Maintaining the app, checking Crew Book revisions, building new features, fixing issues, and responding to questions and requests has effectively become a part-time job for me.</p>
-      <p>Those of you who have dealt with me personally know that I try to respond to questions and problems as quickly as somebody working the list possibly can. My goal is to continue making Engineer Pay Log useful enough that the subscription feels worthwhile, while keeping the cost reasonable for my fellow union brothers and sisters.</p>
-      <p>I sincerely appreciate everyone who has used the app, recommended it to other engineers, reported problems, or sent me ideas. The amount of interest in Engineer Pay Log has been much greater than I ever expected, and I’m excited about where we can take it from here.</p>
-      <p>As always, if you have any questions, problems, or ideas for improving the app, you can reach me at <a href="mailto:admin@engineerpaylog.com">admin@engineerpaylog.com</a>.</p>
-      <p style="margin-bottom:0">Thank you,<br><strong>Justin McKinley</strong><br>Developer of Engineer Pay Log</p>
-    </div>
-    <div class="modal-foot"><button class="btn primary" onclick="closeDeveloperMessage()">Got It</button></div>
   </div>
 </div>
 
@@ -1930,15 +2035,13 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.719,2.578,0.03],[2.292,3.437,0.04],[2.864,4.296,0.05],[3.437,5.156,0.059],[4.01,6.015,0.069],[4.583,6.874,0.079],[5.156,7.733,0.089],[5.728,8.592,0.099],[6.301,9.451,0.109],[6.874,10.311,0.118],[7.447,11.17,0.128],[8.019,12.029,0.138],[8.592,12.888,0.148],[9.165,13.747,0.158],[9.738,14.606,0.167],[10.311,15.466,0.177],[10.883,16.325,0.187],[11.456,17.184,0.197],[12.029,18.043,0.207],[12.602,18.902,0.217],[13.174,19.761,0.226],[13.747,20.621,0.236],[14.32,21.48,0.246],[14.893,22.339,0.256],[15.466,23.198,0.266],[16.038,24.057,0.275],[16.611,24.916,0.285],[17.184,25.776,0.295],[17.757,26.635,0.305],[18.329,27.494,0.315],[18.902,28.353,0.325],[19.475,29.212,0.334],[20.048,30.071,0.344],[20.621,30.931,0.354],[21.193,31.79,0.364],[21.766,32.649,0.374],[22.339,33.508,0.383],[22.912,34.367,0.393],[23.485,35.227,0.403],[24.057,36.086,0.413],[24.63,36.945,0.423],[25.203,37.804,0.433],[25.776,38.663,0.442],[26.348,39.522,0.452],[26.921,40.382,0.462],[27.494,41.241,0.472],[28.067,42.1,0.482],[28.64,42.959,0.491],[29.212,43.818,0.501],[29.785,44.677,0.511],[30.358,45.537,0.521],[30.931,46.396,0.531],[31.503,47.255,0.541],[32.076,48.114,0.55],[32.649,48.973,0.56],[33.222,49.832,0.57],[33.795,50.692,0.58],[34.367,51.551,0.59]],"hour":[null,[34.367,51.55,0.589],[68.734,103.1,1.178],[103.1,154.651,1.768],[137.467,206.201,2.357],[171.834,257.751,2.946],[206.201,309.301,3.535],[240.568,360.852,4.124],[274.935,412.402,4.714]]},"80":{"minute":[null,[0.764,1.146,0.014],[1.528,2.292,0.027],[2.292,3.437,0.04],[3.055,4.583,0.053],[3.819,5.728,0.066],[4.583,6.874,0.079],[5.346,8.019,0.092],[6.11,9.165,0.105],[6.874,10.311,0.118],[7.638,11.456,0.131],[8.401,12.602,0.145],[9.165,13.747,0.158],[9.929,14.893,0.171],[10.692,16.038,0.184],[11.456,17.184,0.197],[12.22,18.329,0.21],[12.984,19.475,0.223],[13.747,20.621,0.236],[14.511,21.766,0.249],[15.275,22.912,0.262],[16.038,24.057,0.275],[16.802,25.203,0.289],[17.566,26.348,0.302],[18.329,27.494,0.315],[19.093,28.64,0.328],[19.857,29.785,0.341],[20.621,30.931,0.354],[21.384,32.076,0.367],[22.148,33.222,0.38],[22.912,34.367,0.393],[23.675,35.513,0.406],[24.439,36.658,0.419],[25.203,37.804,0.433],[25.967,38.95,0.446],[26.73,40.095,0.459],[27.494,41.241,0.472],[28.258,42.386,0.485],[29.021,43.532,0.498],[29.785,44.677,0.511],[30.549,45.823,0.524],[31.313,46.969,0.537],[32.076,48.114,0.55],[32.84,49.26,0.564],[33.604,50.405,0.577],[34.367,51.551,0.59],[35.131,52.696,0.603],[35.895,53.842,0.616],[36.658,54.987,0.629],[37.422,56.133,0.642],[38.186,57.279,0.655],[38.95,58.424,0.668],[39.713,59.57,0.681],[40.477,60.715,0.694],[41.241,61.861,0.708],[42.004,63.006,0.721],[42.768,64.152,0.734],[43.532,65.297,0.747],[44.296,66.443,0.76],[45.059,67.589,0.773],[45.823,68.734,0.786]],"hour":[null,[45.822,68.734,0.786],[91.645,137.467,1.571],[137.467,206.201,2.357],[183.29,274.935,3.142],[229.112,343.668,3.928],[274.935,412.402,4.714],[320.757,481.136,5.499],[366.579,549.869,6.285]]},"90":{"minute":[null,[0.86,1.289,0.015],[1.719,2.578,0.03],[2.578,3.867,0.045],[3.437,5.156,0.059],[4.296,6.444,0.074],[5.156,7.733,0.089],[6.015,9.022,0.104],[6.874,10.311,0.118],[7.733,11.599,0.133],[8.592,12.888,0.148],[9.451,14.177,0.163],[10.311,15.466,0.177],[11.17,16.754,0.192],[12.029,18.043,0.207],[12.888,19.332,0.221],[13.747,20.621,0.236],[14.606,21.909,0.251],[15.466,23.198,0.266],[16.325,24.487,0.28],[17.184,25.776,0.295],[18.043,27.064,0.31],[18.902,28.353,0.325],[19.761,29.642,0.339],[20.621,30.931,0.354],[21.48,32.219,0.369],[22.339,33.508,0.383],[23.198,34.797,0.398],[24.057,36.086,0.413],[24.916,37.374,0.428],[25.776,38.663,0.442],[26.635,39.952,0.457],[27.494,41.241,0.472],[28.353,42.529,0.487],[29.212,43.818,0.501],[30.071,45.107,0.516],[30.931,46.396,0.531],[31.79,47.684,0.546],[32.649,48.973,0.56],[33.508,50.262,0.575],[34.367,51.551,0.59],[35.227,52.84,0.604],[36.086,54.128,0.619],[36.945,55.417,0.634],[37.804,56.706,0.649],[38.663,57.995,0.663],[39.522,59.283,0.678],[40.382,60.572,0.693],[41.241,61.861,0.708],[42.1,63.15,0.722],[42.959,64.438,0.737],[43.818,65.727,0.752],[44.677,67.016,0.766],[45.537,68.305,0.781],[46.396,69.593,0.796],[47.255,70.882,0.811],[48.114,72.171,0.825],[48.973,73.46,0.84],[49.832,74.748,0.855],[50.692,76.037,0.87],[51.551,77.326,0.884]],"hour":[null,[51.55,77.325,0.884],[103.1,154.651,1.768],[154.651,231.976,2.651],[206.201,309.301,3.535],[257.751,386.627,4.419],[309.301,463.952,5.303],[360.852,541.278,6.187],[412.402,618.603,7.07]]},"100":{"minute":[null,[0.955,1.432,0.017],[1.91,2.864,0.033],[2.864,4.296,0.05],[3.819,5.728,0.066],[4.774,7.16,0.082],[5.728,8.592,0.099],[6.683,10.024,0.115],[7.638,11.456,0.131],[8.592,12.888,0.148],[9.547,14.32,0.164],[10.501,15.752,0.181],[11.456,17.184,0.197],[12.411,18.616,0.213],[13.365,20.048,0.23],[14.32,21.48,0.246],[15.275,22.912,0.262],[16.229,24.344,0.279],[17.184,25.776,0.295],[18.139,27.208,0.311],[19.093,28.64,0.328],[20.048,30.071,0.344],[21.002,31.503,0.361],[21.957,32.935,0.377],[22.912,34.367,0.393],[23.866,35.799,0.41],[24.821,37.231,0.426],[25.776,38.663,0.442],[26.73,40.095,0.459],[27.685,41.527,0.475],[28.64,42.959,0.491],[29.594,44.391,0.508],[30.549,45.823,0.524],[31.503,47.255,0.541],[32.458,48.687,0.557],[33.413,50.119,0.573],[34.367,51.551,0.59],[35.322,52.983,0.606],[36.277,54.415,0.622],[37.231,55.847,0.639],[38.186,57.279,0.655],[39.141,58.711,0.672],[40.095,60.142,0.688],[41.05,61.574,0.704],[42.004,63.006,0.721],[42.959,64.438,0.737],[43.914,65.87,0.753],[44.868,67.302,0.77],[45.823,68.734,0.786],[46.778,70.166,0.802],[47.732,71.598,0.819],[48.687,73.03,0.835],[49.641,74.462,0.852],[50.596,75.894,0.868],[51.551,77.326,0.884],[52.505,78.758,0.901],[53.46,80.19,0.917],[54.415,81.622,0.933],[55.369,83.054,0.95],[56.324,84.486,0.966],[57.279,85.918,0.982]],"hour":[null,[57.278,85.917,0.982],[114.556,171.834,1.964],[171.834,257.751,2.946],[229.112,343.668,3.928],[286.39,429.585,4.91],[343.668,515.502,5.892],[400.946,601.419,6.874],[458.224,687.337,7.856]]}};
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
-const APP_VERSION='8.3.1 Labor Day 2026';
-const WHATS_NEW_VERSION='8.3.1-20260829-labor-day-2026';
-const DEVELOPER_MESSAGE_VERSION='8.3.1-20260829-developer-message';
+const APP_VERSION='8.3.1 September 2026 Update Candidate';
+const WHATS_NEW_VERSION='8.3.1-20260901-job-tools-rev7-paper8';
 const CONTACT_EMAIL='admin@engineerpaylog.com';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
 const BACKUP_REMIND_LATER_KEY='engineerPayLogBackupRemindLaterUntil';
 const SAVED_JOBS_KEY='engineerPayLogSavedJobs';
 const LAST_SEEN_VERSION_KEY='engineerPayLogLastSeenVersion';
-const LAST_SEEN_DEVELOPER_MESSAGE_KEY='engineerPayLogLastSeenDeveloperMessage';
 const TRAINEE_MODE_KEY='engineerPayLogTraineeMode';
 const MY_JOB_KEY='engineerPayLogMyJob';
 const MY_JOB_INTRO_SEEN_KEY='engineerPayLogMyJobIntroSeen';
@@ -3338,6 +3441,216 @@ function crewBookLookupJobV8(input,date){
   if(isYardCrewKey(key)){const job=CREW_BOOK_YARD_JOBS[key],schedule=resolveYardJobV8(key,day);return job?{key,day,source:'yard',revision:{go:'201',revision:'Yard current',effective:'2026-07-06'},job,schedule}:null}
   return null
 }
+
+let JOB_COMPARE_PAY_MODE='regular';
+let JOB_COMPARE_ROW_SEQ=0;
+function openJobComparison(){showView('comparison');initJobComparison()}
+function initJobComparison(){
+  const date=document.getElementById('jobCompareDate');
+  if(date&&!date.value)date.value=isoLocal(new Date());
+  const rows=document.getElementById('jobCompareJobRows');
+  if(rows&&!rows.children.length)addJobCompareRow('',false)
+  updateJobCompareRowControls();
+  renderJobComparePayMode();
+}
+function setJobComparePayMode(mode){JOB_COMPARE_PAY_MODE=mode==='relief'?'relief':'regular';renderJobComparePayMode();runJobComparison(false)}
+function renderJobComparePayMode(){
+  document.getElementById('jobCompareRegularBtn')?.classList.toggle('active',JOB_COMPARE_PAY_MODE==='regular');
+  document.getElementById('jobCompareReliefBtn')?.classList.toggle('active',JOB_COMPARE_PAY_MODE==='relief');
+}
+function addJobCompareRow(value='',focus=true){
+  const host=document.getElementById('jobCompareJobRows');if(!host)return;
+  JOB_COMPARE_ROW_SEQ+=1;
+  const row=document.createElement('div');row.className='job-compare-job-row';row.dataset.rowId=String(JOB_COMPARE_ROW_SEQ);
+  row.innerHTML=`<span class="job-compare-row-label"></span><input class="job-compare-job-input" type="text" autocomplete="off" autocapitalize="characters" placeholder="e.g. 271 or 474"><button class="btn small job-compare-remove-job" type="button" aria-label="Remove job">Remove</button>`;
+  const input=row.querySelector('input'),remove=row.querySelector('button');if(input)input.value=value||'';
+  input?.addEventListener('keydown',event=>{if(event.key!=='Enter')return;event.preventDefault();const inputs=[...document.querySelectorAll('.job-compare-job-input')],idx=inputs.indexOf(input);if(idx===inputs.length-1){addJobCompareRow('',true)}else inputs[idx+1]?.focus()});
+  remove?.addEventListener('click',()=>removeJobCompareRow(row));
+  host.appendChild(row);updateJobCompareRowControls();if(focus)setTimeout(()=>input?.focus(),0);
+}
+function removeJobCompareRow(row){
+  const host=document.getElementById('jobCompareJobRows');if(!host||host.children.length<=1)return;row?.remove();updateJobCompareRowControls();runJobComparison(false);
+}
+function updateJobCompareRowControls(){
+  const rows=[...document.querySelectorAll('#jobCompareJobRows .job-compare-job-row')],canRemove=rows.length>1;
+  rows.forEach((row,i)=>{const label=row.querySelector('.job-compare-row-label'),btn=row.querySelector('.job-compare-remove-job');if(label)label.textContent=`Job ${i+1}`;if(btn){btn.style.display=canRemove?'':'none';btn.disabled=!canRemove}});
+}
+function clearJobComparison(){
+  const host=document.getElementById('jobCompareJobRows');if(host){host.innerHTML='';addJobCompareRow('',false)}
+  const results=document.getElementById('jobCompareResults');if(results)results.innerHTML='<div class="job-compare-empty">Enter at least two assignments to begin.</div>';
+}
+function jobCompareParseKeys(value){
+  const seen=new Set(),keys=[];
+  String(value||'').split(/[\s,;]+/).map(normalizeCrewBookKey).filter(Boolean).forEach(key=>{if(!seen.has(key)){seen.add(key);keys.push(key)}});
+  return keys;
+}
+function jobCompareEnteredKeys(){
+  const seen=new Set(),keys=[];
+  document.querySelectorAll('.job-compare-job-input').forEach(input=>jobCompareParseKeys(input.value).forEach(key=>{if(!seen.has(key)){seen.add(key);keys.push(key)}}));
+  return keys;
+}
+function jobCompareTimeLabel(v){
+  const m=parseClock(v);if(m==null)return '—';const h=Math.floor(m/60)%24,min=m%60,ampm=h>=12?'PM':'AM',display=h%12||12;return `${display}:${pad(min)} ${ampm}`;
+}
+function jobCompareDuration(start,end){const a=parseClock(start),b=parseClock(end);if(a==null||b==null)return 0;let d=b-a;if(d<=0)d+=1440;return d}
+function jobCompareDayLabel(day){return day?day.charAt(0).toUpperCase()+day.slice(1):'—'}
+function jobCompareSourceLabel(hit){
+  if(!hit)return '';
+  if(hit.source==='holiday')return 'Labor Day 2026';
+  if(hit.source==='yard')return 'Yard Crew Book';
+  if(hit.source==='yard-relief')return 'Yard Relief Crew';
+  const r=hit.revision;if(r){const paper=r.paperRevision?` + Paper Rev. ${r.paperRevision}`:'';return `GO ${r.go} Rev. ${r.revision}${paper}`;}return hit.source==='passenger-relief'?'Passenger Relief Crew':'Passenger Crew Book';
+}
+function jobCompareReliefCrewDefinition(key,date){
+  key=normalizeCrewBookKey(key);
+  if(isYardReliefKey(key)){const map=CREW_BOOK_YARD_RELIEF?.[key];return map?{key,map,type:'yard',source:'yard-relief',revision:{go:'201',revision:'Yard current',effective:'2026-07-06'}}:null}
+  if(!/^\d+$/.test(key))return null;
+  const rev=crewBookPassengerRevision(date),map=rev.relief?.[key];
+  return map?{key,map,type:'passenger',source:'passenger-relief',revision:rev}:null;
+}
+function jobCompareResolveReliefCrewForDay(key,date){
+  const info=jobCompareReliefCrewDefinition(key,date);if(!info)return null;
+  const day=crewBookDayForDate(date),coveredKey=info.map?.[day]||null;
+  if(!coveredKey)return {hit:{key:info.key,day,source:info.source,revision:info.revision,reliefCrew:true,reliefMap:info.map,coveredKey:null,job:null},schedule:null,state:'off'};
+  if(info.type==='yard'){const normalized=normalizeCrewBookKey(coveredKey),job=CREW_BOOK_YARD_JOBS[normalized],schedule=resolveYardReliefCoveredJobV8(normalized,day);return {hit:{key:info.key,day,source:info.source,revision:info.revision,reliefCrew:true,reliefMap:info.map,coveredKey:normalized,job},schedule,state:schedule?'active':'off'}}
+  const job=info.revision.jobs?.[String(coveredKey)],schedule=resolvePassengerJobV8(String(coveredKey),date,day);return {hit:{key:info.key,day,source:info.source,revision:info.revision,reliefCrew:true,reliefMap:info.map,coveredKey:String(coveredKey),job},schedule,state:schedule?'active':'off'};
+}
+function jobCompareReliefCoverage(key,date){
+  key=normalizeCrewBookKey(key);const result={};
+  if(isYardCrewKey(key)){
+    for(const [reliefCrew,map] of Object.entries(CREW_BOOK_YARD_RELIEF||{}))for(const day of CREW_BOOK_DAYS)if(normalizeCrewBookKey(map?.[day])===key)(result[day]||(result[day]=[])).push(reliefCrew);
+    return result;
+  }
+  if(!/^\d+$/.test(key))return result;
+  const rev=crewBookPassengerRevision(date);
+  for(const [reliefCrew,map] of Object.entries(rev.relief||{}))for(const day of CREW_BOOK_DAYS)if(String(map?.[day]||'')===key)(result[day]||(result[day]=[])).push(reliefCrew);
+  return result;
+}
+function jobCompareReliefText(key,hit,date){
+  if(!hit||hit.source==='holiday')return hit?.source==='holiday'?'Holiday assignment — regular relief pattern not applicable':'—';
+  const days=Array.isArray(hit.job?.relief)?hit.job.relief:[];if(!days.length)return 'No published regular relief days';
+  const coverage=jobCompareReliefCoverage(key,date);
+  return days.map(day=>{const crews=coverage[day]||[];return `${jobCompareDayLabel(day)}${crews.length?` — covered by ${crews.join(', ')}`:''}`}).join(' • ');
+}
+function jobCompareReliefCrewDaysOffText(hit){
+  if(!hit?.reliefCrew||!hit.reliefMap)return '—';
+  const days=CREW_BOOK_DAYS.filter(day=>!hit.reliefMap?.[day]);
+  return days.length?days.map(jobCompareDayLabel).join(' • '):'No published relief days';
+}
+function jobComparePayForSchedule(key,date,schedule){
+  if(!schedule)return null;
+  const ratePct=payScaleForDate(date);if(!ratePct||!rateTableFor(ratePct))return {rateMissing:true};
+  const s={date,assignment:key,start:schedule.start,end:schedule.end,paysMeal:!!schedule.paysMeal,rd:JOB_COMPARE_PAY_MODE==='relief',traineeMode:false};
+  return calculate(s);
+}
+function jobCompareResolveForDay(key,date){
+  key=normalizeCrewBookKey(key);
+  if(!crewBookIsLaborDay2026(date)){const relief=jobCompareResolveReliefCrewForDay(key,date);if(relief)return relief}
+  const hit=crewBookLookupJobV8(key,date);if(!hit)return {hit:null,schedule:null,state:'missing'};
+  if(hit.source==='holiday'){
+    if(hit.state==='assignment')return {hit,schedule:hit.schedule,state:'active'};
+    return {hit,schedule:null,state:hit.state||'missing'};
+  }
+  if(hit.job?.status==='abolished')return {hit,schedule:null,state:'abolished'};
+  return {hit,schedule:hit.schedule||null,state:hit.schedule?'active':'off'};
+}
+function jobCompareWeekRows(key,anchorDate){
+  const base=new Date(anchorDate+'T12:00:00'),mon=new Date(base);mon.setDate(base.getDate()-((base.getDay()+6)%7));
+  let rows='';
+  for(let i=0;i<7;i++){
+    const d=new Date(mon);d.setDate(mon.getDate()+i);const date=isoLocal(d),day=CREW_BOOK_DAYS[i],resolved=jobCompareResolveForDay(key,date),x=resolved.schedule,hit=resolved.hit;
+    let main='Off / no active schedule',sub='';
+    if(x){
+      const time=`${jobCompareTimeLabel(x.start)} – ${jobCompareTimeLabel(x.end)}`,duration=jobCompareDuration(x.start,x.end);
+      if(hit?.reliefCrew){main=`Job ${hit.coveredKey} • ${time}`;sub=`${hit.job?.terminal||'Covered assignment'} • ${fmtMinutes(duration)}${x.paysMeal?' • Pays meal':''}`}
+      else if(hit?.source==='holiday'){main=`Holiday Crew ${hit.key} • ${time}`;sub=`${hit.job?.terminal||'Holiday assignment'} • ${fmtMinutes(duration)} • Holiday pay${x.paysMeal?' • Pays meal':''}`}
+      else{const ownerRelief=!!hit?.job?.relief?.includes(day);main=time;sub=`${fmtMinutes(duration)}${ownerRelief?' • Regular owner relief day':''}${x.paysMeal?' • Pays meal':''}`}
+    }else if(hit?.reliefCrew){main='Relief Day / Off';sub='No covered assignment'}
+    else if(hit?.source==='holiday'){
+      if(hit.state==='off')main='Off / To Be Assigned'; else if(hit.state==='none')main='No published holiday assignment'; else main='Holiday assignment unavailable';
+    }
+    const pay=x?jobComparePayForSchedule(key,date,x):null,payText=pay?.rateMissing?'Rate —':pay?money(pay.total):'—';
+    rows+=`<div class="job-compare-week-row${date===anchorDate?' selected':''}"><div class="job-compare-week-day">${escapeHTML(day.slice(0,3).toUpperCase())}</div><div class="job-compare-week-main"><strong>${escapeHTML(main)}</strong><span>${escapeHTML(sub||date)}</span></div><div class="job-compare-week-pay">${escapeHTML(payText)}</div></div>`;
+  }
+  return rows;
+}
+function jobCompareCardHTML(key,date){
+  const resolved=jobCompareResolveForDay(key,date),hit=resolved.hit,x=resolved.schedule;
+  if(!hit)return `<div class="job-compare-card"><div class="job-compare-error"><strong>${escapeHTML(key)}</strong><br>This assignment or relief crew is not in the verified Crew Book dataset for ${escapeHTML(date)}.</div></div>`;
+  let displayKey=key,terminal=hit.job?.terminal||'—',dateState='',reliefKey=key,reliefLabel='Relief Days',reliefText='—';
+  if(hit.source==='holiday'){
+    if(hit.ownerCrew){displayKey=`${hit.ownerCrew} → ${hit.key}`;reliefKey=hit.ownerCrew}
+    if(hit.state==='assignment')dateState=`Holiday Crew ${hit.key} • Sunday schedule of Job ${hit.h}${hit.cover?` • Crew ${hit.cover}`:''}`;
+    else if(hit.state==='off')dateState='Off / To Be Assigned for Labor Day 2026';
+    else if(hit.state==='none')dateState='No published Labor Day assignment';
+    else dateState='Holiday assignment could not be resolved';
+    reliefText=jobCompareReliefText(reliefKey,hit,date);
+  }else if(hit.reliefCrew){
+    terminal=hit.job?.terminal||'Relief Crew';
+    dateState=`${jobCompareDayLabel(hit.day)} • ${hit.coveredKey?`Covers Job ${hit.coveredKey}`:'Relief Day / Off'}`;
+    reliefLabel='Relief Crew Days Off';reliefText=jobCompareReliefCrewDaysOffText(hit);
+  }else{
+    const ownerRelief=!!hit.job?.relief?.includes(hit.day);
+    dateState=`${jobCompareDayLabel(hit.day)}${ownerRelief?' • Regular owner relief day':''}${!x?' • No active schedule':''}`;
+    reliefText=jobCompareReliefText(reliefKey,hit,date);
+  }
+  const pay=x?jobComparePayForSchedule(key,date,x):null,duration=x?jobCompareDuration(x.start,x.end):0;
+  const payText=pay?.rateMissing?'Set hire date':pay?money(pay.total):'—';
+  const ownerReliefDay=!hit?.reliefCrew&&hit?.source!=='holiday'&&!!hit?.job?.relief?.includes(hit?.day);
+  const payScenario=JOB_COMPARE_PAY_MODE==='relief'?'relief-day scenario — entire assignment at overtime':(ownerReliefDay?'regular-pay scenario — regular owner is off this day':'regular-pay scenario');
+  const paySub=pay?.rateMissing?'A hire date is needed to determine your pay scale.':pay?`${pay.ratePct}% rate • ${payScenario}${hit?.source==='holiday'?' • holiday rules applied':''}${x.paysMeal?' • meal allowance included':''}`:(hit.reliefCrew?'Relief crew is off on this date.':'No active schedule to price for this date.');
+  const source=jobCompareSourceLabel(hit),weekKey=hit.source==='holiday'&&hit.h?hit.h:reliefKey;
+  return `<article class="job-compare-card">
+    <div class="job-compare-card-head"><div class="job-compare-card-titleline"><div class="job-compare-job">${escapeHTML(displayKey)}</div><div class="job-compare-source">${escapeHTML(source)}</div></div><div class="job-compare-terminal">${escapeHTML(terminal)}</div><div class="job-compare-date-state">${escapeHTML(dateState)}</div></div>
+    <div class="job-compare-money"><div class="label">Estimated Earnings If Worked</div><div class="amount">${escapeHTML(payText)}</div><div class="sub">${escapeHTML(paySub)}</div></div>
+    <div class="job-compare-facts"><div class="job-compare-fact"><div class="label">Report</div><div class="value">${x?escapeHTML(jobCompareTimeLabel(x.start)):'—'}</div></div><div class="job-compare-fact"><div class="label">Release</div><div class="value">${x?escapeHTML(jobCompareTimeLabel(x.end)):'—'}</div></div><div class="job-compare-fact"><div class="label">Duration</div><div class="value">${x?escapeHTML(fmtMinutes(duration)):'—'}</div></div><div class="job-compare-fact"><div class="label">Meal</div><div class="value">${x?(x.paysMeal?'Pays Meal':'No'):'—'}</div></div></div>
+    <div class="job-compare-relief"><strong>${escapeHTML(reliefLabel)}</strong><span>${escapeHTML(reliefText)}</span></div>
+    <details class="job-compare-details"><summary>Weekly schedule & pay</summary><div class="job-compare-week">${jobCompareWeekRows(weekKey,date)}</div></details>
+  </article>`;
+}
+function runJobComparison(showValidation=true){
+  initJobComparison();const date=document.getElementById('jobCompareDate')?.value,host=document.getElementById('jobCompareResults'),note=document.getElementById('jobCompareSourceNote');if(!host)return;
+  const keys=jobCompareEnteredKeys();
+  if(keys.length<2){if(showValidation)host.innerHTML='<div class="job-compare-error"><strong>Enter at least two assignments.</strong><br>Use one job field for each regular job or relief crew you want to compare.</div>';return}
+  if(!date){if(showValidation)host.innerHTML='<div class="job-compare-error"><strong>Select a comparison date.</strong><br>The date is required so Engineer Pay Log can choose the correct Crew Book revision and day-specific schedule.</div>';return}
+  host.innerHTML=`<div class="job-compare-position" aria-live="polite"><span id="jobComparePositionText">1 of ${keys.length}</span><span>${keys.map((_,i)=>`<i class="job-compare-position-dot${i===0?' active':''}" aria-hidden="true"></i>`).join('')}</span></div><div class="job-compare-strip">${keys.map(key=>jobCompareCardHTML(key,date)).join('')}</div>`;
+  const strip=host.querySelector('.job-compare-strip'),positionText=host.querySelector('#jobComparePositionText'),dots=[...host.querySelectorAll('.job-compare-position-dot')];
+  if(strip&&keys.length>1){let raf=0;strip.addEventListener('scroll',()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{const cards=[...strip.querySelectorAll('.job-compare-card')];if(!cards.length)return;let best=0,bestDist=Infinity;cards.forEach((card,i)=>{const d=Math.abs(card.offsetLeft-strip.scrollLeft-strip.offsetLeft);if(d<bestDist){bestDist=d;best=i}});if(positionText)positionText.textContent=`${best+1} of ${keys.length}`;dots.forEach((dot,i)=>dot.classList.toggle('active',i===best))})},{passive:true})}
+  if(note){const rev=crewBookPassengerRevision(date),pct=payScaleForDate(date);note.innerHTML=`<strong>${escapeHTML(date)}</strong> • Passenger GO ${escapeHTML(rev.go)} Rev. ${escapeHTML(rev.revision)}${rev.paperRevision?` + Paper Rev. ${escapeHTML(rev.paperRevision)}`:''}${pct?` • Your rate: ${pct}%`:' • Hire date needed for dollar estimates'}<br>Regular assignments and relief crews are supported. Dollar figures are <strong>if-worked estimates</strong> for the selected pay mode; holiday dates automatically use the app's holiday-pay rules. Swipe cards horizontally to compare. Open <strong>Weekly schedule & pay</strong> to see each job's Monday–Sunday pattern.`}
+}
+
+
+function openQuickJobLookup(){showView('lookup');initQuickJobLookup()}
+function initQuickJobLookup(){const date=document.getElementById('quickLookupDate');if(date&&!date.value)date.value=isoLocal(new Date())}
+function clearQuickJobLookup(){const job=document.getElementById('quickLookupJob'),result=document.getElementById('quickLookupResult'),note=document.getElementById('quickLookupSourceNote');if(job)job.value='';if(result)result.innerHTML='<div class="quick-lookup-empty">Enter an assignment and date to begin.</div>';if(note)note.textContent='Quick Job Lookup uses the same verified Crew Book resolver as Crew Book Assistance and Job Comparison.'}
+function quickLookupExceptionText(hit,x,date){
+  if(!hit||!x)return '';
+  const notes=[];
+  if(hit.source==='holiday')notes.push('Holiday-specific assignment logic applied.');
+  if(hit.reliefCrew&&hit.coveredKey)notes.push(`Relief Crew covers Job ${hit.coveredKey} on this date.`);
+  if(!hit.reliefCrew&&hit.source==='passenger'){
+    const base=(hit.day==='saturday'||hit.day==='sunday')?hit.job?.weekend:hit.job?.weekday;
+    if(base&&(base.start!==x.start||base.end!==x.end||!!base.paysMeal!==!!x.paysMeal||(base.location||'')!==(x.location||'')))notes.push(`${jobCompareDayLabel(hit.day)}-specific Crew Book exception applied.`);
+    if(hit.job?.relief?.includes(hit.day))notes.push('This is a published relief day for the regular owner; the assignment may still be protected by another crew.');
+  }
+  if(hit.source==='yard'&&hit.job?.relief?.includes(hit.day))notes.push('This is a published relief day for the regular owner; the Yard assignment may still operate.');
+  return notes.join(' ');
+}
+function quickLookupResultHTML(key,date){
+  const resolved=jobCompareResolveForDay(key,date),hit=resolved.hit,x=resolved.schedule;
+  if(!hit)return `<div class="quick-lookup-error"><strong>${escapeHTML(key)}</strong><br>This assignment or relief crew is not in the verified Crew Book dataset for ${escapeHTML(date)}.</div>`;
+  if(resolved.state==='abolished')return `<div class="quick-lookup-error"><strong>Job ${escapeHTML(key)} is abolished</strong><br>This job is not active for the Crew Book revision in effect on ${escapeHTML(date)}.</div>`;
+  if(!x){const day=jobCompareDayLabel(hit.day);return `<div class="quick-lookup-error"><strong>No active ${escapeHTML(day)} schedule</strong><br>${escapeHTML(key)} does not have an active assignment for ${escapeHTML(date)}.</div>`;}
+  let displayKey=key,terminal=x.location||hit.job?.terminal||'—',state=jobCompareDayLabel(hit.day),reliefLabel='Relief Days',reliefText='—';
+  if(hit.source==='holiday'){if(hit.ownerCrew)displayKey=`${hit.ownerCrew} → ${hit.key}`;state=`Labor Day assignment ${hit.key}${hit.h?` • Sunday schedule of Job ${hit.h}`:''}`;reliefText='Holiday assignment — regular relief pattern not applicable';}
+  else if(hit.reliefCrew){terminal=x.location||hit.job?.terminal||'Relief Crew';state=`${jobCompareDayLabel(hit.day)} • Covers Job ${hit.coveredKey}`;reliefLabel='Relief Crew Days Off';reliefText=jobCompareReliefCrewDaysOffText(hit);}
+  else{const ownerRelief=!!hit.job?.relief?.includes(hit.day);state=`${jobCompareDayLabel(hit.day)}${ownerRelief?' • Regular owner relief day':''}`;reliefText=jobCompareReliefText(key,hit,date);}
+  const duration=jobCompareDuration(x.start,x.end),exception=quickLookupExceptionText(hit,x,date),source=jobCompareSourceLabel(hit);
+  return `<article class="quick-lookup-card"><div class="quick-lookup-head"><div class="quick-lookup-titleline"><div class="quick-lookup-job">${escapeHTML(displayKey)}</div><div class="quick-lookup-source">${escapeHTML(source)}</div></div><div class="quick-lookup-terminal">${escapeHTML(terminal)}</div><div class="quick-lookup-state">${escapeHTML(state)} • ${escapeHTML(date)}</div></div><div class="quick-lookup-grid"><div class="quick-lookup-fact"><div class="label">Report</div><div class="value">${escapeHTML(jobCompareTimeLabel(x.start))}</div></div><div class="quick-lookup-fact"><div class="label">Release</div><div class="value">${escapeHTML(jobCompareTimeLabel(x.end))}</div></div><div class="quick-lookup-fact"><div class="label">Duration</div><div class="value">${escapeHTML(fmtMinutes(duration))}</div></div><div class="quick-lookup-fact"><div class="label">Meal</div><div class="value">${x.paysMeal?'Pays Meal Period':'No paid meal period'}</div></div></div><div class="quick-lookup-relief"><strong>${escapeHTML(reliefLabel)}</strong>${escapeHTML(reliefText)}</div><div class="quick-lookup-exception${exception?'':' none'}"><strong>Date-specific notes</strong>${escapeHTML(exception||'No additional day-specific exception is being applied beyond the published schedule shown above.')}</div></article>`;
+}
+function runQuickJobLookup(showValidation=true){initQuickJobLookup();const raw=(document.getElementById('quickLookupJob')?.value||'').trim(),date=document.getElementById('quickLookupDate')?.value,result=document.getElementById('quickLookupResult'),note=document.getElementById('quickLookupSourceNote');if(!result)return;if(!raw||!date){if(showValidation)result.innerHTML='<div class="quick-lookup-error"><strong>Enter an assignment and date.</strong><br>Both are required for a date-aware Crew Book lookup.</div>';return}const key=normalizeCrewBookKey(raw);result.innerHTML=quickLookupResultHTML(key,date);if(note){const rev=crewBookPassengerRevision(date);note.innerHTML=`<strong>${escapeHTML(date)}</strong> • Passenger GO ${escapeHTML(rev.go)} Rev. ${escapeHTML(rev.revision)}${rev.paperRevision?` + Paper Rev. ${escapeHTML(rev.paperRevision)}`:''}<br>Regular assignments, relief crews, Yard assignments, and supported holiday assignments are resolved from the selected date.`}}
+
+
 function renderCrewBookAssistUI(){
   const trainee=isTraineeMode(),box=document.getElementById('crewBookAssistToggle'),status=document.getElementById('crewBookAssistStatus'),reg=document.getElementById('crewBookFillRegularBtn'),rel=document.getElementById('crewBookFillReliefBtn'),shift=document.getElementById('crewBookFillShiftBtn');
   const on=!trainee&&getCrewBookAssistPreference()==='on';
@@ -3403,15 +3716,23 @@ function fillReliefMyJobFromCrewBook(){
   }
   alert(`Relief Crew ${key} filled from the ${source==='yard'?'Yard':`Passenger GO ${rev.go} Rev. ${rev.revision}`} Crew Book dataset. Daily terminal and times inherit from the covered assignment.`);
 }
+
+function clearCrewBookShiftAutofillFields(){
+  setLocationUI('');
+  const start=document.getElementById('start'),end=document.getElementById('end'),meal=document.getElementById('paysMealFlag');
+  if(start)start.value='';if(end)end.value='';if(meal)meal.checked=false;
+  calculatePreview();
+}
+
 function fillShiftFromCrewBook(){
   if(!crewBookAssistEnabled())return;const raw=(document.getElementById('assignment')?.value||'').trim(),date=document.getElementById('date')?.value;
   if(!raw){alert('Enter the job number first.');return}if(!date){alert('Select the date first.');return}
   const key=normalizeCrewBookKey(raw),hit=crewBookLookupJobV8(key,date);
-  if(!hit){alert(isHolidayCrewKey(key)?`Holiday assignment ${key} is only available for a supported holiday date.`:`Assignment ${key} is not in the verified Crew Book dataset.`);return}
+  if(!hit){clearCrewBookShiftAutofillFields();alert(isHolidayCrewKey(key)?`Holiday assignment ${key} is only available for a supported holiday date.`:`Assignment ${key} is not in the verified Crew Book dataset.`);return}
   if(hit.source==='holiday'){
-    if(hit.state==='off'){alert(isHolidayCrewKey(key)?`${key} is marked To Be Assigned (+) in the Labor Day Crew Book table and is treated as Off for Labor Day 2026.`:`Crew ${key} is explicitly Off for Labor Day 2026.`);return}
-    if(hit.state==='none'){alert(`Crew ${key} has no published Labor Day holiday assignment in the verified table.`);return}
-    if(hit.state!=='assignment'||!hit.job||!hit.schedule){alert(`Holiday assignment ${hit.key||key} could not be resolved to a verified Sunday schedule.`);return}
+    if(hit.state==='off'){clearCrewBookShiftAutofillFields();alert(isHolidayCrewKey(key)?`${key} is marked To Be Assigned (+) in the Labor Day Crew Book table and is treated as Off for Labor Day 2026.`:`Crew ${key} is explicitly Off for Labor Day 2026.`);return}
+    if(hit.state==='none'){clearCrewBookShiftAutofillFields();alert(`Crew ${key} has no published Labor Day holiday assignment in the verified table.`);return}
+    if(hit.state!=='assignment'||!hit.job||!hit.schedule){clearCrewBookShiftAutofillFields();alert(`Holiday assignment ${hit.key||key} could not be resolved to a verified Sunday schedule.`);return}
     document.getElementById('assignment').value=hit.key;setLocationUI(hit.job.terminal);
     document.getElementById('start').value=hit.schedule.start||'';document.getElementById('end').value=hit.schedule.end||'';
     const pm=document.getElementById('paysMealFlag');if(pm)pm.checked=!!hit.schedule.paysMeal;const mp=document.getElementById('mpteFlag');if(mp&&hit.schedule.paysMeal)mp.checked=false;
@@ -3419,7 +3740,7 @@ function fillShiftFromCrewBook(){
     if(hit.ownerCrew)alert(`Labor Day: Crew ${hit.ownerCrew} covers ${hit.key}. ${hit.key} uses the Sunday schedule of Job ${hit.h}.`);
     return
   }
-  if(hit.job.status==='abolished'){alert(`Job ${key} is abolished for this Crew Book revision.`);return}if(!hit.schedule){alert(`Assignment ${key} does not have an active ${hit.day} schedule for ${date}.`);return}
+  if(hit.job.status==='abolished'){clearCrewBookShiftAutofillFields();alert(`Job ${key} is abolished for this Crew Book revision.`);return}if(!hit.schedule){clearCrewBookShiftAutofillFields();alert(`Assignment ${key} does not have an active ${hit.day} schedule for ${date}.`);return}
   document.getElementById('assignment').value=key;setLocationUI(hit.schedule.location||hit.job.terminal);document.getElementById('start').value=hit.schedule.start||'';document.getElementById('end').value=hit.schedule.end||'';const pm=document.getElementById('paysMealFlag');if(pm)pm.checked=!!hit.schedule.paysMeal;const mp=document.getElementById('mpteFlag');if(mp&&hit.schedule.paysMeal)mp.checked=false;calculatePreview()
 }
 function applyMyJob(){
@@ -4133,10 +4454,8 @@ function previewRestore(data){
 }
 function cancelRestore(){pendingRestoreData=null;document.getElementById('restorePreviewModal').classList.remove('open')}
 function confirmRestore(){const data=pendingRestoreData;if(!data)return;shifts=data.shifts.map(upgradeShift);if(data.hireDate)demoStorage.setItem(HIRE_DATE_KEY,data.hireDate);if(data.traineeMode!==undefined)demoStorage.setItem(TRAINEE_MODE_KEY,data.traineeMode?'on':'off');if(data.myJob!==undefined){if(data.myJob)demoStorage.setItem(MY_JOB_KEY,JSON.stringify(data.myJob));else demoStorage.removeItem(MY_JOB_KEY)}if(data.vacationGrossByYear&&typeof data.vacationGrossByYear==='object')demoStorage.setItem(VACATION_GROSS_KEY,JSON.stringify(data.vacationGrossByYear));if(data.appearanceMode)demoStorage.setItem(APPEARANCE_KEY,data.appearanceMode);if(data.crewBookAssistEnabled!==undefined)setCrewBookAssistPreference(!!data.crewBookAssistEnabled);if(data.netEstimatorEnabled!==undefined)demoStorage.setItem(NET_ESTIMATOR_ENABLED_KEY,data.netEstimatorEnabled?'1':'0');if(Array.isArray(data.netPayHistory))demoStorage.setItem(NET_PAY_HISTORY_KEY,JSON.stringify(data.netPayHistory.slice(0,10)));if(Array.isArray(data.savedJobs)){savedJobs=data.savedJobs;persistSavedJobs()}persist();cancelRestore();updateRateDisplays();renderAll();alert('Backup restored.')}
-function openDeveloperMessage(force=false){if(!force&&demoStorage.getItem(LAST_SEEN_DEVELOPER_MESSAGE_KEY)===DEVELOPER_MESSAGE_VERSION)return;document.getElementById('developerMessageModal')?.classList.add('open')}
-function closeDeveloperMessage(){demoStorage.setItem(LAST_SEEN_DEVELOPER_MESSAGE_KEY,DEVELOPER_MESSAGE_VERSION);document.getElementById('developerMessageModal')?.classList.remove('open')}
-function openWhatsNew(force=false){if(!force&&demoStorage.getItem(LAST_SEEN_VERSION_KEY)===WHATS_NEW_VERSION){openDeveloperMessage(false);return;}document.getElementById('whatsNewModal')?.classList.add('open')}
-function closeWhatsNew(){demoStorage.setItem(LAST_SEEN_VERSION_KEY,WHATS_NEW_VERSION);document.getElementById('whatsNewModal').classList.remove('open');setTimeout(()=>openDeveloperMessage(false),150)}
+function openWhatsNew(force=false){if(!force&&demoStorage.getItem(LAST_SEEN_VERSION_KEY)===WHATS_NEW_VERSION)return;document.getElementById('whatsNewModal')?.classList.add('open')}
+function closeWhatsNew(){demoStorage.setItem(LAST_SEEN_VERSION_KEY,WHATS_NEW_VERSION);document.getElementById('whatsNewModal')?.classList.remove('open');void 0}
 function historyAccentColor(s){
   if(isSecretUnpaidSickShift(s))return '#687386';
   if(s.specialShift)return specialCalendarColor(s);
@@ -4298,7 +4617,7 @@ function showMascotMessage(button){
 }
 
 function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView());const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview()}
-function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility()}renderMyJobUI()}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
   return shifts.filter(s=>[

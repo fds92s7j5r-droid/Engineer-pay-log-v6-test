@@ -1,0 +1,29 @@
+ENGINEER PAY LOG — SEPTEMBER 2026 FEATURE UPDATE
+AUTOMATED TEST REPORT
+2026-09-01
+
+PASS — index.html inline JavaScript syntax (Node --check)
+PASS — demo.html inline JavaScript syntax (Node --check)
+PASS — no duplicate HTML IDs in index.html
+PASS — no duplicate HTML IDs in demo.html
+PASS — required Job Comparison and Quick Job Lookup view/control IDs present in both files
+PASS — temporary Message from the Developer modal removed from both files
+PASS — service-worker cache bumped for this test build
+PASS — core Crew Book data constants unchanged from the tested Rev. 7 + Paper Rev. 8 candidate
+
+FUNCTIONAL RESOLVER HARNESS: 130 assertions passed / 0 failed
+Includes:
+- Sept. 4 vs Sept. 8 revision boundary (Job 1)
+- Job 18 abolished state
+- Jobs 203 and 329 newly added behavior
+- Paper Rev. 8 Jobs 28, 108, 113, 157, 165, 356, 367, 370
+- Rev. 7 exceptions Jobs 12, 52, 293, 358
+- unchanged Job 115 regression check
+- meal status checks
+- terminal/report/release checks
+- Quick Job Lookup rendering checks
+- Job Comparison rendering/source checks
+- stale Crew Book autofill helper preserves date/assignment and clears location/start/release/meal
+
+MANUAL PHONE TEST IS STILL REQUIRED BEFORE CLOUDFLARE PRODUCTION.
+See READ_ME_FIRST_SEPTEMBER_2026_FEATURE_UPDATE_GITHUB_TEST.txt.
