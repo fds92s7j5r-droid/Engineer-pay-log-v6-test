@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v8-3-1-september-job-tools-official-assignments-20260901e';
+const CACHE_NAME='engineer-pay-log-v9-0-20260901f';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(
