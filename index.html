@@ -412,20 +412,6 @@
     }
     html[data-theme="dark"] .time-slip-panel .subhead{color:#ffe39a!important}
 
-    /* V9.0.1 — soften yellow-highlight surfaces in dark mode.
-       Keep the warm Time Slip/warning cue without the bright cream panels. */
-    html[data-theme="dark"] .timeslip-summary .statbox,
-    html[data-theme="dark"] .warning-panel{
-      background:#342d13!important;
-      border-color:#756226!important;
-      color:#f3dfa0!important;
-    }
-    html[data-theme="dark"] .timeslip-summary .statbox .num,
-    html[data-theme="dark"] .timeslip-summary .statbox strong,
-    html[data-theme="dark"] .warning-panel strong{
-      color:#f7e6ad!important;
-    }
-
     html[data-theme="dark"] .badge{
       background:#27394e!important;
       color:#dce7f3!important;
@@ -1214,7 +1200,68 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     @media(max-width:620px){#jobCompareOfficialModal .modal-card{width:100%;max-height:95vh;margin:0;border-radius:22px 22px 0 0}#jobCompareOfficialModal .modal-body{padding:0 12px 16px}.job-compare-official-viewer .crewbook-image-viewer{max-height:64vh}}
     @media(max-width:620px){.job-compare-controls,.quick-lookup-controls{grid-template-columns:1fr}.job-compare-card{flex-basis:min(292px,88vw)}.job-compare-job-row{grid-template-columns:42px minmax(0,1fr) auto}.job-compare-remove-job{min-width:auto;padding:9px 10px}.job-compare-actions .btn.primary,.quick-lookup-actions .btn.primary{flex:1}}
 
-</style>
+
+    /* V9.0 dark-mode Time Slip yellow polish — keep the softer light-mode yellow
+       while forcing dark text/accents for readable contrast on dark pages. */
+    html[data-theme="dark"] .timeslip-summary .statbox{
+      background:#fff9d8!important;
+      border-color:#e3ca66!important;
+      color:#10233f!important;
+    }
+    html[data-theme="dark"] .timeslip-summary .statbox .num,
+    html[data-theme="dark"] .timeslip-summary .statbox strong{color:#10233f!important}
+
+    html[data-theme="dark"] .shift.timeslip{
+      background:#fff9d8!important;
+      border-color:#ddc04b!important;
+      color:#10233f!important;
+      box-shadow:inset 4px 0 0 #ddc04b!important;
+    }
+    html[data-theme="dark"] .shift.timeslip .shift-date,
+    html[data-theme="dark"] .shift.timeslip .shift-title{color:#10233f!important}
+    html[data-theme="dark"] .shift.timeslip .shift-sub{color:#6b7485!important}
+
+    html[data-theme="dark"] .badge.timeslip{
+      background:#fff0a8!important;
+      color:#6f5700!important;
+      border-color:#e2c348!important;
+    }
+
+    html[data-theme="dark"] .time-slip-check{
+      background:#fff1a6!important;
+      border-color:#dcc044!important;
+      color:#5f4a00!important;
+    }
+    html[data-theme="dark"] .time-slip-panel{
+      background:#fff8cf!important;
+      border-color:#d9bb39!important;
+      color:#10233f!important;
+    }
+    html[data-theme="dark"] .time-slip-panel .subhead,
+    html[data-theme="dark"] .time-slip-panel .field label{color:#624f00!important}
+    html[data-theme="dark"] .time-slip-panel .notice{color:#685400!important}
+
+    html[data-theme="dark"] .warning-panel,
+    html[data-theme="dark"] .backup-reminder{
+      background:#fff8d8!important;
+      border-color:#e2c05c!important;
+      color:#654f00!important;
+    }
+    html[data-theme="dark"] .warning-panel strong,
+    html[data-theme="dark"] .backup-reminder strong{color:#5f4a00!important}
+
+    html[data-theme="dark"] .history-list-row.timeslip{
+      background:#fff9d8!important;
+      border-color:#ddc04b!important;
+      box-shadow:inset 0 0 0 1px #e1c95c!important;
+    }
+    html[data-theme="dark"] .history-list-row.timeslip .history-dow,
+    html[data-theme="dark"] .history-list-row.timeslip .history-day,
+    html[data-theme="dark"] .history-list-row.timeslip .history-row-title,
+    html[data-theme="dark"] .history-list-row.timeslip .history-row-pay{color:#10233f!important}
+    html[data-theme="dark"] .history-list-row.timeslip .history-row-sub{color:#6b7485!important}
+
+  </style>
 </head>
 <body>
 <div id="accountGate" class="account-gate" aria-live="polite">
