@@ -412,6 +412,20 @@
     }
     html[data-theme="dark"] .time-slip-panel .subhead{color:#ffe39a!important}
 
+    /* V9.0.1 — soften yellow-highlight surfaces in dark mode.
+       Keep the warm Time Slip/warning cue without the bright cream panels. */
+    html[data-theme="dark"] .timeslip-summary .statbox,
+    html[data-theme="dark"] .warning-panel{
+      background:#342d13!important;
+      border-color:#756226!important;
+      color:#f3dfa0!important;
+    }
+    html[data-theme="dark"] .timeslip-summary .statbox .num,
+    html[data-theme="dark"] .timeslip-summary .statbox strong,
+    html[data-theme="dark"] .warning-panel strong{
+      color:#f7e6ad!important;
+    }
+
     html[data-theme="dark"] .badge{
       background:#27394e!important;
       color:#dce7f3!important;
