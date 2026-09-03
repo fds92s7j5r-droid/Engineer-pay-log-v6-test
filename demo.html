@@ -404,6 +404,15 @@ const demoStorage=(()=>{
     }
     html[data-theme="dark"] .time-slip-panel .subhead{color:#ffe39a!important}
 
+
+    /* V9.0 — dark-mode Time Slip summary boxes match the existing Time Slip card treatment. */
+    html[data-theme="dark"] .timeslip-summary .statbox{
+      background:#342d13!important;
+      color:#ffeaa0!important;
+      border-color:#756226!important;
+    }
+    html[data-theme="dark"] .timeslip-summary .statbox .num{color:#ffeaa0!important}
+
     html[data-theme="dark"] .badge{
       background:#27394e!important;
       color:#dce7f3!important;
@@ -772,6 +781,10 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .settings-row small,.settings-pref-title small,.settings-disclosure summary small,.about-inline small{display:block;font-size:10.5px;color:var(--muted);font-weight:500;line-height:1.35}
     .settings-value{font-size:14px;font-weight:850;color:var(--brand);white-space:nowrap}
     .settings-inline-input{width:min(230px,46%);min-height:42px;border:1px solid #cfd8e6;border-radius:11px;background:var(--card);color:var(--ink);padding:9px 10px;text-align:right}
+    .account-profile-value{font-size:12px;font-weight:700;word-break:break-word;text-align:right}
+    .account-sync-pill{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:11px;font-weight:800;background:var(--soft)}
+    .account-sync-dot{width:8px;height:8px;border-radius:50%;background:#5d8c68}
+    .account-sync-detail{margin-top:10px;font-size:11px;line-height:1.45;color:var(--muted)}
     .money-input{text-align:right}
     .switch-label{display:flex!important;align-items:center;gap:7px;flex:0 0 auto;font-size:11px;font-weight:750;color:var(--muted)}
     .switch-label input{width:22px;height:22px;margin:0;accent-color:var(--brand2)}
@@ -1412,6 +1425,29 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
   <section id="settingsView" class="view">
     <div class="grid settings-grid">
+
+      <div class="card span12 settings-card account-settings-card">
+        <div class="section-title settings-heading"><div><h2>Account</h2></div></div>
+        <div class="settings-list">
+          <div class="settings-row">
+            <div><strong>Name</strong></div>
+            <span class="account-profile-value">Art Vandelay</span>
+          </div>
+          <div class="settings-row">
+            <div><strong>IBM</strong></div>
+            <span class="account-profile-value">42069</span>
+          </div>
+          <div class="settings-row">
+            <div><strong>Email</strong></div>
+            <span class="account-profile-value">iwasinthepool@engineerpaylog.com</span>
+          </div>
+          <div class="settings-row">
+            <div><strong>Sync Status</strong><small>Changes sync automatically when you're online.</small></div>
+            <span class="account-sync-pill"><span class="account-sync-dot"></span><span>Up to date</span></span>
+          </div>
+        </div>
+        <div class="account-sync-detail">Your Engineer Pay Log is up to date across devices.</div>
+      </div>
 
       <div class="card span12 settings-card settings-primary-card">
         <div class="section-title settings-heading"><div><h2>Pay & Employment</h2><p>Settings that affect your pay calculations and daily entry.</p></div></div>
