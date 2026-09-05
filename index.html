@@ -4309,7 +4309,10 @@ function communityShiftContext(s){
   if(!s||!s.id||!s.date||s.traineeMode||s.classDay||String(s.specialShift||'').trim())return null;
   const jobKey=normalizeCrewBookKey(s.assignment||'');if(!jobKey)return null;
   const resolved=jobCompareResolveForDay(jobKey,s.date);
-  if(!resolved?.hit||resolved.state==='abolished'||!resolved.schedule)return null;
+  // A saved shift is enough evidence that the engineer is actually working the assignment.
+  // Do not require the Crew Book resolver to expose an active schedule for that exact day;
+  // relief-day/date-specific edge cases can otherwise hide useful Community Notes.
+  if(!resolved?.hit||resolved.state==='abolished'||resolved.state==='missing')return null;
   return {shiftId:String(s.id),jobKey,date:String(s.date),revision:communityRevisionMeta(jobKey,String(s.date))};
 }
 function communityShiftFormSnapshot(){
@@ -8334,7 +8337,7 @@ function showMascotMessage(button){
 }
 
 function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI()}
-function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility()}renderMyJobUI()}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){void renderDashboardCommunityNotes();setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
   return shifts.filter(s=>[
