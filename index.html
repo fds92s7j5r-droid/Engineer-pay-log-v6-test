@@ -4306,19 +4306,22 @@ function communityWorkedJobLocally(jobKey,effective){
   return shifts.some(s=>s&&String(s.date||'')>=effective&&String(s.date||'')<=today&&!s.traineeMode&&!s.classDay&&!String(s.specialShift||'').trim()&&normalizeCrewBookKey(s.assignment)===normalizeCrewBookKey(jobKey));
 }
 function communityShiftContext(s){
-  if(!s||!s.id||!s.date||s.traineeMode||s.classDay||String(s.specialShift||'').trim())return null;
+  if(!s||!s.date||s.traineeMode||s.classDay||String(s.specialShift||'').trim())return null;
   const jobKey=normalizeCrewBookKey(s.assignment||'');if(!jobKey)return null;
   const resolved=jobCompareResolveForDay(jobKey,s.date);
-  // A saved shift is enough evidence that the engineer is actually working the assignment.
-  // Do not require the Crew Book resolver to expose an active schedule for that exact day;
-  // relief-day/date-specific edge cases can otherwise hide useful Community Notes.
+  // A real shift form (saved or not yet saved) is enough context to surface notes.
+  // The assignment must still resolve to a recognized Crew Book job; custom labels
+  // such as Committee Day therefore never inherit Community Notes.
   if(!resolved?.hit||resolved.state==='abolished'||resolved.state==='missing')return null;
-  return {shiftId:String(s.id),jobKey,date:String(s.date),revision:communityRevisionMeta(jobKey,String(s.date))};
+  return {shiftId:s.id?String(s.id):'',jobKey,date:String(s.date),revision:communityRevisionMeta(jobKey,String(s.date))};
 }
 function communityShiftFormSnapshot(){
-  const id=document.getElementById('editId')?.value||'';if(!id)return null;
-  const base=shifts.find(x=>String(x.id)===String(id));if(!base)return null;
-  return {...base,id,date:document.getElementById('date')?.value||base.date,assignment:document.getElementById('assignment')?.value||'',specialShift:document.getElementById('specialShift')?.value||'',classDay:!!document.getElementById('classFlag')?.checked,traineeMode:(document.getElementById('shiftRuleMode')?.value==='trainee')};
+  const id=document.getElementById('editId')?.value||'';
+  const base=id?shifts.find(x=>String(x.id)===String(id)):null;
+  const date=document.getElementById('date')?.value||base?.date||'';
+  const assignment=document.getElementById('assignment')?.value||'';
+  if(!date||!String(assignment).trim())return null;
+  return {...(base||{}),id,date,assignment,specialShift:document.getElementById('specialShift')?.value||'',classDay:!!document.getElementById('classFlag')?.checked,traineeMode:(document.getElementById('shiftRuleMode')?.value==='trainee')};
 }
 async function communityFetchRows(jobKey){
   const client=getCloudClient();if(!client)return {rows:[],reason:'offline'};
