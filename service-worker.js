@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v9-0-20260904-timeslip-photo-test1';
+const CACHE_NAME='engineer-pay-log-v9-1-20260904-timeslip-deadline-test2';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(

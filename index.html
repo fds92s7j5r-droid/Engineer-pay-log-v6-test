@@ -161,7 +161,14 @@
     .warning-panel{display:none;margin-top:12px;padding:12px 14px;border-radius:14px;border:1px solid #e2c05c;background:#fff8d8;color:#654f00;font-size:12px;line-height:1.5}.warning-panel.show{display:block}.warning-panel strong{display:block;margin-bottom:4px}
     .backup-reminder{display:none;margin-bottom:14px;padding:12px 14px;border-radius:14px;background:#fff8d8;border:1px solid #e4c65f;color:#685300;font-size:12px;line-height:1.45}.backup-reminder.show{display:block}.mode-banner{padding:10px 12px;border-radius:12px;background:#eaf2fb;border:1px solid #9bbce0;color:#12345b;font-size:12px;font-weight:800;margin-top:10px}.readonly-info{padding:11px 12px;border-radius:12px;background:#f3f6f9;border:1px solid #d8e0e8;color:#263342}.readonly-info strong{font-size:15px;color:#12345b}.trainee-only{display:none}.trainee-mode .trainee-only{display:block}.hidden-by-mode{display:none!important}
     .saved-job{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #e7edf3}.saved-job:last-child{border-bottom:0}.saved-job-title{font-weight:850}.saved-job-sub{font-size:12px;color:var(--muted);margin-top:3px}
-    .timeslip-group{margin-top:18px}.timeslip-group h3{margin:0 0 8px;font-size:15px}.timeslip-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.timeslip-summary .statbox{padding:12px;border-radius:14px;background:#fff9d8;border:1px solid #e3ca66}.timeslip-summary .num{font-size:24px;font-weight:900}
+    .timeslip-group{margin-top:18px}.timeslip-group h3{margin:0 0 8px;font-size:15px}.timeslip-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}.timeslip-summary .statbox{padding:12px;border-radius:14px;background:#fff9d8;border:1px solid #e3ca66}.timeslip-summary .num{font-size:24px;font-weight:900}
+    .shift.timeslip .shift-sub{white-space:normal;line-height:1.42}
+    .time-slip-deadline-line{display:block;margin-top:4px;font-weight:800;color:#735d00}
+    .time-slip-deadline-line.warning{color:#8a5a00}.time-slip-deadline-line.urgent,.time-slip-deadline-line.overdue{color:#a22922}
+    .time-slip-deadline-info{padding:11px 12px;border:1px solid #dfc24d;border-radius:12px;background:#fffdf0;color:#5f4a00;font-size:12px;line-height:1.45}
+    .time-slip-deadline-info strong{display:block;font-size:14px;color:#4f3d00;margin-bottom:2px}.time-slip-deadline-info.warning{background:#fff4cf;border-color:#e2b53c}.time-slip-deadline-info.urgent,.time-slip-deadline-info.overdue{background:#fff0ee;border-color:#df7b72;color:#852720}.time-slip-deadline-info.urgent strong,.time-slip-deadline-info.overdue strong{color:#852720}
+    .time-slip-status-hint{font-size:10.5px;color:var(--muted);line-height:1.4;margin-top:5px;min-height:14px}
+    .time-slip-deadline-banner{display:none;margin:0 0 12px;padding:12px 14px;border-radius:14px;border:1px solid #dfbd43;background:#fff8d8;color:#604c00;font-size:12px;line-height:1.45}.time-slip-deadline-banner.show{display:block}.time-slip-deadline-banner strong{display:block;font-size:13px;margin-bottom:3px}.time-slip-deadline-banner.urgent,.time-slip-deadline-banner.overdue{background:#fff0ee;border-color:#df7b72;color:#852720}.time-slip-deadline-banner .btn{margin-top:8px}
     .time-slip-photo-panel{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
     .time-slip-photo-lead{font-size:12px;color:var(--muted);line-height:1.45;margin:4px 0 10px}
     .time-slip-photo-status{font-size:11px;color:var(--muted);margin:8px 0 0;min-height:16px}
@@ -432,6 +439,13 @@
       border-color:#756226!important;
     }
     html[data-theme="dark"] .timeslip-summary .statbox .num{color:#ffeaa0!important}
+    html[data-theme="dark"] .time-slip-deadline-info{background:#2d2917!important;border-color:#756226!important;color:#ffe39a!important}
+    html[data-theme="dark"] .time-slip-deadline-info strong{color:#ffeaa0!important}
+    html[data-theme="dark"] .time-slip-deadline-info.urgent,html[data-theme="dark"] .time-slip-deadline-info.overdue,html[data-theme="dark"] .time-slip-deadline-banner.urgent,html[data-theme="dark"] .time-slip-deadline-banner.overdue{background:#3b1f1d!important;border-color:#8b4a43!important;color:#ffc1bb!important}
+    html[data-theme="dark"] .time-slip-deadline-info.urgent strong,html[data-theme="dark"] .time-slip-deadline-info.overdue strong{color:#ffd3cf!important}
+    html[data-theme="dark"] .time-slip-deadline-banner{background:#342c12!important;border-color:#695a24!important;color:#ffe6a0!important}
+    html[data-theme="dark"] .time-slip-deadline-line{color:#ffe39a!important}
+    html[data-theme="dark"] .time-slip-deadline-line.urgent,html[data-theme="dark"] .time-slip-deadline-line.overdue{color:#ffb0a8!important}
 
     html[data-theme="dark"] .badge{
       background:#27394e!important;
@@ -1395,6 +1409,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
   <div id="billingReadOnlyBanner" class="billing-readonly-banner"><strong>Read-only mode.</strong> Your existing records remain available to view and export. Subscribe for $5/month to restore adding and editing shifts.</div>
 
   <section id="dashboardView" class="view active">
+    <div id="timeSlipDeadlineBanner" class="time-slip-deadline-banner" role="status"></div>
     <div class="grid dashboard-grid">
       <div class="card span4 stat"><div class="label">This month</div><div class="value" id="monthTotal">$0.00</div><div class="sub" id="monthCount">0 paid shifts</div></div>
       <div class="card span4 stat"><div class="label"><span id="yearTotalLabel">Current year</span> total</div><div class="value" id="yearTotal">$0.00</div><div class="sub" id="yearHours">0:00 actual hours</div></div>
@@ -1451,7 +1466,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
             <div class="mini" id="dashPaycheckDates">Wednesday–Tuesday pay period</div>
             <button class="btn small" style="margin-top:10px" onclick="openPaychecks()">View paycheck</button>
           </div>
-          <div class="feature-card"><h3>Time Slip Center</h3><div class="big" id="dashPendingSlips">0</div><div class="mini">pending time slips</div><button class="btn small" style="margin-top:10px" onclick="showView('timeslips')">View time slips</button></div>
+          <div class="feature-card"><h3>Time Slip Center</h3><div class="big" id="dashPendingSlips">0</div><div class="mini">open time slips</div><button class="btn small" style="margin-top:10px" onclick="showView('timeslips')">View time slips</button></div>
           <div class="feature-card"><h3>Saved Jobs</h3><div class="big" id="dashSavedJobs">0</div><div class="mini">favorites ready for quick entry</div><button class="btn small" style="margin-top:10px" onclick="showView('savedjobs')">View favorites</button></div>
         </div>
       </div>
@@ -1525,7 +1540,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
   <section id="timeslipsView" class="view">
     <div class="card">
       <div class="section-title"><h2>Time Slip Center</h2><button class="btn small" onclick="showView('dashboard')">Dashboard</button></div>
-      <p class="notice">Track every shift with a Time Slip. Pending slips stay at the top; paid and denied slips remain available for reference.</p>
+      <p class="notice">Track every shift with a Time Slip. Slips that still need to be submitted stay first, followed by pending, paid, and denied slips.</p>
       <div id="timeSlipCenter"></div>
     </div>
     <div class="contact-footer"><button type="button" onclick="openContactSettings()">Questions? Comments?</button></div>
@@ -2277,10 +2292,11 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <div id="timeSlipWrap" class="time-slip-panel">
             <div class="subhead">Time Slip Tracking</div>
             <div class="time-slip-grid">
-              <div class="field full"><label>Date Written</label><input id="timeSlipWritten" type="date"></div>
-              <div class="field full"><label>Date Submitted</label><input id="timeSlipSubmitted" type="date"></div>
+              <div class="field full"><label>Date Written</label><input id="timeSlipWritten" type="date" onchange="renderTimeSlipDeadlinePreview()"></div>
+              <div id="timeSlipDeadlineInfo" class="time-slip-deadline-info field full" style="display:none"></div>
+              <div class="field full"><label>Date Submitted</label><input id="timeSlipSubmitted" type="date" onchange="handleTimeSlipSubmittedChange()"></div>
               <div class="field full"><label>Location Submitted</label><input id="timeSlipLocation" placeholder="e.g. Jamaica"></div>
-              <div class="field full"><label>Status</label><select id="timeSlipStatus"><option value="Pending">Pending</option><option value="Paid">Paid</option><option value="Denied">Denied</option></select></div>
+              <div class="field full"><label>Status</label><select id="timeSlipStatus" onchange="renderTimeSlipDeadlinePreview()"><option value="Pending">Pending</option><option value="Paid">Paid</option><option value="Denied">Denied</option></select><div id="timeSlipStatusHint" class="time-slip-status-hint"></div></div>
               <div class="field full"><label>Date Paid / Denied</label><input id="timeSlipResolved" type="date"></div>
             </div>
             <div class="time-slip-photo-panel">
@@ -2394,7 +2410,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.719,2.578,0.03],[2.292,3.437,0.04],[2.864,4.296,0.05],[3.437,5.156,0.059],[4.01,6.015,0.069],[4.583,6.874,0.079],[5.156,7.733,0.089],[5.728,8.592,0.099],[6.301,9.451,0.109],[6.874,10.311,0.118],[7.447,11.17,0.128],[8.019,12.029,0.138],[8.592,12.888,0.148],[9.165,13.747,0.158],[9.738,14.606,0.167],[10.311,15.466,0.177],[10.883,16.325,0.187],[11.456,17.184,0.197],[12.029,18.043,0.207],[12.602,18.902,0.217],[13.174,19.761,0.226],[13.747,20.621,0.236],[14.32,21.48,0.246],[14.893,22.339,0.256],[15.466,23.198,0.266],[16.038,24.057,0.275],[16.611,24.916,0.285],[17.184,25.776,0.295],[17.757,26.635,0.305],[18.329,27.494,0.315],[18.902,28.353,0.325],[19.475,29.212,0.334],[20.048,30.071,0.344],[20.621,30.931,0.354],[21.193,31.79,0.364],[21.766,32.649,0.374],[22.339,33.508,0.383],[22.912,34.367,0.393],[23.485,35.227,0.403],[24.057,36.086,0.413],[24.63,36.945,0.423],[25.203,37.804,0.433],[25.776,38.663,0.442],[26.348,39.522,0.452],[26.921,40.382,0.462],[27.494,41.241,0.472],[28.067,42.1,0.482],[28.64,42.959,0.491],[29.212,43.818,0.501],[29.785,44.677,0.511],[30.358,45.537,0.521],[30.931,46.396,0.531],[31.503,47.255,0.541],[32.076,48.114,0.55],[32.649,48.973,0.56],[33.222,49.832,0.57],[33.795,50.692,0.58],[34.367,51.551,0.59]],"hour":[null,[34.367,51.55,0.589],[68.734,103.1,1.178],[103.1,154.651,1.768],[137.467,206.201,2.357],[171.834,257.751,2.946],[206.201,309.301,3.535],[240.568,360.852,4.124],[274.935,412.402,4.714]]},"80":{"minute":[null,[0.764,1.146,0.014],[1.528,2.292,0.027],[2.292,3.437,0.04],[3.055,4.583,0.053],[3.819,5.728,0.066],[4.583,6.874,0.079],[5.346,8.019,0.092],[6.11,9.165,0.105],[6.874,10.311,0.118],[7.638,11.456,0.131],[8.401,12.602,0.145],[9.165,13.747,0.158],[9.929,14.893,0.171],[10.692,16.038,0.184],[11.456,17.184,0.197],[12.22,18.329,0.21],[12.984,19.475,0.223],[13.747,20.621,0.236],[14.511,21.766,0.249],[15.275,22.912,0.262],[16.038,24.057,0.275],[16.802,25.203,0.289],[17.566,26.348,0.302],[18.329,27.494,0.315],[19.093,28.64,0.328],[19.857,29.785,0.341],[20.621,30.931,0.354],[21.384,32.076,0.367],[22.148,33.222,0.38],[22.912,34.367,0.393],[23.675,35.513,0.406],[24.439,36.658,0.419],[25.203,37.804,0.433],[25.967,38.95,0.446],[26.73,40.095,0.459],[27.494,41.241,0.472],[28.258,42.386,0.485],[29.021,43.532,0.498],[29.785,44.677,0.511],[30.549,45.823,0.524],[31.313,46.969,0.537],[32.076,48.114,0.55],[32.84,49.26,0.564],[33.604,50.405,0.577],[34.367,51.551,0.59],[35.131,52.696,0.603],[35.895,53.842,0.616],[36.658,54.987,0.629],[37.422,56.133,0.642],[38.186,57.279,0.655],[38.95,58.424,0.668],[39.713,59.57,0.681],[40.477,60.715,0.694],[41.241,61.861,0.708],[42.004,63.006,0.721],[42.768,64.152,0.734],[43.532,65.297,0.747],[44.296,66.443,0.76],[45.059,67.589,0.773],[45.823,68.734,0.786]],"hour":[null,[45.822,68.734,0.786],[91.645,137.467,1.571],[137.467,206.201,2.357],[183.29,274.935,3.142],[229.112,343.668,3.928],[274.935,412.402,4.714],[320.757,481.136,5.499],[366.579,549.869,6.285]]},"90":{"minute":[null,[0.86,1.289,0.015],[1.719,2.578,0.03],[2.578,3.867,0.045],[3.437,5.156,0.059],[4.296,6.444,0.074],[5.156,7.733,0.089],[6.015,9.022,0.104],[6.874,10.311,0.118],[7.733,11.599,0.133],[8.592,12.888,0.148],[9.451,14.177,0.163],[10.311,15.466,0.177],[11.17,16.754,0.192],[12.029,18.043,0.207],[12.888,19.332,0.221],[13.747,20.621,0.236],[14.606,21.909,0.251],[15.466,23.198,0.266],[16.325,24.487,0.28],[17.184,25.776,0.295],[18.043,27.064,0.31],[18.902,28.353,0.325],[19.761,29.642,0.339],[20.621,30.931,0.354],[21.48,32.219,0.369],[22.339,33.508,0.383],[23.198,34.797,0.398],[24.057,36.086,0.413],[24.916,37.374,0.428],[25.776,38.663,0.442],[26.635,39.952,0.457],[27.494,41.241,0.472],[28.353,42.529,0.487],[29.212,43.818,0.501],[30.071,45.107,0.516],[30.931,46.396,0.531],[31.79,47.684,0.546],[32.649,48.973,0.56],[33.508,50.262,0.575],[34.367,51.551,0.59],[35.227,52.84,0.604],[36.086,54.128,0.619],[36.945,55.417,0.634],[37.804,56.706,0.649],[38.663,57.995,0.663],[39.522,59.283,0.678],[40.382,60.572,0.693],[41.241,61.861,0.708],[42.1,63.15,0.722],[42.959,64.438,0.737],[43.818,65.727,0.752],[44.677,67.016,0.766],[45.537,68.305,0.781],[46.396,69.593,0.796],[47.255,70.882,0.811],[48.114,72.171,0.825],[48.973,73.46,0.84],[49.832,74.748,0.855],[50.692,76.037,0.87],[51.551,77.326,0.884]],"hour":[null,[51.55,77.325,0.884],[103.1,154.651,1.768],[154.651,231.976,2.651],[206.201,309.301,3.535],[257.751,386.627,4.419],[309.301,463.952,5.303],[360.852,541.278,6.187],[412.402,618.603,7.07]]},"100":{"minute":[null,[0.955,1.432,0.017],[1.91,2.864,0.033],[2.864,4.296,0.05],[3.819,5.728,0.066],[4.774,7.16,0.082],[5.728,8.592,0.099],[6.683,10.024,0.115],[7.638,11.456,0.131],[8.592,12.888,0.148],[9.547,14.32,0.164],[10.501,15.752,0.181],[11.456,17.184,0.197],[12.411,18.616,0.213],[13.365,20.048,0.23],[14.32,21.48,0.246],[15.275,22.912,0.262],[16.229,24.344,0.279],[17.184,25.776,0.295],[18.139,27.208,0.311],[19.093,28.64,0.328],[20.048,30.071,0.344],[21.002,31.503,0.361],[21.957,32.935,0.377],[22.912,34.367,0.393],[23.866,35.799,0.41],[24.821,37.231,0.426],[25.776,38.663,0.442],[26.73,40.095,0.459],[27.685,41.527,0.475],[28.64,42.959,0.491],[29.594,44.391,0.508],[30.549,45.823,0.524],[31.503,47.255,0.541],[32.458,48.687,0.557],[33.413,50.119,0.573],[34.367,51.551,0.59],[35.322,52.983,0.606],[36.277,54.415,0.622],[37.231,55.847,0.639],[38.186,57.279,0.655],[39.141,58.711,0.672],[40.095,60.142,0.688],[41.05,61.574,0.704],[42.004,63.006,0.721],[42.959,64.438,0.737],[43.914,65.87,0.753],[44.868,67.302,0.77],[45.823,68.734,0.786],[46.778,70.166,0.802],[47.732,71.598,0.819],[48.687,73.03,0.835],[49.641,74.462,0.852],[50.596,75.894,0.868],[51.551,77.326,0.884],[52.505,78.758,0.901],[53.46,80.19,0.917],[54.415,81.622,0.933],[55.369,83.054,0.95],[56.324,84.486,0.966],[57.279,85.918,0.982]],"hour":[null,[57.278,85.917,0.982],[114.556,171.834,1.964],[171.834,257.751,2.946],[229.112,343.668,3.928],[286.39,429.585,4.91],[343.668,515.502,5.892],[400.946,601.419,6.874],[458.224,687.337,7.856]]}};
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
-const APP_VERSION='9.0-photo-test1';
+const APP_VERSION='9.1-deadline-test2';
 const WHATS_NEW_VERSION='9.0-20260901-finalized-rev8-images';
 const CONTACT_EMAIL='admin@engineerpaylog.com';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
@@ -4506,6 +4522,7 @@ function handleShiftDateChange(){
   // Date-driven convenience: recognized holidays check automatically, and moving to a normal date clears the auto-applied flag.
   // The checkbox remains editable, so a user can still manually mark an unrecognized/special holiday if needed.
   if(holidayBox&&document.getElementById('shiftRuleMode')?.value!=='trainee')holidayBox.checked=isContractHoliday(date);
+  renderTimeSlipDeadlinePreview();
   calculatePreview();
 }
 function calculatePreview(){
@@ -4758,6 +4775,7 @@ function toggleTimeSlip(){
   const checked=$('timeSlipFlag').checked;
   $('timeSlipWrap').classList.toggle('show',checked);
   if(checked&&!$('timeSlipStatus').value)$('timeSlipStatus').value='Pending';
+  renderTimeSlipDeadlinePreview();
   if(checked)void renderTimeSlipPhotoSection();
 }
 function toggleA2(){
@@ -4822,6 +4840,7 @@ function newShift(){if(!billingRequireWriteAccess())return;
   $('formTitle').textContent='Add shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';
   $('date').value=new Date().toISOString().slice(0,10);$('holidayFlag').checked=isContractHoliday($('date').value);
   $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';
+  renderTimeSlipDeadlinePreview();
   applyEntryMode();handleSecretUnpaidSick();$('specialShift').value='';$('specialCategory').value='';$('classFlag').checked=false;$('conductorName').value='';$('brakemanName').value='';$('engineerName').value='';$('engineerIBM').value='';$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('unscheduledOTFlag').checked=false;$('crewBookReleaseTime').value='';$('twoClassesPullTime').value='';
   $('vacationGrossInput').value='';$('vacationGrossInput').dataset.vacationYear='';$('vacationReliefPair').value='';
   $('traineeCount').value=1;$('yardCertCount').value=1;
@@ -4838,6 +4857,7 @@ function editShift(id){if(!billingRequireWriteAccess())return;
   $('notes').value=s.notes||'';$('engineerName').value=s.engineerName||'';$('engineerIBM').value=s.engineerIBM||'';$('classFlag').checked=!!s.classDay;$('conductorName').value=s.conductorName||'';$('brakemanName').value=s.brakemanName||'';
   $('specialShift').value=s.specialShift||'';$('specialCategory').value=s.specialCategory||'';$('vacationReliefPair').value=s.vacationReliefPair||'';
   $('timeSlipFlag').checked=!!s.timeSlip;$('timeSlipWritten').value=s.timeSlipWritten||'';$('timeSlipSubmitted').value=s.timeSlipSubmitted||'';$('timeSlipLocation').value=s.timeSlipLocation||'';$('timeSlipStatus').value=s.timeSlipStatus||'Pending';$('timeSlipResolved').value=s.timeSlipResolved||'';
+  renderTimeSlipDeadlinePreview();
   $('holidayFlag').checked=!!s.holiday;$('ssotFlag').checked=!!s.ssot;$('rdFlag').checked=!!s.rd;
   $('paysMealFlag').checked=!!s.paysMeal;$('mpteFlag').checked=!!s.mpte;$('freightMealFlag').checked=!!s.freightMeal;$('fuelClaimFlag').checked=!!s.fuelClaim;$('otCompletionFlag').checked=!!s.otCompletion;$('otCompletionTime').value=s.otCompletionTime||'';$('unscheduledOTFlag').checked=!!s.unscheduledOT;$('crewBookReleaseTime').value=s.crewBookReleaseTime||'';$('poneFlag').checked=!!s.pone;$('traineeCount').value=Math.min(2,Math.max(1,Number(s.traineeCount)||1));
   $('noCoFlag').checked=!!s.noCo;$('certFlag').checked=!!s.cert;$('yardCertCount').value=Math.max(1,Number(s.yardCertCount)||1);
@@ -4868,6 +4888,7 @@ function duplicateShift(id){if(!billingRequireWriteAccess())return;
   $('traineeCount').value=1;$('yardCertCount').value=1;$('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;$('miscPenaltyDescription').value='';$('miscPenaltyHours').value=0;$('miscPenaltyMinutes').value=0;$('miscPenaltyStraight').checked=true;
 
   $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';
+  renderTimeSlipDeadlinePreview();
   $('vacationGrossInput').value='';$('vacationGrossInput').dataset.vacationYear='';$('vacationReliefPair').value=s.specialShift==='Vacation Week'?(s.vacationReliefPair||vacationReliefPairFromMyJob()):'';
 
   applyEntryMode();toggleSpecialShift();handleSecretUnpaidSick();toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleTwoClasses();toggleRunaround();toggleA2();toggleMiscPenalty();
@@ -4880,6 +4901,54 @@ function duplicateCurrentShift(){
 function closeModal(){document.getElementById('shiftModal').classList.remove('open')}
 const TIME_SLIP_PHOTO_BUCKET='time-slip-photos';
 let pendingTimeSlipPhotoSide='';
+const TIME_SLIP_SUBMISSION_WINDOW_DAYS=30;
+function timeSlipDisplayStatus(s){
+  const status=s?.timeSlipStatus||'Pending';
+  return status==='Pending'&&!s?.timeSlipSubmitted?'Needs Submission':status;
+}
+function timeSlipSubmissionDeadline(s){return s?.date?addDaysISO(s.date,TIME_SLIP_SUBMISSION_WINDOW_DAYS):''}
+function timeSlipDeadlineInfoFor(s,todayISO=isoLocal(new Date())){
+  if(!s?.timeSlip||timeSlipDisplayStatus(s)!=='Needs Submission'||!s?.date)return null;
+  const due=timeSlipSubmissionDeadline(s);if(!due)return null;
+  const days=daysBetweenISO(todayISO,due);if(days==null)return null;
+  const level=days<0?'overdue':days<=3?'urgent':days<=7?'warning':days<=14?'notice':'normal';
+  let message='';
+  if(days<0)message=`30-day submission window passed ${Math.abs(days)} day${Math.abs(days)===1?'':'s'} ago`;
+  else if(days===0)message='Due today — 30-day submission window ends today';
+  else message=`${days} day${days===1?'':'s'} remaining to submit`;
+  return {due,days,level,message};
+}
+function renderTimeSlipDeadlinePreview(){
+  const box=document.getElementById('timeSlipDeadlineInfo'),hint=document.getElementById('timeSlipStatusHint');
+  if(!box)return;
+  const checked=!!document.getElementById('timeSlipFlag')?.checked;
+  const s={timeSlip:checked,date:document.getElementById('date')?.value||'',timeSlipSubmitted:document.getElementById('timeSlipSubmitted')?.value||'',timeSlipStatus:document.getElementById('timeSlipStatus')?.value||'Pending'};
+  const display=timeSlipDisplayStatus(s),info=timeSlipDeadlineInfoFor(s);
+  if(hint)hint.textContent=display==='Needs Submission'?'Current state: Needs Submission. Enter Date Submitted when Wage Examiners receives the slip.':display==='Pending'?'Current state: Pending (submitted, awaiting Paid or Denied).':'';
+  if(!checked||!info){box.style.display='none';box.className='time-slip-deadline-info field full';box.innerHTML='';return}
+  const dueLabel=formatDateShort(info.due);
+  box.className=`time-slip-deadline-info field full ${info.level}`;
+  box.style.display='block';
+  box.innerHTML=`<strong>Submission deadline: ${escapeHTML(dueLabel)}</strong>${escapeHTML(info.message)}<br><span style="font-size:10.5px">The 30-day window is calculated from the job date.</span>`;
+}
+function handleTimeSlipSubmittedChange(){
+  const submitted=document.getElementById('timeSlipSubmitted')?.value||'',status=document.getElementById('timeSlipStatus');
+  if(submitted&&status&&status.value!=='Paid'&&status.value!=='Denied')status.value='Pending';
+  renderTimeSlipDeadlinePreview();calculatePreview();
+}
+function renderTimeSlipDeadlineBanner(){
+  const el=document.getElementById('timeSlipDeadlineBanner');if(!el)return;
+  const items=shifts.filter(s=>s.timeSlip&&timeSlipDisplayStatus(s)==='Needs Submission').map(s=>({s,info:timeSlipDeadlineInfoFor(s)})).filter(x=>x.info&&x.info.days<=14).sort((a,b)=>a.info.days-b.info.days||String(a.s.date||'').localeCompare(String(b.s.date||'')));
+  if(!items.length){el.className='time-slip-deadline-banner';el.innerHTML='';return}
+  const first=items[0],count=items.length,job=escapeHTML(first.s.assignment||'Time Slip'),due=formatDateShort(first.info.due);
+  let title='',body='';
+  if(first.info.days<0){title='Time Slip submission window alert';body=`${job}: ${escapeHTML(first.info.message)} (deadline ${escapeHTML(due)}).`;}
+  else if(first.info.days===0){title='Time Slip due today';body=`${job}: the 30-day submission window ends today (${escapeHTML(due)}).`;}
+  else{title='Time Slip submission reminder';body=`${job}: ${first.info.days} day${first.info.days===1?'':'s'} remain before the 30-day submission deadline (${escapeHTML(due)}).`;}
+  if(count>1)body+=` ${count-1} other Time Slip${count-1===1?' also needs':'s also need'} submission.`;
+  el.className=`time-slip-deadline-banner show ${first.info.level}`;
+  el.innerHTML=`<strong>${title}</strong>${body}<br><button class="btn small" type="button" onclick="showView('timeslips')">Open Time Slip Center</button>`;
+}
 function timeSlipPhotoCount(s){
   const photos=s?.timeSlipPhotos&&typeof s.timeSlipPhotos==='object'?s.timeSlipPhotos:{};
   return ['front','back'].filter(side=>photos?.[side]?.path).length;
@@ -7637,8 +7706,7 @@ function collectWarnings(s){
   if(hasPenaltyOrClaim(s)&&!s.timeSlip)w.push('This shift has a penalty or claim but no Time Slip is marked.');
   if(s.timeSlip){
     if(!s.timeSlipWritten)w.push('Time Slip is marked but Date Written is blank.');
-    if(!s.timeSlipSubmitted)w.push('Time Slip is marked but Date Submitted is blank.');
-    if(!s.timeSlipLocation)w.push('Time Slip is marked but Location Submitted is blank.');
+    if(s.timeSlipSubmitted&&!s.timeSlipLocation)w.push('Time Slip has a Date Submitted but Location Submitted is blank.');
     if((s.timeSlipStatus==='Paid'||s.timeSlipStatus==='Denied')&&!s.timeSlipResolved)w.push(`Time Slip is ${s.timeSlipStatus} but Date Paid / Denied is blank.`);
   }
   return w;
@@ -7717,15 +7785,25 @@ function renderSavedJobs(){
   el.innerHTML=savedJobs.map(j=>`<div class="saved-job"><div><div class="saved-job-title">${escapeHTML(j.name)}</div><div class="saved-job-sub">${escapeHTML(j.assignment||'No assignment')}${j.location?' • '+escapeHTML(j.location):''}${j.shiftType?' • '+escapeHTML(j.shiftType):''}${j.start||j.end?' • '+escapeHTML(j.start||'—')+'–'+escapeHTML(j.end||'—'):''}</div></div><div style="display:flex;gap:6px"><button class="btn small" onclick="useFavorite('${j.id}')">Use</button><button class="btn small danger" onclick="deleteFavorite('${j.id}')">Delete</button></div></div>`).join('');
 }
 function timeSlipCard(s){
-  const status=s.timeSlipStatus||'Pending',photoCount=timeSlipPhotoCount(s);
-  return `<div class="shift timeslip"><div class="shift-date">${dateLabel(s.date)}</div><div class="shift-main"><div class="shift-title">${escapeHTML(s.assignment||'Shift')} <span class="badge timeslip">${escapeHTML(status)}</span></div><div class="shift-sub">${formatDateShort(s.timeSlipWritten)} written${s.timeSlipSubmitted?' • '+formatDateShort(s.timeSlipSubmitted)+' submitted':''}${s.timeSlipLocation?' • '+escapeHTML(s.timeSlipLocation):''}${s.timeSlipResolved?' • '+formatDateShort(s.timeSlipResolved):''}${photoCount?' • 📷 '+photoCount+' photo'+(photoCount===1?'':'s'):''}</div></div><div><button class="btn small" onclick="editShift('${s.id}')">Edit</button></div></div>`;
+  const status=timeSlipDisplayStatus(s),photoCount=timeSlipPhotoCount(s),info=timeSlipDeadlineInfoFor(s);
+  const submitted=s.timeSlipSubmitted?`Submitted ${formatDateShort(s.timeSlipSubmitted)}`:'';
+  const written=s.timeSlipWritten?`Written ${formatDateShort(s.timeSlipWritten)}`:'Date written not recorded';
+  const firstLine=[written,submitted].filter(Boolean).join(' • ');
+  const secondBits=[s.timeSlipLocation?escapeHTML(s.timeSlipLocation):'',photoCount?`📷 ${photoCount} photo${photoCount===1?'':'s'}`:'',s.timeSlipResolved?`${status} ${formatDateShort(s.timeSlipResolved)}`:''].filter(Boolean);
+  let deadlineLine='';
+  if(info)deadlineLine=`<span class="time-slip-deadline-line ${info.level}">Due ${escapeHTML(formatDateShort(info.due))} • ${escapeHTML(info.message)}</span>`;
+  return `<div class="shift timeslip"><div class="shift-date">${dateLabel(s.date)}</div><div class="shift-main"><div class="shift-title">${escapeHTML(s.assignment||'Shift')} <span class="badge timeslip">${escapeHTML(status)}</span></div><div class="shift-sub">${firstLine}${secondBits.length?`<br>${secondBits.join(' • ')}`:''}${deadlineLine}</div></div><div><button class="btn small" onclick="editShift('${s.id}')">Edit</button></div></div>`;
 }
 function renderTimeSlipCenter(){
   const el=document.getElementById('timeSlipCenter');if(!el)return;
-  const slips=shifts.filter(s=>s.timeSlip).sort((a,b)=>(b.timeSlipSubmitted||b.timeSlipWritten||b.date).localeCompare(a.timeSlipSubmitted||a.timeSlipWritten||a.date));
-  const groups=['Pending','Paid','Denied'],counts=Object.fromEntries(groups.map(g=>[g,slips.filter(s=>(s.timeSlipStatus||'Pending')===g).length]));
+  const slips=shifts.filter(s=>s.timeSlip);
+  const groups=['Needs Submission','Pending','Paid','Denied'];
+  const grouped=Object.fromEntries(groups.map(g=>[g,slips.filter(s=>timeSlipDisplayStatus(s)===g)]));
+  grouped['Needs Submission'].sort((a,b)=>String(timeSlipSubmissionDeadline(a)||'9999').localeCompare(String(timeSlipSubmissionDeadline(b)||'9999'))||String(b.date||'').localeCompare(String(a.date||'')));
+  for(const g of ['Pending','Paid','Denied'])grouped[g].sort((a,b)=>(b.timeSlipSubmitted||b.timeSlipWritten||b.date||'').localeCompare(a.timeSlipSubmitted||a.timeSlipWritten||a.date||''));
+  const counts=Object.fromEntries(groups.map(g=>[g,grouped[g].length]));
   let out=`<div class="timeslip-summary">${groups.map(g=>`<div class="statbox"><div class="num">${counts[g]}</div><div>${g}</div></div>`).join('')}</div>`;
-  for(const g of groups){const list=slips.filter(s=>(s.timeSlipStatus||'Pending')===g);out+=`<div class="timeslip-group"><h3>${g}</h3>${list.length?list.map(timeSlipCard).join(''):'<div class="empty">No '+g.toLowerCase()+' time slips.</div>'}</div>`}
+  for(const g of groups){const list=grouped[g];out+=`<div class="timeslip-group"><h3>${g}</h3>${list.length?list.map(timeSlipCard).join(''):'<div class="empty">No '+g.toLowerCase()+' time slips.</div>'}</div>`}
   el.innerHTML=out;
 }
 function getNextThursday(base=new Date()){const d=new Date(base.getFullYear(),base.getMonth(),base.getDate()),delta=(4-d.getDay()+7)%7;d.setDate(d.getDate()+delta);return d}
@@ -7873,7 +7951,7 @@ function shiftHTML(s){
   if(s.ssot)tags.push('<span class="badge ot">Short Swing</span>');
   if(s.holiday)tags.push('<span class="badge holiday">Holiday</span>');
   if(s.mpte||s.freightMeal||s.fuelClaim||s.otCompletion||s.unscheduledOT||s.pone||s.noCo||s.cert||s.commingle||s.yardMove||s.sheridanMove||s.terminalNotCrewBook||s.runaround||s.a2||s.miscPenalty)tags.push('<span class="badge penalty">Extra</span>');
-  if(s.timeSlip)tags.push(`<span class="badge timeslip">${escapeHTML(s.timeSlipStatus||'Time Slip')}</span>`);
+  if(s.timeSlip)tags.push(`<span class="badge timeslip">${escapeHTML(timeSlipDisplayStatus(s))}</span>`);
 
   const vacationWeek=s.specialShift==='Vacation Week',unpaidSick=isSecretUnpaidSickShift(s);
   const title=escapeHTML(s.classDay?'Class':(s.specialShift||s.assignment||'Shift'));
@@ -7955,7 +8033,8 @@ function renderDashboard(){
   const showNet=netEstimatorEnabled()&&netRate!=null;
   if(netBlock)netBlock.style.display=showNet?'block':'none';
   if(netAmount&&showNet)netAmount.textContent=money(pi.total*netRate);
-  const p=document.getElementById('dashPendingSlips');if(p)p.textContent=String(shifts.filter(s=>s.timeSlip&&(s.timeSlipStatus||'Pending')==='Pending').length);
+  const p=document.getElementById('dashPendingSlips');if(p)p.textContent=String(shifts.filter(s=>s.timeSlip&&['Needs Submission','Pending'].includes(timeSlipDisplayStatus(s))).length);
+  renderTimeSlipDeadlineBanner();
   const f=document.getElementById('dashSavedJobs');if(f)f.textContent=String(savedJobs.length);updateBackupUI();
 }
 function renderHistory(){
@@ -8027,7 +8106,7 @@ function exportCSV(){
   let rows=[['Date','Mode','Class','Engineer Name','Engineer IBM','Assignment','Location','Shift Type','Special Shift','Special Category','Vacation End Date','Previous Year Gross Earnings','Vacation Relief Days','Conductor','Brakeman','Start','End','Actual Time','Payable Time','Pay Scale','Pay Type','Regular Pay','OT Pay','Night Differential','Holiday Pay','Daily Cert','Meal Period','Freight Meal','Fuel Claim','OT Upon Completion Time','OT Upon Completion Pay','Trainees','Trainee Pay','Operating Without a Conductor','Yard Certifications','Yard Certification Pay','Commingle','2 Classes of Service','2 Classes Pull Time','2 Classes Selection','Pull-Related OT Time','Pull-Related OT Pay','Sheridan / Shop / House Move','Terminal Not In Crew Book','Runaround Difference','Runaround Pay','Time on Time','Time on Time Pay','Miscellaneous Penalty Description','Miscellaneous Penalty Time','Miscellaneous Penalty Rate','Miscellaneous Penalty Pay','Special Shift Pay','Time Slip','Time Slip Date Written','Time Slip Date Submitted','Time Slip Location','Time Slip Status','Time Slip Date Paid/Denied','Total','Notes']];
   for(const s of getFilteredHistoryShifts()){
     const c=calculate(s);if(!c||c.rateMissing)continue;
-    rows.push([s.date,s.traineeMode?'Trainee':'Engineer',s.classDay?'Yes':'No',s.engineerName||'',s.engineerIBM||'',s.assignment,s.location,s.shiftType||'',s.specialShift||'',s.specialCategory||'',s.vacationEndDate||'',s.vacationGross||'',s.vacationReliefPair||'',s.conductorName||'',s.brakemanName||'',s.start||'',s.end||'',fmtMinutes(c.actual),fmtMinutes(c.payable),c.ratePct+'%',c.payType,c.regular.toFixed(3),c.ot.toFixed(3),c.night.toFixed(3),c.holidayBonus.toFixed(3),(c.dailyCertPay||0).toFixed(2),c.mptePay.toFixed(3),(c.freightMealPay||0).toFixed(3),(c.fuelClaimPay||0).toFixed(3),fmtMinutes(c.otCompletionMinutes||0),(c.otCompletionPay||0).toFixed(3),c.traineeCount,c.ponePay.toFixed(3),c.noCoPay.toFixed(3),c.yardCertCount,c.certPay.toFixed(3),c.comminglePay.toFixed(3),c.classesPay.toFixed(3),s.twoClassesPullTime||'',c.twoClassesDecision==='classes'?'2 Classes':c.twoClassesDecision==='overtime'?'Overtime':s.yardMove?'Legacy / pull time not recorded':'',fmtMinutes(c.twoClassesPullRelatedOTMinutes||0),(c.twoClassesPullRelatedOTPay||0).toFixed(3),c.sheridanPay.toFixed(3),c.terminalPay.toFixed(3),fmtMinutes(c.runaroundDiffMinutes),c.runaroundPay.toFixed(3),fmtMinutes(c.a2mins),c.a2.toFixed(3),s.miscPenaltyDescription||'',fmtMinutes(c.miscPenaltyMinutes||0),c.miscPenaltyRate==='overtime'?'Overtime':'Straight Time',(c.miscPenaltyPay||0).toFixed(3),(c.specialPay||0).toFixed(3),s.timeSlip?'Yes':'No',s.timeSlipWritten||'',s.timeSlipSubmitted||'',s.timeSlipLocation||'',s.timeSlipStatus||'',s.timeSlipResolved||'',c.total.toFixed(3),s.notes||''])
+    rows.push([s.date,s.traineeMode?'Trainee':'Engineer',s.classDay?'Yes':'No',s.engineerName||'',s.engineerIBM||'',s.assignment,s.location,s.shiftType||'',s.specialShift||'',s.specialCategory||'',s.vacationEndDate||'',s.vacationGross||'',s.vacationReliefPair||'',s.conductorName||'',s.brakemanName||'',s.start||'',s.end||'',fmtMinutes(c.actual),fmtMinutes(c.payable),c.ratePct+'%',c.payType,c.regular.toFixed(3),c.ot.toFixed(3),c.night.toFixed(3),c.holidayBonus.toFixed(3),(c.dailyCertPay||0).toFixed(2),c.mptePay.toFixed(3),(c.freightMealPay||0).toFixed(3),(c.fuelClaimPay||0).toFixed(3),fmtMinutes(c.otCompletionMinutes||0),(c.otCompletionPay||0).toFixed(3),c.traineeCount,c.ponePay.toFixed(3),c.noCoPay.toFixed(3),c.yardCertCount,c.certPay.toFixed(3),c.comminglePay.toFixed(3),c.classesPay.toFixed(3),s.twoClassesPullTime||'',c.twoClassesDecision==='classes'?'2 Classes':c.twoClassesDecision==='overtime'?'Overtime':s.yardMove?'Legacy / pull time not recorded':'',fmtMinutes(c.twoClassesPullRelatedOTMinutes||0),(c.twoClassesPullRelatedOTPay||0).toFixed(3),c.sheridanPay.toFixed(3),c.terminalPay.toFixed(3),fmtMinutes(c.runaroundDiffMinutes),c.runaroundPay.toFixed(3),fmtMinutes(c.a2mins),c.a2.toFixed(3),s.miscPenaltyDescription||'',fmtMinutes(c.miscPenaltyMinutes||0),c.miscPenaltyRate==='overtime'?'Overtime':'Straight Time',(c.miscPenaltyPay||0).toFixed(3),(c.specialPay||0).toFixed(3),s.timeSlip?'Yes':'No',s.timeSlipWritten||'',s.timeSlipSubmitted||'',s.timeSlipLocation||'',s.timeSlip?timeSlipDisplayStatus(s):(s.timeSlipStatus||''),s.timeSlipResolved||'',c.total.toFixed(3),s.notes||''])
   }
   const csv=rows.map(r=>r.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(',')).join('\n');
   download('Engineer_Pay_Log.csv',csv,'text/csv')
@@ -8098,7 +8177,7 @@ async function exportPDF(){
       if(s.a2)tags.push(['Time on Time',paleBlue,'0.52 0.65 0.92',navy]);
       if(s.miscPenalty)tags.push([`Misc: ${s.miscPenaltyDescription||'Miscellaneous'} • ${fmtMinutes(c.miscPenaltyMinutes||0)} ${c.miscPenaltyRate==='overtime'?'OT':'ST'}`,paleBlue,'0.52 0.65 0.92',navy]);
       if(c.holidayBonus)tags.push(['Holiday Pay','1 0.93 0.93','0.92 0.55 0.55',red]);
-      if(s.timeSlip)tags.push([`Time Slip ${s.timeSlipStatus||'Pending'}`,paleYellow,'0.92 0.65 0.10','0.55 0.38 0.02']);
+      if(s.timeSlip)tags.push([`Time Slip ${timeSlipDisplayStatus(s)}`,paleYellow,'0.92 0.65 0.10','0.55 0.38 0.02']);
 
       const contentX=M+84;
       const earningsX=W-M-90;
