@@ -168,6 +168,17 @@
     .time-slip-deadline-info{padding:11px 12px;border:1px solid #dfc24d;border-radius:12px;background:#fffdf0;color:#5f4a00;font-size:12px;line-height:1.45}
     .time-slip-deadline-info strong{display:block;font-size:14px;color:#4f3d00;margin-bottom:2px}.time-slip-deadline-info.warning{background:#fff4cf;border-color:#e2b53c}.time-slip-deadline-info.urgent,.time-slip-deadline-info.overdue{background:#fff0ee;border-color:#df7b72;color:#852720}.time-slip-deadline-info.urgent strong,.time-slip-deadline-info.overdue strong{color:#852720}
     .time-slip-status-hint{font-size:10.5px;color:var(--muted);line-height:1.4;margin-top:5px;min-height:14px}
+    .time-slip-wage-panel{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+    .time-slip-wage-lead{font-size:12px;color:var(--muted);line-height:1.45;margin:4px 0 10px}
+    .time-slip-wage-actions{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
+    .time-slip-wage-actions .btn{flex:1 1 180px;justify-content:center}
+    .time-slip-followup-list{display:grid;gap:8px;margin-top:10px}
+    .time-slip-followup-entry{border:1px solid var(--line);border-radius:12px;padding:10px 11px;background:var(--card)}
+    .time-slip-followup-entry-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;font-size:11px;font-weight:850}
+    .time-slip-followup-entry-note{font-size:11px;line-height:1.45;margin-top:5px;white-space:pre-wrap}
+    .time-slip-followup-entry-meta{font-size:10px;color:var(--muted);margin-top:4px}
+    .time-slip-wage-banner{display:none;margin:0 0 12px;padding:12px 14px;border-radius:14px;border:1px solid #dfbd43;background:#fff8d8;color:#604c00;font-size:12px;line-height:1.45}.time-slip-wage-banner.show{display:block}.time-slip-wage-banner strong{display:block;font-size:13px;margin-bottom:3px}.time-slip-wage-banner.warning,.time-slip-wage-banner.urgent,.time-slip-wage-banner.overdue{background:#fff0ee;border-color:#df7b72;color:#852720}.time-slip-wage-banner-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    .time-slip-wage-line{display:block;margin-top:4px;font-weight:800;color:#735d00}.time-slip-wage-line.warning,.time-slip-wage-line.urgent,.time-slip-wage-line.overdue{color:#a22922}
     .time-slip-deadline-banner{display:none;margin:0 0 12px;padding:12px 14px;border-radius:14px;border:1px solid #dfbd43;background:#fff8d8;color:#604c00;font-size:12px;line-height:1.45}.time-slip-deadline-banner.show{display:block}.time-slip-deadline-banner strong{display:block;font-size:13px;margin-bottom:3px}.time-slip-deadline-banner.urgent,.time-slip-deadline-banner.overdue{background:#fff0ee;border-color:#df7b72;color:#852720}.time-slip-deadline-banner .btn{margin-top:8px}
     .time-slip-photo-panel{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
     .time-slip-photo-lead{font-size:12px;color:var(--muted);line-height:1.45;margin:4px 0 10px}
@@ -446,6 +457,9 @@
     html[data-theme="dark"] .time-slip-deadline-banner{background:#342c12!important;border-color:#695a24!important;color:#ffe6a0!important}
     html[data-theme="dark"] .time-slip-deadline-line{color:#ffe39a!important}
     html[data-theme="dark"] .time-slip-deadline-line.urgent,html[data-theme="dark"] .time-slip-deadline-line.overdue{color:#ffb0a8!important}
+    html[data-theme="dark"] .time-slip-wage-banner{background:#342c12!important;border-color:#695a24!important;color:#ffe6a0!important}
+    html[data-theme="dark"] .time-slip-wage-banner.warning,html[data-theme="dark"] .time-slip-wage-banner.urgent,html[data-theme="dark"] .time-slip-wage-banner.overdue{background:#3b1f1d!important;border-color:#8b4a43!important;color:#ffc1bb!important}
+    html[data-theme="dark"] .time-slip-wage-line{color:#ffe39a!important}html[data-theme="dark"] .time-slip-wage-line.warning,html[data-theme="dark"] .time-slip-wage-line.urgent,html[data-theme="dark"] .time-slip-wage-line.overdue{color:#ffb0a8!important}
 
     html[data-theme="dark"] .badge{
       background:#27394e!important;
@@ -1410,6 +1424,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
   <section id="dashboardView" class="view active">
     <div id="timeSlipDeadlineBanner" class="time-slip-deadline-banner" role="status"></div>
+    <div id="timeSlipWageBanner" class="time-slip-wage-banner" role="status"></div>
     <div class="grid dashboard-grid">
       <div class="card span4 stat"><div class="label">This month</div><div class="value" id="monthTotal">$0.00</div><div class="sub" id="monthCount">0 paid shifts</div></div>
       <div class="card span4 stat"><div class="label"><span id="yearTotalLabel">Current year</span> total</div><div class="value" id="yearTotal">$0.00</div><div class="sub" id="yearHours">0:00 actual hours</div></div>
@@ -1887,6 +1902,14 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           </div>
         </div>
 
+        <div class="settings-pref-section" id="timeSlipFollowUpSettingsCard">
+          <div class="settings-row settings-row-control borderless-row">
+            <div><strong>Time Slip Wage Follow-Up</strong><small>If a submitted Time Slip is still Pending, remind you to call Wage Examiners before the 30-day window ends.</small></div>
+            <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end"><input id="timeSlipWageDefaultDays" class="settings-inline-input" type="number" min="1" max="29" step="1" inputmode="numeric" style="width:82px" onchange="saveTimeSlipWageDefaultDays()"><span class="muted" style="font-size:11px">days before</span></div>
+          </div>
+          <div class="rate-note" style="margin-top:10px"><strong>Wage Examiners Office:</strong> 1 (718) 558-7546<br>The default is 7 days before the end of the 30-day window. You can override or disable the reminder on an individual Time Slip.</div>
+        </div>
+
         <div class="settings-pref-section" id="netEstimatorSettingsCard">
           <div class="settings-row settings-toggle-row borderless-row"><div><strong>Estimated Net Pay</strong><small>Estimate take-home pay using your recent paycheck history.</small></div><label class="switch-label" aria-label="Estimated Net Pay"><input id="netEstimatorToggle" type="checkbox" onchange="requestNetEstimatorToggle(this.checked)"><span class="switch-ui" aria-hidden="true"></span></label></div>
           <div id="netEstimatorSummary" class="rate-note" style="margin-top:10px;display:none"></div>
@@ -2296,8 +2319,15 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
               <div id="timeSlipDeadlineInfo" class="time-slip-deadline-info field full" style="display:none"></div>
               <div class="field full"><label>Date Submitted</label><input id="timeSlipSubmitted" type="date" onchange="handleTimeSlipSubmittedChange()"></div>
               <div class="field full"><label>Location Submitted</label><input id="timeSlipLocation" placeholder="e.g. Jamaica"></div>
-              <div class="field full"><label>Status</label><select id="timeSlipStatus" onchange="renderTimeSlipDeadlinePreview()"><option value="Pending">Pending</option><option value="Paid">Paid</option><option value="Denied">Denied</option></select><div id="timeSlipStatusHint" class="time-slip-status-hint"></div></div>
+              <div class="field full"><label>Status</label><select id="timeSlipStatus" onchange="handleTimeSlipStatusChange()"><option value="Pending">Pending</option><option value="Paid">Paid</option><option value="Denied">Denied</option></select><div id="timeSlipStatusHint" class="time-slip-status-hint"></div></div>
               <div class="field full"><label>Date Paid / Denied</label><input id="timeSlipResolved" type="date"></div>
+            </div>
+            <div class="time-slip-wage-panel">
+              <div class="subhead">Wage Examiners Follow-Up</div>
+              <p class="time-slip-wage-lead">For submitted slips that are still Pending, Engineer Pay Log can remind you to call Wage Examiners before the 30-day window ends and keep a record of your follow-up.</p>
+              <div class="time-slip-wage-actions"><a class="btn primary" href="tel:+17185587546">☎ Call Wage Examiners</a></div>
+              <div class="field full"><label>Reminder override for this slip (optional)</label><input id="timeSlipWageReminderDays" type="number" min="0" max="29" step="1" inputmode="numeric" placeholder="Leave blank to use app default" oninput="renderTimeSlipWageReminderHint()"><div id="timeSlipWageReminderHint" class="time-slip-status-hint"></div></div>
+              <div id="timeSlipFollowUpContent"></div>
             </div>
             <div class="time-slip-photo-panel">
               <div class="subhead">Time Slip Photos</div>
@@ -2410,7 +2440,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.719,2.578,0.03],[2.292,3.437,0.04],[2.864,4.296,0.05],[3.437,5.156,0.059],[4.01,6.015,0.069],[4.583,6.874,0.079],[5.156,7.733,0.089],[5.728,8.592,0.099],[6.301,9.451,0.109],[6.874,10.311,0.118],[7.447,11.17,0.128],[8.019,12.029,0.138],[8.592,12.888,0.148],[9.165,13.747,0.158],[9.738,14.606,0.167],[10.311,15.466,0.177],[10.883,16.325,0.187],[11.456,17.184,0.197],[12.029,18.043,0.207],[12.602,18.902,0.217],[13.174,19.761,0.226],[13.747,20.621,0.236],[14.32,21.48,0.246],[14.893,22.339,0.256],[15.466,23.198,0.266],[16.038,24.057,0.275],[16.611,24.916,0.285],[17.184,25.776,0.295],[17.757,26.635,0.305],[18.329,27.494,0.315],[18.902,28.353,0.325],[19.475,29.212,0.334],[20.048,30.071,0.344],[20.621,30.931,0.354],[21.193,31.79,0.364],[21.766,32.649,0.374],[22.339,33.508,0.383],[22.912,34.367,0.393],[23.485,35.227,0.403],[24.057,36.086,0.413],[24.63,36.945,0.423],[25.203,37.804,0.433],[25.776,38.663,0.442],[26.348,39.522,0.452],[26.921,40.382,0.462],[27.494,41.241,0.472],[28.067,42.1,0.482],[28.64,42.959,0.491],[29.212,43.818,0.501],[29.785,44.677,0.511],[30.358,45.537,0.521],[30.931,46.396,0.531],[31.503,47.255,0.541],[32.076,48.114,0.55],[32.649,48.973,0.56],[33.222,49.832,0.57],[33.795,50.692,0.58],[34.367,51.551,0.59]],"hour":[null,[34.367,51.55,0.589],[68.734,103.1,1.178],[103.1,154.651,1.768],[137.467,206.201,2.357],[171.834,257.751,2.946],[206.201,309.301,3.535],[240.568,360.852,4.124],[274.935,412.402,4.714]]},"80":{"minute":[null,[0.764,1.146,0.014],[1.528,2.292,0.027],[2.292,3.437,0.04],[3.055,4.583,0.053],[3.819,5.728,0.066],[4.583,6.874,0.079],[5.346,8.019,0.092],[6.11,9.165,0.105],[6.874,10.311,0.118],[7.638,11.456,0.131],[8.401,12.602,0.145],[9.165,13.747,0.158],[9.929,14.893,0.171],[10.692,16.038,0.184],[11.456,17.184,0.197],[12.22,18.329,0.21],[12.984,19.475,0.223],[13.747,20.621,0.236],[14.511,21.766,0.249],[15.275,22.912,0.262],[16.038,24.057,0.275],[16.802,25.203,0.289],[17.566,26.348,0.302],[18.329,27.494,0.315],[19.093,28.64,0.328],[19.857,29.785,0.341],[20.621,30.931,0.354],[21.384,32.076,0.367],[22.148,33.222,0.38],[22.912,34.367,0.393],[23.675,35.513,0.406],[24.439,36.658,0.419],[25.203,37.804,0.433],[25.967,38.95,0.446],[26.73,40.095,0.459],[27.494,41.241,0.472],[28.258,42.386,0.485],[29.021,43.532,0.498],[29.785,44.677,0.511],[30.549,45.823,0.524],[31.313,46.969,0.537],[32.076,48.114,0.55],[32.84,49.26,0.564],[33.604,50.405,0.577],[34.367,51.551,0.59],[35.131,52.696,0.603],[35.895,53.842,0.616],[36.658,54.987,0.629],[37.422,56.133,0.642],[38.186,57.279,0.655],[38.95,58.424,0.668],[39.713,59.57,0.681],[40.477,60.715,0.694],[41.241,61.861,0.708],[42.004,63.006,0.721],[42.768,64.152,0.734],[43.532,65.297,0.747],[44.296,66.443,0.76],[45.059,67.589,0.773],[45.823,68.734,0.786]],"hour":[null,[45.822,68.734,0.786],[91.645,137.467,1.571],[137.467,206.201,2.357],[183.29,274.935,3.142],[229.112,343.668,3.928],[274.935,412.402,4.714],[320.757,481.136,5.499],[366.579,549.869,6.285]]},"90":{"minute":[null,[0.86,1.289,0.015],[1.719,2.578,0.03],[2.578,3.867,0.045],[3.437,5.156,0.059],[4.296,6.444,0.074],[5.156,7.733,0.089],[6.015,9.022,0.104],[6.874,10.311,0.118],[7.733,11.599,0.133],[8.592,12.888,0.148],[9.451,14.177,0.163],[10.311,15.466,0.177],[11.17,16.754,0.192],[12.029,18.043,0.207],[12.888,19.332,0.221],[13.747,20.621,0.236],[14.606,21.909,0.251],[15.466,23.198,0.266],[16.325,24.487,0.28],[17.184,25.776,0.295],[18.043,27.064,0.31],[18.902,28.353,0.325],[19.761,29.642,0.339],[20.621,30.931,0.354],[21.48,32.219,0.369],[22.339,33.508,0.383],[23.198,34.797,0.398],[24.057,36.086,0.413],[24.916,37.374,0.428],[25.776,38.663,0.442],[26.635,39.952,0.457],[27.494,41.241,0.472],[28.353,42.529,0.487],[29.212,43.818,0.501],[30.071,45.107,0.516],[30.931,46.396,0.531],[31.79,47.684,0.546],[32.649,48.973,0.56],[33.508,50.262,0.575],[34.367,51.551,0.59],[35.227,52.84,0.604],[36.086,54.128,0.619],[36.945,55.417,0.634],[37.804,56.706,0.649],[38.663,57.995,0.663],[39.522,59.283,0.678],[40.382,60.572,0.693],[41.241,61.861,0.708],[42.1,63.15,0.722],[42.959,64.438,0.737],[43.818,65.727,0.752],[44.677,67.016,0.766],[45.537,68.305,0.781],[46.396,69.593,0.796],[47.255,70.882,0.811],[48.114,72.171,0.825],[48.973,73.46,0.84],[49.832,74.748,0.855],[50.692,76.037,0.87],[51.551,77.326,0.884]],"hour":[null,[51.55,77.325,0.884],[103.1,154.651,1.768],[154.651,231.976,2.651],[206.201,309.301,3.535],[257.751,386.627,4.419],[309.301,463.952,5.303],[360.852,541.278,6.187],[412.402,618.603,7.07]]},"100":{"minute":[null,[0.955,1.432,0.017],[1.91,2.864,0.033],[2.864,4.296,0.05],[3.819,5.728,0.066],[4.774,7.16,0.082],[5.728,8.592,0.099],[6.683,10.024,0.115],[7.638,11.456,0.131],[8.592,12.888,0.148],[9.547,14.32,0.164],[10.501,15.752,0.181],[11.456,17.184,0.197],[12.411,18.616,0.213],[13.365,20.048,0.23],[14.32,21.48,0.246],[15.275,22.912,0.262],[16.229,24.344,0.279],[17.184,25.776,0.295],[18.139,27.208,0.311],[19.093,28.64,0.328],[20.048,30.071,0.344],[21.002,31.503,0.361],[21.957,32.935,0.377],[22.912,34.367,0.393],[23.866,35.799,0.41],[24.821,37.231,0.426],[25.776,38.663,0.442],[26.73,40.095,0.459],[27.685,41.527,0.475],[28.64,42.959,0.491],[29.594,44.391,0.508],[30.549,45.823,0.524],[31.503,47.255,0.541],[32.458,48.687,0.557],[33.413,50.119,0.573],[34.367,51.551,0.59],[35.322,52.983,0.606],[36.277,54.415,0.622],[37.231,55.847,0.639],[38.186,57.279,0.655],[39.141,58.711,0.672],[40.095,60.142,0.688],[41.05,61.574,0.704],[42.004,63.006,0.721],[42.959,64.438,0.737],[43.914,65.87,0.753],[44.868,67.302,0.77],[45.823,68.734,0.786],[46.778,70.166,0.802],[47.732,71.598,0.819],[48.687,73.03,0.835],[49.641,74.462,0.852],[50.596,75.894,0.868],[51.551,77.326,0.884],[52.505,78.758,0.901],[53.46,80.19,0.917],[54.415,81.622,0.933],[55.369,83.054,0.95],[56.324,84.486,0.966],[57.279,85.918,0.982]],"hour":[null,[57.278,85.917,0.982],[114.556,171.834,1.964],[171.834,257.751,2.946],[229.112,343.668,3.928],[286.39,429.585,4.91],[343.668,515.502,5.892],[400.946,601.419,6.874],[458.224,687.337,7.856]]}};
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
-const APP_VERSION='9.1-deadline-test2';
+const APP_VERSION='9.1-wage-followup-test3';
 const WHATS_NEW_VERSION='9.0-20260901-finalized-rev8-images';
 const CONTACT_EMAIL='admin@engineerpaylog.com';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
@@ -2429,6 +2459,7 @@ const CREW_BOOK_ASSIST_KEY='engineerPayLogCrewBookAssist';
 const CREW_BOOK_ASSIST_SEEN_KEY='engineerPayLogCrewBookAssistSeen';
 const CREW_BOOK_ASSIST_PREF_KEY='engineerPayLogCrewBookAssistPreferenceV1';
 const INSTALL_ONBOARDING_DISMISSED_KEY='engineerPayLogInstallOnboardingDismissed_v1';
+const TIME_SLIP_WAGE_DEFAULT_KEY='engineerPayLogTimeSlipWageReminderDays_v1';
 let savedJobs=JSON.parse(localStorage.getItem(SAVED_JOBS_KEY)||'[]');
 let pendingRestoreData=null;
 let paycheckWeekOffset=0;
@@ -2783,6 +2814,8 @@ function upgradeShift(s){
   if(s.timeSlipStatus===undefined)s.timeSlipStatus='Pending';
   if(s.timeSlipResolved===undefined)s.timeSlipResolved='';
   if(!s.timeSlipPhotos||typeof s.timeSlipPhotos!=='object'||Array.isArray(s.timeSlipPhotos))s.timeSlipPhotos={};
+  if(s.timeSlipWageReminderDays===undefined)s.timeSlipWageReminderDays=null;
+  if(!Array.isArray(s.timeSlipFollowUps))s.timeSlipFollowUps=[];
   if(s.conductorName===undefined)s.conductorName='';
   if(s.brakemanName===undefined)s.brakemanName='';
   if(s.freightMeal===undefined)s.freightMeal=false;
@@ -4491,6 +4524,8 @@ function formData(){
     timeSlipLocation:$('timeSlipFlag').checked?$('timeSlipLocation').value.trim():'',
     timeSlipStatus:$('timeSlipFlag').checked?($('timeSlipStatus').value||'Pending'):'Pending',
     timeSlipResolved:$('timeSlipFlag').checked?$('timeSlipResolved').value:'',
+    timeSlipWageReminderDays:$('timeSlipFlag').checked?parseTimeSlipWageReminderOverride($('timeSlipWageReminderDays').value):null,
+    timeSlipFollowUps:(()=>{const old=shifts.find(x=>x.id===$('editId').value);return old&&Array.isArray(old.timeSlipFollowUps)?old.timeSlipFollowUps:[]})(),
     timeSlipPhotos:(()=>{const old=shifts.find(x=>x.id===$('editId').value);return old&&old.timeSlipPhotos&&typeof old.timeSlipPhotos==='object'?old.timeSlipPhotos:{}})(),
     holiday:$('shiftRuleMode').value==='trainee'?false:$('holidayFlag').checked,ssot:$('shiftRuleMode').value==='trainee'?false:$('ssotFlag').checked,rd:$('shiftRuleMode').value==='trainee'?false:$('rdFlag').checked,
     paysMeal:$('paysMealFlag').checked,mpte:$('mpteFlag').checked,freightMeal:$('freightMealFlag').checked,fuelClaim:$('shiftRuleMode').value==='trainee'?false:$('fuelClaimFlag').checked,otCompletion:$('shiftRuleMode').value==='trainee'?false:$('otCompletionFlag').checked,otCompletionTime:$('shiftRuleMode').value==='trainee'?'':($('otCompletionFlag').checked?$('otCompletionTime').value:''),
@@ -4775,6 +4810,7 @@ function toggleTimeSlip(){
   const checked=$('timeSlipFlag').checked;
   $('timeSlipWrap').classList.toggle('show',checked);
   if(checked&&!$('timeSlipStatus').value)$('timeSlipStatus').value='Pending';
+  renderTimeSlipWagePanel();
   renderTimeSlipDeadlinePreview();
   if(checked)void renderTimeSlipPhotoSection();
 }
@@ -4839,7 +4875,7 @@ function newShift(){if(!billingRequireWriteAccess())return;
   $('shiftForm').reset();setLocationUI('');setShiftTypeUI('');$('editId').value='';$('shiftRuleMode').value=isTraineeMode()?'trainee':'engineer';$('legacyExtras').value='';$('legacyClaims').value='';
   $('formTitle').textContent='Add shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';
   $('date').value=new Date().toISOString().slice(0,10);$('holidayFlag').checked=isContractHoliday($('date').value);
-  $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';
+  $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';$('timeSlipWageReminderDays').value='';
   renderTimeSlipDeadlinePreview();
   applyEntryMode();handleSecretUnpaidSick();$('specialShift').value='';$('specialCategory').value='';$('classFlag').checked=false;$('conductorName').value='';$('brakemanName').value='';$('engineerName').value='';$('engineerIBM').value='';$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('unscheduledOTFlag').checked=false;$('crewBookReleaseTime').value='';$('twoClassesPullTime').value='';
   $('vacationGrossInput').value='';$('vacationGrossInput').dataset.vacationYear='';$('vacationReliefPair').value='';
@@ -4856,7 +4892,7 @@ function editShift(id){if(!billingRequireWriteAccess())return;
   setLocationUI(s.location||'');setShiftTypeUI(s.shiftType||'');$('legacyExtras').value=s.extras||'';$('legacyClaims').value=s.claims||'';
   $('notes').value=s.notes||'';$('engineerName').value=s.engineerName||'';$('engineerIBM').value=s.engineerIBM||'';$('classFlag').checked=!!s.classDay;$('conductorName').value=s.conductorName||'';$('brakemanName').value=s.brakemanName||'';
   $('specialShift').value=s.specialShift||'';$('specialCategory').value=s.specialCategory||'';$('vacationReliefPair').value=s.vacationReliefPair||'';
-  $('timeSlipFlag').checked=!!s.timeSlip;$('timeSlipWritten').value=s.timeSlipWritten||'';$('timeSlipSubmitted').value=s.timeSlipSubmitted||'';$('timeSlipLocation').value=s.timeSlipLocation||'';$('timeSlipStatus').value=s.timeSlipStatus||'Pending';$('timeSlipResolved').value=s.timeSlipResolved||'';
+  $('timeSlipFlag').checked=!!s.timeSlip;$('timeSlipWritten').value=s.timeSlipWritten||'';$('timeSlipSubmitted').value=s.timeSlipSubmitted||'';$('timeSlipLocation').value=s.timeSlipLocation||'';$('timeSlipStatus').value=s.timeSlipStatus||'Pending';$('timeSlipResolved').value=s.timeSlipResolved||'';$('timeSlipWageReminderDays').value=s.timeSlipWageReminderDays===null||s.timeSlipWageReminderDays===undefined?'':String(s.timeSlipWageReminderDays);
   renderTimeSlipDeadlinePreview();
   $('holidayFlag').checked=!!s.holiday;$('ssotFlag').checked=!!s.ssot;$('rdFlag').checked=!!s.rd;
   $('paysMealFlag').checked=!!s.paysMeal;$('mpteFlag').checked=!!s.mpte;$('freightMealFlag').checked=!!s.freightMeal;$('fuelClaimFlag').checked=!!s.fuelClaim;$('otCompletionFlag').checked=!!s.otCompletion;$('otCompletionTime').value=s.otCompletionTime||'';$('unscheduledOTFlag').checked=!!s.unscheduledOT;$('crewBookReleaseTime').value=s.crewBookReleaseTime||'';$('poneFlag').checked=!!s.pone;$('traineeCount').value=Math.min(2,Math.max(1,Number(s.traineeCount)||1));
@@ -4887,7 +4923,7 @@ function duplicateShift(id){if(!billingRequireWriteAccess())return;
   $('runaroundFlag').checked=false;$('a2Flag').checked=false;$('miscPenaltyFlag').checked=false;
   $('traineeCount').value=1;$('yardCertCount').value=1;$('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;$('miscPenaltyDescription').value='';$('miscPenaltyHours').value=0;$('miscPenaltyMinutes').value=0;$('miscPenaltyStraight').checked=true;
 
-  $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';
+  $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';$('timeSlipWageReminderDays').value='';
   renderTimeSlipDeadlinePreview();
   $('vacationGrossInput').value='';$('vacationGrossInput').dataset.vacationYear='';$('vacationReliefPair').value=s.specialShift==='Vacation Week'?(s.vacationReliefPair||vacationReliefPairFromMyJob()):'';
 
@@ -4902,6 +4938,61 @@ function closeModal(){document.getElementById('shiftModal').classList.remove('op
 const TIME_SLIP_PHOTO_BUCKET='time-slip-photos';
 let pendingTimeSlipPhotoSide='';
 const TIME_SLIP_SUBMISSION_WINDOW_DAYS=30;
+const WAGE_EXAMINERS_PHONE_DISPLAY='1 (718) 558-7546';
+const WAGE_EXAMINERS_TEL='+17185587546';
+const TIME_SLIP_WAGE_DEFAULT_DAYS=7;
+function getTimeSlipWageDefaultDays(){
+  const n=Number(localStorage.getItem(TIME_SLIP_WAGE_DEFAULT_KEY));
+  return Number.isInteger(n)&&n>=1&&n<=29?n:TIME_SLIP_WAGE_DEFAULT_DAYS;
+}
+function parseTimeSlipWageReminderOverride(value){
+  if(value===undefined||value===null||String(value).trim()==='')return null;
+  const n=Math.round(Number(value));if(!Number.isFinite(n))return null;return Math.max(0,Math.min(29,n));
+}
+function effectiveTimeSlipWageReminderDays(s){
+  const n=s?.timeSlipWageReminderDays;return n===null||n===undefined||n===''?getTimeSlipWageDefaultDays():Math.max(0,Math.min(29,Math.round(Number(n)||0)));
+}
+function renderTimeSlipWageSettings(){const el=document.getElementById('timeSlipWageDefaultDays');if(el)el.value=String(getTimeSlipWageDefaultDays())}
+async function saveTimeSlipWageDefaultDays(){
+  const el=document.getElementById('timeSlipWageDefaultDays');let n=Math.round(Number(el?.value));if(!Number.isFinite(n)||n<1||n>29){n=TIME_SLIP_WAGE_DEFAULT_DAYS;if(el)el.value=String(n);alert('Choose a reminder between 1 and 29 days before the end of the 30-day window.')}
+  localStorage.setItem(TIME_SLIP_WAGE_DEFAULT_KEY,String(n));if(activeWorkspaceUserId)accountSaveWorkspace(activeWorkspaceUserId);renderTimeSlipWageReminderHint();renderDashboard();renderTimeSlipCenter();await cloudMirrorTimeSlipWageReminderSetting();
+}
+function renderTimeSlipWageReminderHint(){
+  const input=document.getElementById('timeSlipWageReminderDays'),hint=document.getElementById('timeSlipWageReminderHint');if(!input||!hint)return;
+  const raw=String(input.value||'').trim(),def=getTimeSlipWageDefaultDays();
+  if(raw==='')hint.textContent=`Using app default: remind ${def} day${def===1?'':'s'} before the 30-day window ends.`;
+  else if(Number(raw)===0)hint.textContent='Reminder disabled for this Time Slip.';
+  else{const n=Math.max(1,Math.min(29,Math.round(Number(raw)||def)));hint.textContent=`This Time Slip will remind you ${n} day${n===1?'':'s'} before the 30-day window ends if it is still Pending.`}
+}
+function timeSlipWageReminderInfoFor(s,todayISO=isoLocal(new Date())){
+  if(!s?.timeSlip||timeSlipDisplayStatus(s)!=='Pending'||!s?.date)return null;
+  const reminderDays=effectiveTimeSlipWageReminderDays(s);if(reminderDays<=0)return null;
+  const due=timeSlipSubmissionDeadline(s);if(!due)return null;const days=daysBetweenISO(todayISO,due);if(days==null||days>reminderDays)return null;
+  const level=days<0?'overdue':days<=1?'urgent':days<=3?'warning':'notice';
+  let message='';if(days<0)message=`30-day window ended ${Math.abs(days)} day${Math.abs(days)===1?'':'s'} ago — call Wage Examiners to confirm the slip is on file and check its status`;
+  else if(days===0)message='30-day window ends today — call Wage Examiners to confirm the slip is on file';
+  else message=`${days} day${days===1?'':'s'} until the 30-day window ends — call Wage Examiners to confirm the slip is on file`;
+  return {due,days,level,message,reminderDays};
+}
+function formatTimeSlipFollowUpDate(value){try{const d=new Date(value);if(Number.isNaN(d.getTime()))return String(value||'');return d.toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}catch{return String(value||'')}}
+function localDateTimeInputValue(d=new Date()){const z=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}`}
+function ensureTimeSlipFollowUpModal(){
+  let modal=document.getElementById('timeSlipFollowUpModal');if(modal)return modal;modal=document.createElement('div');modal.id='timeSlipFollowUpModal';modal.className='modal';modal.style.zIndex='65';
+  modal.innerHTML=`<div class="modal-card" style="width:min(560px,calc(100% - 16px))"><div class="modal-head"><h2>Add Wage Follow-Up Note</h2></div><div class="modal-body"><div class="form-grid"><div class="field full"><label>When</label><input id="timeSlipFollowUpAt" type="datetime-local"></div><div class="field full"><label>Spoke with (optional)</label><input id="timeSlipFollowUpPerson" maxlength="100" placeholder="Name or office contact"></div><div class="field full"><label>Note</label><textarea id="timeSlipFollowUpNote" rows="4" maxlength="1000" placeholder="e.g. Confirmed slip is on file and still pending"></textarea></div></div></div><div class="modal-foot"><button class="btn" type="button" onclick="closeTimeSlipFollowUpModal()">Cancel</button><button class="btn primary" type="button" onclick="saveTimeSlipFollowUp()">Save Note</button></div></div>`;document.body.appendChild(modal);return modal;
+}
+function openTimeSlipFollowUpModal(){if(!billingRequireWriteAccess())return;const s=currentTimeSlipPhotoShift();if(!s){alert('Save this shift first, then reopen it to add follow-up notes.');return}const modal=ensureTimeSlipFollowUpModal();document.getElementById('timeSlipFollowUpAt').value=localDateTimeInputValue();document.getElementById('timeSlipFollowUpPerson').value='';document.getElementById('timeSlipFollowUpNote').value='';modal.classList.add('open');setTimeout(()=>document.getElementById('timeSlipFollowUpNote')?.focus(),50)}
+function closeTimeSlipFollowUpModal(){document.getElementById('timeSlipFollowUpModal')?.classList.remove('open')}
+async function saveTimeSlipFollowUp(){if(!billingRequireWriteAccess())return;const s=currentTimeSlipPhotoShift();if(!s)return;const atRaw=document.getElementById('timeSlipFollowUpAt')?.value||'',person=(document.getElementById('timeSlipFollowUpPerson')?.value||'').trim(),note=(document.getElementById('timeSlipFollowUpNote')?.value||'').trim();if(!person&&!note){alert('Add a short note or the name of the person you spoke with.');return}const at=atRaw?new Date(atRaw).toISOString():new Date().toISOString();if(!Array.isArray(s.timeSlipFollowUps))s.timeSlipFollowUps=[];s.timeSlipFollowUps.push({id:createUniqueId(),at,spokeWith:person,note});persist();await cloudMirrorShift(s);closeTimeSlipFollowUpModal();renderTimeSlipWagePanel();renderTimeSlipCenter();renderDashboard()}
+async function deleteTimeSlipFollowUp(id){if(!billingRequireWriteAccess())return;const s=currentTimeSlipPhotoShift();if(!s||!Array.isArray(s.timeSlipFollowUps))return;if(!confirm('Delete this follow-up note?'))return;s.timeSlipFollowUps=s.timeSlipFollowUps.filter(x=>String(x?.id)!==String(id));persist();await cloudMirrorShift(s);renderTimeSlipWagePanel();renderTimeSlipCenter();renderDashboard()}
+function renderTimeSlipWagePanel(){
+  renderTimeSlipWageReminderHint();const host=document.getElementById('timeSlipFollowUpContent');if(!host)return;const checked=!!document.getElementById('timeSlipFlag')?.checked;if(!checked){host.innerHTML='';return}const s=currentTimeSlipPhotoShift();
+  if(!s){host.innerHTML='<div class="readonly-info" style="margin-top:10px"><strong>Follow-up history</strong><div class="muted" style="margin-top:3px">Save this shift first to record calls or conversations with Wage Examiners.</div></div>';return}
+  upgradeShift(s);const rows=[...s.timeSlipFollowUps].sort((a,b)=>String(b?.at||'').localeCompare(String(a?.at||'')));host.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px"><strong style="font-size:12px">Follow-Up History</strong><button class="btn small" type="button" onclick="openTimeSlipFollowUpModal()">+ Add Note</button></div>${rows.length?`<div class="time-slip-followup-list">${rows.map(r=>`<div class="time-slip-followup-entry"><div class="time-slip-followup-entry-head"><span>${escapeHTML(formatTimeSlipFollowUpDate(r.at))}</span><button class="btn small danger" type="button" onclick="deleteTimeSlipFollowUp('${escapeHTML(String(r.id||''))}')">Delete</button></div>${r.spokeWith?`<div class="time-slip-followup-entry-meta">Spoke with: ${escapeHTML(r.spokeWith)}</div>`:''}${r.note?`<div class="time-slip-followup-entry-note">${escapeHTML(r.note)}</div>`:''}</div>`).join('')}</div>`:'<div class="muted" style="font-size:11px;margin-top:8px">No Wage follow-up notes yet.</div>'}`;
+}
+function renderTimeSlipWageBanner(){
+  const el=document.getElementById('timeSlipWageBanner');if(!el)return;const items=shifts.filter(s=>s.timeSlip&&timeSlipDisplayStatus(s)==='Pending').map(s=>({s,info:timeSlipWageReminderInfoFor(s)})).filter(x=>x.info).sort((a,b)=>a.info.days-b.info.days||String(a.s.date||'').localeCompare(String(b.s.date||'')));
+  if(!items.length){el.className='time-slip-wage-banner';el.innerHTML='';return}const first=items[0],count=items.length,job=escapeHTML(first.s.assignment||'Time Slip');let body=`${job}: ${escapeHTML(first.info.message)}.`;if(count>1)body+=` ${count-1} other Pending Time Slip${count-1===1?' also needs':'s also need'} Wage follow-up.`;el.className=`time-slip-wage-banner show ${first.info.level}`;el.innerHTML=`<strong>Wage Examiners follow-up reminder</strong>${body}<div class="time-slip-wage-banner-actions"><a class="btn small primary" href="tel:${WAGE_EXAMINERS_TEL}">Call Wage Examiners</a><button class="btn small" type="button" onclick="showView('timeslips')">Open Time Slip Center</button></div>`;
+}
 function timeSlipDisplayStatus(s){
   const status=s?.timeSlipStatus||'Pending';
   return status==='Pending'&&!s?.timeSlipSubmitted?'Needs Submission':status;
@@ -4924,7 +5015,7 @@ function renderTimeSlipDeadlinePreview(){
   const checked=!!document.getElementById('timeSlipFlag')?.checked;
   const s={timeSlip:checked,date:document.getElementById('date')?.value||'',timeSlipSubmitted:document.getElementById('timeSlipSubmitted')?.value||'',timeSlipStatus:document.getElementById('timeSlipStatus')?.value||'Pending'};
   const display=timeSlipDisplayStatus(s),info=timeSlipDeadlineInfoFor(s);
-  if(hint)hint.textContent=display==='Needs Submission'?'Current state: Needs Submission. Enter Date Submitted when Wage Examiners receives the slip.':display==='Pending'?'Current state: Pending (submitted, awaiting Paid or Denied).':'';
+  if(hint)hint.textContent=display==='Needs Submission'?'Current state: Needs Submission. Enter Date Submitted after you turn in the slip.':display==='Pending'?'Current state: Pending (submitted, awaiting Paid or Denied).':'';
   if(!checked||!info){box.style.display='none';box.className='time-slip-deadline-info field full';box.innerHTML='';return}
   const dueLabel=formatDateShort(info.due);
   box.className=`time-slip-deadline-info field full ${info.level}`;
@@ -4934,8 +5025,9 @@ function renderTimeSlipDeadlinePreview(){
 function handleTimeSlipSubmittedChange(){
   const submitted=document.getElementById('timeSlipSubmitted')?.value||'',status=document.getElementById('timeSlipStatus');
   if(submitted&&status&&status.value!=='Paid'&&status.value!=='Denied')status.value='Pending';
-  renderTimeSlipDeadlinePreview();calculatePreview();
+  renderTimeSlipDeadlinePreview();renderTimeSlipWagePanel();calculatePreview();
 }
+function handleTimeSlipStatusChange(){renderTimeSlipDeadlinePreview();renderTimeSlipWagePanel();calculatePreview()}
 function renderTimeSlipDeadlineBanner(){
   const el=document.getElementById('timeSlipDeadlineBanner');if(!el)return;
   const items=shifts.filter(s=>s.timeSlip&&timeSlipDisplayStatus(s)==='Needs Submission').map(s=>({s,info:timeSlipDeadlineInfoFor(s)})).filter(x=>x.info&&x.info.days<=14).sort((a,b)=>a.info.days-b.info.days||String(a.s.date||'').localeCompare(String(b.s.date||'')));
@@ -5127,6 +5219,7 @@ const ACCOUNT_SCOPED_LOCAL_KEYS=[
   CREW_BOOK_ASSIST_KEY,
   CREW_BOOK_ASSIST_SEEN_KEY,
   CREW_BOOK_ASSIST_PREF_KEY,
+  TIME_SLIP_WAGE_DEFAULT_KEY,
   'engineerPayLogWelcomeSeen_v2'
 ];
 let activeWorkspaceUserId=localStorage.getItem(ACCOUNT_WORKSPACE_OWNER_KEY)||null;
@@ -5141,6 +5234,7 @@ const CLOUD_VACATION_GROSS_SETTING='vacation_gross_by_year';
 const CLOUD_CREW_BOOK_ASSIST_SETTING='crew_book_assistance';
 const CLOUD_TRAINEE_MODE_SETTING='engineer_trainee_mode';
 const CLOUD_NET_ESTIMATOR_SETTING='net_estimator';
+const CLOUD_TIME_SLIP_WAGE_SETTING='time_slip_wage_followup';
 const CLOUD_SETTINGS_BASELINE_PREFIX='engineerPayLogSettingsBaseline_v1:';
 let accountSettingsReviewCount=0;
 let lastCloudStatusMessage='';
@@ -5913,6 +6007,15 @@ async function cloudMirrorNetEstimator(){
   const result=await cloudUpsertAccountSetting(user,CLOUD_NET_ESTIMATOR_SETTING,cloudLocalNetEstimatorValue(),client);
   if(!result.ok)console.warn('Net Estimator cloud mirror failed:',result.error);
 }
+function cloudLocalTimeSlipWageReminderValue(){return {days:getTimeSlipWageDefaultDays()}}
+function cloudApplyTimeSlipWageReminderValue(value){const n=Math.round(Number(value?.days));localStorage.setItem(TIME_SLIP_WAGE_DEFAULT_KEY,String(Number.isFinite(n)&&n>=1&&n<=29?n:TIME_SLIP_WAGE_DEFAULT_DAYS));if(activeWorkspaceUserId)accountSaveWorkspace(activeWorkspaceUserId);renderTimeSlipWageSettings();renderDashboard();renderTimeSlipCenter()}
+async function cloudSyncTimeSlipWageReminder(options={}){
+  const client=getCloudClient();if(!client)return {ok:false,review:0,message:'Cloud unavailable'};const user=await cloudCurrentUser(client);if(!user)return {ok:false,review:0,message:'Signed out'};if(!accountGuardWorkspace(user)){accountActivateWorkspace(user);if(!accountGuardWorkspace(user))return {ok:false,review:0,message:'Workspace mismatch'}}if(navigator.onLine===false)return {ok:true,review:0,message:'Offline'};
+  const localValue=cloudLocalTimeSlipWageReminderValue(),baseline=cloudLoadSettingsBaseline(user),hasBase=Object.prototype.hasOwnProperty.call(baseline,CLOUD_TIME_SLIP_WAGE_SETTING),base=hasBase?baseline[CLOUD_TIME_SLIP_WAGE_SETTING]:null;const {data,error}=await client.from(CLOUD_SETTINGS_TABLE).select('setting_key, setting_value, updated_at').eq('setting_key',CLOUD_TIME_SLIP_WAGE_SETTING).maybeSingle();if(error)return {ok:false,review:0,message:error.message};const remoteExists=!!data,remoteValue=remoteExists?(data.setting_value??null):null,remoteUpdatedAt=remoteExists?(data.updated_at||null):null;
+  if(!hasBase){if(!remoteExists){const written=await cloudUpsertAccountSetting(user,CLOUD_TIME_SLIP_WAGE_SETTING,localValue,client);return {ok:written.ok,review:0,message:written.ok?'Uploaded Time Slip Wage reminder setting':written.error}}if(cloudSameSettingValue(localValue,remoteValue)){cloudSetSettingsBaselineEntry(user,CLOUD_TIME_SLIP_WAGE_SETTING,remoteValue,remoteUpdatedAt);return {ok:true,review:0,message:'Time Slip Wage reminder already matches'}}cloudApplyTimeSlipWageReminderValue(remoteValue);cloudSetSettingsBaselineEntry(user,CLOUD_TIME_SLIP_WAGE_SETTING,remoteValue,remoteUpdatedAt);return {ok:true,review:0,message:'Downloaded Time Slip Wage reminder setting'}}
+  const baseValue=base?.value??null,baseUpdatedAt=base?.cloudUpdatedAt||null,localChanged=!cloudSameSettingValue(localValue,baseValue),cloudChanged=remoteExists?remoteUpdatedAt!==baseUpdatedAt:baseUpdatedAt!==null;if(!localChanged&&!cloudChanged)return {ok:true,review:0,message:'Time Slip Wage reminder unchanged'};if(localChanged&&!cloudChanged){const written=await cloudUpsertAccountSetting(user,CLOUD_TIME_SLIP_WAGE_SETTING,localValue,client);return {ok:written.ok,review:0,message:written.ok?'Uploaded Time Slip Wage reminder change':written.error}}if(!localChanged&&cloudChanged){cloudApplyTimeSlipWageReminderValue(remoteValue);cloudSetSettingsBaselineEntry(user,CLOUD_TIME_SLIP_WAGE_SETTING,remoteValue,remoteUpdatedAt);return {ok:true,review:0,message:'Downloaded Time Slip Wage reminder change'}}if(cloudSameSettingValue(localValue,remoteValue)){cloudSetSettingsBaselineEntry(user,CLOUD_TIME_SLIP_WAGE_SETTING,remoteValue,remoteUpdatedAt);return {ok:true,review:0,message:'Time Slip Wage reminder converged'}}return {ok:true,review:1,message:'Time Slip Wage reminder changed independently on this device and the account; left untouched for review'};
+}
+async function cloudMirrorTimeSlipWageReminderSetting(){if(navigator.onLine===false)return;const client=getCloudClient();if(!client)return;const user=await cloudCurrentUser(client);if(!user||!accountGuardWorkspace(user))return;const result=await cloudUpsertAccountSetting(user,CLOUD_TIME_SLIP_WAGE_SETTING,cloudLocalTimeSlipWageReminderValue(),client);if(!result.ok)console.warn('Time Slip Wage reminder cloud mirror failed:',result.error)}
 async function cloudRunFullAccountSync(options={}){
   const hireDateResult=await cloudSyncEmploymentStartDate(options);
   const myJobResult=await cloudSyncMyJob(options);
@@ -5921,14 +6024,15 @@ async function cloudRunFullAccountSync(options={}){
   const traineeModeResult=await cloudSyncTraineeMode(options);
   const crewBookAssistResult=await cloudSyncCrewBookAssist(options);
   const netEstimatorResult=await cloudSyncNetEstimator(options);
-  accountSettingsReviewCount=[hireDateResult,myJobResult,savedJobsResult,vacationGrossResult,traineeModeResult,crewBookAssistResult,netEstimatorResult].reduce((sum,result)=>sum+Math.max(0,Number(result?.review)||0),0);
+  const timeSlipWageResult=await cloudSyncTimeSlipWageReminder(options);
+  accountSettingsReviewCount=[hireDateResult,myJobResult,savedJobsResult,vacationGrossResult,traineeModeResult,crewBookAssistResult,netEstimatorResult,timeSlipWageResult].reduce((sum,result)=>sum+Math.max(0,Number(result?.review)||0),0);
   await cloudRunVersionAwareSync(options);
-  const failed=[hireDateResult,myJobResult,savedJobsResult,vacationGrossResult,traineeModeResult,crewBookAssistResult,netEstimatorResult].filter(result=>result&&!result.ok);
+  const failed=[hireDateResult,myJobResult,savedJobsResult,vacationGrossResult,traineeModeResult,crewBookAssistResult,netEstimatorResult,timeSlipWageResult].filter(result=>result&&!result.ok);
   if(failed.length){
     const shiftResult=lastCloudStatusMessage;
     setCloudTestStatus(`Account settings sync failed: ${failed.map(result=>result.message||'Unknown settings error').join('; ')}. Shift sync result: ${shiftResult}`);
   }
-  return {settingsResults:{employmentStartDate:hireDateResult,myJob:myJobResult,savedJobs:savedJobsResult,vacationGross:vacationGrossResult,traineeMode:traineeModeResult,crewBookAssist:crewBookAssistResult,netEstimator:netEstimatorResult},status:lastCloudStatusMessage};
+  return {settingsResults:{employmentStartDate:hireDateResult,myJob:myJobResult,savedJobs:savedJobsResult,vacationGross:vacationGrossResult,traineeMode:traineeModeResult,crewBookAssist:crewBookAssistResult,netEstimator:netEstimatorResult,timeSlipWage:timeSlipWageResult},status:lastCloudStatusMessage};
 }
 async function cloudRunAutomaticAccountSyncWithRetry(source='startup'){
   await cloudRunFullAccountSync({automatic:true,source});
@@ -7789,10 +7893,12 @@ function timeSlipCard(s){
   const submitted=s.timeSlipSubmitted?`Submitted ${formatDateShort(s.timeSlipSubmitted)}`:'';
   const written=s.timeSlipWritten?`Written ${formatDateShort(s.timeSlipWritten)}`:'Date written not recorded';
   const firstLine=[written,submitted].filter(Boolean).join(' • ');
-  const secondBits=[s.timeSlipLocation?escapeHTML(s.timeSlipLocation):'',photoCount?`📷 ${photoCount} photo${photoCount===1?'':'s'}`:'',s.timeSlipResolved?`${status} ${formatDateShort(s.timeSlipResolved)}`:''].filter(Boolean);
+  const followUpCount=Array.isArray(s.timeSlipFollowUps)?s.timeSlipFollowUps.length:0;
+  const secondBits=[s.timeSlipLocation?escapeHTML(s.timeSlipLocation):'',photoCount?`📷 ${photoCount} photo${photoCount===1?'':'s'}`:'',followUpCount?`📝 ${followUpCount} follow-up${followUpCount===1?'':'s'}`:'',s.timeSlipResolved?`${status} ${formatDateShort(s.timeSlipResolved)}`:''].filter(Boolean);
   let deadlineLine='';
   if(info)deadlineLine=`<span class="time-slip-deadline-line ${info.level}">Due ${escapeHTML(formatDateShort(info.due))} • ${escapeHTML(info.message)}</span>`;
-  return `<div class="shift timeslip"><div class="shift-date">${dateLabel(s.date)}</div><div class="shift-main"><div class="shift-title">${escapeHTML(s.assignment||'Shift')} <span class="badge timeslip">${escapeHTML(status)}</span></div><div class="shift-sub">${firstLine}${secondBits.length?`<br>${secondBits.join(' • ')}`:''}${deadlineLine}</div></div><div><button class="btn small" onclick="editShift('${s.id}')">Edit</button></div></div>`;
+  const wageInfo=timeSlipWageReminderInfoFor(s);const wageLine=wageInfo?`<span class="time-slip-wage-line ${wageInfo.level}">☎ ${escapeHTML(wageInfo.message)}</span>`:'';
+  return `<div class="shift timeslip"><div class="shift-date">${dateLabel(s.date)}</div><div class="shift-main"><div class="shift-title">${escapeHTML(s.assignment||'Shift')} <span class="badge timeslip">${escapeHTML(status)}</span></div><div class="shift-sub">${firstLine}${secondBits.length?`<br>${secondBits.join(' • ')}`:''}${deadlineLine}${wageLine}</div></div><div><button class="btn small" onclick="editShift('${s.id}')">Edit</button></div></div>`;
 }
 function renderTimeSlipCenter(){
   const el=document.getElementById('timeSlipCenter');if(!el)return;
@@ -7802,7 +7908,7 @@ function renderTimeSlipCenter(){
   grouped['Needs Submission'].sort((a,b)=>String(timeSlipSubmissionDeadline(a)||'9999').localeCompare(String(timeSlipSubmissionDeadline(b)||'9999'))||String(b.date||'').localeCompare(String(a.date||'')));
   for(const g of ['Pending','Paid','Denied'])grouped[g].sort((a,b)=>(b.timeSlipSubmitted||b.timeSlipWritten||b.date||'').localeCompare(a.timeSlipSubmitted||a.timeSlipWritten||a.date||''));
   const counts=Object.fromEntries(groups.map(g=>[g,grouped[g].length]));
-  let out=`<div class="timeslip-summary">${groups.map(g=>`<div class="statbox"><div class="num">${counts[g]}</div><div>${g}</div></div>`).join('')}</div>`;
+  let out=`<div class="rate-note" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><strong>Wage Examiners Office</strong><br><span class="muted">${WAGE_EXAMINERS_PHONE_DISPLAY}</span></div><a class="btn primary small" href="tel:${WAGE_EXAMINERS_TEL}">☎ Call Wage Examiners</a></div><div class="timeslip-summary">${groups.map(g=>`<div class="statbox"><div class="num">${counts[g]}</div><div>${g}</div></div>`).join('')}</div>`;
   for(const g of groups){const list=grouped[g];out+=`<div class="timeslip-group"><h3>${g}</h3>${list.length?list.map(timeSlipCard).join(''):'<div class="empty">No '+g.toLowerCase()+' time slips.</div>'}</div>`}
   el.innerHTML=out;
 }
@@ -7835,7 +7941,7 @@ function previewRestore(data){
   document.getElementById('restoreHireDate').textContent=data.hireDate?formatDateShort(data.hireDate):'Not included';document.getElementById('restorePreviewModal').classList.add('open');
 }
 function cancelRestore(){pendingRestoreData=null;document.getElementById('restorePreviewModal').classList.remove('open')}
-function confirmRestore(){const data=pendingRestoreData;if(!data)return;shifts=data.shifts.map(upgradeShift);if(data.hireDate)localStorage.setItem(HIRE_DATE_KEY,data.hireDate);if(data.traineeMode!==undefined)localStorage.setItem(TRAINEE_MODE_KEY,data.traineeMode?'on':'off');if(data.myJob!==undefined){if(data.myJob)localStorage.setItem(MY_JOB_KEY,JSON.stringify(data.myJob));else localStorage.removeItem(MY_JOB_KEY)}if(data.vacationGrossByYear&&typeof data.vacationGrossByYear==='object')localStorage.setItem(VACATION_GROSS_KEY,JSON.stringify(data.vacationGrossByYear));if(data.appearanceMode)localStorage.setItem(APPEARANCE_KEY,data.appearanceMode);if(data.crewBookAssistEnabled!==undefined)setCrewBookAssistPreference(!!data.crewBookAssistEnabled);if(data.netEstimatorEnabled!==undefined)localStorage.setItem(NET_ESTIMATOR_ENABLED_KEY,data.netEstimatorEnabled?'1':'0');if(Array.isArray(data.netPayHistory))localStorage.setItem(NET_PAY_HISTORY_KEY,JSON.stringify(data.netPayHistory.slice(0,10)));if(Array.isArray(data.savedJobs)){savedJobs=data.savedJobs;persistSavedJobs()}persist();cancelRestore();updateRateDisplays();renderAll();alert('Backup restored.')}
+function confirmRestore(){const data=pendingRestoreData;if(!data)return;shifts=data.shifts.map(upgradeShift);if(data.hireDate)localStorage.setItem(HIRE_DATE_KEY,data.hireDate);if(data.traineeMode!==undefined)localStorage.setItem(TRAINEE_MODE_KEY,data.traineeMode?'on':'off');if(data.myJob!==undefined){if(data.myJob)localStorage.setItem(MY_JOB_KEY,JSON.stringify(data.myJob));else localStorage.removeItem(MY_JOB_KEY)}if(data.vacationGrossByYear&&typeof data.vacationGrossByYear==='object')localStorage.setItem(VACATION_GROSS_KEY,JSON.stringify(data.vacationGrossByYear));if(data.appearanceMode)localStorage.setItem(APPEARANCE_KEY,data.appearanceMode);if(data.crewBookAssistEnabled!==undefined)setCrewBookAssistPreference(!!data.crewBookAssistEnabled);if(data.netEstimatorEnabled!==undefined)localStorage.setItem(NET_ESTIMATOR_ENABLED_KEY,data.netEstimatorEnabled?'1':'0');if(Array.isArray(data.netPayHistory))localStorage.setItem(NET_PAY_HISTORY_KEY,JSON.stringify(data.netPayHistory.slice(0,10)));if(Number(data.timeSlipWageReminderDays)>=1&&Number(data.timeSlipWageReminderDays)<=29)localStorage.setItem(TIME_SLIP_WAGE_DEFAULT_KEY,String(Math.round(Number(data.timeSlipWageReminderDays))));if(Array.isArray(data.savedJobs)){savedJobs=data.savedJobs;persistSavedJobs()}persist();cancelRestore();updateRateDisplays();renderAll();alert('Backup restored.')}
 let deferredInstallPrompt=null;
 let installOnboardingTimer=null;
 let installOnboardingAttempts=0;
@@ -8034,7 +8140,7 @@ function renderDashboard(){
   if(netBlock)netBlock.style.display=showNet?'block':'none';
   if(netAmount&&showNet)netAmount.textContent=money(pi.total*netRate);
   const p=document.getElementById('dashPendingSlips');if(p)p.textContent=String(shifts.filter(s=>s.timeSlip&&['Needs Submission','Pending'].includes(timeSlipDisplayStatus(s))).length);
-  renderTimeSlipDeadlineBanner();
+  renderTimeSlipDeadlineBanner();renderTimeSlipWageBanner();
   const f=document.getElementById('dashSavedJobs');if(f)f.textContent=String(savedJobs.length);updateBackupUI();
 }
 function renderHistory(){
@@ -8091,8 +8197,8 @@ function showMascotMessage(button){
   clearTimeout(button._mascotTimer);button._mascotTimer=setTimeout(()=>bubble.classList.remove('show'),4200);
 }
 
-function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI()}
-function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility()}renderMyJobUI()}
+function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI()}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
   return shifts.filter(s=>[
@@ -8304,7 +8410,7 @@ async function exportPDF(){
   const tb=strBytes(tail);chunks.push(tb);total+=tb.length;const pdf=new Uint8Array(total);let pos=0;for(const ch of chunks){pdf.set(ch,pos);pos+=ch.length}
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([pdf],{type:'application/pdf'}));a.download='Engineer_Pay_Log_Shift_History.pdf';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);
 }
-function exportJSON(){const exported=new Date().toISOString();download('Engineer_Pay_Log_backup.json',JSON.stringify({version:13,appVersion:APP_VERSION,exported,hireDate:getHireDate(),traineeMode:isTraineeMode(),myJob:getMyJob(),vacationGrossByYear:getVacationGrossMap(),appearanceMode:getAppearanceMode(),crewBookAssistEnabled:getCrewBookAssistPreference()==='on',netEstimatorEnabled:netEstimatorEnabled(),netPayHistory:getNetPayHistory(),savedJobs,shifts},null,2),'application/json');localStorage.setItem(LAST_BACKUP_KEY,exported);updateBackupUI()}
+function exportJSON(){const exported=new Date().toISOString();download('Engineer_Pay_Log_backup.json',JSON.stringify({version:13,appVersion:APP_VERSION,exported,hireDate:getHireDate(),traineeMode:isTraineeMode(),myJob:getMyJob(),vacationGrossByYear:getVacationGrossMap(),appearanceMode:getAppearanceMode(),crewBookAssistEnabled:getCrewBookAssistPreference()==='on',netEstimatorEnabled:netEstimatorEnabled(),netPayHistory:getNetPayHistory(),timeSlipWageReminderDays:getTimeSlipWageDefaultDays(),savedJobs,shifts},null,2),'application/json');localStorage.setItem(LAST_BACKUP_KEY,exported);updateBackupUI()}
 function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const data=JSON.parse(r.result);if(!data||!Array.isArray(data.shifts))throw 0;previewRestore(data)}catch{alert('That backup file could not be read or does not contain a valid Engineer Pay Log backup.')}};r.readAsText(f);e.target.value=''}
 function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 function clearAll(){if(confirm('Delete every saved shift from this browser?')){shifts=[];persist();renderAll()}}
