@@ -690,6 +690,22 @@ input[type="date"],input[type="time"]{min-width:0!important;max-width:100%!impor
   .field{min-width:0}
 }
 
+/* V9.1 demo showcase — keep the new-feature preview readable on phones */
+.feature-grid.v91-showcase-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px}
+.v91-showcase-grid .v91-showcase-card{padding:15px!important}
+.v91-showcase-grid .v91-showcase-card h3{font-size:15px!important;margin:0 0 7px}
+.v91-showcase-grid .v91-showcase-card .mini{font-size:12px!important;line-height:1.5}
+.v91-community-sample{margin-top:10px;padding:12px;border:1px solid #d7e3ef;border-radius:13px;background:#fff;font-size:12px;line-height:1.5}
+.v91-community-sample strong{display:block;color:#1f6f4a;margin-bottom:5px}
+.v91-community-sample span{display:block;color:var(--muted);margin-top:6px;font-weight:800}
+html[data-theme="dark"] .v91-community-sample{background:#0c1828;border-color:#314158}
+@media(max-width:780px){
+  .feature-grid.v91-showcase-grid{grid-template-columns:1fr!important;gap:10px}
+  .v91-showcase-grid .v91-showcase-card{padding:14px!important}
+  .v91-showcase-grid .v91-showcase-card h3{font-size:15px!important}
+  .v91-showcase-grid .v91-showcase-card .mini{font-size:12px!important}
+}
+
 /* CONCEPT: DASHBOARD FIRST — modern mobile dashboard, system typography */
 :root{--bg:#edf3f9;--card:#fff;--ink:#13243b;--muted:#6b7b90;--line:#d8e2ed;--brand:#0b3768;--brand2:#2774c9;--shadow:0 7px 22px rgba(12,49,87,.08);--radius:20px}
 html,body{background:#edf3f9}
@@ -1297,17 +1313,21 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         </div>
       </div>
 
-      <div class="card span12">
-        <div class="section-title"><h2>New in V9.1</h2><span class="badge">Demo preview</span></div>
-        <div class="feature-grid">
-          <div class="feature-card">
-            <h3>Time Slip Center</h3>
-            <div class="mini" style="line-height:1.55">Private front/back photos • 30-day submission countdown • Wage Examiners follow-up reminders • timestamped contact history.</div>
+      <div class="card span12 v91-showcase">
+        <div class="section-title"><h2>New in V9.1</h2></div>
+        <div class="feature-grid v91-showcase-grid">
+          <div class="feature-card v91-showcase-card">
+            <h3>📷 Time Slip Center</h3>
+            <div class="mini">Private slip photos • 30-day submission reminders • Wage Examiners follow-up</div>
           </div>
-          <div class="feature-card">
-            <h3>Community Job Notes</h3>
-            <div class="mini" style="margin-bottom:8px">Sample community guidance shown where a Crew Book job is relevant.</div>
-            <div class="notice" style="margin:0"><strong>✓ Verified Work</strong><br>Example: Queens will usually let you out before the local on 3761 if you’re quick<br><span class="muted">👍 Helpful</span></div>
+          <div class="feature-card v91-showcase-card">
+            <h3>💬 Community Job Notes</h3>
+            <div class="mini">See job-specific tips from other engineers.</div>
+            <div class="v91-community-sample">
+              <strong>✓ Verified Work</strong>
+              <div>Example: Queens will usually let you out before the local on 3761 if you’re quick</div>
+              <span>👍 Helpful</span>
+            </div>
           </div>
         </div>
       </div>
