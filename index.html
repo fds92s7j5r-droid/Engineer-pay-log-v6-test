@@ -1268,6 +1268,9 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .job-compare-official-viewer .crewbook-image-shell{margin-top:0}
     .job-compare-official-viewer .crewbook-image-viewer{max-height:62vh}
     .job-compare-official-viewer .crewbook-image-caption{padding:8px 2px 2px}
+    .crewbook-temporary-revision-note{margin:0 0 12px;padding:9px 11px;border:1px solid #d8e0ea;border-radius:11px;background:#f7f9fc;color:var(--muted);font-size:10px;line-height:1.45}
+    .crewbook-temporary-revision-note strong{color:var(--ink)}
+    html[data-theme="dark"] .crewbook-temporary-revision-note{background:#171c24;border-color:#354150}
     html[data-theme="dark"] .job-compare-official-launch{background:var(--card)}
     @media(max-width:620px){#jobCompareOfficialModal .modal-card{width:100%;max-height:95vh;margin:0;border-radius:22px 22px 0 0}#jobCompareOfficialModal .modal-body{padding:0 12px 16px}.job-compare-official-viewer .crewbook-image-viewer{max-height:64vh}}
     @media(max-width:620px){.job-compare-controls,.quick-lookup-controls{grid-template-columns:1fr}.job-compare-card{flex-basis:min(292px,88vw)}.job-compare-job-row{grid-template-columns:42px minmax(0,1fr) auto}.job-compare-remove-job{min-width:auto;padding:9px 10px}.job-compare-actions .btn.primary,.quick-lookup-actions .btn.primary{flex:1}}
@@ -4000,9 +4003,10 @@ function crewBookOfficialAssignmentHTML(key,date,hit){
 }
 
 function crewBookOfficialViewerBodyHTML(key,date,hit){
-  if(!hit)return '<div class="crewbook-official-unavailable">An official Crew Book assignment image is not available for this lookup.</div>';
-  if(date<CREW_BOOK_GO202_IMAGE_EFFECTIVE)return '<div class="crewbook-official-unavailable"><strong>Official September 8 Crew Book images are loaded and ready.</strong><br>They will become available for viewing beginning September 8. The structured result continues to use the revision applicable to the selected date.</div>';
-  const imageKey=crewBookOfficialImageKey(key,hit);if(!imageKey)return '<div class="crewbook-official-unavailable">An official GO 202 assignment image is not available for this assignment type.</div>';
+  const temporaryRevisionNote='<div class="crewbook-temporary-revision-note"><strong>Note:</strong> This does not account for temporary revisions such as track work programs.</div>';
+  if(!hit)return temporaryRevisionNote+'<div class="crewbook-official-unavailable">An official Crew Book assignment image is not available for this lookup.</div>';
+  if(date<CREW_BOOK_GO202_IMAGE_EFFECTIVE)return temporaryRevisionNote+'<div class="crewbook-official-unavailable"><strong>Official September 8 Crew Book images are loaded and ready.</strong><br>They will become available for viewing beginning September 8. The structured result continues to use the revision applicable to the selected date.</div>';
+  const imageKey=crewBookOfficialImageKey(key,hit);if(!imageKey)return temporaryRevisionNote+'<div class="crewbook-official-unavailable">An official GO 202 assignment image is not available for this assignment type.</div>';
   const meta=CREW_BOOK_GO202_IMAGE_MAP[imageKey],paper=crewBookPaperRev8VisualStatus(imageKey,date);let html='';
   if(paper){
     const dayLabel=jobCompareDayLabel(paper.day),scope=paper.portion==='m-f'?'Monday–Friday':paper.portion==='s-s'?'Saturday–Sunday':paper.portion==='saturday'?'Saturday':'Sunday';
@@ -4014,7 +4018,7 @@ function crewBookOfficialViewerBodyHTML(key,date,hit){
     const label='Official GO 202 Crew Book';
     html+=`<section class="job-compare-official-section"><h3 class="job-compare-official-section-title">Official Crew Book assignment</h3>${crewBookSpriteCropHTML(meta,label)}<div class="crewbook-image-caption">Official Sept. 8 GO 202 Crew Book assignment image. The date-aware comparison summary remains controlling for supported day-specific exceptions.</div></section>`;
   }else html+='<div class="crewbook-official-unavailable">An official GO 202 assignment image was not isolated for this crew in the current source file. The date-aware comparison summary still uses the verified Crew Book dataset.</div>';
-  return html;
+  return temporaryRevisionNote+html;
 }
 function crewBookOfficialComparisonLaunchHTML(key,date,hit){
   if(!hit)return '';
@@ -4623,6 +4627,9 @@ function ensureMealPeriodUI(){
   if(assignmentField&&!document.getElementById('crewBookFillShiftBtn')){
     const btn=document.createElement('button');btn.id='crewBookFillShiftBtn';btn.type='button';btn.className='btn small';btn.style.cssText='display:none;margin-top:8px';btn.textContent='Fill from Crew Book';btn.onclick=fillShiftFromCrewBook;assignmentField.appendChild(btn);
   }
+  if(assignmentField&&!document.getElementById('crewBookViewShiftBtn')){
+    const btn=document.createElement('button');btn.id='crewBookViewShiftBtn';btn.type='button';btn.className='btn small';btn.style.cssText='display:none;margin-top:8px;margin-left:8px';btn.textContent='View Crew Book Assignment';btn.onclick=function(){openJobCompareOfficialViewer(this)};assignmentField.appendChild(btn);
+  }
   for(const day of MY_JOB_RELIEF_DAYS){
     const cap=day.charAt(0).toUpperCase()+day.slice(1);
     const regFields=document.querySelector(`#myJobRegular${cap}Card .relief-day-fields`);
@@ -4634,6 +4641,18 @@ function ensureMealPeriodUI(){
       const wrap=document.createElement('div');wrap.className='field full';wrap.innerHTML=`<label class="check"><input id="myJobRelief${cap}PaysMeal" type="checkbox"> Pays Meal Period</label>`;relFields.appendChild(wrap);
     }
   }
+}
+function updateShiftCrewBookAssignmentButton(){
+  const btn=document.getElementById('crewBookViewShiftBtn');if(!btn)return;
+  const snapshot=communityShiftFormSnapshot(),ctx=communityShiftContext(snapshot);
+  let show=false,key='',date='';
+  if(ctx&&ctx.date>=CREW_BOOK_GO202_IMAGE_EFFECTIVE){
+    key=ctx.jobKey;date=ctx.date;
+    const hit=crewBookLookupJobV8(key,date),imageKey=crewBookOfficialImageKey(key,hit);
+    show=!!imageKey;
+  }
+  btn.style.display=show?'inline-flex':'none';
+  if(show){btn.dataset.crewbookKey=key;btn.dataset.crewbookDate=date}else{delete btn.dataset.crewbookKey;delete btn.dataset.crewbookDate}
 }
 function mealFlagChanged(which){
   const pays=document.getElementById('paysMealFlag'),pen=document.getElementById('mpteFlag');
@@ -4714,6 +4733,7 @@ function handleShiftDateChange(){
 function calculatePreview(){
   const $=id=>document.getElementById(id),s=formData(),holidayBox=$('holidayFlag');
   communityRefreshShiftPanelFromForm();
+  updateShiftCrewBookAssignmentButton();
   if(!s.traineeMode&&!s.specialShift&&isContractHoliday(s.date))holidayBox.checked=true;
   updateTimeOnDuty();updateUnscheduledOTPreview();
   const c=calculate({...s,holiday:holidayBox.checked});
