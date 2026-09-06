@@ -2971,7 +2971,12 @@ function previousWeekSpecialEarnings(dateStr,category,specialType,depth=0){
 
     const c=calculate(x,depth+1);
     if(!c||!Number.isFinite(c.total))continue;
-    sum+=Math.max(0,c.total-(c.dailyCertPay||0));
+    // Personal Day uses the actual qualifying prior-week earnings, including
+    // Daily Certs earned on those worked shifts. The Personal Day itself still
+    // receives no new Daily Cert. Other shared special-shift averages retain
+    // the existing Daily Cert exclusion.
+    const qualifyingTotal=specialType==='Personal Day'?c.total:c.total-(c.dailyCertPay||0);
+    sum+=Math.max(0,qualifyingTotal);
   }
   return sum;
 }
