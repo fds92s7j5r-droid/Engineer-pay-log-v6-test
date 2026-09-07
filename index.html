@@ -1294,6 +1294,27 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .roster-admin-rules{margin-top:10px;font-size:9px;line-height:1.55;color:var(--muted)}
     .roster-admin-diff{margin-top:10px;padding:10px 11px;border:1px solid var(--line);border-radius:11px;background:var(--card);font-size:9.5px;line-height:1.5}
     .roster-admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .trim-dev-box{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
+    .trim-dev-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .trim-dev-head h3{margin:0;color:var(--ink);font-size:14px}.trim-dev-head p{margin:4px 0 0;color:var(--muted);font-size:9.5px;line-height:1.45}
+    .trim-dev-rank-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end;margin-top:12px}.trim-dev-rank-row .field{margin:0}
+    .trim-dev-rank-note{margin-top:7px;color:var(--muted);font-size:9px;line-height:1.4}
+    .trim-dev-summary{display:none;margin-top:12px;padding:11px 12px;border:1px solid #b9d2ea;border-radius:12px;background:#edf6ff;color:#214e7c;font-size:10px;line-height:1.5}.trim-dev-summary.show{display:block}
+    .trim-dev-filters{display:none;margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.trim-dev-filters.show{display:block}
+    .trim-filter-title{font-size:9px;font-weight:900;color:var(--ink);text-transform:uppercase;letter-spacing:.04em;margin:0 0 7px}
+    .trim-check-grid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:11px}
+    .trim-check{display:inline-flex;align-items:center;gap:5px;padding:6px 8px;border:1px solid var(--line);border-radius:999px;background:var(--bg);font-size:9px;font-weight:800;color:var(--ink);cursor:pointer}.trim-check input{margin:0}
+    .trim-dev-filter-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.trim-dev-filter-row .field{margin:0}
+    .trim-dev-results{display:none;margin-top:12px}.trim-dev-results.show{display:block}
+    .trim-result-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;color:var(--muted);font-size:9px}
+    .trim-result-list{display:grid;gap:8px}.trim-result{padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+    .trim-result-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.trim-result-job{font-size:13px;font-weight:900;color:var(--ink)}.trim-result-rank{font-size:8.5px;font-weight:900;color:var(--muted);white-space:nowrap}
+    .trim-result-type{margin-top:2px;color:var(--muted);font-size:8.5px;font-weight:800}.trim-result-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.trim-chip{display:inline-flex;padding:4px 6px;border-radius:999px;background:var(--bg);border:1px solid var(--line);font-size:8.5px;color:var(--ink)}
+    .trim-ipma{font-weight:900;color:#214e7c}.trim-result-actions{margin-top:9px;display:flex;gap:7px;flex-wrap:wrap}.trim-result-actions .btn{padding:7px 9px;font-size:8.5px}
+    .trim-dev-empty{padding:13px;text-align:center;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:9.5px}
+    html[data-theme="dark"] .trim-dev-summary{background:#14283a;border-color:#315f91;color:#b9d8f7}
+    html[data-theme="dark"] .trim-ipma{color:#b9d8f7}
+    @media(max-width:620px){.trim-dev-rank-row{grid-template-columns:1fr}.trim-dev-filter-row{grid-template-columns:1fr}}
     html[data-theme="dark"] .roster-admin-badge{background:#14283a;border-color:#315f91;color:#b9d8f7}
     html[data-theme="dark"] .roster-admin-drop{background:#101d2d;border-color:#315f91}
     html[data-theme="dark"] .roster-admin-validation{background:#122a23;border-color:#315e50}
@@ -1690,6 +1711,56 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <div class="roster-admin-actions">
             <button id="rosterPublishBtn" class="btn primary" type="button" onclick="rosterPublishPreview()" disabled>Publish Roster Snapshot</button>
             <button class="btn" type="button" onclick="rosterClearPreview()">Clear</button>
+          </div>
+        </div>
+
+        <div class="trim-dev-box" id="trimDevBox">
+          <div class="trim-dev-head">
+            <div><h3>Trim Assistant — Developer Preview</h3><p>Uses the latest published roster snapshot. This preview is visible only to authorized roster maintainers.</p></div>
+            <span class="roster-admin-badge">Private Beta</span>
+          </div>
+          <div class="trim-dev-rank-row">
+            <div class="field">
+              <label>Test Rank Override</label>
+              <input id="trimTestRank" type="number" min="1" step="1" inputmode="numeric" placeholder="Example: 479" onchange="trimDevRankChanged()">
+            </div>
+            <button class="btn primary" type="button" onclick="trimDevLoad()">Load Jobs Below Me</button>
+          </div>
+          <div class="trim-dev-rank-note" id="trimDevRankNote">If your profile employee number matches the roster, the app can use that rank automatically. The override is stored only on this device and does not change your profile.</div>
+          <div class="trim-dev-summary" id="trimDevSummary"></div>
+          <div class="trim-dev-filters" id="trimDevFilters">
+            <div class="trim-filter-title">Assignment type</div>
+            <div class="trim-check-grid">
+              <label class="trim-check"><input type="checkbox" id="trimTypeRegular" checked onchange="trimDevApplyFilters()"> Numbered jobs</label>
+              <label class="trim-check"><input type="checkbox" id="trimTypeEx1" checked onchange="trimDevApplyFilters()"> EX1 Extra List</label>
+            </div>
+            <div class="trim-filter-title">Relief days <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— selecting multiple requires all selected days</span></div>
+            <div class="trim-check-grid" id="trimReliefChecks">
+              <label class="trim-check"><input type="checkbox" value="1" onchange="trimDevApplyFilters()"> Mon</label>
+              <label class="trim-check"><input type="checkbox" value="2" onchange="trimDevApplyFilters()"> Tue</label>
+              <label class="trim-check"><input type="checkbox" value="3" onchange="trimDevApplyFilters()"> Wed</label>
+              <label class="trim-check"><input type="checkbox" value="4" onchange="trimDevApplyFilters()"> Thu</label>
+              <label class="trim-check"><input type="checkbox" value="5" onchange="trimDevApplyFilters()"> Fri</label>
+              <label class="trim-check"><input type="checkbox" value="6" onchange="trimDevApplyFilters()"> Sat</label>
+              <label class="trim-check"><input type="checkbox" value="7" onchange="trimDevApplyFilters()"> Sun</label>
+            </div>
+            <div class="trim-filter-title">Extra List IPMA <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— any selected IPMA matches</span></div>
+            <div class="trim-check-grid" id="trimIpmaChecks">
+              <label class="trim-check"><input type="checkbox" value="12:01 AM" onchange="trimDevApplyFilters()"> 12:01 AM</label>
+              <label class="trim-check"><input type="checkbox" value="5:01 AM" onchange="trimDevApplyFilters()"> 5:01 AM</label>
+              <label class="trim-check"><input type="checkbox" value="6:01 AM" onchange="trimDevApplyFilters()"> 6:01 AM</label>
+              <label class="trim-check"><input type="checkbox" value="8:01 AM" onchange="trimDevApplyFilters()"> 8:01 AM</label>
+              <label class="trim-check"><input type="checkbox" value="12:59 PM" onchange="trimDevApplyFilters()"> 12:59 PM</label>
+            </div>
+            <div class="trim-dev-filter-row">
+              <div class="field"><label>Terminal</label><select id="trimTerminal" onchange="trimDevApplyFilters()"><option value="">All terminals</option></select></div>
+              <div class="field"><label>Crew Book reference date</label><input id="trimReferenceDate" type="date" onchange="trimDevApplyFilters()"></div>
+            </div>
+            <div class="trim-dev-rank-note">Selecting one or more IPMA values automatically narrows results to EX1 Extra List jobs because regular jobs do not have an IPMA.</div>
+          </div>
+          <div class="trim-dev-results" id="trimDevResults">
+            <div class="trim-result-toolbar"><span id="trimDevResultCount"></span><button class="btn" type="button" onclick="trimDevClearFilters()">Clear Filters</button></div>
+            <div class="trim-result-list" id="trimDevResultList"></div>
           </div>
         </div>
       </div>
@@ -8502,8 +8573,25 @@ function showMascotMessage(button){
 const ROSTER_PDFJS_URL='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
 const ROSTER_PDFJS_WORKER_URL='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const ROSTER_PARSER_VERSION='roster_pdf_v1';
+const TRIM_TEST_RANK_KEY='epl_trim_test_rank_override_v1';
+const TRIM_IPMA_VALUES=['12:01 AM','5:01 AM','6:01 AM','8:01 AM','12:59 PM'];
+const TRIM_DAY_NAMES={1:'Mon',2:'Tue',3:'Wed',4:'Thu',5:'Fri',6:'Sat',7:'Sun'};
+const TRIM_EX1_IPMA=(()=>{
+  const map={};
+  const set=(from,to,value)=>{for(let n=from;n<=to;n++)map[String(n)]=value};
+  set(1101,1103,'12:01 AM');set(1104,1105,'5:01 AM');set(1106,1107,'6:01 AM');set(1108,1108,'8:01 AM');set(1109,1110,'12:59 PM');
+  set(1111,1117,'12:01 AM');set(1118,1118,'5:01 AM');set(1119,1119,'6:01 AM');set(1120,1120,'8:01 AM');set(1121,1122,'12:59 PM');
+  set(1123,1128,'12:01 AM');set(1129,1130,'5:01 AM');set(1131,1131,'6:01 AM');set(1132,1132,'8:01 AM');set(1133,1134,'12:59 PM');
+  set(1135,1139,'12:01 AM');set(1140,1141,'5:01 AM');set(1142,1142,'6:01 AM');set(1143,1143,'8:01 AM');set(1144,1145,'12:59 PM');
+  set(1146,1147,'12:01 AM');set(1148,1148,'5:01 AM');set(1149,1149,'6:01 AM');set(1150,1150,'8:01 AM');set(1151,1152,'12:59 PM');
+  set(1153,1155,'12:01 AM');set(1156,1157,'5:01 AM');set(1158,1158,'6:01 AM');set(1159,1159,'8:01 AM');set(1160,1162,'12:59 PM');
+  set(1163,1169,'12:01 AM');set(1170,1172,'5:01 AM');set(1173,1175,'6:01 AM');set(1176,1176,'8:01 AM');set(1177,1178,'12:59 PM');
+  set(1179,1179,'6:01 AM');set(1180,1181,'8:01 AM');set(1182,1185,'12:59 PM');
+  return map;
+})();
 let rosterAdminState={checked:false,canPublish:false,user:null,latest:null,latestRows:null};
 let rosterPreviewState=null;
+let trimDevState={rows:[],rank:null,profileRank:null,source:null};
 
 function rosterSetStatus(message='',type=''){
   const el=document.getElementById('rosterAdminStatus');if(!el)return;
@@ -8538,7 +8626,7 @@ async function rosterCheckAdmin(force=false){
     if(error)throw error;
     rosterAdminState.checked=true;rosterAdminState.canPublish=!!data?.can_publish;
     card.classList.toggle('show',rosterAdminState.canPublish);
-    if(rosterAdminState.canPublish)await rosterLoadLatestSnapshot();
+    if(rosterAdminState.canPublish){await rosterLoadLatestSnapshot();trimDevInitControls();}
     return rosterAdminState.canPublish;
   }catch(err){console.warn('Roster admin check failed:',err);rosterAdminState.checked=true;rosterAdminState.canPublish=false;card.classList.remove('show');return false}
 }
@@ -8665,10 +8753,91 @@ async function rosterPublishPreview(){
     const cleanRows=parsed.rows.map(r=>({snapshot_id:snapshotId,rank:r.rank,employee_id:r.employee_id,assignment:r.assignment,rest_day_1:r.rest_day_1,rest_day_2:r.rest_day_2,terminal:r.terminal,craft:r.craft,position_code:r.position_code,st_rs:r.st_rs,assignment_type:r.assignment_type}));
     for(let i=0;i<cleanRows.length;i+=150){rosterSetStatus(`Publishing roster rows… ${Math.min(i+150,cleanRows.length)} of ${cleanRows.length}`);const {error}=await client.from('roster_rows').insert(cleanRows.slice(i,i+150));if(error)throw error}
     const {error:publishError}=await client.from('roster_snapshots').update({status:'published'}).eq('id',snapshotId);if(publishError)throw publishError;
-    rosterSetStatus(`Published ${parsed.rows.length} roster rows successfully.`,'success');rosterPreviewState=null;document.getElementById('rosterAdminPreview')?.classList.remove('show');const input=document.getElementById('rosterPdfInput');if(input)input.value='';rosterAdminState.latestRows=null;await rosterLoadLatestSnapshot();
+    rosterSetStatus(`Published ${parsed.rows.length} roster rows successfully.`,'success');rosterPreviewState=null;document.getElementById('rosterAdminPreview')?.classList.remove('show');const input=document.getElementById('rosterPdfInput');if(input)input.value='';rosterAdminState.latestRows=null;await rosterLoadLatestSnapshot();if(document.getElementById('trimTestRank')?.value)await trimDevLoad(false);
   }catch(err){console.error('Roster publish failed:',err);if(snapshotId){try{await client.from('roster_snapshots').delete().eq('id',snapshotId)}catch{}}rosterSetStatus(`Roster was not published: ${err?.message||err}`,'error')}
   finally{if(btn){btn.disabled=!rosterPreviewState?.valid;btn.textContent='Publish Roster Snapshot'}}
 }
+// ---- Maintainer-only Trim Assistant developer preview ----
+function trimDevDefaultDate(){
+  const d=new Date();d.setHours(12,0,0,0);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function trimDevInitControls(){
+  const input=document.getElementById('trimTestRank');
+  if(input&&!input.value){const saved=Number(localStorage.getItem(TRIM_TEST_RANK_KEY)||0);if(saved>0)input.value=String(saved)}
+  const date=document.getElementById('trimReferenceDate');if(date&&!date.value)date.value=trimDevDefaultDate();
+}
+function trimDevRankChanged(){
+  const input=document.getElementById('trimTestRank'),n=Math.round(Number(input?.value||0));
+  if(n>0)localStorage.setItem(TRIM_TEST_RANK_KEY,String(n));else localStorage.removeItem(TRIM_TEST_RANK_KEY);
+  if(trimDevState.rows.length)trimDevLoad(false);
+}
+function trimDevProfileRank(rows){
+  const ibm=String(document.getElementById('accountIBMDisplay')?.textContent||'').trim();if(!/^\d+$/.test(ibm))return null;
+  return rows.find(r=>String(r.employee_id||'')===ibm)?.rank||null;
+}
+function trimDevEffectiveRank(rows){
+  const override=Math.round(Number(document.getElementById('trimTestRank')?.value||0));
+  const profileRank=trimDevProfileRank(rows);trimDevState.profileRank=profileRank;
+  if(override>=1&&override<=rows.length)return {rank:override,source:'override',profileRank};
+  if(profileRank)return {rank:profileRank,source:'profile',profileRank};
+  return {rank:null,source:null,profileRank};
+}
+function trimDevRestDays(row){return [Number(row?.rest_day_1||0),Number(row?.rest_day_2||0)].filter(n=>n>=1&&n<=7)}
+function trimDevRestLabel(row){const days=trimDevRestDays(row);return days.length?days.map(d=>TRIM_DAY_NAMES[d]||d).join('–'):'Not listed'}
+function trimDevIpma(row){if(row?.assignment_type!=='extra_list')return null;const job=String(row.assignment||'').replace(/^EX/i,'').replace(/\D/g,'');return TRIM_EX1_IPMA[job]||null}
+function trimDevTerminalOptions(rows){
+  const select=document.getElementById('trimTerminal');if(!select)return;const prev=select.value;
+  const values=[...new Set(rows.map(r=>String(r.terminal||'').trim()).filter(Boolean))].sort();
+  select.innerHTML='<option value="">All terminals</option>'+values.map(v=>`<option value="${escapeHTML(v)}">${escapeHTML(v)}</option>`).join('');if(values.includes(prev))select.value=prev;
+}
+async function trimDevLoad(showStatus=true){
+  if(!await rosterCheckAdmin())return;
+  trimDevInitControls();if(!rosterAdminState.latest)await rosterLoadLatestSnapshot();const rows=await rosterGetLatestRows();
+  const summary=document.getElementById('trimDevSummary'),filters=document.getElementById('trimDevFilters'),results=document.getElementById('trimDevResults'),note=document.getElementById('trimDevRankNote');
+  if(!rows?.length){if(summary){summary.classList.add('show');summary.textContent='No published roster rows are available yet.'}filters?.classList.remove('show');results?.classList.remove('show');return}
+  const rankInfo=trimDevEffectiveRank(rows);trimDevState.rows=rows;trimDevState.rank=rankInfo.rank;trimDevState.source=rankInfo.source;
+  if(!rankInfo.rank){if(summary){summary.classList.add('show');summary.innerHTML='<strong>Choose a test rank.</strong><br>This account does not match a roster employee number, so enter a Test Rank Override to continue.'}filters?.classList.remove('show');results?.classList.remove('show');if(note)note.textContent='No automatic roster match was found for this profile. Enter a Test Rank Override; it stays only on this device.';return}
+  const below=rows.filter(r=>Number(r.rank)>rankInfo.rank&&(r.assignment_type==='regular'||r.assignment_type==='extra_list'));
+  const regular=below.filter(r=>r.assignment_type==='regular').length,ex1=below.filter(r=>r.assignment_type==='extra_list').length;
+  if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Testing as roster rank ${rankInfo.rank}</strong> (${rankInfo.source==='override'?'local override':'profile match'})<br>${below.length} currently ownable assignments below this rank • ${regular} numbered • ${ex1} EX1 Extra List<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(rosterAdminState.latest?.source_generated_at||rosterAdminState.latest?.uploaded_at))}</span>`}
+  if(note){note.textContent=rankInfo.source==='override'?(rankInfo.profileRank?`Local override ${rankInfo.rank} is active. Profile would otherwise match rank ${rankInfo.profileRank}.`:`Local override ${rankInfo.rank} is active. It does not modify this account's profile.`):`Profile employee number matched roster rank ${rankInfo.rank}.`}
+  trimDevTerminalOptions(below);filters?.classList.add('show');results?.classList.add('show');trimDevApplyFilters();
+  if(showStatus)rosterSetStatus('Trim Assistant developer preview loaded from the latest published roster.','success');
+}
+function trimDevCheckedValues(containerId){return [...document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)].map(x=>x.value)}
+function trimDevRegularCrewBookMeta(row,date){
+  try{
+    if(row.assignment_type!=='regular'||!date)return null;const key=String(row.assignment||'').trim();const hit=crewBookLookupJobV8(key,date);if(!hit?.job)return null;
+    const resolved=jobCompareResolveForDay(key,date),schedule=resolved?.schedule||hit.schedule||null;return {schedule,job:hit.job,revision:hit.revision};
+  }catch{return null}
+}
+function trimDevOpenQuickLookup(assignment,date){
+  showView('lookup');const j=document.getElementById('quickLookupJob'),d=document.getElementById('quickLookupDate');if(j)j.value=assignment;if(d)d.value=date||trimDevDefaultDate();runQuickJobLookup(false);window.scrollTo({top:0,behavior:'smooth'});
+}
+function trimDevApplyFilters(){
+  if(!trimDevState.rows.length||!trimDevState.rank)return;
+  const regularOn=!!document.getElementById('trimTypeRegular')?.checked,ex1On=!!document.getElementById('trimTypeEx1')?.checked;
+  const relief=trimDevCheckedValues('trimReliefChecks').map(Number),ipmas=trimDevCheckedValues('trimIpmaChecks'),terminal=String(document.getElementById('trimTerminal')?.value||''),date=document.getElementById('trimReferenceDate')?.value||trimDevDefaultDate();
+  let rows=trimDevState.rows.filter(r=>Number(r.rank)>trimDevState.rank&&(r.assignment_type==='regular'||r.assignment_type==='extra_list'));
+  rows=rows.filter(r=>r.assignment_type==='regular'?regularOn:ex1On);
+  if(relief.length)rows=rows.filter(r=>{const d=trimDevRestDays(r);return relief.every(x=>d.includes(x))});
+  if(ipmas.length)rows=rows.filter(r=>r.assignment_type==='extra_list'&&ipmas.includes(trimDevIpma(r)));
+  if(terminal)rows=rows.filter(r=>String(r.terminal||'')===terminal);
+  const count=document.getElementById('trimDevResultCount'),list=document.getElementById('trimDevResultList');if(count)count.textContent=`${rows.length} match${rows.length===1?'':'es'} • sorted by seniority`;
+  if(!list)return;if(!rows.length){list.innerHTML='<div class="trim-dev-empty">No ownable assignments match these filters.</div>';return}
+  list.innerHTML=rows.map(r=>{
+    const ex1=r.assignment_type==='extra_list',ipma=trimDevIpma(r),meta=ex1?null:trimDevRegularCrewBookMeta(r,date),schedule=meta?.schedule||null;
+    const chips=[`Relief: ${trimDevRestLabel(r)}`];if(r.terminal)chips.push(`Terminal: ${r.terminal}`);if(ex1&&ipma)chips.push(`IPMA: ${ipma}`);if(!ex1&&schedule?.start&&schedule?.end)chips.push(`${jobCompareTimeLabel(schedule.start)}–${jobCompareTimeLabel(schedule.end)}`);if(!ex1&&schedule?.paysMeal)chips.push('Pays Meal');
+    return `<div class="trim-result"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${ex1?'Guaranteed Extra List':'Numbered Crew Book assignment'}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}">${escapeHTML(c)}</span>`).join('')}</div>${!ex1?`<div class="trim-result-actions"><button class="btn" type="button" onclick="trimDevOpenQuickLookup('${escapeHTML(String(r.assignment))}','${escapeHTML(date)}')">Quick Lookup</button></div>`:''}</div>`;
+  }).join('');
+}
+function trimDevClearFilters(){
+  const reg=document.getElementById('trimTypeRegular'),ex=document.getElementById('trimTypeEx1');if(reg)reg.checked=true;if(ex)ex.checked=true;
+  for(const id of ['trimReliefChecks','trimIpmaChecks'])document.querySelectorAll(`#${id} input[type="checkbox"]`).forEach(x=>x.checked=false);
+  const t=document.getElementById('trimTerminal');if(t)t.value='';trimDevApplyFilters();
+}
+// ---- End maintainer-only Trim Assistant developer preview ----
+
 // ---- End developer roster PDF importer ----
 
 function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI()}
