@@ -1275,6 +1275,31 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     @media(max-width:620px){#jobCompareOfficialModal .modal-card{width:100%;max-height:95vh;margin:0;border-radius:22px 22px 0 0}#jobCompareOfficialModal .modal-body{padding:0 12px 16px}.job-compare-official-viewer .crewbook-image-viewer{max-height:64vh}}
     @media(max-width:620px){.job-compare-controls,.quick-lookup-controls{grid-template-columns:1fr}.job-compare-card{flex-basis:min(292px,88vw)}.job-compare-job-row{grid-template-columns:42px minmax(0,1fr) auto}.job-compare-remove-job{min-width:auto;padding:9px 10px}.job-compare-actions .btn.primary,.quick-lookup-actions .btn.primary{flex:1}}
 
+
+    /* Developer roster maintenance - hidden unless authorized by Supabase RLS */
+    .roster-admin-card{display:none}
+    .roster-admin-card.show{display:block}
+    .roster-admin-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;border-radius:999px;border:1px solid #b9d2ea;background:#edf6ff;color:#214e7c;font-size:9px;font-weight:900;letter-spacing:.02em}
+    .roster-admin-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+    .roster-admin-stat{padding:10px 11px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}
+    .roster-admin-stat strong{display:block;font-size:15px;color:var(--ink)}
+    .roster-admin-stat span{display:block;margin-top:2px;color:var(--muted);font-size:8.5px;font-weight:800;line-height:1.35}
+    .roster-admin-drop{margin-top:12px;padding:14px;border:1px dashed #94b6d9;border-radius:13px;background:#f7fbff}
+    .roster-admin-drop input{width:100%}
+    .roster-admin-status{margin-top:10px;font-size:10px;line-height:1.5;color:var(--muted)}
+    .roster-admin-status.error{color:#a12828}.roster-admin-status.success{color:#187044}
+    .roster-admin-preview{display:none;margin-top:12px}.roster-admin-preview.show{display:block}
+    .roster-admin-validation{margin-top:10px;padding:10px 11px;border-radius:11px;border:1px solid #b9d6cc;background:#f3faf7;font-size:10px;line-height:1.45}
+    .roster-admin-validation.warn{border-color:#e0c37a;background:#fff9e8}.roster-admin-validation.error{border-color:#e0aaaa;background:#fff1f1}
+    .roster-admin-rules{margin-top:10px;font-size:9px;line-height:1.55;color:var(--muted)}
+    .roster-admin-diff{margin-top:10px;padding:10px 11px;border:1px solid var(--line);border-radius:11px;background:var(--card);font-size:9.5px;line-height:1.5}
+    .roster-admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    html[data-theme="dark"] .roster-admin-badge{background:#14283a;border-color:#315f91;color:#b9d8f7}
+    html[data-theme="dark"] .roster-admin-drop{background:#101d2d;border-color:#315f91}
+    html[data-theme="dark"] .roster-admin-validation{background:#122a23;border-color:#315e50}
+    html[data-theme="dark"] .roster-admin-validation.warn{background:#2c2615;border-color:#6b5b27}
+    html[data-theme="dark"] .roster-admin-validation.error{background:#351b1b;border-color:#704040}
+    @media(max-width:620px){.roster-admin-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -1639,6 +1664,35 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         </div>
       </div>
 
+
+
+      <div class="card span12 settings-card roster-admin-card" id="rosterAdminCard">
+        <div class="section-title settings-heading">
+          <div><h2>Roster Maintenance</h2><p>Developer-only tool for the future Trim Assistant. The roster PDF is parsed on this device before publishing.</p></div>
+          <span class="roster-admin-badge">Developer</span>
+        </div>
+        <div id="rosterAdminLatest" class="account-sync-detail">Checking the latest roster snapshot…</div>
+        <div class="roster-admin-drop">
+          <div class="field full">
+            <label>RPCS Seniority Roster PDF</label>
+            <input id="rosterPdfInput" type="file" accept="application/pdf,.pdf" onchange="rosterHandlePdfFile(event)">
+          </div>
+          <div class="roster-admin-status" id="rosterAdminStatus">Choose the full ENGINEERS - BLE EN roster exported with Show All entries.</div>
+        </div>
+        <div class="roster-admin-preview" id="rosterAdminPreview">
+          <div class="roster-admin-grid" id="rosterAdminStats"></div>
+          <div class="roster-admin-validation" id="rosterAdminValidation"></div>
+          <div class="roster-admin-diff" id="rosterAdminDiff" style="display:none"></div>
+          <div class="roster-admin-rules">
+            Import rules: numbered assignments are regular jobs; EX1 assignments are ownable Guaranteed Extra List jobs; EX2 assignments are Subject To Bid and are excluded from ownable jobs; ET assignments are trainee placeholders and are excluded. Other assignment families are preserved but not treated as ownable until their rules are defined.<br><br>
+            Employee names are <strong>not uploaded</strong>. Employee numbers are stored privately only so a signed-in engineer can later be matched to their own roster rank.
+          </div>
+          <div class="roster-admin-actions">
+            <button id="rosterPublishBtn" class="btn primary" type="button" onclick="rosterPublishPreview()" disabled>Publish Roster Snapshot</button>
+            <button class="btn" type="button" onclick="rosterClearPreview()">Clear</button>
+          </div>
+        </div>
+      </div>
 
       <div class="card span12 settings-card" id="billingSettingsCard">
         <div class="section-title settings-heading"><div><h2>Subscription</h2><p id="billingSettingsSubtitle">30 days free, then $5/month. No card is required to begin the trial.</p></div></div>
@@ -8443,8 +8497,182 @@ function showMascotMessage(button){
   clearTimeout(button._mascotTimer);button._mascotTimer=setTimeout(()=>bubble.classList.remove('show'),4200);
 }
 
+
+// ---- Developer roster PDF importer (future Trim Assistant) ----
+const ROSTER_PDFJS_URL='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+const ROSTER_PDFJS_WORKER_URL='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+const ROSTER_PARSER_VERSION='roster_pdf_v1';
+let rosterAdminState={checked:false,canPublish:false,user:null,latest:null,latestRows:null};
+let rosterPreviewState=null;
+
+function rosterSetStatus(message='',type=''){
+  const el=document.getElementById('rosterAdminStatus');if(!el)return;
+  el.textContent=message;el.className=`roster-admin-status${type?' '+type:''}`;
+}
+function rosterAssignmentType(value){
+  const a=String(value||'').trim().toUpperCase();
+  if(!a)return 'blank';
+  if(a.startsWith('ET'))return 'trainee';
+  if(a.startsWith('EX2'))return 'subject_to_bid';
+  if(a.startsWith('EX1'))return 'extra_list';
+  if(/^\d+$/.test(a))return 'regular';
+  return 'other';
+}
+function rosterTypeCounts(rows){
+  const counts={regular:0,extra_list:0,subject_to_bid:0,trainee:0,blank:0,other:0};
+  for(const r of rows)counts[r.assignment_type]=(counts[r.assignment_type]||0)+1;
+  return counts;
+}
+function rosterDateDisplay(value){
+  if(!value)return 'Unknown source time';
+  try{return new Date(value).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}catch{return String(value)}
+}
+async function rosterCheckAdmin(force=false){
+  const card=document.getElementById('rosterAdminCard');if(!card)return false;
+  if(rosterAdminState.checked&&!force){card.classList.toggle('show',!!rosterAdminState.canPublish);return rosterAdminState.canPublish}
+  const client=getCloudClient();if(!client){card.classList.remove('show');return false}
+  const user=await cloudCurrentUser(client);if(!user){card.classList.remove('show');return false}
+  rosterAdminState.user=user;
+  try{
+    const {data,error}=await client.from('roster_admins').select('can_publish,label').eq('user_id',user.id).maybeSingle();
+    if(error)throw error;
+    rosterAdminState.checked=true;rosterAdminState.canPublish=!!data?.can_publish;
+    card.classList.toggle('show',rosterAdminState.canPublish);
+    if(rosterAdminState.canPublish)await rosterLoadLatestSnapshot();
+    return rosterAdminState.canPublish;
+  }catch(err){console.warn('Roster admin check failed:',err);rosterAdminState.checked=true;rosterAdminState.canPublish=false;card.classList.remove('show');return false}
+}
+async function rosterLoadLatestSnapshot(){
+  if(!rosterAdminState.canPublish)return null;
+  const client=getCloudClient();if(!client)return null;
+  const latestEl=document.getElementById('rosterAdminLatest');
+  try{
+    const {data,error}=await client.from('roster_snapshots').select('id,source_generated_at,source_file_name,source_sha256,row_count,regular_count,ex1_count,ex2_count,et_count,other_count,uploaded_at,status,metadata').eq('status','published').order('uploaded_at',{ascending:false}).limit(1).maybeSingle();
+    if(error)throw error;
+    rosterAdminState.latest=data||null;rosterAdminState.latestRows=null;
+    if(latestEl)latestEl.innerHTML=data?`<strong>Latest published roster:</strong> ${escapeHTML(rosterDateDisplay(data.source_generated_at||data.uploaded_at))} • ${Number(data.row_count||0)} rows`:'<strong>No roster snapshot has been published yet.</strong> Your first validated upload will establish the baseline.';
+    return data||null;
+  }catch(err){console.warn('Latest roster snapshot load failed:',err);if(latestEl)latestEl.textContent='Could not load the latest roster snapshot.';return null}
+}
+function rosterLoadPdfJs(){
+  if(window.pdfjsLib)return Promise.resolve(window.pdfjsLib);
+  if(window.__rosterPdfJsPromise)return window.__rosterPdfJsPromise;
+  window.__rosterPdfJsPromise=new Promise((resolve,reject)=>{
+    const script=document.createElement('script');script.src=ROSTER_PDFJS_URL;script.async=true;
+    script.onload=()=>{if(!window.pdfjsLib){reject(new Error('PDF parser did not initialize.'));return}window.pdfjsLib.GlobalWorkerOptions.workerSrc=ROSTER_PDFJS_WORKER_URL;resolve(window.pdfjsLib)};
+    script.onerror=()=>reject(new Error('Could not load the PDF parser. Check your internet connection.'));
+    document.head.appendChild(script);
+  });
+  return window.__rosterPdfJsPromise;
+}
+function rosterClusterPageItems(items){
+  const useful=items.filter(i=>String(i?.str||'').trim()).map(i=>({text:String(i.str).trim(),x:Number(i.transform?.[4]||0),y:Number(i.transform?.[5]||0)})).sort((a,b)=>b.y-a.y||a.x-b.x);
+  const lines=[];
+  for(const item of useful){
+    let line=lines.find(l=>Math.abs(l.y-item.y)<=1.25);
+    if(!line){line={y:item.y,items:[]};lines.push(line)}
+    line.items.push(item);
+  }
+  lines.sort((a,b)=>b.y-a.y);for(const l of lines)l.items.sort((a,b)=>a.x-b.x);return lines;
+}
+function rosterColumnText(items,min,max,compact=false){
+  const values=items.filter(i=>i.x>=min&&i.x<max).sort((a,b)=>a.x-b.x).map(i=>i.text).filter(Boolean);
+  const joined=values.join(' ').trim();return compact?joined.replace(/\s+/g,''):joined;
+}
+function rosterParseLine(items,pageNumber){
+  const rankText=rosterColumnText(items,40,80,true),emp=rosterColumnText(items,80,130,true);
+  if(!/^\d{1,4}$/.test(rankText)||!/^\d{4,6}$/.test(emp))return null;
+  const assignment=rosterColumnText(items,205,245,true).toUpperCase();
+  const restText=rosterColumnText(items,245,285,false),rest=(restText.match(/[1-7]/g)||[]).map(Number);
+  return {rank:Number(rankText),employee_id:emp,assignment,rest_day_1:rest[0]||null,rest_day_2:rest[1]||null,terminal:rosterColumnText(items,285,330,true).toUpperCase(),craft:rosterColumnText(items,330,370,true).toUpperCase(),position_code:rosterColumnText(items,370,408,true).toUpperCase(),st_rs:rosterColumnText(items,408,455,true).toUpperCase(),assignment_type:rosterAssignmentType(assignment),source_page:pageNumber};
+}
+function rosterParseSourceTimestamp(text,file){
+  const m=String(text||'').match(/(\d{1,2})\/(\d{1,2})\/(\d{2,4}),?\s+(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if(m){let year=Number(m[3]);if(year<100)year+=2000;let hour=Number(m[4])%12;if(String(m[6]).toUpperCase()==='PM')hour+=12;const d=new Date(year,Number(m[1])-1,Number(m[2]),hour,Number(m[5]),0,0);return {iso:d.toISOString(),label:`${m[1]}/${m[2]}/${m[3]} ${m[4]}:${m[5]} ${String(m[6]).toUpperCase()}`,fallback:false}}
+  const d=new Date(Number(file?.lastModified||Date.now()));return {iso:d.toISOString(),label:`File timestamp: ${d.toLocaleString()}`,fallback:true};
+}
+async function rosterSha256(buffer){const hash=await crypto.subtle.digest('SHA-256',buffer);return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,'0')).join('')}
+async function rosterParsePdf(file){
+  const pdfjs=await rosterLoadPdfJs();const buffer=await file.arrayBuffer();const sha256=await rosterSha256(buffer);const pdf=await pdfjs.getDocument({data:new Uint8Array(buffer)}).promise;
+  if(pdf.numPages<5||pdf.numPages>60)throw new Error(`Unexpected roster length: ${pdf.numPages} pages.`);
+  const rows=[],allText=[];
+  for(let pageNum=1;pageNum<=pdf.numPages;pageNum++){
+    rosterSetStatus(`Reading roster PDF… page ${pageNum} of ${pdf.numPages}`);
+    const page=await pdf.getPage(pageNum),content=await page.getTextContent();
+    allText.push(content.items.map(i=>String(i.str||'')).join(' '));
+    const lines=rosterClusterPageItems(content.items);
+    for(const line of lines){const row=rosterParseLine(line.items,pageNum);if(row)rows.push(row)}
+  }
+  rows.sort((a,b)=>a.rank-b.rank);
+  const text=allText.join(' '),timestamp=rosterParseSourceTimestamp(text,file),declaredMatch=text.match(/Showing\s+1\s+to\s+(\d+)\s+of\s+(\d+)\s+entries/i),declaredTotal=declaredMatch?Number(declaredMatch[2]):null;
+  const titleOk=/Seniority\s+Roster/i.test(text)&&/ENGINEERS\s*-\s*BLE\s+EN/i.test(text);
+  const ranks=rows.map(r=>r.rank),maxRank=ranks.length?Math.max(...ranks):0,uniqueRanks=new Set(ranks),uniqueEmployees=new Set(rows.map(r=>r.employee_id));
+  const contiguous=rows.length>0&&uniqueRanks.size===rows.length&&maxRank===rows.length&&rows.every((r,i)=>r.rank===i+1);
+  const counts=rosterTypeCounts(rows),warnings=[],errors=[];
+  if(!titleOk)errors.push('This does not look like the ENGINEERS - BLE EN Seniority Roster export.');
+  if(rows.length<400)errors.push(`Only ${rows.length} roster rows were detected.`);
+  if(!contiguous)errors.push(`Roster ranks are not a complete 1-${maxRank} sequence.`);
+  if(uniqueEmployees.size!==rows.length)errors.push('Duplicate employee numbers were detected in the PDF.');
+  if(declaredTotal&&declaredTotal!==rows.length)errors.push(`The PDF says ${declaredTotal} entries, but ${rows.length} rows were parsed.`);
+  if(!declaredTotal)warnings.push('The “Showing 1 to … entries” total could not be read; rank continuity will be used for validation.');
+  if(timestamp.fallback)warnings.push('The printed roster timestamp could not be read; the PDF file timestamp will be used.');
+  const currentIbm=String(document.getElementById('accountIBMDisplay')?.textContent||'').trim(),mine=/^\d+$/.test(currentIbm)?rows.find(r=>r.employee_id===currentIbm):null;
+  let belowOwnable=null;if(mine)belowOwnable=rows.filter(r=>r.rank>mine.rank&&(r.assignment_type==='regular'||r.assignment_type==='extra_list')).length;
+  return {file,rows,sha256,pages:pdf.numPages,titleOk,declaredTotal,timestamp,counts,warnings,errors,valid:errors.length===0,mine,belowOwnable};
+}
+async function rosterHandlePdfFile(event){
+  const file=event?.target?.files?.[0];if(!file)return;
+  rosterClearPreview(false);if(!await rosterCheckAdmin()){rosterSetStatus('This account is not authorized to publish roster data.','error');return}
+  if(!/\.pdf$/i.test(file.name)){rosterSetStatus('Choose the PDF export from the RPCS Seniority Roster.','error');return}
+  if(file.size>15*1024*1024){rosterSetStatus('That PDF is unexpectedly large. Export the Show All roster again and retry.','error');return}
+  rosterSetStatus('Loading the roster parser…');
+  try{const parsed=await rosterParsePdf(file);rosterPreviewState=parsed;await rosterRenderPreview(parsed)}catch(err){console.error('Roster PDF parse failed:',err);rosterPreviewState=null;rosterSetStatus(`Could not read this roster PDF: ${err?.message||err}`,'error')}
+}
+async function rosterGetLatestRows(){
+  if(rosterAdminState.latestRows)return rosterAdminState.latestRows;
+  const latest=rosterAdminState.latest;if(!latest?.id)return null;const client=getCloudClient();if(!client)return null;
+  const {data,error}=await client.from('roster_rows').select('rank,employee_id,assignment,rest_day_1,rest_day_2,terminal,craft,position_code,st_rs,assignment_type').eq('snapshot_id',latest.id).order('rank');
+  if(error){console.warn('Previous roster rows could not be loaded:',error);return null}rosterAdminState.latestRows=data||[];return rosterAdminState.latestRows;
+}
+function rosterDiffRows(previous,current){
+  if(!previous?.length)return null;const prevByEmp=new Map(previous.map(r=>[String(r.employee_id),r])),curByEmp=new Map(current.map(r=>[String(r.employee_id),r]));let assignmentChanges=0,rankChanges=0,newRows=0,removedRows=0;
+  for(const r of current){const p=prevByEmp.get(String(r.employee_id));if(!p){newRows++;continue}if(String(p.assignment||'')!==String(r.assignment||''))assignmentChanges++;if(Number(p.rank)!==Number(r.rank))rankChanges++}
+  for(const p of previous)if(!curByEmp.has(String(p.employee_id)))removedRows++;
+  return {assignmentChanges,rankChanges,newRows,removedRows};
+}
+async function rosterRenderPreview(parsed){
+  const host=document.getElementById('rosterAdminPreview'),stats=document.getElementById('rosterAdminStats'),validation=document.getElementById('rosterAdminValidation'),diffEl=document.getElementById('rosterAdminDiff'),publish=document.getElementById('rosterPublishBtn');if(!host||!stats||!validation||!publish)return;
+  const c=parsed.counts,ownable=c.regular+c.extra_list;
+  stats.innerHTML=[['Rows',parsed.rows.length],['Ownable',ownable],['Numbered jobs',c.regular],['EX1 Extra List',c.extra_list],['EX2 excluded',c.subject_to_bid],['ET excluded',c.trainee]].map(([label,value])=>`<div class="roster-admin-stat"><strong>${Number(value)}</strong><span>${escapeHTML(label)}</span></div>`).join('');
+  const details=[`<strong>${parsed.valid?'Validation passed':'Validation failed'}</strong>`,`${parsed.pages} pages • ${parsed.rows.length} parsed rows${parsed.declaredTotal?` • PDF total ${parsed.declaredTotal}`:''}`,`Roster generated: ${escapeHTML(parsed.timestamp.label)}`,`Other/unclassified: ${c.other} • Blank assignments: ${c.blank}`];
+  if(parsed.mine)details.push(`Your profile matched roster rank ${parsed.mine.rank}.${parsed.belowOwnable!==null?` ${parsed.belowOwnable} currently ownable numbered/EX1 assignments are below you in this snapshot.`:''}`);else details.push('Your profile employee number was not matched in this PDF. The roster can still be published, but check your profile before testing Trim Assistant results.');
+  if(parsed.errors.length)details.push(...parsed.errors.map(x=>`Error: ${escapeHTML(x)}`));if(parsed.warnings.length)details.push(...parsed.warnings.map(x=>`Warning: ${escapeHTML(x)}`));
+  validation.className=`roster-admin-validation${parsed.errors.length?' error':parsed.warnings.length?' warn':''}`;validation.innerHTML=details.join('<br>');
+  if(!rosterAdminState.latest)await rosterLoadLatestSnapshot();const previous=await rosterGetLatestRows(),diff=rosterDiffRows(previous,parsed.rows);
+  if(diff&&diffEl){diffEl.style.display='block';diffEl.innerHTML=`<strong>Changes from the latest published roster</strong><br>${diff.assignmentChanges} assignment change${diff.assignmentChanges===1?'':'s'} • ${diff.rankChanges} rank change${diff.rankChanges===1?'':'s'} • ${diff.newRows} new roster entr${diff.newRows===1?'y':'ies'} • ${diff.removedRows} removed`;}else if(diffEl){diffEl.style.display='none';diffEl.innerHTML=''}
+  publish.disabled=!parsed.valid;host.classList.add('show');rosterSetStatus(parsed.valid?'Roster parsed successfully. Review the validation summary, then publish when ready.':'Roster parsed, but validation failed. Nothing has been published. ',parsed.valid?'success':'error');
+}
+function rosterClearPreview(clearInput=true){rosterPreviewState=null;document.getElementById('rosterAdminPreview')?.classList.remove('show');const b=document.getElementById('rosterPublishBtn');if(b)b.disabled=true;if(clearInput){const input=document.getElementById('rosterPdfInput');if(input)input.value=''}rosterSetStatus('Choose the full ENGINEERS - BLE EN roster exported with Show All entries.')}
+async function rosterPublishPreview(){
+  const parsed=rosterPreviewState;if(!parsed?.valid)return;if(!await rosterCheckAdmin(true)){rosterSetStatus('This account is no longer authorized to publish roster data.','error');return}
+  const client=getCloudClient(),user=rosterAdminState.user||await cloudCurrentUser(client);if(!client||!user)return;
+  if(!confirm(`Publish this roster snapshot?\n\n${parsed.rows.length} roster rows\nGenerated ${parsed.timestamp.label}\n\nEmployee names will not be uploaded.`))return;
+  const btn=document.getElementById('rosterPublishBtn');if(btn){btn.disabled=true;btn.textContent='Publishing…'}rosterSetStatus('Checking for a duplicate roster…');let snapshotId=null;
+  try{
+    const {data:existing,error:existingError}=await client.from('roster_snapshots').select('id,status,source_generated_at').eq('source_sha256',parsed.sha256).maybeSingle();if(existingError)throw existingError;if(existing){throw new Error(`This exact PDF was already uploaded${existing.status==='published'?' and published':''}.`)}
+    const c=parsed.counts,meta={source_timestamp_label:parsed.timestamp.label,source_timestamp_fallback:parsed.timestamp.fallback,pages:parsed.pages,declared_total:parsed.declaredTotal,ownable_count:c.regular+c.extra_list};
+    const {data:snapshot,error:snapshotError}=await client.from('roster_snapshots').insert({source_generated_at:parsed.timestamp.iso,source_file_name:parsed.file.name,source_sha256:parsed.sha256,roster_name:'ENGINEERS - BLE EN',row_count:parsed.rows.length,regular_count:c.regular,ex1_count:c.extra_list,ex2_count:c.subject_to_bid,et_count:c.trainee,other_count:c.other,uploaded_by:user.id,status:'draft',parser_version:ROSTER_PARSER_VERSION,metadata:meta}).select('id').single();if(snapshotError)throw snapshotError;snapshotId=snapshot.id;
+    const cleanRows=parsed.rows.map(r=>({snapshot_id:snapshotId,rank:r.rank,employee_id:r.employee_id,assignment:r.assignment,rest_day_1:r.rest_day_1,rest_day_2:r.rest_day_2,terminal:r.terminal,craft:r.craft,position_code:r.position_code,st_rs:r.st_rs,assignment_type:r.assignment_type}));
+    for(let i=0;i<cleanRows.length;i+=150){rosterSetStatus(`Publishing roster rows… ${Math.min(i+150,cleanRows.length)} of ${cleanRows.length}`);const {error}=await client.from('roster_rows').insert(cleanRows.slice(i,i+150));if(error)throw error}
+    const {error:publishError}=await client.from('roster_snapshots').update({status:'published'}).eq('id',snapshotId);if(publishError)throw publishError;
+    rosterSetStatus(`Published ${parsed.rows.length} roster rows successfully.`,'success');rosterPreviewState=null;document.getElementById('rosterAdminPreview')?.classList.remove('show');const input=document.getElementById('rosterPdfInput');if(input)input.value='';rosterAdminState.latestRows=null;await rosterLoadLatestSnapshot();
+  }catch(err){console.error('Roster publish failed:',err);if(snapshotId){try{await client.from('roster_snapshots').delete().eq('id',snapshotId)}catch{}}rosterSetStatus(`Roster was not published: ${err?.message||err}`,'error')}
+  finally{if(btn){btn.disabled=!rosterPreviewState?.valid;btn.textContent='Publish Roster Snapshot'}}
+}
+// ---- End developer roster PDF importer ----
+
 function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI()}
-function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){void renderDashboardCommunityNotes();setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility()}renderMyJobUI()}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){void renderDashboardCommunityNotes();setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility();void rosterCheckAdmin()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
   return shifts.filter(s=>[
