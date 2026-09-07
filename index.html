@@ -1880,7 +1880,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <summary><span><strong>Pay Rules & Rates</strong><small>Rate table Jul 29, 2026 • 8-hour minimum • reference details</small></span><span class="settings-chevron">›</span></summary>
           <div class="settings-disclosure-body">
             <div class="pay-rules-quick"><span><strong>Minimum</strong>8 hours</span><span><strong>Night Diff.</strong>8:00 PM–5:59 AM</span><span><strong>Daily Cert</strong>$10 normal shift</span></div>
-            <details class="settings-inline-details"><summary>View full pay rules</summary><div class="rate-note details-copy"><strong>Pay scale:</strong> Automatically determined from Employment Start Date using the BLET rate tables effective July 29, 2026 (60%, 80%, 90%, 100%).<br><strong>Minimum:</strong> 8 hours per paid shift.<br><strong>Normal OT:</strong> actual time over 8 hours.<br><strong>Full-shift OT:</strong> Holiday, Short Swing, or Relief Day.<br><strong>Night differential:</strong> actual time between 8:00 PM and 5:59 AM.<br><strong>Meal Period:</strong> 20 minutes at time-and-one-half.<br><strong>Freight Meal:</strong> 40 minutes at time-and-one-half.<br><strong>Fuel Claim:</strong> 30 minutes at time-and-one-half.<br><strong>Daily Cert:</strong> $10 once per normal worked shift; excluded from Special Shifts.<br><strong>Trainee:</strong> 1 hour straight time per trainee, maximum 2.<br><strong>Operating Without a Conductor:</strong> 8 hours straight time.<br><strong>Yard Certification:</strong> 1 hour straight time per certification.<br><strong>Commingle / Sheridan-Shop-House Move:</strong> each adds 8 hours straight time.<br><strong>2 Classes of Service:</strong> compares the 8-hour straight-time payment with ordinary overtime attributable to the pull and uses the greater payment; the same pull is not paid both ways.<br><strong>Terminal Not In Crew Book:</strong> 2 hours straight time.<br><strong>Runaround Claim:</strong> 2 hours straight time plus the entered difference in earnings, all straight time.<br><strong>Time on Time:</strong> variable additional straight-time payment, maximum 8:00 per shift.<br><strong>Miscellaneous Penalty:</strong> user-entered description and duration paid at the selected straight-time or overtime rate.<br><strong>Vacation Week:</strong> 1/52 of previous year gross earnings, minimum five basic days.<br><strong>Single Vacation Day:</strong> 1/5 of the vacation-week value, minimum one basic day.</div></details>
+            <details class="settings-inline-details"><summary>View full pay rules</summary><div class="rate-note details-copy"><strong>Pay scale:</strong> Automatically determined from Employment Start Date using the BLET rate tables effective July 29, 2026 (60%, 80%, 90%, 100%).<br><strong>Minimum:</strong> 8 hours per paid shift.<br><strong>Normal OT:</strong> actual time over 8 hours.<br><strong>Full-shift OT:</strong> Holiday, Short Swing, or Relief Day.<br><strong>Holiday Pay:</strong> Separate 8:00 straight-time payment when eligibility is confirmed; requires working the following day unless that day is a regular relief day, approved vacation day, or approved personal day.<br><strong>Night differential:</strong> actual time between 8:00 PM and 5:59 AM.<br><strong>Meal Period:</strong> 20 minutes at time-and-one-half.<br><strong>Freight Meal:</strong> 40 minutes at time-and-one-half.<br><strong>Fuel Claim:</strong> 30 minutes at time-and-one-half.<br><strong>Daily Cert:</strong> $10 once per normal worked shift; excluded from Special Shifts.<br><strong>Trainee:</strong> 1 hour straight time per trainee, maximum 2.<br><strong>Operating Without a Conductor:</strong> 8 hours straight time.<br><strong>Yard Certification:</strong> 1 hour straight time per certification.<br><strong>Commingle / Sheridan-Shop-House Move:</strong> each adds 8 hours straight time.<br><strong>2 Classes of Service:</strong> compares the 8-hour straight-time payment with ordinary overtime attributable to the pull and uses the greater payment; the same pull is not paid both ways.<br><strong>Terminal Not In Crew Book:</strong> 2 hours straight time.<br><strong>Runaround Claim:</strong> 2 hours straight time plus the entered difference in earnings, all straight time.<br><strong>Time on Time:</strong> variable additional straight-time payment, maximum 8:00 per shift.<br><strong>Miscellaneous Penalty:</strong> user-entered description and duration paid at the selected straight-time or overtime rate.<br><strong>Vacation Week:</strong> 1/52 of previous year gross earnings, minimum five basic days.<br><strong>Single Vacation Day:</strong> 1/5 of the vacation-week value, minimum one basic day.</div></details>
           </div>
         </details>
 
@@ -2275,7 +2275,11 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           </div>
         </div>
         <div id="payFlagsField" class="field full"><label>Pay flags</label><div class="checks">
-          <label class="check"><input id="holidayFlag" type="checkbox" onchange="calculatePreview()"> Holiday</label>
+          <label class="check"><input id="holidayFlag" type="checkbox" onchange="holidayFlagChanged()"> Holiday</label>
+          <div id="holidayPayEligibilityWrap" style="display:none;width:100%;margin:6px 0 2px 24px">
+            <label class="check"><input id="holidayPayEligibleFlag" type="checkbox" onchange="toggleSpecialShift();calculatePreview()"> Include 8:00 Holiday Pay</label>
+            <div class="muted" style="margin-top:4px;max-width:680px">Eligible when you work the following day, or the following day is a regularly scheduled relief day, approved vacation day, or approved personal day.</div>
+          </div>
           <label class="check"><input id="ssotFlag" type="checkbox" onchange="calculatePreview()"> Short Swing</label>
           <label class="check"><input id="rdFlag" type="checkbox" onchange="calculatePreview()"> Relief Day</label>
         </div></div>
@@ -2762,6 +2766,8 @@ function upgradeShift(s){
   if(s.vacationGross===undefined)s.vacationGross=0;
   if(s.vacationReliefPair===undefined)s.vacationReliefPair='';
   if(s.vacationEndDate===undefined)s.vacationEndDate=s.specialShift==='Vacation Week'?addDaysISO(s.date,6):'';
+  // Backward compatibility: older saved holiday shifts already included the separate 8:00 holiday payment.
+  if(s.holidayPayEligible===undefined)s.holidayPayEligible=!!s.holiday||isContractHoliday(s.date);
   return s;
 }
 shifts=shifts.map(upgradeShift);
@@ -2926,12 +2932,14 @@ function calculate(s,depth=0){
   }
 
   // Flat special shifts: 8 hours straight time, no Daily Cert.
-  // Paid Guarantee on a contract holiday also receives the separate 8:00 straight-time holiday payment.
+  // Paid Guarantee on a holiday can also receive the separate 8:00 straight-time holiday payment,
+  // but only when the user confirms holiday-pay eligibility.
   if(special==='Sick Day'||special==='Paid Guarantee'){
     const guaranteeHoliday=special==='Paid Guarantee'&&(!!s.holiday||isContractHoliday(s.date));
-    const holidayBonus=guaranteeHoliday?basicST:0;
+    const holidayPayEligible=guaranteeHoliday&&s.holidayPayEligible!==false;
+    const holidayBonus=holidayPayEligible?basicST:0;
     const total=basicST+holidayBonus;
-    return {actual:480,payable:480,holiday:guaranteeHoliday,ssot:false,rd:false,fullOT:false,ratePct,payType:guaranteeHoliday?'Paid Guarantee + Holiday':special,
+    return {actual:480,payable:480,holiday:guaranteeHoliday,ssot:false,rd:false,fullOT:false,ratePct,payType:holidayPayEligible?'Paid Guarantee + Holiday':special,
       regular:basicST,ot:0,night:0,holidayBonus,mptePay:0,freightMealPay:0,fuelClaimPay:0,dailyCertPay:0,specialPay:0,
       traineeCount:0,ponePay:0,noCoPay:0,yardCertCount:0,certPay:0,comminglePay:0,classesPay:0,sheridanPay:0,terminalPay:0,
       runaroundBaseMinutes:0,runaroundDiffMinutes:0,runaroundPay:0,a2mins:0,a2:0,total};
@@ -2975,7 +2983,9 @@ function calculate(s,depth=0){
   let ot=traineeMode?otPay(Math.max(0,actual-510),ratePct):(fullOT?otPay(payable,ratePct):otPay(Math.max(0,baseActual-480),ratePct));
   const ordinaryOTBeforeTwoClasses=ot;
   const night=nightPay(overlapNight(start,end),ratePct);
-  const holidayBonus=holiday?basicST:0;
+  // Working a holiday still drives full-shift holiday OT. The separate 8:00 straight-time
+  // holiday payment is controlled independently by eligibility.
+  const holidayBonus=holiday&&s.holidayPayEligible!==false?basicST:0;
   const mptePay=(s.mpte||s.paysMeal)?otPay(20,ratePct):0;
   const freightMealPay=s.freightMeal?otPay(40,ratePct):0;
   const fuelClaimPay=traineeMode?0:(s.fuelClaim?otPay(30,ratePct):0);
@@ -4467,7 +4477,9 @@ function formData(){
     timeSlipLocation:$('timeSlipFlag').checked?$('timeSlipLocation').value.trim():'',
     timeSlipStatus:$('timeSlipFlag').checked?($('timeSlipStatus').value||'Pending'):'Pending',
     timeSlipResolved:$('timeSlipFlag').checked?$('timeSlipResolved').value:'',
-    holiday:$('shiftRuleMode').value==='trainee'?false:$('holidayFlag').checked,ssot:$('shiftRuleMode').value==='trainee'?false:$('ssotFlag').checked,rd:$('shiftRuleMode').value==='trainee'?false:$('rdFlag').checked,
+    holiday:$('shiftRuleMode').value==='trainee'?false:$('holidayFlag').checked,
+    holidayPayEligible:$('shiftRuleMode').value==='trainee'?false:$('holidayPayEligibleFlag').checked,
+    ssot:$('shiftRuleMode').value==='trainee'?false:$('ssotFlag').checked,rd:$('shiftRuleMode').value==='trainee'?false:$('rdFlag').checked,
     paysMeal:$('paysMealFlag').checked,mpte:$('mpteFlag').checked,freightMeal:$('freightMealFlag').checked,fuelClaim:$('shiftRuleMode').value==='trainee'?false:$('fuelClaimFlag').checked,otCompletion:$('shiftRuleMode').value==='trainee'?false:$('otCompletionFlag').checked,otCompletionTime:$('shiftRuleMode').value==='trainee'?'':($('otCompletionFlag').checked?$('otCompletionTime').value:''),
     unscheduledOT:$('unscheduledOTFlag').checked,crewBookReleaseTime:$('unscheduledOTFlag').checked?$('crewBookReleaseTime').value:'',
     twoClassesPullTime:$('yardMoveFlag').checked?$('twoClassesPullTime').value:'',
@@ -4491,19 +4503,35 @@ function resetCalcRows(){
   ['pRegular','pOT','pNight','pHoliday','pMPTE','pFreightMeal','pFuelClaim','pOTCompletion','pDailyCert','pSpecialPay','pPONE','pNOCO','pCERT','pCommingle','pClasses','pSheridan','pTerminal','pRunaround','p2a','pMiscPenalty']
     .forEach(id=>{const el=document.getElementById(id);if(el){el.textContent='$0.00';const row=el.closest('.calc-row');if(row)row.classList.add('pay-zero')}});
 }
+function updateHolidayPayEligibilityUI(){
+  const holidayBox=document.getElementById('holidayFlag'),eligibleBox=document.getElementById('holidayPayEligibleFlag'),wrap=document.getElementById('holidayPayEligibilityWrap');
+  const trainee=document.getElementById('shiftRuleMode')?.value==='trainee',special=document.getElementById('specialShift')?.value||'';
+  const eligibleShift=!special||special==='Paid Guarantee';
+  const show=!trainee&&eligibleShift&&!!holidayBox?.checked;
+  if(wrap)wrap.style.display=show?'block':'none';
+  if(!show&&eligibleBox&&(!holidayBox?.checked||trainee))eligibleBox.checked=false;
+}
+function holidayFlagChanged(){
+  const holidayBox=document.getElementById('holidayFlag'),eligibleBox=document.getElementById('holidayPayEligibleFlag');
+  if(eligibleBox)eligibleBox.checked=!!holidayBox?.checked;
+  updateHolidayPayEligibilityUI();toggleSpecialShift();calculatePreview();
+}
 function handleShiftDateChange(){
-  const date=document.getElementById('date')?.value||'',holidayBox=document.getElementById('holidayFlag');
+  const date=document.getElementById('date')?.value||'',holidayBox=document.getElementById('holidayFlag'),eligibleBox=document.getElementById('holidayPayEligibleFlag');
   updateVacationUI();
   // Date-driven convenience: recognized holidays check automatically, and moving to a normal date clears the auto-applied flag.
-  // The checkbox remains editable, so a user can still manually mark an unrecognized/special holiday if needed.
-  if(holidayBox&&document.getElementById('shiftRuleMode')?.value!=='trainee')holidayBox.checked=isContractHoliday(date);
-  calculatePreview();
+  // Holiday-pay eligibility is a separate user-confirmed choice because it depends on the following day.
+  if(holidayBox&&document.getElementById('shiftRuleMode')?.value!=='trainee'){
+    const on=isContractHoliday(date);holidayBox.checked=on;if(eligibleBox)eligibleBox.checked=on;
+  }
+  updateHolidayPayEligibilityUI();toggleSpecialShift();calculatePreview();
 }
 function calculatePreview(){
   const $=id=>document.getElementById(id),s=formData(),holidayBox=$('holidayFlag');
   if(!s.traineeMode&&!s.specialShift&&isContractHoliday(s.date))holidayBox.checked=true;
   updateTimeOnDuty();updateUnscheduledOTPreview();
-  const c=calculate({...s,holiday:holidayBox.checked});
+  updateHolidayPayEligibilityUI();
+  const c=calculate({...s,holiday:holidayBox.checked,holidayPayEligible:$('holidayPayEligibleFlag')?.checked!==false});
   if(!c||c.rateMissing){
     resetCalcRows();$('pTotal').textContent='$0.00';
     $('pTime').textContent=c&&c.rateMissing?'Set hire date in Settings':'—';
@@ -4611,8 +4639,8 @@ function applyEntryMode(){
   document.querySelectorAll('#payFlagsField .check').forEach(l=>{const inp=l.querySelector('input');l.classList.toggle('hidden-by-mode',trainee&&inp&&inp.id!=='paysMealFlag')});
   document.querySelectorAll('#penaltiesField .check').forEach(l=>{const inp=l.querySelector('input');l.classList.toggle('hidden-by-mode',trainee&&inp&&!allowed.has(inp.id))});
   const dailyRow=document.getElementById('pDailyCert')?.closest('.calc-row');if(dailyRow)dailyRow.classList.toggle('hidden-by-mode',trainee);
-  if(trainee){['holidayFlag','ssotFlag','rdFlag','fuelClaimFlag','otCompletionFlag','poneFlag','noCoFlag','certFlag','commingleFlag','yardMoveFlag','sheridanFlag','terminalFlag','runaroundFlag','a2Flag','miscPenaltyFlag'].forEach(id=>{const e=document.getElementById(id);if(e)e.checked=false})}
-  toggleSpecialShift();toggleMiscPenalty();updateTimeOnDuty();
+  if(trainee){['holidayFlag','holidayPayEligibleFlag','ssotFlag','rdFlag','fuelClaimFlag','otCompletionFlag','poneFlag','noCoFlag','certFlag','commingleFlag','yardMoveFlag','sheridanFlag','terminalFlag','runaroundFlag','a2Flag','miscPenaltyFlag'].forEach(id=>{const e=document.getElementById(id);if(e)e.checked=false})}
+  updateHolidayPayEligibilityUI();toggleSpecialShift();toggleMiscPenalty();updateTimeOnDuty();
 }
 function toggleClassDay(){applyEntryMode()}
 const YARD_FREIGHT_PREFIXES=['YER','YPR','YPD','YFD','HMP','CER','YE','CE','RF'];
@@ -4722,7 +4750,12 @@ function toggleSpecialShift(){
     ?'Vacation Week pay is 1/52 of the previous year’s gross earnings, with a minimum of five basic days. Select your two consecutive relief days so the weekly value can be allocated across your five regular workdays for later 1/5 calculations.'
     :'Single Vacation Day pay is 1/5 of your vacation-week value, with a minimum of one basic day.';
   else if(type==='Holiday - Not Worked')msg.textContent='Pays a flat 8:00 hours of straight time.';
-  else if(type==='Paid Guarantee'&&(!!$('holidayFlag')?.checked||isContractHoliday($('date')?.value||'')))msg.textContent='Holiday Paid Guarantee pays 8:00 straight-time guarantee + 8:00 straight-time holiday pay = 16:00 straight time total. Daily Cert does not apply.';
+  else if(type==='Paid Guarantee'&&(!!$('holidayFlag')?.checked||isContractHoliday($('date')?.value||''))){
+    const includeHoliday=!!$('holidayPayEligibleFlag')?.checked;
+    msg.textContent=includeHoliday
+      ?'Pays 8:00 straight-time guarantee + 8:00 straight-time holiday pay = 16:00 straight time total. Holiday pay requires working the following day, unless the following day is a regular relief day, approved vacation day, or approved personal day. Daily Cert does not apply.'
+      :'Pays the 8:00 straight-time guarantee only. Check Include 8:00 Holiday Pay if the following-day eligibility requirement is met. Daily Cert does not apply.';
+  }
   else if(type==='Sick Day'||type==='Paid Guarantee')msg.textContent='Pays a flat 8:00 hours of straight time. Daily Cert does not apply.';
   else if(!category)msg.textContent=myJobConfigured()?'My Job could not determine this job class automatically. Choose the category that applies to this Special Shift.':'Choose the job category that applies to this Special Shift.';
   else if(category==='passenger'){
@@ -4811,14 +4844,14 @@ function newShift(){if(!billingRequireWriteAccess())return;
   const $=id=>document.getElementById(id);
   $('shiftForm').reset();setLocationUI('');setShiftTypeUI('');$('editId').value='';$('shiftRuleMode').value=isTraineeMode()?'trainee':'engineer';$('legacyExtras').value='';$('legacyClaims').value='';
   $('formTitle').textContent='Add shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';
-  $('date').value=new Date().toISOString().slice(0,10);$('holidayFlag').checked=isContractHoliday($('date').value);
+  $('date').value=new Date().toISOString().slice(0,10);$('holidayFlag').checked=isContractHoliday($('date').value);$('holidayPayEligibleFlag').checked=$('holidayFlag').checked;
   $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';
   applyEntryMode();handleSecretUnpaidSick();$('specialShift').value='';$('specialCategory').value='';$('classFlag').checked=false;$('conductorName').value='';$('brakemanName').value='';$('engineerName').value='';$('engineerIBM').value='';$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('unscheduledOTFlag').checked=false;$('crewBookReleaseTime').value='';$('twoClassesPullTime').value='';
   $('vacationGrossInput').value='';$('vacationGrossInput').dataset.vacationYear='';$('vacationReliefPair').value='';
   $('traineeCount').value=1;$('yardCertCount').value=1;
   $('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;
   $('miscPenaltyFlag').checked=false;$('miscPenaltyDescription').value='';$('miscPenaltyHours').value=0;$('miscPenaltyMinutes').value=0;$('miscPenaltyStraight').checked=true;
-  applyEntryMode();toggleSpecialShift();toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleTwoClasses();toggleRunaround();toggleA2();toggleMiscPenalty();
+  applyEntryMode();toggleSpecialShift();updateHolidayPayEligibilityUI();toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleTwoClasses();toggleRunaround();toggleA2();toggleMiscPenalty();
   renderMyJobUI();$('shiftModal').classList.add('open');calculatePreview();
 }
 function editShift(id){if(!billingRequireWriteAccess())return;
@@ -4829,7 +4862,7 @@ function editShift(id){if(!billingRequireWriteAccess())return;
   $('notes').value=s.notes||'';$('engineerName').value=s.engineerName||'';$('engineerIBM').value=s.engineerIBM||'';$('classFlag').checked=!!s.classDay;$('conductorName').value=s.conductorName||'';$('brakemanName').value=s.brakemanName||'';
   $('specialShift').value=s.specialShift||'';$('specialCategory').value=s.specialCategory||'';$('vacationReliefPair').value=s.vacationReliefPair||'';
   $('timeSlipFlag').checked=!!s.timeSlip;$('timeSlipWritten').value=s.timeSlipWritten||'';$('timeSlipSubmitted').value=s.timeSlipSubmitted||'';$('timeSlipLocation').value=s.timeSlipLocation||'';$('timeSlipStatus').value=s.timeSlipStatus||'Pending';$('timeSlipResolved').value=s.timeSlipResolved||'';
-  $('holidayFlag').checked=!!s.holiday;$('ssotFlag').checked=!!s.ssot;$('rdFlag').checked=!!s.rd;
+  $('holidayFlag').checked=!!s.holiday;$('holidayPayEligibleFlag').checked=s.holidayPayEligible!==false&&!!s.holiday;$('ssotFlag').checked=!!s.ssot;$('rdFlag').checked=!!s.rd;
   $('paysMealFlag').checked=!!s.paysMeal;$('mpteFlag').checked=!!s.mpte;$('freightMealFlag').checked=!!s.freightMeal;$('fuelClaimFlag').checked=!!s.fuelClaim;$('otCompletionFlag').checked=!!s.otCompletion;$('otCompletionTime').value=s.otCompletionTime||'';$('unscheduledOTFlag').checked=!!s.unscheduledOT;$('crewBookReleaseTime').value=s.crewBookReleaseTime||'';$('poneFlag').checked=!!s.pone;$('traineeCount').value=Math.min(2,Math.max(1,Number(s.traineeCount)||1));
   $('noCoFlag').checked=!!s.noCo;$('certFlag').checked=!!s.cert;$('yardCertCount').value=Math.max(1,Number(s.yardCertCount)||1);
   $('commingleFlag').checked=!!s.commingle;$('yardMoveFlag').checked=!!s.yardMove;$('twoClassesPullTime').value=s.twoClassesPullTime||'';$('sheridanFlag').checked=!!s.sheridanMove;
@@ -4837,7 +4870,7 @@ function editShift(id){if(!billingRequireWriteAccess())return;
   const rr=Math.max(0,Number(s.runaroundDiffMinutes)||0);$('runaroundHours').value=Math.floor(rr/60);$('runaroundMinutes').value=rr%60;
   $('a2Flag').checked=!!s.a2;const mins=Math.max(0,Number(s.a2Minutes)||0);$('a2Hours').value=Math.floor(mins/60);$('a2Minutes').value=mins%60;
   $('miscPenaltyFlag').checked=!!s.miscPenalty;$('miscPenaltyDescription').value=s.miscPenaltyDescription||'';const miscMins=Math.max(0,Number(s.miscPenaltyMinutes)||0);$('miscPenaltyHours').value=Math.floor(miscMins/60);$('miscPenaltyMinutes').value=miscMins%60;$('miscPenaltyOvertime').checked=s.miscPenaltyRate==='overtime';$('miscPenaltyStraight').checked=s.miscPenaltyRate!=='overtime';
-  applyEntryMode();toggleSpecialShift();handleSecretUnpaidSick();if(isVacationSpecial(s.specialShift))updateVacationUI(s.vacationGross||getVacationGrossForYear(Number(s.date.slice(0,4))));toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleTwoClasses();toggleRunaround();toggleA2();toggleMiscPenalty();
+  applyEntryMode();toggleSpecialShift();updateHolidayPayEligibilityUI();handleSecretUnpaidSick();if(isVacationSpecial(s.specialShift))updateVacationUI(s.vacationGross||getVacationGrossForYear(Number(s.date.slice(0,4))));toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleTwoClasses();toggleRunaround();toggleA2();toggleMiscPenalty();
   $('formTitle').textContent='Edit shift';$('deleteBtn').style.display='block';$('duplicateBtn').style.display='inline-flex';$('favoriteBtn').style.display='inline-flex';$('shiftModal').classList.add('open');calculatePreview();
 }
 function duplicateShift(id){if(!billingRequireWriteAccess())return;
@@ -4852,7 +4885,7 @@ function duplicateShift(id){if(!billingRequireWriteAccess())return;
   applyEntryMode();$('assignment').value=s.assignment||'';setLocationUI(s.location||'');setShiftTypeUI(s.shiftType||'');$('conductorName').value=s.conductorName||'';$('brakemanName').value=s.brakemanName||'';$('engineerName').value=s.engineerName||'';$('engineerIBM').value=s.engineerIBM||'';$('classFlag').checked=!!s.classDay;$('specialShift').value=s.specialShift||'';$('specialCategory').value=s.specialCategory||'';
 
   $('notes').value='';
-  $('holidayFlag').checked=isContractHoliday($('date').value);$('ssotFlag').checked=false;$('rdFlag').checked=false;
+  $('holidayFlag').checked=isContractHoliday($('date').value);$('holidayPayEligibleFlag').checked=$('holidayFlag').checked;$('ssotFlag').checked=false;$('rdFlag').checked=false;
   $('paysMealFlag').checked=false;$('mpteFlag').checked=false;$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('unscheduledOTFlag').checked=false;$('crewBookReleaseTime').value='';$('poneFlag').checked=false;$('noCoFlag').checked=false;$('certFlag').checked=false;
   $('commingleFlag').checked=false;$('yardMoveFlag').checked=false;$('twoClassesPullTime').value='';$('sheridanFlag').checked=false;$('terminalFlag').checked=false;
   $('runaroundFlag').checked=false;$('a2Flag').checked=false;$('miscPenaltyFlag').checked=false;
@@ -4861,7 +4894,7 @@ function duplicateShift(id){if(!billingRequireWriteAccess())return;
   $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';
   $('vacationGrossInput').value='';$('vacationGrossInput').dataset.vacationYear='';$('vacationReliefPair').value=s.specialShift==='Vacation Week'?(s.vacationReliefPair||vacationReliefPairFromMyJob()):'';
 
-  applyEntryMode();toggleSpecialShift();handleSecretUnpaidSick();toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleTwoClasses();toggleRunaround();toggleA2();toggleMiscPenalty();
+  applyEntryMode();toggleSpecialShift();updateHolidayPayEligibilityUI();handleSecretUnpaidSick();toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleTwoClasses();toggleRunaround();toggleA2();toggleMiscPenalty();
   $('shiftModal').classList.add('open');calculatePreview();
 }
 function duplicateCurrentShift(){
