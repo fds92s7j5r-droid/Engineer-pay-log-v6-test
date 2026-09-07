@@ -2926,10 +2926,13 @@ function calculate(s,depth=0){
   }
 
   // Flat special shifts: 8 hours straight time, no Daily Cert.
+  // Paid Guarantee on a contract holiday also receives the separate 8:00 straight-time holiday payment.
   if(special==='Sick Day'||special==='Paid Guarantee'){
-    const total=basicST;
-    return {actual:480,payable:480,holiday:false,ssot:false,rd:false,fullOT:false,ratePct,payType:special,
-      regular:basicST,ot:0,night:0,holidayBonus:0,mptePay:0,freightMealPay:0,fuelClaimPay:0,dailyCertPay:0,specialPay:0,
+    const guaranteeHoliday=special==='Paid Guarantee'&&(!!s.holiday||isContractHoliday(s.date));
+    const holidayBonus=guaranteeHoliday?basicST:0;
+    const total=basicST+holidayBonus;
+    return {actual:480,payable:480,holiday:guaranteeHoliday,ssot:false,rd:false,fullOT:false,ratePct,payType:guaranteeHoliday?'Paid Guarantee + Holiday':special,
+      regular:basicST,ot:0,night:0,holidayBonus,mptePay:0,freightMealPay:0,fuelClaimPay:0,dailyCertPay:0,specialPay:0,
       traineeCount:0,ponePay:0,noCoPay:0,yardCertCount:0,certPay:0,comminglePay:0,classesPay:0,sheridanPay:0,terminalPay:0,
       runaroundBaseMinutes:0,runaroundDiffMinutes:0,runaroundPay:0,a2mins:0,a2:0,total};
   }
@@ -4719,6 +4722,7 @@ function toggleSpecialShift(){
     ?'Vacation Week pay is 1/52 of the previous year’s gross earnings, with a minimum of five basic days. Select your two consecutive relief days so the weekly value can be allocated across your five regular workdays for later 1/5 calculations.'
     :'Single Vacation Day pay is 1/5 of your vacation-week value, with a minimum of one basic day.';
   else if(type==='Holiday - Not Worked')msg.textContent='Pays a flat 8:00 hours of straight time.';
+  else if(type==='Paid Guarantee'&&(!!$('holidayFlag')?.checked||isContractHoliday($('date')?.value||'')))msg.textContent='Holiday Paid Guarantee pays 8:00 straight-time guarantee + 8:00 straight-time holiday pay = 16:00 straight time total. Daily Cert does not apply.';
   else if(type==='Sick Day'||type==='Paid Guarantee')msg.textContent='Pays a flat 8:00 hours of straight time. Daily Cert does not apply.';
   else if(!category)msg.textContent=myJobConfigured()?'My Job could not determine this job class automatically. Choose the category that applies to this Special Shift.':'Choose the job category that applies to this Special Shift.';
   else if(category==='passenger'){
