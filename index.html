@@ -1307,14 +1307,16 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .trim-dev-filter-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.trim-dev-filter-row .field{margin:0}
     .trim-dev-results{display:none;margin-top:12px}.trim-dev-results.show{display:block}
     .trim-result-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;color:var(--muted);font-size:9px}
-    .trim-result-list{display:grid;gap:8px}.trim-result{padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+    .trim-result-list{display:grid;gap:8px}.trim-result{padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;transition:border-color .15s ease,transform .15s ease,box-shadow .15s ease}.trim-result:hover,.trim-result:focus-visible{border-color:#8fb3d8;box-shadow:0 3px 12px rgba(18,52,91,.08);outline:none}.trim-result:active{transform:scale(.995)}
     .trim-result-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.trim-result-job{font-size:13px;font-weight:900;color:var(--ink)}.trim-result-rank{font-size:8.5px;font-weight:900;color:var(--muted);white-space:nowrap}
     .trim-result-type{margin-top:2px;color:var(--muted);font-size:8.5px;font-weight:800}.trim-result-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.trim-chip{display:inline-flex;padding:4px 6px;border-radius:999px;background:var(--bg);border:1px solid var(--line);font-size:8.5px;color:var(--ink)}
-    .trim-ipma{font-weight:900;color:#214e7c}.trim-result-actions{margin-top:9px;display:flex;gap:7px;flex-wrap:wrap}.trim-result-actions .btn{padding:7px 9px;font-size:8.5px}
+    .trim-ipma{font-weight:900;color:#214e7c}.trim-result-detail{margin-top:8px;padding:8px 9px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:9px;line-height:1.45;color:var(--ink)}.trim-result-detail strong{color:var(--brand)}
+    .trim-result-schedules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}.trim-result-schedule{padding:7px 8px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}.trim-result-schedule span{display:block;color:var(--muted);font-size:7.5px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.trim-result-schedule strong{display:block;margin-top:2px;font-size:9px;color:var(--ink);line-height:1.35}.trim-result-schedule small{display:block;margin-top:2px;color:var(--muted);font-size:7.5px;line-height:1.3}.trim-result-hint{margin-top:7px;color:var(--muted);font-size:8px;font-weight:800}
+    .trim-result-actions{margin-top:9px;display:flex;gap:7px;flex-wrap:wrap}.trim-result-actions .btn{padding:7px 9px;font-size:8.5px}
     .trim-dev-empty{padding:13px;text-align:center;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:9.5px}
     html[data-theme="dark"] .trim-dev-summary{background:#14283a;border-color:#315f91;color:#b9d8f7}
     html[data-theme="dark"] .trim-ipma{color:#b9d8f7}
-    @media(max-width:620px){.trim-dev-rank-row{grid-template-columns:1fr}.trim-dev-filter-row{grid-template-columns:1fr}}
+    @media(max-width:620px){.trim-dev-rank-row{grid-template-columns:1fr}.trim-dev-filter-row{grid-template-columns:1fr}.trim-result-schedules{grid-template-columns:1fr}}
     html[data-theme="dark"] .roster-admin-badge{background:#14283a;border-color:#315f91;color:#b9d8f7}
     html[data-theme="dark"] .roster-admin-drop{background:#101d2d;border-color:#315f91}
     html[data-theme="dark"] .roster-admin-validation{background:#122a23;border-color:#315e50}
@@ -1732,7 +1734,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
             <div class="trim-filter-title">Assignment type</div>
             <div class="trim-check-grid">
               <label class="trim-check"><input type="checkbox" id="trimTypeRegular" checked onchange="trimDevApplyFilters()"> Numbered jobs</label>
-              <label class="trim-check"><input type="checkbox" id="trimTypeEx1" checked onchange="trimDevApplyFilters()"> EX1 Extra List</label>
+              <label class="trim-check"><input type="checkbox" id="trimTypeEx1" checked onchange="trimDevApplyFilters()"> Extra List</label>
             </div>
             <div class="trim-filter-title">Relief days <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— selecting multiple requires all selected days</span></div>
             <div class="trim-check-grid" id="trimReliefChecks">
@@ -1754,9 +1756,8 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
             </div>
             <div class="trim-dev-filter-row">
               <div class="field"><label>Terminal</label><select id="trimTerminal" onchange="trimDevApplyFilters()"><option value="">All terminals</option></select></div>
-              <div class="field"><label>Crew Book reference date</label><input id="trimReferenceDate" type="date" onchange="trimDevApplyFilters()"></div>
             </div>
-            <div class="trim-dev-rank-note">Selecting one or more IPMA values automatically narrows results to EX1 Extra List jobs because regular jobs do not have an IPMA.</div>
+            <div class="trim-dev-rank-note">IPMA selections filter only Extra List results. Numbered jobs remain visible when Numbered jobs is selected.</div>
           </div>
           <div class="trim-dev-results" id="trimDevResults">
             <div class="trim-result-toolbar"><span id="trimDevResultCount"></span><button class="btn" type="button" onclick="trimDevClearFilters()">Clear Filters</button></div>
@@ -4984,6 +4985,7 @@ function updateTraineeModeUI(){
   if(dash)dash.style.display=on?'none':'';
   if(settings)settings.style.display=on?'none':'';
   if(entry&&on)entry.classList.remove('show');
+  try{trimDevUpdateModeAvailability()}catch{}
 }
 function updateTimeOnDuty(){
   const el=document.getElementById('timeOnDutyDisplay'),st=parseClock(document.getElementById('start')?.value),en=parseClock(document.getElementById('end')?.value);
@@ -8617,7 +8619,7 @@ function rosterDateDisplay(value){
 }
 async function rosterCheckAdmin(force=false){
   const card=document.getElementById('rosterAdminCard');if(!card)return false;
-  if(rosterAdminState.checked&&!force){card.classList.toggle('show',!!rosterAdminState.canPublish);return rosterAdminState.canPublish}
+  if(rosterAdminState.checked&&!force){card.classList.toggle('show',!!rosterAdminState.canPublish);trimDevUpdateModeAvailability();return rosterAdminState.canPublish}
   const client=getCloudClient();if(!client){card.classList.remove('show');return false}
   const user=await cloudCurrentUser(client);if(!user){card.classList.remove('show');return false}
   rosterAdminState.user=user;
@@ -8626,7 +8628,7 @@ async function rosterCheckAdmin(force=false){
     if(error)throw error;
     rosterAdminState.checked=true;rosterAdminState.canPublish=!!data?.can_publish;
     card.classList.toggle('show',rosterAdminState.canPublish);
-    if(rosterAdminState.canPublish){await rosterLoadLatestSnapshot();trimDevInitControls();}
+    if(rosterAdminState.canPublish){await rosterLoadLatestSnapshot();trimDevInitControls();}trimDevUpdateModeAvailability();
     return rosterAdminState.canPublish;
   }catch(err){console.warn('Roster admin check failed:',err);rosterAdminState.checked=true;rosterAdminState.canPublish=false;card.classList.remove('show');return false}
 }
@@ -8758,13 +8760,19 @@ async function rosterPublishPreview(){
   finally{if(btn){btn.disabled=!rosterPreviewState?.valid;btn.textContent='Publish Roster Snapshot'}}
 }
 // ---- Maintainer-only Trim Assistant developer preview ----
-function trimDevDefaultDate(){
-  const d=new Date();d.setHours(12,0,0,0);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const TRIM_CREW_BOOK_DATE=CREW_BOOK_REV7_EFFECTIVE;
+const TRIM_RELIEF_PAGE_134={file:'assets/crewbook/relief_crews_134.png',offset:0,height:1800,spriteHeight:1800,width:990};
+const TRIM_RELIEF_PAGE_135={file:'assets/crewbook/relief_crews_135.png',offset:0,height:1800,spriteHeight:1800,width:990};
+const TRIM_EXTRA_LIST_PAGE_250={file:'assets/crewbook/engineers_extra_list_250.png',offset:0,height:1800,spriteHeight:1800,width:990};
+function trimDevDefaultDate(){return TRIM_CREW_BOOK_DATE}
+function trimDevUpdateModeAvailability(){
+  const box=document.getElementById('trimDevBox');if(!box)return;
+  box.style.display=(rosterAdminState.canPublish&&!isTraineeMode())?'':'none';
 }
 function trimDevInitControls(){
   const input=document.getElementById('trimTestRank');
   if(input&&!input.value){const saved=Number(localStorage.getItem(TRIM_TEST_RANK_KEY)||0);if(saved>0)input.value=String(saved)}
-  const date=document.getElementById('trimReferenceDate');if(date&&!date.value)date.value=trimDevDefaultDate();
+  trimDevUpdateModeAvailability();
 }
 function trimDevRankChanged(){
   const input=document.getElementById('trimTestRank'),n=Math.round(Number(input?.value||0));
@@ -8787,48 +8795,72 @@ function trimDevRestLabel(row){const days=trimDevRestDays(row);return days.lengt
 function trimDevIpma(row){if(row?.assignment_type!=='extra_list')return null;const job=String(row.assignment||'').replace(/^EX/i,'').replace(/\D/g,'');return TRIM_EX1_IPMA[job]||null}
 function trimDevTerminalOptions(rows){
   const select=document.getElementById('trimTerminal');if(!select)return;const prev=select.value;
-  const values=[...new Set(rows.map(r=>String(r.terminal||'').trim()).filter(Boolean))].sort();
+  const values=[...new Set(rows.filter(r=>r.assignment_type==='regular').map(r=>String(r.terminal||'').trim()).filter(Boolean))].sort();
   select.innerHTML='<option value="">All terminals</option>'+values.map(v=>`<option value="${escapeHTML(v)}">${escapeHTML(v)}</option>`).join('');if(values.includes(prev))select.value=prev;
 }
 async function trimDevLoad(showStatus=true){
   if(!await rosterCheckAdmin())return;
-  trimDevInitControls();if(!rosterAdminState.latest)await rosterLoadLatestSnapshot();const rows=await rosterGetLatestRows();
+  trimDevInitControls();if(isTraineeMode()){trimDevUpdateModeAvailability();if(showStatus)rosterSetStatus('Trim Assistant is not available while Engineer Trainee Mode is active.','error');return}
+  if(!rosterAdminState.latest)await rosterLoadLatestSnapshot();const rows=await rosterGetLatestRows();
   const summary=document.getElementById('trimDevSummary'),filters=document.getElementById('trimDevFilters'),results=document.getElementById('trimDevResults'),note=document.getElementById('trimDevRankNote');
   if(!rows?.length){if(summary){summary.classList.add('show');summary.textContent='No published roster rows are available yet.'}filters?.classList.remove('show');results?.classList.remove('show');return}
   const rankInfo=trimDevEffectiveRank(rows);trimDevState.rows=rows;trimDevState.rank=rankInfo.rank;trimDevState.source=rankInfo.source;
   if(!rankInfo.rank){if(summary){summary.classList.add('show');summary.innerHTML='<strong>Choose a test rank.</strong><br>This account does not match a roster employee number, so enter a Test Rank Override to continue.'}filters?.classList.remove('show');results?.classList.remove('show');if(note)note.textContent='No automatic roster match was found for this profile. Enter a Test Rank Override; it stays only on this device.';return}
   const below=rows.filter(r=>Number(r.rank)>rankInfo.rank&&(r.assignment_type==='regular'||r.assignment_type==='extra_list'));
-  const regular=below.filter(r=>r.assignment_type==='regular').length,ex1=below.filter(r=>r.assignment_type==='extra_list').length;
-  if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Testing as roster rank ${rankInfo.rank}</strong> (${rankInfo.source==='override'?'local override':'profile match'})<br>${below.length} currently ownable assignments below this rank • ${regular} numbered • ${ex1} EX1 Extra List<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(rosterAdminState.latest?.source_generated_at||rosterAdminState.latest?.uploaded_at))}</span>`}
+  const regular=below.filter(r=>r.assignment_type==='regular').length,extra=below.filter(r=>r.assignment_type==='extra_list').length;
+  if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Testing as roster rank ${rankInfo.rank}</strong> (${rankInfo.source==='override'?'local override':'profile match'})<br>${below.length} currently ownable assignments below this rank • ${regular} numbered • ${extra} Extra List<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(rosterAdminState.latest?.source_generated_at||rosterAdminState.latest?.uploaded_at))} • Crew Book: GO 202 Rev. 7 + Paper Rev. 8</span>`}
   if(note){note.textContent=rankInfo.source==='override'?(rankInfo.profileRank?`Local override ${rankInfo.rank} is active. Profile would otherwise match rank ${rankInfo.profileRank}.`:`Local override ${rankInfo.rank} is active. It does not modify this account's profile.`):`Profile employee number matched roster rank ${rankInfo.rank}.`}
   trimDevTerminalOptions(below);filters?.classList.add('show');results?.classList.add('show');trimDevApplyFilters();
   if(showStatus)rosterSetStatus('Trim Assistant developer preview loaded from the latest published roster.','success');
 }
 function trimDevCheckedValues(containerId){return [...document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)].map(x=>x.value)}
-function trimDevRegularCrewBookMeta(row,date){
+function trimDevRegularCrewBookMeta(row){
   try{
-    if(row.assignment_type!=='regular'||!date)return null;const key=String(row.assignment||'').trim();const hit=crewBookLookupJobV8(key,date);if(!hit?.job)return null;
-    const resolved=jobCompareResolveForDay(key,date),schedule=resolved?.schedule||hit.schedule||null;return {schedule,job:hit.job,revision:hit.revision};
+    if(row.assignment_type!=='regular')return null;const key=String(row.assignment||'').trim(),rev=crewBookPassengerRevision(TRIM_CREW_BOOK_DATE),relief=jobCompareReliefCrewDefinition(key,TRIM_CREW_BOOK_DATE);
+    if(relief)return {relief,job:null,revision:rev};
+    const hit=crewBookLookupJobV8(key,TRIM_CREW_BOOK_DATE);if(!hit?.job)return null;return {relief:null,job:hit.job,revision:hit.revision||rev};
   }catch{return null}
 }
-function trimDevOpenQuickLookup(assignment,date){
-  showView('lookup');const j=document.getElementById('quickLookupJob'),d=document.getElementById('quickLookupDate');if(j)j.value=assignment;if(d)d.value=date||trimDevDefaultDate();runQuickJobLookup(false);window.scrollTo({top:0,behavior:'smooth'});
+function trimDevReliefCoverageText(relief){
+  if(!relief?.map)return '';
+  return CREW_BOOK_DAYS.map((day,i)=>relief.map?.[day]?`${TRIM_DAY_NAMES[i+1]} ${relief.map[day]}`:null).filter(Boolean).join(' • ');
+}
+function trimDevScheduleText(schedule){return schedule?.start&&schedule?.end?`${jobCompareTimeLabel(schedule.start)}–${jobCompareTimeLabel(schedule.end)}`:'Off / not scheduled'}
+function trimDevScheduleCard(label,schedule){
+  const time=trimDevScheduleText(schedule),meal=schedule?.start&&schedule?.end?(schedule.paysMeal?'Pays Meal':'No paid meal'):'';
+  return `<div class="trim-result-schedule"><span>${escapeHTML(label)}</span><strong>${escapeHTML(time)}</strong>${meal?`<small>${escapeHTML(meal)}</small>`:''}</div>`;
+}
+function trimDevCrewBookFullPage(meta,label,caption){return `${crewBookSpriteCropHTML(meta,label)}<div class="crewbook-image-caption">${escapeHTML(caption)}</div>`}
+function trimDevOpenCrewBook(assignment){
+  const raw=String(assignment||'').trim(),modal=document.getElementById('jobCompareOfficialModal'),body=document.getElementById('jobCompareOfficialBody'),title=document.getElementById('jobCompareOfficialTitle'),sub=document.getElementById('jobCompareOfficialSubtitle');if(!raw||!modal||!body)return;
+  const temporaryRevisionNote='<div class="crewbook-temporary-revision-note"><strong>Note:</strong> This does not account for temporary revisions such as track work programs.</div>';
+  if(/^EX1/i.test(raw)){
+    if(title)title.textContent=`Extra List ${raw} • Official Assignment`;if(sub)sub.textContent='GO 202 Rev. 7 • Engineers Guaranteed Extra List';
+    body.innerHTML=temporaryRevisionNote+trimDevCrewBookFullPage(TRIM_EXTRA_LIST_PAGE_250,'Official GO 202 • Engineers Guaranteed Extra List','Official GO 202 page 250. Relief days and I.P.M.A. are shown for all Guaranteed Extra List assignments.');modal.classList.add('open');return;
+  }
+  const key=normalizeCrewBookKey(raw),relief=jobCompareReliefCrewDefinition(key,TRIM_CREW_BOOK_DATE);
+  if(relief){const n=Number(key),meta=n>=459?TRIM_RELIEF_PAGE_135:TRIM_RELIEF_PAGE_134,page=n>=459?135:134;if(title)title.textContent=`Relief Crew ${key} • Official Assignment`;if(sub)sub.textContent=`GO 202 Rev. 7 • Relief Crews • Page ${page}`;body.innerHTML=temporaryRevisionNote+trimDevCrewBookFullPage(meta,`Official GO 202 • Relief Crews • Page ${page}`,`Official GO 202 relief-crew table, page ${page}. R indicates a relief day.`);modal.classList.add('open');return}
+  const hit=crewBookLookupJobV8(key,TRIM_CREW_BOOK_DATE);if(title)title.textContent=`Job ${key} • Official Assignment`;if(sub)sub.textContent='GO 202 Rev. 7 + Paper Rev. 8 • Effective Sep. 8, 2026';body.innerHTML=crewBookOfficialViewerBodyHTML(key,TRIM_CREW_BOOK_DATE,hit);modal.classList.add('open');
 }
 function trimDevApplyFilters(){
   if(!trimDevState.rows.length||!trimDevState.rank)return;
-  const regularOn=!!document.getElementById('trimTypeRegular')?.checked,ex1On=!!document.getElementById('trimTypeEx1')?.checked;
-  const relief=trimDevCheckedValues('trimReliefChecks').map(Number),ipmas=trimDevCheckedValues('trimIpmaChecks'),terminal=String(document.getElementById('trimTerminal')?.value||''),date=document.getElementById('trimReferenceDate')?.value||trimDevDefaultDate();
+  const regularOn=!!document.getElementById('trimTypeRegular')?.checked,extraOn=!!document.getElementById('trimTypeEx1')?.checked;
+  const relief=trimDevCheckedValues('trimReliefChecks').map(Number),ipmas=trimDevCheckedValues('trimIpmaChecks'),terminal=String(document.getElementById('trimTerminal')?.value||'');
   let rows=trimDevState.rows.filter(r=>Number(r.rank)>trimDevState.rank&&(r.assignment_type==='regular'||r.assignment_type==='extra_list'));
-  rows=rows.filter(r=>r.assignment_type==='regular'?regularOn:ex1On);
+  rows=rows.filter(r=>r.assignment_type==='regular'?regularOn:extraOn);
   if(relief.length)rows=rows.filter(r=>{const d=trimDevRestDays(r);return relief.every(x=>d.includes(x))});
-  if(ipmas.length)rows=rows.filter(r=>r.assignment_type==='extra_list'&&ipmas.includes(trimDevIpma(r)));
-  if(terminal)rows=rows.filter(r=>String(r.terminal||'')===terminal);
+  if(ipmas.length)rows=rows.filter(r=>r.assignment_type==='regular'||ipmas.includes(trimDevIpma(r)));
+  if(terminal)rows=rows.filter(r=>r.assignment_type==='extra_list'||String(r.terminal||'')===terminal);
   const count=document.getElementById('trimDevResultCount'),list=document.getElementById('trimDevResultList');if(count)count.textContent=`${rows.length} match${rows.length===1?'':'es'} • sorted by seniority`;
   if(!list)return;if(!rows.length){list.innerHTML='<div class="trim-dev-empty">No ownable assignments match these filters.</div>';return}
   list.innerHTML=rows.map(r=>{
-    const ex1=r.assignment_type==='extra_list',ipma=trimDevIpma(r),meta=ex1?null:trimDevRegularCrewBookMeta(r,date),schedule=meta?.schedule||null;
-    const chips=[`Relief: ${trimDevRestLabel(r)}`];if(r.terminal)chips.push(`Terminal: ${r.terminal}`);if(ex1&&ipma)chips.push(`IPMA: ${ipma}`);if(!ex1&&schedule?.start&&schedule?.end)chips.push(`${jobCompareTimeLabel(schedule.start)}–${jobCompareTimeLabel(schedule.end)}`);if(!ex1&&schedule?.paysMeal)chips.push('Pays Meal');
-    return `<div class="trim-result"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${ex1?'Guaranteed Extra List':'Numbered Crew Book assignment'}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}">${escapeHTML(c)}</span>`).join('')}</div>${!ex1?`<div class="trim-result-actions"><button class="btn" type="button" onclick="trimDevOpenQuickLookup('${escapeHTML(String(r.assignment))}','${escapeHTML(date)}')">Quick Lookup</button></div>`:''}</div>`;
+    const extra=r.assignment_type==='extra_list',ipma=trimDevIpma(r),meta=extra?null:trimDevRegularCrewBookMeta(r),reliefInfo=meta?.relief||null,job=meta?.job||null;
+    const chips=[`Relief: ${trimDevRestLabel(r)}`];if(!extra&&r.terminal)chips.push(`Terminal: ${r.terminal}`);if(extra&&ipma)chips.push(`IPMA: ${ipma}`);
+    let detail='';
+    if(reliefInfo){const coverage=trimDevReliefCoverageText(reliefInfo);if(coverage)detail=`<div class="trim-result-detail"><strong>Covers:</strong> ${escapeHTML(coverage)}</div>`}
+    else if(!extra&&job){if(job.type==='extraCrewOnly'&&job.extra)detail=`<div class="trim-result-schedules">${trimDevScheduleCard('Published schedule',job.extra)}</div>`;else detail=`<div class="trim-result-schedules">${trimDevScheduleCard('Weekday',job.weekday)}${trimDevScheduleCard('Weekend',job.weekend)}</div>`}
+    const cardLabel=extra?'Guaranteed Extra List':reliefInfo?'Relief Crew':'Numbered Crew Book assignment';
+    return `<div class="trim-result" role="button" tabindex="0" data-trim-assignment="${escapeHTML(String(r.assignment))}" onclick="trimDevOpenCrewBook(this.dataset.trimAssignment)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();trimDevOpenCrewBook(this.dataset.trimAssignment)}"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}">${escapeHTML(c)}</span>`).join('')}</div>${detail}<div class="trim-result-hint">Tap to view the official Crew Book assignment</div></div>`;
   }).join('');
 }
 function trimDevClearFilters(){
