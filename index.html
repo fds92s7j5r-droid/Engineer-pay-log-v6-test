@@ -1138,6 +1138,13 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .crew-tool-dashboard{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
     .crew-tool-dashboard-title{font-size:17px;font-weight:850;color:var(--brand);margin-bottom:3px}
     .crew-tool-dashboard-sub{font-size:12px;color:var(--muted);line-height:1.45;max-width:650px}
+    .crew-tools-compact-card{border:1px solid #b9d2ea;background:linear-gradient(180deg,#f3f9ff,#ffffff)}
+    .crew-tools-compact-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+    .crew-tools-compact-btn{appearance:none;border:1px solid var(--line);background:var(--card);border-radius:14px;padding:13px 14px;text-align:left;cursor:pointer;color:var(--ink);font:inherit;min-height:82px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+    .crew-tools-compact-btn:hover{border-color:#91b9df;background:#f7fbff}.crew-tools-compact-btn strong{font-size:14px;color:var(--brand)}.crew-tools-compact-btn span{font-size:9.5px;line-height:1.35;color:var(--muted)}
+    .crew-tools-compact-btn.trim{border-color:#a8d6c9;background:linear-gradient(180deg,#f3fcf8,#fff)}
+    .crew-tools-compact-btn[hidden]{display:none!important}
+    @media(max-width:700px){.crew-tools-compact-grid{grid-template-columns:1fr}.crew-tools-compact-btn{min-height:0;padding:11px 13px}}
     .job-compare-intro,.quick-lookup-intro{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.5}
     .job-compare-controls,.quick-lookup-controls{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(170px,.7fr);gap:12px;align-items:end}
     .job-compare-job-rows{display:grid;gap:8px}
@@ -1218,6 +1225,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     html[data-theme="dark"] .community-test-banner{background:#10243b;border-color:#315f91;color:#b9d8f7}html[data-theme="dark"] .community-note-badge.verified{background:#123326;border-color:#286b4b;color:#a8e4c5}html[data-theme="dark"] .community-note-badge.previous{background:#2c2615;border-color:#6b5b27;color:#f2dfaa}
     .shift-community-panel{display:none;margin-top:4px;padding:12px;border:1px solid #b9d6cc;border-radius:14px;background:#f3faf7}.shift-community-panel.show{display:block}.shift-community-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.shift-community-title{font-size:12px;font-weight:900;color:var(--ink)}.shift-community-revision{display:block;margin-top:2px;color:var(--muted);font-size:8.5px;font-weight:800}.shift-community-list{display:grid;gap:8px;margin-top:9px}.shift-community-note{padding:9px 10px;border-radius:11px;border:1px solid var(--line);background:var(--card)}.shift-community-note-body{font-size:10.5px;line-height:1.45;overflow-wrap:anywhere}.shift-community-note-meta{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:6px;color:var(--muted);font-size:8.5px;font-weight:750}.shift-community-empty{margin-top:8px;color:var(--muted);font-size:9.5px;line-height:1.45}.shift-community-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.shift-community-compose{margin-top:10px}.shift-community-compose .community-status{min-height:12px}.shift-community-compose-note{margin-top:6px;color:var(--muted);font-size:8.5px;line-height:1.4}.dashboard-community-notes{display:none;margin:0 0 14px;padding:14px 16px;border:1px solid #a9d2c4;border-radius:16px;background:#f2faf6}.dashboard-community-notes.show{display:block}.dashboard-community-notes-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.dashboard-community-notes h3{margin:0;font-size:14px}.dashboard-community-notes-sub{margin-top:3px;color:var(--muted);font-size:9.5px;font-weight:750}.dashboard-community-note{margin-top:10px;padding:10px 11px;border:1px solid var(--line);border-radius:11px;background:var(--card);font-size:10.5px;line-height:1.45}.dashboard-community-note .meta{margin-top:5px;color:var(--muted);font-size:8.5px;font-weight:750}.dashboard-community-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}html[data-theme="dark"] .shift-community-panel,html[data-theme="dark"] .dashboard-community-notes{background:#122a23;border-color:#315e50}
     html[data-theme="dark"] .crew-tool-dashboard-card{background:linear-gradient(180deg,#12253a,#101d2d);border-color:#315f91}html[data-theme="dark"] .crew-tool-dashboard-card.lookup{background:linear-gradient(180deg,#12302c,#101d2d);border-color:#316f64}
+    html[data-theme="dark"] .crew-tools-compact-card{background:linear-gradient(180deg,#12253a,#101d2d);border-color:#315f91}html[data-theme="dark"] .crew-tools-compact-btn{background:#101d2d;border-color:#31445a}html[data-theme="dark"] .crew-tools-compact-btn:hover{background:#15283c;border-color:#4b78a5}html[data-theme="dark"] .crew-tools-compact-btn.trim{background:#12302c;border-color:#316f64}
     html[data-theme="dark"] .job-compare-toggle button.active{background:#1b2b3f;color:#fff}
     html[data-theme="dark"] .job-compare-card-head,html[data-theme="dark"] .job-compare-note,html[data-theme="dark"] .quick-lookup-head,html[data-theme="dark"] .quick-lookup-note{background:#0a1727}
     html[data-theme="dark"] .job-compare-week-row.selected{background:#14283a}
@@ -1314,6 +1322,10 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .trim-result-schedules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}.trim-result-schedule{padding:7px 8px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}.trim-result-schedule span{display:block;color:var(--muted);font-size:7.5px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.trim-result-schedule strong{display:block;margin-top:2px;font-size:9px;color:var(--ink);line-height:1.35}.trim-result-schedule small{display:block;margin-top:2px;color:var(--muted);font-size:7.5px;line-height:1.3}.trim-result-hint{margin-top:7px;color:var(--muted);font-size:8px;font-weight:800}
     .trim-result-actions{margin-top:9px;display:flex;gap:7px;flex-wrap:wrap}.trim-result-actions .btn{padding:7px 9px;font-size:8.5px}.trim-relief-image-section{margin:0 0 18px}.trim-relief-image-section:last-child{margin-bottom:0}.trim-relief-image-title{margin:0 0 7px;color:var(--ink);font-size:13px}.trim-relief-image-title small{display:block;margin-top:2px;color:var(--muted);font-size:9px;font-weight:700}
     .trim-dev-empty{padding:13px;text-align:center;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:9.5px}
+    .trim-public-intro{margin:0 0 12px;color:var(--muted);font-size:11px;line-height:1.5}
+    .trim-roster-freshness{margin-top:8px;font-size:9.5px;font-weight:750}.trim-roster-freshness.current{color:#1f7a50}.trim-roster-freshness.caution{color:#9a6a00}.trim-roster-freshness.stale{color:#a33a32}
+    .trim-dev-override{display:none;margin:0 0 12px;padding:11px 12px;border:1px dashed #91b9df;border-radius:12px;background:#f7fbff}.trim-dev-override.show{display:block}.trim-dev-override-title{font-size:9px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;color:#356b9e;margin-bottom:7px}
+    html[data-theme="dark"] .trim-dev-override{background:#14283a;border-color:#315f91}
     html[data-theme="dark"] .trim-dev-summary{background:#14283a;border-color:#315f91;color:#b9d8f7}
     html[data-theme="dark"] .trim-ipma,html[data-theme="dark"] .trim-ot{color:#b9d8f7}
     @media(max-width:620px){.trim-dev-rank-row{grid-template-columns:1fr}.trim-dev-filter-row{grid-template-columns:1fr}.trim-result-schedules{grid-template-columns:1fr}}
@@ -1500,23 +1512,18 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       </div>
 
 
-      <div class="card span6 crew-tool-dashboard-card">
-        <div class="crew-tool-dashboard">
-          <div>
-            <div class="crew-tool-dashboard-title">Job Comparison</div>
-            <div class="crew-tool-dashboard-sub">Compare multiple Crew Book assignments by date, schedule, relief days, estimated earnings, and the official printed assignment.</div>
-          </div>
-          <button class="btn primary small" type="button" onclick="openJobComparison()">Compare Jobs</button>
-        </div>
-      </div>
-
-      <div class="card span6 crew-tool-dashboard-card lookup">
-        <div class="crew-tool-dashboard">
-          <div>
-            <div class="crew-tool-dashboard-title">Quick Job Lookup</div>
-            <div class="crew-tool-dashboard-sub">Enter one assignment and date for a fast Crew Book summary, including day-specific exceptions and the official printed assignment.</div>
-          </div>
-          <button class="btn primary small" type="button" onclick="openQuickJobLookup()">Look Up Job</button>
+      <div class="card span12 crew-tools-compact-card">
+        <div class="section-title"><h2>Crew Book Tools</h2></div>
+        <div class="crew-tools-compact-grid">
+          <button id="dashboardTrimAssistantBtn" class="crew-tools-compact-btn trim" type="button" onclick="openTrimAssistant()">
+            <strong>Trim Assistant</strong><span>Find ownable jobs below your seniority position and filter by relief days, terminal, overtime, or Extra List IPMA.</span>
+          </button>
+          <button class="crew-tools-compact-btn" type="button" onclick="openQuickJobLookup()">
+            <strong>Quick Job Lookup</strong><span>Open one assignment for a fast, date-aware Crew Book summary.</span>
+          </button>
+          <button class="crew-tools-compact-btn" type="button" onclick="openJobComparison()">
+            <strong>Job Comparison</strong><span>Compare multiple assignments by schedule, relief days, earnings, and official Crew Book pages.</span>
+          </button>
         </div>
       </div>
 
@@ -1575,6 +1582,56 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <div class="quick-lookup-actions"><button class="btn primary" type="button" onclick="runQuickJobLookup()">Look Up</button><button class="btn" type="button" onclick="clearQuickJobLookup()">Clear</button></div>
       <div id="quickLookupSourceNote" class="quick-lookup-note">Quick Job Lookup uses the same verified Crew Book resolver as Crew Book Assistance and Job Comparison.</div>
       <div id="quickLookupResult" class="quick-lookup-result"><div class="quick-lookup-empty">Enter an assignment and date to begin.</div></div>
+    </div>
+    <div class="contact-footer"><button type="button" onclick="openContactSettings()">Questions? Comments?</button></div>
+  </section>
+
+  <section id="trimView" class="view">
+    <div class="card">
+      <div class="section-title"><h2>Trim Assistant</h2><button class="btn small" type="button" onclick="showView('dashboard')">Dashboard</button></div>
+      <p class="trim-public-intro">Uses the latest published Engineer seniority roster to show currently ownable numbered and Extra List assignments below your roster position. Roster ownership can change daily during bids, trims, and picks, so always check the roster freshness shown below.</p>
+
+      <div class="trim-dev-override" id="trimDevOverride">
+        <div class="trim-dev-override-title">Developer testing</div>
+        <div class="trim-dev-rank-row" style="margin-top:0">
+          <div class="field"><label>Test Rank Override</label><input id="trimTestRank" type="number" min="1" step="1" inputmode="numeric" placeholder="Example: 479" onchange="trimDevRankChanged()"></div>
+          <button class="btn" type="button" onclick="trimDevLoad()">Reload</button>
+        </div>
+        <div class="trim-dev-rank-note" id="trimDevRankNote">Maintainer-only local override. It does not change this account's profile or the published roster.</div>
+      </div>
+
+      <div class="trim-dev-summary" id="trimDevSummary"></div>
+      <div class="trim-dev-filters" id="trimDevFilters">
+        <div class="trim-filter-title">Assignment type</div>
+        <div class="trim-check-grid">
+          <label class="trim-check"><input type="checkbox" id="trimTypeRegular" checked onchange="trimDevApplyFilters()"> Numbered jobs</label>
+          <label class="trim-check"><input type="checkbox" id="trimTypeEx1" checked onchange="trimDevApplyFilters()"> Extra List</label>
+        </div>
+        <div class="trim-filter-title">Relief days <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— selecting multiple requires all selected days</span></div>
+        <div class="trim-check-grid" id="trimReliefChecks">
+          <label class="trim-check"><input type="checkbox" value="1" onchange="trimDevApplyFilters()"> Mon</label>
+          <label class="trim-check"><input type="checkbox" value="2" onchange="trimDevApplyFilters()"> Tue</label>
+          <label class="trim-check"><input type="checkbox" value="3" onchange="trimDevApplyFilters()"> Wed</label>
+          <label class="trim-check"><input type="checkbox" value="4" onchange="trimDevApplyFilters()"> Thu</label>
+          <label class="trim-check"><input type="checkbox" value="5" onchange="trimDevApplyFilters()"> Fri</label>
+          <label class="trim-check"><input type="checkbox" value="6" onchange="trimDevApplyFilters()"> Sat</label>
+          <label class="trim-check"><input type="checkbox" value="7" onchange="trimDevApplyFilters()"> Sun</label>
+        </div>
+        <div class="trim-filter-title">Extra List IPMA <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— any selected IPMA matches</span></div>
+        <div class="trim-check-grid" id="trimIpmaChecks">
+          <label class="trim-check"><input type="checkbox" value="12:01 AM" onchange="trimDevApplyFilters()"> 12:01 AM</label>
+          <label class="trim-check"><input type="checkbox" value="5:01 AM" onchange="trimDevApplyFilters()"> 5:01 AM</label>
+          <label class="trim-check"><input type="checkbox" value="6:01 AM" onchange="trimDevApplyFilters()"> 6:01 AM</label>
+          <label class="trim-check"><input type="checkbox" value="8:01 AM" onchange="trimDevApplyFilters()"> 8:01 AM</label>
+          <label class="trim-check"><input type="checkbox" value="12:59 PM" onchange="trimDevApplyFilters()"> 12:59 PM</label>
+        </div>
+        <div class="trim-dev-filter-row"><div class="field"><label>Terminal</label><select id="trimTerminal" onchange="trimDevApplyFilters()"><option value="">All terminals</option></select></div></div>
+        <div class="trim-dev-rank-note">IPMA selections filter only Extra List results. Numbered jobs remain visible when Numbered jobs is selected.<br>Schedule previews resolve each worked day individually and group matching days. Weekly OT totals exclude paid meal-period allowances.</div>
+      </div>
+      <div class="trim-dev-results" id="trimDevResults">
+        <div class="trim-result-toolbar"><span id="trimDevResultCount"></span><button class="btn" type="button" onclick="trimDevClearFilters()">Clear Filters</button></div>
+        <div class="trim-result-list" id="trimDevResultList"></div>
+      </div>
     </div>
     <div class="contact-footer"><button type="button" onclick="openContactSettings()">Questions? Comments?</button></div>
   </section>
@@ -1691,7 +1748,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
       <div class="card span12 settings-card roster-admin-card" id="rosterAdminCard">
         <div class="section-title settings-heading">
-          <div><h2>Roster Maintenance</h2><p>Developer-only tool for the future Trim Assistant. The roster PDF is parsed on this device before publishing.</p></div>
+          <div><h2>Roster Maintenance</h2><p>Developer-only roster publisher for Trim Assistant. The roster PDF is parsed on this device before publishing.</p></div>
           <span class="roster-admin-badge">Developer</span>
         </div>
         <div id="rosterAdminLatest" class="account-sync-detail">Checking the latest roster snapshot…</div>
@@ -1716,54 +1773,6 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           </div>
         </div>
 
-        <div class="trim-dev-box" id="trimDevBox">
-          <div class="trim-dev-head">
-            <div><h3>Trim Assistant — Developer Preview</h3><p>Uses the latest published roster snapshot. This preview is visible only to authorized roster maintainers.</p></div>
-            <span class="roster-admin-badge">Private Beta</span>
-          </div>
-          <div class="trim-dev-rank-row">
-            <div class="field">
-              <label>Test Rank Override</label>
-              <input id="trimTestRank" type="number" min="1" step="1" inputmode="numeric" placeholder="Example: 479" onchange="trimDevRankChanged()">
-            </div>
-            <button class="btn primary" type="button" onclick="trimDevLoad()">Load Jobs Below Me</button>
-          </div>
-          <div class="trim-dev-rank-note" id="trimDevRankNote">If your profile employee number matches the roster, the app can use that rank automatically. The override is stored only on this device and does not change your profile.</div>
-          <div class="trim-dev-summary" id="trimDevSummary"></div>
-          <div class="trim-dev-filters" id="trimDevFilters">
-            <div class="trim-filter-title">Assignment type</div>
-            <div class="trim-check-grid">
-              <label class="trim-check"><input type="checkbox" id="trimTypeRegular" checked onchange="trimDevApplyFilters()"> Numbered jobs</label>
-              <label class="trim-check"><input type="checkbox" id="trimTypeEx1" checked onchange="trimDevApplyFilters()"> Extra List</label>
-            </div>
-            <div class="trim-filter-title">Relief days <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— selecting multiple requires all selected days</span></div>
-            <div class="trim-check-grid" id="trimReliefChecks">
-              <label class="trim-check"><input type="checkbox" value="1" onchange="trimDevApplyFilters()"> Mon</label>
-              <label class="trim-check"><input type="checkbox" value="2" onchange="trimDevApplyFilters()"> Tue</label>
-              <label class="trim-check"><input type="checkbox" value="3" onchange="trimDevApplyFilters()"> Wed</label>
-              <label class="trim-check"><input type="checkbox" value="4" onchange="trimDevApplyFilters()"> Thu</label>
-              <label class="trim-check"><input type="checkbox" value="5" onchange="trimDevApplyFilters()"> Fri</label>
-              <label class="trim-check"><input type="checkbox" value="6" onchange="trimDevApplyFilters()"> Sat</label>
-              <label class="trim-check"><input type="checkbox" value="7" onchange="trimDevApplyFilters()"> Sun</label>
-            </div>
-            <div class="trim-filter-title">Extra List IPMA <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— any selected IPMA matches</span></div>
-            <div class="trim-check-grid" id="trimIpmaChecks">
-              <label class="trim-check"><input type="checkbox" value="12:01 AM" onchange="trimDevApplyFilters()"> 12:01 AM</label>
-              <label class="trim-check"><input type="checkbox" value="5:01 AM" onchange="trimDevApplyFilters()"> 5:01 AM</label>
-              <label class="trim-check"><input type="checkbox" value="6:01 AM" onchange="trimDevApplyFilters()"> 6:01 AM</label>
-              <label class="trim-check"><input type="checkbox" value="8:01 AM" onchange="trimDevApplyFilters()"> 8:01 AM</label>
-              <label class="trim-check"><input type="checkbox" value="12:59 PM" onchange="trimDevApplyFilters()"> 12:59 PM</label>
-            </div>
-            <div class="trim-dev-filter-row">
-              <div class="field"><label>Terminal</label><select id="trimTerminal" onchange="trimDevApplyFilters()"><option value="">All terminals</option></select></div>
-            </div>
-            <div class="trim-dev-rank-note">IPMA selections filter only Extra List results. Numbered jobs remain visible when Numbered jobs is selected.<br>Schedule previews resolve each worked day individually and group matching days. Weekly OT totals use those resolved schedules and exclude paid meal-period allowances.</div>
-          </div>
-          <div class="trim-dev-results" id="trimDevResults">
-            <div class="trim-result-toolbar"><span id="trimDevResultCount"></span><button class="btn" type="button" onclick="trimDevClearFilters()">Clear Filters</button></div>
-            <div class="trim-result-list" id="trimDevResultList"></div>
-          </div>
-        </div>
       </div>
 
       <div class="card span12 settings-card" id="billingSettingsCard">
@@ -8593,7 +8602,7 @@ const TRIM_EX1_IPMA=(()=>{
 })();
 let rosterAdminState={checked:false,canPublish:false,user:null,latest:null,latestRows:null};
 let rosterPreviewState=null;
-let trimDevState={rows:[],rank:null,profileRank:null,source:null};
+let trimDevState={rows:[],rank:null,profileRank:null,source:null,sourceGeneratedAt:null,uploadedAt:null,rowCount:0};
 
 function rosterSetStatus(message='',type=''){
   const el=document.getElementById('rosterAdminStatus');if(!el)return;
@@ -8766,8 +8775,26 @@ const TRIM_CREW_BOOK_DATE=CREW_BOOK_REV7_EFFECTIVE;
 const TRIM_STANDARD_WEEK_START='2026-09-14';
 function trimDevDefaultDate(){return TRIM_CREW_BOOK_DATE}
 function trimDevUpdateModeAvailability(){
-  const box=document.getElementById('trimDevBox');if(!box)return;
-  box.style.display=(rosterAdminState.canPublish&&!isTraineeMode())?'':'none';
+  const trainee=isTraineeMode();
+  const dash=document.getElementById('dashboardTrimAssistantBtn');if(dash)dash.hidden=trainee;
+  const override=document.getElementById('trimDevOverride');if(override)override.classList.toggle('show',!!rosterAdminState.canPublish&&!trainee);
+}
+function trimRosterFreshnessHTML(value){
+  if(!value)return '<div class="trim-roster-freshness stale">Roster freshness unavailable.</div>';
+  const t=new Date(value).getTime(),hours=Number.isFinite(t)?Math.max(0,(Date.now()-t)/3600000):9999;
+  if(hours<24)return '<div class="trim-roster-freshness current">Roster status: Current (updated within 24 hours)</div>';
+  if(hours<48)return '<div class="trim-roster-freshness caution">Roster status: Caution — more than 24 hours old</div>';
+  return '<div class="trim-roster-freshness stale">Roster status: Stale — more than 48 hours old. Assignments may have changed.</div>';
+}
+async function trimPublicData(){
+  const client=getCloudClient();if(!client)return null;
+  const {data,error}=await client.rpc('trim_assistant_current_data');
+  if(error){console.warn('Trim Assistant data load failed:',error);return null}
+  return data||null;
+}
+function openTrimAssistant(){
+  if(isTraineeMode()){alert('Trim Assistant is not available while Engineer Trainee Mode is active.');return}
+  showView('trim');
 }
 function trimDevInitControls(){
   const input=document.getElementById('trimTestRank');
@@ -8799,19 +8826,32 @@ function trimDevTerminalOptions(rows){
   select.innerHTML='<option value="">All terminals</option>'+values.map(v=>`<option value="${escapeHTML(v)}">${escapeHTML(v)}</option>`).join('');if(values.includes(prev))select.value=prev;
 }
 async function trimDevLoad(showStatus=true){
-  if(!await rosterCheckAdmin())return;
-  trimDevInitControls();if(isTraineeMode()){trimDevUpdateModeAvailability();if(showStatus)rosterSetStatus('Trim Assistant is not available while Engineer Trainee Mode is active.','error');return}
-  if(!rosterAdminState.latest)await rosterLoadLatestSnapshot();const rows=await rosterGetLatestRows();
+  trimDevInitControls();
+  if(isTraineeMode()){trimDevUpdateModeAvailability();const summary=document.getElementById('trimDevSummary');if(summary){summary.classList.add('show');summary.innerHTML='<strong>Trim Assistant is disabled in Engineer Trainee Mode.</strong>'}document.getElementById('trimDevFilters')?.classList.remove('show');document.getElementById('trimDevResults')?.classList.remove('show');return}
+
   const summary=document.getElementById('trimDevSummary'),filters=document.getElementById('trimDevFilters'),results=document.getElementById('trimDevResults'),note=document.getElementById('trimDevRankNote');
-  if(!rows?.length){if(summary){summary.classList.add('show');summary.textContent='No published roster rows are available yet.'}filters?.classList.remove('show');results?.classList.remove('show');return}
-  const rankInfo=trimDevEffectiveRank(rows);trimDevState.rows=rows;trimDevState.rank=rankInfo.rank;trimDevState.source=rankInfo.source;
-  if(!rankInfo.rank){if(summary){summary.classList.add('show');summary.innerHTML='<strong>Choose a test rank.</strong><br>This account does not match a roster employee number, so enter a Test Rank Override to continue.'}filters?.classList.remove('show');results?.classList.remove('show');if(note)note.textContent='No automatic roster match was found for this profile. Enter a Test Rank Override; it stays only on this device.';return}
-  const below=rows.filter(r=>Number(r.rank)>rankInfo.rank&&(r.assignment_type==='regular'||r.assignment_type==='extra_list'));
-  const regular=below.filter(r=>r.assignment_type==='regular').length,extra=below.filter(r=>r.assignment_type==='extra_list').length;
-  if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Testing as roster rank ${rankInfo.rank}</strong> (${rankInfo.source==='override'?'local override':'profile match'})<br>${below.length} currently ownable assignments below this rank • ${regular} numbered • ${extra} Extra List<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(rosterAdminState.latest?.source_generated_at||rosterAdminState.latest?.uploaded_at))} • Crew Book: GO 202 Rev. 7 + Paper Rev. 8</span>`}
-  if(note){note.textContent=rankInfo.source==='override'?(rankInfo.profileRank?`Local override ${rankInfo.rank} is active. Profile would otherwise match rank ${rankInfo.profileRank}.`:`Local override ${rankInfo.rank} is active. It does not modify this account's profile.`):`Profile employee number matched roster rank ${rankInfo.rank}.`}
-  trimDevTerminalOptions(below);filters?.classList.add('show');results?.classList.add('show');trimDevApplyFilters();
-  if(showStatus)rosterSetStatus('Trim Assistant developer preview loaded from the latest published roster.','success');
+  const admin=await rosterCheckAdmin();trimDevUpdateModeAvailability();
+  const override=Math.round(Number(document.getElementById('trimTestRank')?.value||0));
+
+  // Authorized maintainers can use a local rank override for GitHub testing without changing their profile.
+  if(admin&&override>0){
+    if(!rosterAdminState.latest)await rosterLoadLatestSnapshot();const rows=await rosterGetLatestRows();
+    if(!rows?.length){if(summary){summary.classList.add('show');summary.textContent='No published roster rows are available yet.'}filters?.classList.remove('show');results?.classList.remove('show');return}
+    const rankInfo=trimDevEffectiveRank(rows);trimDevState.rows=rows;trimDevState.rank=rankInfo.rank;trimDevState.source='override';trimDevState.sourceGeneratedAt=rosterAdminState.latest?.source_generated_at||null;trimDevState.uploadedAt=rosterAdminState.latest?.uploaded_at||null;trimDevState.rowCount=Number(rosterAdminState.latest?.row_count||rows.length);
+    const below=rows.filter(r=>Number(r.rank)>rankInfo.rank&&(r.assignment_type==='regular'||r.assignment_type==='extra_list')),regular=below.filter(r=>r.assignment_type==='regular').length,extra=below.filter(r=>r.assignment_type==='extra_list').length;
+    if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Testing as roster rank ${rankInfo.rank}</strong> (local override)<br>${below.length} currently ownable assignments below this rank • ${regular} numbered • ${extra} Extra List<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(trimDevState.sourceGeneratedAt||trimDevState.uploadedAt))} • Crew Book: GO 202 Rev. 7 + Paper Rev. 8</span>${trimRosterFreshnessHTML(trimDevState.sourceGeneratedAt||trimDevState.uploadedAt)}`}
+    if(note)note.textContent=rankInfo.profileRank?`Local override ${rankInfo.rank} is active. Profile would otherwise match rank ${rankInfo.profileRank}.`:`Local override ${rankInfo.rank} is active. It does not modify this account's profile.`;
+    trimDevTerminalOptions(below);filters?.classList.add('show');results?.classList.add('show');trimDevApplyFilters();return;
+  }
+
+  const payload=await trimPublicData();
+  if(!payload){if(summary){summary.classList.add('show');summary.innerHTML='<strong>Could not load the latest roster.</strong><br>Please try again while online.'}filters?.classList.remove('show');results?.classList.remove('show');return}
+  trimDevState.sourceGeneratedAt=payload.source_generated_at||null;trimDevState.uploadedAt=payload.uploaded_at||null;trimDevState.rowCount=Number(payload.row_count||0);
+  if(!payload.match_found){trimDevState.rows=[];trimDevState.rank=null;trimDevState.source='profile';if(summary){summary.classList.add('show');const why=payload.reason==='missing_employee_number'?'Your profile does not have an IBM / employee number saved.':'Your saved IBM / employee number was not found in the latest roster.';summary.innerHTML=`<strong>We could not match you to the current roster.</strong><br>${escapeHTML(why)} Check <strong>Settings → Account → Edit Profile</strong>, then try again.<br><span style="font-size:9px">Latest roster: ${escapeHTML(rosterDateDisplay(payload.source_generated_at||payload.uploaded_at))}</span>${trimRosterFreshnessHTML(payload.source_generated_at||payload.uploaded_at)}`}filters?.classList.remove('show');results?.classList.remove('show');return}
+  trimDevState.rows=Array.isArray(payload.jobs)?payload.jobs:[];trimDevState.rank=Number(payload.own_rank||0);trimDevState.source='profile';
+  const regular=Number(payload.regular_count||0),extra=Number(payload.extra_list_count||0),below=regular+extra;
+  if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Roster rank ${trimDevState.rank}</strong><br>${below} currently ownable assignments below you • ${regular} numbered • ${extra} Extra List<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(payload.source_generated_at||payload.uploaded_at))} • Crew Book: GO 202 Rev. 7 + Paper Rev. 8</span>${trimRosterFreshnessHTML(payload.source_generated_at||payload.uploaded_at)}`}
+  trimDevTerminalOptions(trimDevState.rows);filters?.classList.add('show');results?.classList.add('show');trimDevApplyFilters();
 }
 function trimDevCheckedValues(containerId){return [...document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)].map(x=>x.value)}
 function trimDevRegularCrewBookMeta(row){
@@ -8933,8 +8973,8 @@ function trimDevClearFilters(){
 
 // ---- End developer roster PDF importer ----
 
-function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI()}
-function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){void renderDashboardCommunityNotes();setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility();void rosterCheckAdmin()}renderMyJobUI()}
+function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();trimDevUpdateModeAvailability();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI()}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){trimDevUpdateModeAvailability();void renderDashboardCommunityNotes();setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='trim')void trimDevLoad(false);if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility();void rosterCheckAdmin()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
   return shifts.filter(s=>[
