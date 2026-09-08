@@ -1757,7 +1757,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
             <div class="trim-dev-filter-row">
               <div class="field"><label>Terminal</label><select id="trimTerminal" onchange="trimDevApplyFilters()"><option value="">All terminals</option></select></div>
             </div>
-            <div class="trim-dev-rank-note">IPMA selections filter only Extra List results. Numbered jobs remain visible when Numbered jobs is selected.<br>Weekly OT totals use the published schedule and exclude paid meal-period allowances.</div>
+            <div class="trim-dev-rank-note">IPMA selections filter only Extra List results. Numbered jobs remain visible when Numbered jobs is selected.<br>Schedule previews resolve each worked day individually and group matching days. Weekly OT totals use those resolved schedules and exclude paid meal-period allowances.</div>
           </div>
           <div class="trim-dev-results" id="trimDevResults">
             <div class="trim-result-toolbar"><span id="trimDevResultCount"></span><button class="btn" type="button" onclick="trimDevClearFilters()">Clear Filters</button></div>
@@ -8830,6 +8830,27 @@ function trimDevScheduleCard(label,schedule){
   const time=trimDevScheduleText(schedule),meal=schedule?.start&&schedule?.end?(schedule.paysMeal?'Pays Meal':'No paid meal'):'';
   return `<div class="trim-result-schedule"><span>${escapeHTML(label)}</span><strong>${escapeHTML(time)}</strong>${meal?`<small>${escapeHTML(meal)}</small>`:''}</div>`;
 }
+function trimDevDayGroupLabel(dayNums){
+  const nums=[...new Set((dayNums||[]).map(Number).filter(n=>n>=1&&n<=7))].sort((a,b)=>a-b),parts=[];
+  for(let i=0;i<nums.length;){let j=i;while(j+1<nums.length&&nums[j+1]===nums[j]+1)j++;const first=TRIM_DAY_NAMES[nums[i]]||String(nums[i]),last=TRIM_DAY_NAMES[nums[j]]||String(nums[j]);parts.push(i===j?first:`${first}–${last}`);i=j+1}
+  return parts.join(', ')||'Published schedule';
+}
+function trimDevRegularScheduleGroups(row){
+  if(row?.assignment_type!=='regular')return [];
+  const key=normalizeCrewBookKey(row?.assignment);if(!key)return [];
+  const restDays=new Set(trimDevRestDays(row)),monday=new Date(`${TRIM_STANDARD_WEEK_START}T12:00:00`),groups=[],bySignature=new Map();
+  for(let i=0;i<7;i++){
+    if(restDays.has(i+1))continue;
+    const d=new Date(monday);d.setDate(monday.getDate()+i);const date=isoLocal(d),resolved=jobCompareResolveForDay(key,date),schedule=resolved?.schedule||null;
+    const signature=schedule?.start&&schedule?.end?`${schedule.start}|${schedule.end}|${schedule.paysMeal?'1':'0'}`:`off|${resolved?.state||'off'}`;
+    let group=bySignature.get(signature);if(!group){group={days:[],schedule};bySignature.set(signature,group);groups.push(group)}group.days.push(i+1);
+  }
+  return groups;
+}
+function trimDevRegularScheduleCardsHTML(row){
+  const groups=trimDevRegularScheduleGroups(row);if(!groups.length)return '';
+  return `<div class="trim-result-schedules">${groups.map(g=>trimDevScheduleCard(trimDevDayGroupLabel(g.days),g.schedule)).join('')}</div>`;
+}
 function trimDevWeeklyOtMinutes(row){
   if(row?.assignment_type==='extra_list')return null;
   const key=normalizeCrewBookKey(row?.assignment);if(!key)return null;
@@ -8895,7 +8916,7 @@ function trimDevApplyFilters(){
     const chips=[`Relief: ${trimDevRestLabel(r)}`,trimDevWeeklyOtLabel(r)];if(!extra&&r.terminal)chips.push(`Terminal: ${r.terminal}`);if(extra&&ipma)chips.push(`IPMA: ${ipma}`);
     let detail='';
     if(reliefInfo){const coverage=trimDevReliefCoverageText(reliefInfo);if(coverage)detail=`<div class="trim-result-detail"><strong>Covers:</strong> ${escapeHTML(coverage)}</div>`}
-    else if(!extra&&job){if(job.type==='extraCrewOnly'&&job.extra)detail=`<div class="trim-result-schedules">${trimDevScheduleCard('Published schedule',job.extra)}</div>`;else detail=`<div class="trim-result-schedules">${trimDevScheduleCard('Weekday',job.weekday)}${trimDevScheduleCard('Weekend',job.weekend)}</div>`}
+    else if(!extra&&job){detail=trimDevRegularScheduleCardsHTML(r);if(!detail&&job.type==='extraCrewOnly'&&job.extra)detail=`<div class="trim-result-schedules">${trimDevScheduleCard('Published schedule',job.extra)}</div>`}
     const cardLabel=extra?'Guaranteed Extra List':reliefInfo?'Relief Crew':'Numbered Crew Book assignment';
     const chipHTML=chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}${c.startsWith('Weekly OT:')?' trim-ot':''}">${escapeHTML(c)}</span>`).join('');
     if(extra)return `<div class="trim-result trim-static"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chipHTML}</div></div>`;
