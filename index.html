@@ -1145,6 +1145,13 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .crew-tools-compact-btn.trim{border-color:#a8d6c9;background:linear-gradient(180deg,#f3fcf8,#fff)}
     .crew-tools-compact-btn[hidden]{display:none!important}
     @media(max-width:700px){.crew-tools-compact-grid{grid-template-columns:1fr}.crew-tools-compact-btn{min-height:0;padding:11px 13px}}
+    .retirement-watch-strip{width:100%;margin-top:10px;border:1px solid #c8d9ea;background:linear-gradient(180deg,#f7fbff,#fff);border-radius:14px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;color:var(--ink);font:inherit;text-align:left}
+    .retirement-watch-strip:hover{border-color:#8fb8df;background:#f3f9ff}.retirement-watch-strip[hidden]{display:none!important}
+    .retirement-watch-left{display:flex;align-items:center;gap:9px;min-width:0}.retirement-watch-icon{font-size:20px;line-height:1}.retirement-watch-copy{min-width:0}.retirement-watch-copy strong{display:block;color:var(--brand);font-size:13px;line-height:1.2}.retirement-watch-copy span{display:block;color:var(--muted);font-size:9.5px;line-height:1.3;margin-top:2px}.retirement-watch-count{font-weight:900;font-size:14px;color:var(--brand);white-space:nowrap}
+    .retirement-watch-big{border:1px solid #c8d9ea;background:#f5faff;border-radius:18px;padding:18px;text-align:center}.retirement-watch-big strong{display:block;font-size:42px;line-height:1;color:var(--brand)}.retirement-watch-big span{display:block;margin-top:7px;color:var(--muted);font-size:11px}
+    .retirement-watch-note{margin-top:12px;border:1px solid var(--line);background:var(--soft);border-radius:14px;padding:12px;font-size:10.5px;line-height:1.45;color:var(--muted)}
+    .retirement-watch-history{margin-top:12px}.retirement-watch-history-row{display:flex;justify-content:space-between;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line);font-size:11px}.retirement-watch-history-row:last-child{border-bottom:0}.retirement-watch-history-row strong{color:var(--ink)}
+    .roster-retirement-admin{margin-top:12px;border:1px solid #c8d9ea;background:#f7fbff;border-radius:14px;padding:12px}.roster-retirement-admin strong{color:var(--brand)}.roster-retirement-admin .mini{margin-top:4px;color:var(--muted);font-size:10px;line-height:1.4}.roster-retirement-admin .btn{margin-top:10px}
     .job-compare-intro,.quick-lookup-intro{margin:0 0 14px;color:var(--muted);font-size:12px;line-height:1.5}
     .job-compare-controls,.quick-lookup-controls{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(170px,.7fr);gap:12px;align-items:end}
     .job-compare-job-rows{display:grid;gap:8px}
@@ -1226,6 +1233,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .shift-community-panel{display:none;margin-top:4px;padding:12px;border:1px solid #b9d6cc;border-radius:14px;background:#f3faf7}.shift-community-panel.show{display:block}.shift-community-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.shift-community-title{font-size:12px;font-weight:900;color:var(--ink)}.shift-community-revision{display:block;margin-top:2px;color:var(--muted);font-size:8.5px;font-weight:800}.shift-community-list{display:grid;gap:8px;margin-top:9px}.shift-community-note{padding:9px 10px;border-radius:11px;border:1px solid var(--line);background:var(--card)}.shift-community-note-body{font-size:10.5px;line-height:1.45;overflow-wrap:anywhere}.shift-community-note-meta{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:6px;color:var(--muted);font-size:8.5px;font-weight:750}.shift-community-empty{margin-top:8px;color:var(--muted);font-size:9.5px;line-height:1.45}.shift-community-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.shift-community-compose{margin-top:10px}.shift-community-compose .community-status{min-height:12px}.shift-community-compose-note{margin-top:6px;color:var(--muted);font-size:8.5px;line-height:1.4}.dashboard-community-notes{display:none;margin:0 0 14px;padding:14px 16px;border:1px solid #a9d2c4;border-radius:16px;background:#f2faf6}.dashboard-community-notes.show{display:block}.dashboard-community-notes-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.dashboard-community-notes h3{margin:0;font-size:14px}.dashboard-community-notes-sub{margin-top:3px;color:var(--muted);font-size:9.5px;font-weight:750}.dashboard-community-note{margin-top:10px;padding:10px 11px;border:1px solid var(--line);border-radius:11px;background:var(--card);font-size:10.5px;line-height:1.45}.dashboard-community-note .meta{margin-top:5px;color:var(--muted);font-size:8.5px;font-weight:750}.dashboard-community-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}html[data-theme="dark"] .shift-community-panel,html[data-theme="dark"] .dashboard-community-notes{background:#122a23;border-color:#315e50}
     html[data-theme="dark"] .crew-tool-dashboard-card{background:linear-gradient(180deg,#12253a,#101d2d);border-color:#315f91}html[data-theme="dark"] .crew-tool-dashboard-card.lookup{background:linear-gradient(180deg,#12302c,#101d2d);border-color:#316f64}
     html[data-theme="dark"] .crew-tools-compact-card{background:linear-gradient(180deg,#12253a,#101d2d);border-color:#315f91}html[data-theme="dark"] .crew-tools-compact-btn{background:#101d2d;border-color:#31445a}html[data-theme="dark"] .crew-tools-compact-btn:hover{background:#15283c;border-color:#4b78a5}html[data-theme="dark"] .crew-tools-compact-btn.trim{background:#12302c;border-color:#316f64}
+    html[data-theme="dark"] .retirement-watch-strip,html[data-theme="dark"] .roster-retirement-admin{background:#101d2d;border-color:#315f91}html[data-theme="dark"] .retirement-watch-strip:hover{background:#15283c;border-color:#4b78a5}html[data-theme="dark"] .retirement-watch-big{background:#101d2d;border-color:#315f91}
     html[data-theme="dark"] .job-compare-toggle button.active{background:#1b2b3f;color:#fff}
     html[data-theme="dark"] .job-compare-card-head,html[data-theme="dark"] .job-compare-note,html[data-theme="dark"] .quick-lookup-head,html[data-theme="dark"] .quick-lookup-note{background:#0a1727}
     html[data-theme="dark"] .job-compare-week-row.selected{background:#14283a}
@@ -1525,6 +1533,10 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
             <strong>Job Comparison</strong><span>Compare multiple assignments by schedule, relief days, earnings, and official Crew Book pages.</span>
           </button>
         </div>
+        <button id="retirementWatchStrip" class="retirement-watch-strip" type="button" onclick="openRetirementWatch()" hidden>
+          <span class="retirement-watch-left"><span class="retirement-watch-icon">🚂</span><span class="retirement-watch-copy"><strong id="retirementWatchStripTitle">Retirement Watch 2K26</strong><span id="retirementWatchStripSub">Official roster code 99/Z2</span></span></span>
+          <span id="retirementWatchStripCount" class="retirement-watch-count">0 this year</span>
+        </button>
       </div>
 
       <div class="card span12 recent-dashboard-card">
@@ -1752,6 +1764,11 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <span class="roster-admin-badge">Developer</span>
         </div>
         <div id="rosterAdminLatest" class="account-sync-detail">Checking the latest roster snapshot…</div>
+        <div id="rosterRetirementAdmin" class="roster-retirement-admin">
+          <strong>🚂 Retirement Watch</strong>
+          <div id="rosterRetirementAdminText" class="mini">Checking annual retirement tracking…</div>
+          <button id="rosterRetirementStartBtn" class="btn small" type="button" onclick="retirementWatchStartCurrentYear()" hidden>Start annual baseline</button>
+        </div>
         <div class="roster-admin-drop">
           <div class="field full">
             <label>RPCS Seniority Roster PDF</label>
@@ -2264,6 +2281,19 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       </ul>
     </div>
     <div class="modal-foot"><button class="btn primary" onclick="closeWhatsNew()">Got It</button></div>
+  </div>
+</div>
+
+<div id="retirementWatchModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="retirementWatchModalTitle" onclick="if(event.target===this)closeRetirementWatch()">
+  <div class="modal-card" style="max-width:520px">
+    <div class="modal-head"><div><h2 id="retirementWatchModalTitle" style="margin:0">🚂 Retirement Watch 2K26</h2><div class="muted" style="margin-top:4px">Official retired-engineer roster code: 99/Z2</div></div></div>
+    <div class="modal-body">
+      <div class="retirement-watch-big"><strong id="retirementWatchModalCount">0</strong><span id="retirementWatchModalCountLabel">engineers retired this year</span></div>
+      <div id="retirementWatchModalLatest" class="retirement-watch-note"></div>
+      <div id="retirementWatchModalHistory" class="retirement-watch-history"></div>
+      <div class="retirement-watch-note">Retirement Watch counts roster entries that newly move to <strong>99/Z2</strong>. Names and employee numbers are never displayed. On January 1 the public counter resets to 0; after the railroad's annual roster cleanup, a roster maintainer starts the new year's baseline and tracking resumes.</div>
+    </div>
+    <div class="modal-foot"><button class="btn primary" type="button" onclick="closeRetirementWatch()">Close</button></div>
   </div>
 </div>
 
@@ -8523,7 +8553,7 @@ function renderDashboard(){
   if(netAmount&&showNet)netAmount.textContent=money(pi.total*netRate);
   const p=document.getElementById('dashPendingSlips');if(p)p.textContent=String(shifts.filter(s=>s.timeSlip&&['Needs Submission','Pending'].includes(timeSlipDisplayStatus(s))).length);
   renderTimeSlipDeadlineBanner();renderTimeSlipWageBanner();void renderDashboardCommunityNotes();
-  const f=document.getElementById('dashSavedJobs');if(f)f.textContent=String(savedJobs.length);updateBackupUI();
+  const f=document.getElementById('dashSavedJobs');if(f)f.textContent=String(savedJobs.length);updateBackupUI();void retirementWatchLoad(false);
 }
 function renderHistory(){
   if(getHistoryView()==='calendar'){renderHistoryCalendar();return}
@@ -8579,6 +8609,52 @@ function showMascotMessage(button){
   clearTimeout(button._mascotTimer);button._mascotTimer=setTimeout(()=>bubble.classList.remove('show'),4200);
 }
 
+
+// ---- Retirement Watch ----
+let retirementWatchState={data:null,loadedAt:0,loading:false};
+function retirementWatchYearLabel(year){return `2K${String(year||new Date().getFullYear()).slice(-2).padStart(2,'0')}`}
+function retirementWatchDate(value){if(!value)return 'No roster timestamp available';try{return new Date(value).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}catch{return String(value)}}
+function retirementWatchRender(data){
+  const strip=document.getElementById('retirementWatchStrip');if(!strip)return;
+  if(!data){strip.hidden=true;return}strip.hidden=false;
+  const year=Number(data.year||new Date().getFullYear()),count=Number(data.count||0),active=!!data.tracking_active,newest=Number(data.new_since_latest_roster||0);
+  const title=document.getElementById('retirementWatchStripTitle'),sub=document.getElementById('retirementWatchStripSub'),countEl=document.getElementById('retirementWatchStripCount');
+  if(title)title.textContent=`Retirement Watch ${retirementWatchYearLabel(year)}`;
+  if(sub)sub.textContent=active?(newest?`+${newest} on the latest roster • 99/Z2`:'Official roster code 99/Z2'):'Annual baseline pending • counter reset to 0';
+  if(countEl)countEl.textContent=`${count} this year`;
+  retirementWatchRenderAdmin(data);
+}
+function retirementWatchRenderAdmin(data){
+  const text=document.getElementById('rosterRetirementAdminText'),btn=document.getElementById('rosterRetirementStartBtn');if(!text||!data)return;
+  const year=Number(data.year||new Date().getFullYear()),count=Number(data.count||0),active=!!data.tracking_active;
+  text.innerHTML=active?`<strong>${count}</strong> retirement${count===1?'':'s'} counted for ${escapeHTML(retirementWatchYearLabel(year))}. Latest roster: ${escapeHTML(retirementWatchDate(data.latest_roster_generated_at||data.latest_roster_uploaded_at))}.`:`${escapeHTML(retirementWatchYearLabel(year))} is reset to <strong>0</strong> and paused until the railroad's annual roster cleanup is complete. Start the baseline only when you're ready to resume tracking.`;
+  if(btn){btn.hidden=active;btn.textContent=`Start ${retirementWatchYearLabel(year)} from latest roster`}
+}
+async function retirementWatchLoad(force=false){
+  if(retirementWatchState.loading)return retirementWatchState.data;
+  if(!force&&retirementWatchState.data&&Date.now()-retirementWatchState.loadedAt<60000){retirementWatchRender(retirementWatchState.data);return retirementWatchState.data}
+  const client=getCloudClient();if(!client){retirementWatchRender(null);return null}
+  const user=await cloudCurrentUser(client);if(!user){retirementWatchRender(null);return null}
+  retirementWatchState.loading=true;
+  try{const {data,error}=await client.rpc('retirement_watch_summary');if(error)throw error;retirementWatchState.data=data||null;retirementWatchState.loadedAt=Date.now();retirementWatchRender(retirementWatchState.data);return retirementWatchState.data}catch(err){console.warn('Retirement Watch load failed:',err);retirementWatchRender(null);return null}finally{retirementWatchState.loading=false}
+}
+async function openRetirementWatch(){
+  const data=await retirementWatchLoad(true);if(!data)return;
+  const year=Number(data.year||new Date().getFullYear()),count=Number(data.count||0),active=!!data.tracking_active,newest=Number(data.new_since_latest_roster||0);
+  const title=document.getElementById('retirementWatchModalTitle'),num=document.getElementById('retirementWatchModalCount'),label=document.getElementById('retirementWatchModalCountLabel'),latest=document.getElementById('retirementWatchModalLatest'),hist=document.getElementById('retirementWatchModalHistory');
+  if(title)title.textContent=`🚂 Retirement Watch ${retirementWatchYearLabel(year)}`;if(num)num.textContent=String(count);if(label)label.textContent=`engineer${count===1?'':'s'} retired this year`;
+  if(latest)latest.innerHTML=active?`Latest published roster: <strong>${escapeHTML(retirementWatchDate(data.latest_roster_generated_at||data.latest_roster_uploaded_at))}</strong>${newest?`<br><strong>+${newest}</strong> new retirement${newest===1?'':'s'} detected on that roster.`:''}`:`The ${escapeHTML(retirementWatchYearLabel(year))} counter has reset to 0. Tracking will resume after a roster maintainer establishes the post-cleanup annual baseline.`;
+  const history=Array.isArray(data.history)?data.history:[];if(hist)hist.innerHTML=history.length?`<div style="font-weight:800;margin-bottom:4px">Year history</div>${history.map(h=>`<div class="retirement-watch-history-row"><span>${escapeHTML(retirementWatchYearLabel(h.year))}${h.tracking_active?'':' • paused'}</span><strong>${Number(h.count||0)}</strong></div>`).join('')}`:'';
+  document.getElementById('retirementWatchModal')?.classList.add('open');
+}
+function closeRetirementWatch(){document.getElementById('retirementWatchModal')?.classList.remove('open')}
+async function retirementWatchStartCurrentYear(){
+  if(!rosterAdminState.canPublish)return;const year=new Date().getFullYear();
+  if(!confirm(`Start Retirement Watch ${retirementWatchYearLabel(year)} from the latest published roster?\n\nOnly do this after the railroad's annual roster cleanup. Existing 99/Z2 entries in that roster will become the baseline and will NOT count toward the new year's total.`))return;
+  const client=getCloudClient();if(!client)return;const btn=document.getElementById('rosterRetirementStartBtn');if(btn)btn.disabled=true;
+  try{const {error}=await client.rpc('retirement_watch_start_year',{p_year:year,p_snapshot_id:null});if(error)throw error;retirementWatchState.data=null;await retirementWatchLoad(true)}catch(err){console.error('Retirement Watch baseline failed:',err);alert(`Could not start Retirement Watch ${retirementWatchYearLabel(year)}: ${err?.message||err}`)}finally{if(btn)btn.disabled=false}
+}
+// ---- End Retirement Watch ----
 
 // ---- Developer roster PDF importer (future Trim Assistant) ----
 const ROSTER_PDFJS_URL='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
@@ -8637,7 +8713,7 @@ async function rosterCheckAdmin(force=false){
     if(error)throw error;
     rosterAdminState.checked=true;rosterAdminState.canPublish=!!data?.can_publish;
     card.classList.toggle('show',rosterAdminState.canPublish);
-    if(rosterAdminState.canPublish){await rosterLoadLatestSnapshot();trimDevInitControls();}trimDevUpdateModeAvailability();
+    if(rosterAdminState.canPublish){await rosterLoadLatestSnapshot();await retirementWatchLoad(true);trimDevInitControls();}trimDevUpdateModeAvailability();
     return rosterAdminState.canPublish;
   }catch(err){console.warn('Roster admin check failed:',err);rosterAdminState.checked=true;rosterAdminState.canPublish=false;card.classList.remove('show');return false}
 }
@@ -8734,21 +8810,21 @@ async function rosterGetLatestRows(){
   if(error){console.warn('Previous roster rows could not be loaded:',error);return null}rosterAdminState.latestRows=data||[];return rosterAdminState.latestRows;
 }
 function rosterDiffRows(previous,current){
-  if(!previous?.length)return null;const prevByEmp=new Map(previous.map(r=>[String(r.employee_id),r])),curByEmp=new Map(current.map(r=>[String(r.employee_id),r]));let assignmentChanges=0,rankChanges=0,newRows=0,removedRows=0;
-  for(const r of current){const p=prevByEmp.get(String(r.employee_id));if(!p){newRows++;continue}if(String(p.assignment||'')!==String(r.assignment||''))assignmentChanges++;if(Number(p.rank)!==Number(r.rank))rankChanges++}
+  if(!previous?.length)return null;const prevByEmp=new Map(previous.map(r=>[String(r.employee_id),r])),curByEmp=new Map(current.map(r=>[String(r.employee_id),r]));let assignmentChanges=0,rankChanges=0,newRows=0,removedRows=0,newRetirements=0;
+  for(const r of current){const p=prevByEmp.get(String(r.employee_id));if(!p){newRows++;if(String(r.st_rs||'').toUpperCase()==='99/Z2')newRetirements++;continue}if(String(p.assignment||'')!==String(r.assignment||''))assignmentChanges++;if(Number(p.rank)!==Number(r.rank))rankChanges++;if(String(r.st_rs||'').toUpperCase()==='99/Z2'&&String(p.st_rs||'').toUpperCase()!=='99/Z2')newRetirements++}
   for(const p of previous)if(!curByEmp.has(String(p.employee_id)))removedRows++;
-  return {assignmentChanges,rankChanges,newRows,removedRows};
+  return {assignmentChanges,rankChanges,newRows,removedRows,newRetirements};
 }
 async function rosterRenderPreview(parsed){
   const host=document.getElementById('rosterAdminPreview'),stats=document.getElementById('rosterAdminStats'),validation=document.getElementById('rosterAdminValidation'),diffEl=document.getElementById('rosterAdminDiff'),publish=document.getElementById('rosterPublishBtn');if(!host||!stats||!validation||!publish)return;
-  const c=parsed.counts,ownable=c.regular+c.extra_list;
-  stats.innerHTML=[['Rows',parsed.rows.length],['Ownable',ownable],['Numbered jobs',c.regular],['EX1 Extra List',c.extra_list],['EX2 excluded',c.subject_to_bid],['ET excluded',c.trainee]].map(([label,value])=>`<div class="roster-admin-stat"><strong>${Number(value)}</strong><span>${escapeHTML(label)}</span></div>`).join('');
+  const c=parsed.counts,ownable=c.regular+c.extra_list,retiredCount=parsed.rows.filter(r=>String(r.st_rs||'').toUpperCase()==='99/Z2').length;
+  stats.innerHTML=[['Rows',parsed.rows.length],['Ownable',ownable],['Numbered jobs',c.regular],['EX1 Extra List',c.extra_list],['EX2 excluded',c.subject_to_bid],['ET excluded',c.trainee],['99/Z2 retired',retiredCount]].map(([label,value])=>`<div class="roster-admin-stat"><strong>${Number(value)}</strong><span>${escapeHTML(label)}</span></div>`).join('');
   const details=[`<strong>${parsed.valid?'Validation passed':'Validation failed'}</strong>`,`${parsed.pages} pages • ${parsed.rows.length} parsed rows${parsed.declaredTotal?` • PDF total ${parsed.declaredTotal}`:''}`,`Roster generated: ${escapeHTML(parsed.timestamp.label)}`,`Other/unclassified: ${c.other} • Blank assignments: ${c.blank}`];
   if(parsed.mine)details.push(`Your profile matched roster rank ${parsed.mine.rank}.${parsed.belowOwnable!==null?` ${parsed.belowOwnable} currently ownable numbered/EX1 assignments are below you in this snapshot.`:''}`);else details.push('Your profile employee number was not matched in this PDF. The roster can still be published, but check your profile before testing Trim Assistant results.');
   if(parsed.errors.length)details.push(...parsed.errors.map(x=>`Error: ${escapeHTML(x)}`));if(parsed.warnings.length)details.push(...parsed.warnings.map(x=>`Warning: ${escapeHTML(x)}`));
   validation.className=`roster-admin-validation${parsed.errors.length?' error':parsed.warnings.length?' warn':''}`;validation.innerHTML=details.join('<br>');
   if(!rosterAdminState.latest)await rosterLoadLatestSnapshot();const previous=await rosterGetLatestRows(),diff=rosterDiffRows(previous,parsed.rows);
-  if(diff&&diffEl){diffEl.style.display='block';diffEl.innerHTML=`<strong>Changes from the latest published roster</strong><br>${diff.assignmentChanges} assignment change${diff.assignmentChanges===1?'':'s'} • ${diff.rankChanges} rank change${diff.rankChanges===1?'':'s'} • ${diff.newRows} new roster entr${diff.newRows===1?'y':'ies'} • ${diff.removedRows} removed`;}else if(diffEl){diffEl.style.display='none';diffEl.innerHTML=''}
+  if(diff&&diffEl){diffEl.style.display='block';diffEl.innerHTML=`<strong>Changes from the latest published roster</strong><br>${diff.assignmentChanges} assignment change${diff.assignmentChanges===1?'':'s'} • ${diff.rankChanges} rank change${diff.rankChanges===1?'':'s'} • ${diff.newRows} new roster entr${diff.newRows===1?'y':'ies'} • ${diff.removedRows} removed • <strong>${diff.newRetirements} new 99/Z2 retirement${diff.newRetirements===1?'':'s'}</strong>`;}else if(diffEl){diffEl.style.display='none';diffEl.innerHTML=''}
   publish.disabled=!parsed.valid;host.classList.add('show');rosterSetStatus(parsed.valid?'Roster parsed successfully. Review the validation summary, then publish when ready.':'Roster parsed, but validation failed. Nothing has been published. ',parsed.valid?'success':'error');
 }
 function rosterClearPreview(clearInput=true){rosterPreviewState=null;document.getElementById('rosterAdminPreview')?.classList.remove('show');const b=document.getElementById('rosterPublishBtn');if(b)b.disabled=true;if(clearInput){const input=document.getElementById('rosterPdfInput');if(input)input.value=''}rosterSetStatus('Choose the full ENGINEERS - BLE EN roster exported with Show All entries.')}
@@ -8764,7 +8840,8 @@ async function rosterPublishPreview(){
     const cleanRows=parsed.rows.map(r=>({snapshot_id:snapshotId,rank:r.rank,employee_id:r.employee_id,assignment:r.assignment,rest_day_1:r.rest_day_1,rest_day_2:r.rest_day_2,terminal:r.terminal,craft:r.craft,position_code:r.position_code,st_rs:r.st_rs,assignment_type:r.assignment_type}));
     for(let i=0;i<cleanRows.length;i+=150){rosterSetStatus(`Publishing roster rows… ${Math.min(i+150,cleanRows.length)} of ${cleanRows.length}`);const {error}=await client.from('roster_rows').insert(cleanRows.slice(i,i+150));if(error)throw error}
     const {error:publishError}=await client.from('roster_snapshots').update({status:'published'}).eq('id',snapshotId);if(publishError)throw publishError;
-    rosterSetStatus(`Published ${parsed.rows.length} roster rows successfully.`,'success');rosterPreviewState=null;document.getElementById('rosterAdminPreview')?.classList.remove('show');const input=document.getElementById('rosterPdfInput');if(input)input.value='';rosterAdminState.latestRows=null;await rosterLoadLatestSnapshot();if(document.getElementById('trimTestRank')?.value)await trimDevLoad(false);
+    let retirementAdded=0;try{const {data:rw,error:rwError}=await client.rpc('retirement_watch_process_snapshot',{p_snapshot_id:snapshotId});if(rwError)throw rwError;retirementAdded=Number(rw?.added||0)}catch(rwErr){console.warn('Retirement Watch processing failed:',rwErr)}
+    rosterSetStatus(`Published ${parsed.rows.length} roster rows successfully.${retirementAdded?` Retirement Watch detected ${retirementAdded} new retirement${retirementAdded===1?'':'s'}.`:''}`,'success');rosterPreviewState=null;document.getElementById('rosterAdminPreview')?.classList.remove('show');const input=document.getElementById('rosterPdfInput');if(input)input.value='';rosterAdminState.latestRows=null;await rosterLoadLatestSnapshot();await retirementWatchLoad(true);if(document.getElementById('trimTestRank')?.value)await trimDevLoad(false);
   }catch(err){console.error('Roster publish failed:',err);if(snapshotId){try{await client.from('roster_snapshots').delete().eq('id',snapshotId)}catch{}}rosterSetStatus(`Roster was not published: ${err?.message||err}`,'error')}
   finally{if(btn){btn.disabled=!rosterPreviewState?.valid;btn.textContent='Publish Roster Snapshot'}}
 }
