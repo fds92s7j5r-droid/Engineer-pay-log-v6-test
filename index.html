@@ -1307,15 +1307,15 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .trim-dev-filter-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.trim-dev-filter-row .field{margin:0}
     .trim-dev-results{display:none;margin-top:12px}.trim-dev-results.show{display:block}
     .trim-result-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;color:var(--muted);font-size:9px}
-    .trim-result-list{display:grid;gap:8px}.trim-result{padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;transition:border-color .15s ease,transform .15s ease,box-shadow .15s ease}.trim-result:hover,.trim-result:focus-visible{border-color:#8fb3d8;box-shadow:0 3px 12px rgba(18,52,91,.08);outline:none}.trim-result:active{transform:scale(.995)}
+    .trim-result-list{display:grid;gap:8px}.trim-result{padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer;transition:border-color .15s ease,transform .15s ease,box-shadow .15s ease}.trim-result:hover,.trim-result:focus-visible{border-color:#8fb3d8;box-shadow:0 3px 12px rgba(18,52,91,.08);outline:none}.trim-result:active{transform:scale(.995)}.trim-result.trim-static{cursor:default}.trim-result.trim-static:hover,.trim-result.trim-static:focus-visible{border-color:var(--line);box-shadow:none}.trim-result.trim-static:active{transform:none}
     .trim-result-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}.trim-result-job{font-size:13px;font-weight:900;color:var(--ink)}.trim-result-rank{font-size:8.5px;font-weight:900;color:var(--muted);white-space:nowrap}
     .trim-result-type{margin-top:2px;color:var(--muted);font-size:8.5px;font-weight:800}.trim-result-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.trim-chip{display:inline-flex;padding:4px 6px;border-radius:999px;background:var(--bg);border:1px solid var(--line);font-size:8.5px;color:var(--ink)}
-    .trim-ipma{font-weight:900;color:#214e7c}.trim-result-detail{margin-top:8px;padding:8px 9px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:9px;line-height:1.45;color:var(--ink)}.trim-result-detail strong{color:var(--brand)}
+    .trim-ipma{font-weight:900;color:#214e7c}.trim-ot{font-weight:900;color:#214e7c}.trim-result-detail{margin-top:8px;padding:8px 9px;border:1px solid var(--line);border-radius:10px;background:var(--bg);font-size:9px;line-height:1.45;color:var(--ink)}.trim-result-detail strong{color:var(--brand)}
     .trim-result-schedules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:8px}.trim-result-schedule{padding:7px 8px;border:1px solid var(--line);border-radius:10px;background:var(--bg)}.trim-result-schedule span{display:block;color:var(--muted);font-size:7.5px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}.trim-result-schedule strong{display:block;margin-top:2px;font-size:9px;color:var(--ink);line-height:1.35}.trim-result-schedule small{display:block;margin-top:2px;color:var(--muted);font-size:7.5px;line-height:1.3}.trim-result-hint{margin-top:7px;color:var(--muted);font-size:8px;font-weight:800}
-    .trim-result-actions{margin-top:9px;display:flex;gap:7px;flex-wrap:wrap}.trim-result-actions .btn{padding:7px 9px;font-size:8.5px}
+    .trim-result-actions{margin-top:9px;display:flex;gap:7px;flex-wrap:wrap}.trim-result-actions .btn{padding:7px 9px;font-size:8.5px}.trim-relief-image-section{margin:0 0 18px}.trim-relief-image-section:last-child{margin-bottom:0}.trim-relief-image-title{margin:0 0 7px;color:var(--ink);font-size:13px}.trim-relief-image-title small{display:block;margin-top:2px;color:var(--muted);font-size:9px;font-weight:700}
     .trim-dev-empty{padding:13px;text-align:center;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:9.5px}
     html[data-theme="dark"] .trim-dev-summary{background:#14283a;border-color:#315f91;color:#b9d8f7}
-    html[data-theme="dark"] .trim-ipma{color:#b9d8f7}
+    html[data-theme="dark"] .trim-ipma,html[data-theme="dark"] .trim-ot{color:#b9d8f7}
     @media(max-width:620px){.trim-dev-rank-row{grid-template-columns:1fr}.trim-dev-filter-row{grid-template-columns:1fr}.trim-result-schedules{grid-template-columns:1fr}}
     html[data-theme="dark"] .roster-admin-badge{background:#14283a;border-color:#315f91;color:#b9d8f7}
     html[data-theme="dark"] .roster-admin-drop{background:#101d2d;border-color:#315f91}
@@ -1757,7 +1757,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
             <div class="trim-dev-filter-row">
               <div class="field"><label>Terminal</label><select id="trimTerminal" onchange="trimDevApplyFilters()"><option value="">All terminals</option></select></div>
             </div>
-            <div class="trim-dev-rank-note">IPMA selections filter only Extra List results. Numbered jobs remain visible when Numbered jobs is selected.</div>
+            <div class="trim-dev-rank-note">IPMA selections filter only Extra List results. Numbered jobs remain visible when Numbered jobs is selected.<br>Weekly OT totals use the published schedule and exclude paid meal-period allowances.</div>
           </div>
           <div class="trim-dev-results" id="trimDevResults">
             <div class="trim-result-toolbar"><span id="trimDevResultCount"></span><button class="btn" type="button" onclick="trimDevClearFilters()">Clear Filters</button></div>
@@ -8761,9 +8761,9 @@ async function rosterPublishPreview(){
 }
 // ---- Maintainer-only Trim Assistant developer preview ----
 const TRIM_CREW_BOOK_DATE=CREW_BOOK_REV7_EFFECTIVE;
-const TRIM_RELIEF_PAGE_134={file:'assets/crewbook/relief_crews_134.png',offset:0,height:1800,spriteHeight:1800,width:990};
-const TRIM_RELIEF_PAGE_135={file:'assets/crewbook/relief_crews_135.png',offset:0,height:1800,spriteHeight:1800,width:990};
-const TRIM_EXTRA_LIST_PAGE_250={file:'assets/crewbook/engineers_extra_list_250.png',offset:0,height:1800,spriteHeight:1800,width:990};
+// Use a neutral Monday-Sunday week after the Sep. 8 cutover for scheduled weekly OT totals.
+// This avoids holiday/date-specific pay while still applying the new GO 202 weekday/weekend schedules.
+const TRIM_STANDARD_WEEK_START='2026-09-14';
 function trimDevDefaultDate(){return TRIM_CREW_BOOK_DATE}
 function trimDevUpdateModeAvailability(){
   const box=document.getElementById('trimDevBox');if(!box)return;
@@ -8830,18 +8830,55 @@ function trimDevScheduleCard(label,schedule){
   const time=trimDevScheduleText(schedule),meal=schedule?.start&&schedule?.end?(schedule.paysMeal?'Pays Meal':'No paid meal'):'';
   return `<div class="trim-result-schedule"><span>${escapeHTML(label)}</span><strong>${escapeHTML(time)}</strong>${meal?`<small>${escapeHTML(meal)}</small>`:''}</div>`;
 }
-function trimDevCrewBookFullPage(meta,label,caption){return `${crewBookSpriteCropHTML(meta,label)}<div class="crewbook-image-caption">${escapeHTML(caption)}</div>`}
+function trimDevWeeklyOtMinutes(row){
+  if(row?.assignment_type==='extra_list')return null;
+  const key=normalizeCrewBookKey(row?.assignment);if(!key)return null;
+  const reliefInfo=jobCompareReliefCrewDefinition(key,TRIM_CREW_BOOK_DATE);
+  const restDays=new Set(trimDevRestDays(row));
+  let total=0,found=false;
+  const monday=new Date(`${TRIM_STANDARD_WEEK_START}T12:00:00`);
+  for(let i=0;i<7;i++){
+    // A regular job owner does not work their two published relief days.
+    if(!reliefInfo&&restDays.has(i+1))continue;
+    const d=new Date(monday);d.setDate(monday.getDate()+i);const date=isoLocal(d);
+    const resolved=jobCompareResolveForDay(key,date),schedule=resolved?.schedule;
+    if(!schedule?.start||!schedule?.end)continue;
+    found=true;total+=Math.max(0,jobCompareDuration(schedule.start,schedule.end)-480);
+  }
+  return found?total:null;
+}
+function trimDevWeeklyOtLabel(row){
+  if(row?.assignment_type==='extra_list')return 'Weekly OT: Variable';
+  const mins=trimDevWeeklyOtMinutes(row);return mins==null?'Weekly OT: —':`Weekly OT: ${fmtMinutes(mins)}`;
+}
+function trimDevReliefCoveredJobs(relief){
+  if(!relief?.map)return [];const grouped=new Map();
+  CREW_BOOK_DAYS.forEach((day,i)=>{const key=normalizeCrewBookKey(relief.map?.[day]);if(!key)return;if(!grouped.has(key))grouped.set(key,[]);grouped.get(key).push(TRIM_DAY_NAMES[i+1]||jobCompareDayLabel(day))});
+  return [...grouped.entries()].map(([key,days])=>({key,days}));
+}
+function trimDevReliefCoveredImagesHTML(relief){
+  const jobs=trimDevReliefCoveredJobs(relief);if(!jobs.length)return '<div class="crewbook-official-unavailable">No covered jobs are listed for this Relief Crew.</div>';
+  return jobs.map(({key,days})=>{
+    const hit=crewBookLookupJobV8(key,TRIM_CREW_BOOK_DATE),imageKey=crewBookOfficialImageKey(key,hit)||key,meta=CREW_BOOK_GO202_IMAGE_MAP[String(imageKey)];
+    const heading=`Job ${key}`,sub=`Covered ${days.join(', ')}`;
+    const body=meta?`${crewBookSpriteCropHTML(meta,`Official GO 202 • Job ${key}`)}<div class="crewbook-image-caption">Official GO 202 assignment image for Job ${escapeHTML(key)}.</div>`:`<div class="crewbook-official-unavailable">An official GO 202 assignment image is not available for Job ${escapeHTML(key)}.</div>`;
+    return `<section class="trim-relief-image-section"><h3 class="trim-relief-image-title">${escapeHTML(heading)}<small>${escapeHTML(sub)}</small></h3>${body}</section>`;
+  }).join('');
+}
 function trimDevOpenCrewBook(assignment){
   const raw=String(assignment||'').trim(),modal=document.getElementById('jobCompareOfficialModal'),body=document.getElementById('jobCompareOfficialBody'),title=document.getElementById('jobCompareOfficialTitle'),sub=document.getElementById('jobCompareOfficialSubtitle');if(!raw||!modal||!body)return;
+  // Extra List cards intentionally have no Crew Book image action: relief days + IPMA are the useful fields.
+  if(/^EX1/i.test(raw))return;
   const temporaryRevisionNote='<div class="crewbook-temporary-revision-note"><strong>Note:</strong> This does not account for temporary revisions such as track work programs.</div>';
-  if(/^EX1/i.test(raw)){
-    if(title)title.textContent=`Extra List ${raw} • Official Assignment`;if(sub)sub.textContent='GO 202 Rev. 7 • Engineers Guaranteed Extra List';
-    body.innerHTML=temporaryRevisionNote+trimDevCrewBookFullPage(TRIM_EXTRA_LIST_PAGE_250,'Official GO 202 • Engineers Guaranteed Extra List','Official GO 202 page 250. Relief days and I.P.M.A. are shown for all Guaranteed Extra List assignments.');modal.classList.add('open');return;
-  }
   const key=normalizeCrewBookKey(raw),relief=jobCompareReliefCrewDefinition(key,TRIM_CREW_BOOK_DATE);
-  if(relief){const n=Number(key),meta=n>=459?TRIM_RELIEF_PAGE_135:TRIM_RELIEF_PAGE_134,page=n>=459?135:134;if(title)title.textContent=`Relief Crew ${key} • Official Assignment`;if(sub)sub.textContent=`GO 202 Rev. 7 • Relief Crews • Page ${page}`;body.innerHTML=temporaryRevisionNote+trimDevCrewBookFullPage(meta,`Official GO 202 • Relief Crews • Page ${page}`,`Official GO 202 relief-crew table, page ${page}. R indicates a relief day.`);modal.classList.add('open');return}
+  if(relief){
+    const covered=trimDevReliefCoveredJobs(relief);if(title)title.textContent=`Relief Crew ${key} • Covered Assignments`;
+    if(sub)sub.textContent=`GO 202 Rev. 7 • ${covered.length} covered job${covered.length===1?'':'s'} • scroll to view all`;
+    body.innerHTML=temporaryRevisionNote+trimDevReliefCoveredImagesHTML(relief);modal.classList.add('open');return;
+  }
   const hit=crewBookLookupJobV8(key,TRIM_CREW_BOOK_DATE);if(title)title.textContent=`Job ${key} • Official Assignment`;if(sub)sub.textContent='GO 202 Rev. 7 + Paper Rev. 8 • Effective Sep. 8, 2026';body.innerHTML=crewBookOfficialViewerBodyHTML(key,TRIM_CREW_BOOK_DATE,hit);modal.classList.add('open');
 }
+
 function trimDevApplyFilters(){
   if(!trimDevState.rows.length||!trimDevState.rank)return;
   const regularOn=!!document.getElementById('trimTypeRegular')?.checked,extraOn=!!document.getElementById('trimTypeEx1')?.checked;
@@ -8855,12 +8892,15 @@ function trimDevApplyFilters(){
   if(!list)return;if(!rows.length){list.innerHTML='<div class="trim-dev-empty">No ownable assignments match these filters.</div>';return}
   list.innerHTML=rows.map(r=>{
     const extra=r.assignment_type==='extra_list',ipma=trimDevIpma(r),meta=extra?null:trimDevRegularCrewBookMeta(r),reliefInfo=meta?.relief||null,job=meta?.job||null;
-    const chips=[`Relief: ${trimDevRestLabel(r)}`];if(!extra&&r.terminal)chips.push(`Terminal: ${r.terminal}`);if(extra&&ipma)chips.push(`IPMA: ${ipma}`);
+    const chips=[`Relief: ${trimDevRestLabel(r)}`,trimDevWeeklyOtLabel(r)];if(!extra&&r.terminal)chips.push(`Terminal: ${r.terminal}`);if(extra&&ipma)chips.push(`IPMA: ${ipma}`);
     let detail='';
     if(reliefInfo){const coverage=trimDevReliefCoverageText(reliefInfo);if(coverage)detail=`<div class="trim-result-detail"><strong>Covers:</strong> ${escapeHTML(coverage)}</div>`}
     else if(!extra&&job){if(job.type==='extraCrewOnly'&&job.extra)detail=`<div class="trim-result-schedules">${trimDevScheduleCard('Published schedule',job.extra)}</div>`;else detail=`<div class="trim-result-schedules">${trimDevScheduleCard('Weekday',job.weekday)}${trimDevScheduleCard('Weekend',job.weekend)}</div>`}
     const cardLabel=extra?'Guaranteed Extra List':reliefInfo?'Relief Crew':'Numbered Crew Book assignment';
-    return `<div class="trim-result" role="button" tabindex="0" data-trim-assignment="${escapeHTML(String(r.assignment))}" onclick="trimDevOpenCrewBook(this.dataset.trimAssignment)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();trimDevOpenCrewBook(this.dataset.trimAssignment)}"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}">${escapeHTML(c)}</span>`).join('')}</div>${detail}<div class="trim-result-hint">Tap to view the official Crew Book assignment</div></div>`;
+    const chipHTML=chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}${c.startsWith('Weekly OT:')?' trim-ot':''}">${escapeHTML(c)}</span>`).join('');
+    if(extra)return `<div class="trim-result trim-static"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chipHTML}</div></div>`;
+    const hint=reliefInfo?'Tap to view every covered job assignment':'Tap to view the official Crew Book assignment';
+    return `<div class="trim-result" role="button" tabindex="0" data-trim-assignment="${escapeHTML(String(r.assignment))}" onclick="trimDevOpenCrewBook(this.dataset.trimAssignment)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();trimDevOpenCrewBook(this.dataset.trimAssignment)}"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chipHTML}</div>${detail}<div class="trim-result-hint">${escapeHTML(hint)}</div></div>`;
   }).join('');
 }
 function trimDevClearFilters(){
