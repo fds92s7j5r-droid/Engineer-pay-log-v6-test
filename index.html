@@ -1534,7 +1534,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           </button>
         </div>
         <button id="retirementWatchStrip" class="retirement-watch-strip" type="button" onclick="openRetirementWatch()" hidden>
-          <span class="retirement-watch-left"><span class="retirement-watch-icon">🚂</span><span class="retirement-watch-copy"><strong id="retirementWatchStripTitle">Retirement Watch 2K26</strong><span id="retirementWatchStripSub">Official roster code 99/Z2</span></span></span>
+          <span class="retirement-watch-left"><span class="retirement-watch-icon">🚂</span><span class="retirement-watch-copy"><strong id="retirementWatchStripTitle">Retirement Watch 2K26</strong></span></span>
           <span id="retirementWatchStripCount" class="retirement-watch-count">0 this year</span>
         </button>
       </div>
@@ -2286,12 +2286,12 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
 <div id="retirementWatchModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="retirementWatchModalTitle" onclick="if(event.target===this)closeRetirementWatch()">
   <div class="modal-card" style="max-width:520px">
-    <div class="modal-head"><div><h2 id="retirementWatchModalTitle" style="margin:0">🚂 Retirement Watch 2K26</h2><div class="muted" style="margin-top:4px">Official retired-engineer roster code: 99/Z2</div></div></div>
+    <div class="modal-head"><div><h2 id="retirementWatchModalTitle" style="margin:0">🚂 Retirement Watch 2K26</h2></div></div>
     <div class="modal-body">
       <div class="retirement-watch-big"><strong id="retirementWatchModalCount">0</strong><span id="retirementWatchModalCountLabel">engineers retired this year</span></div>
       <div id="retirementWatchModalLatest" class="retirement-watch-note"></div>
-      <div id="retirementWatchModalHistory" class="retirement-watch-history"></div>
-      <div class="retirement-watch-note">Retirement Watch counts roster entries that newly move to <strong>99/Z2</strong>. Names and employee numbers are never displayed. On January 1 the public counter resets to 0; after the railroad's annual roster cleanup, a roster maintainer starts the new year's baseline and tracking resumes.</div>
+      <div id="retirementWatchModalUpdate" class="retirement-watch-note" hidden></div>
+      <div id="retirementWatchModalHistory" class="retirement-watch-history" hidden></div>
     </div>
     <div class="modal-foot"><button class="btn primary" type="button" onclick="closeRetirementWatch()">Close</button></div>
   </div>
@@ -8617,10 +8617,9 @@ function retirementWatchDate(value){if(!value)return 'No roster timestamp availa
 function retirementWatchRender(data){
   const strip=document.getElementById('retirementWatchStrip');if(!strip)return;
   if(!data){strip.hidden=true;return}strip.hidden=false;
-  const year=Number(data.year||new Date().getFullYear()),count=Number(data.count||0),active=!!data.tracking_active,newest=Number(data.new_since_latest_roster||0);
-  const title=document.getElementById('retirementWatchStripTitle'),sub=document.getElementById('retirementWatchStripSub'),countEl=document.getElementById('retirementWatchStripCount');
+  const year=Number(data.year||new Date().getFullYear()),count=Number(data.count||0);
+  const title=document.getElementById('retirementWatchStripTitle'),countEl=document.getElementById('retirementWatchStripCount');
   if(title)title.textContent=`Retirement Watch ${retirementWatchYearLabel(year)}`;
-  if(sub)sub.textContent=active?(newest?`+${newest} on the latest roster • 99/Z2`:'Official roster code 99/Z2'):'Annual baseline pending • counter reset to 0';
   if(countEl)countEl.textContent=`${count} this year`;
   retirementWatchRenderAdmin(data);
 }
@@ -8630,21 +8629,44 @@ function retirementWatchRenderAdmin(data){
   text.innerHTML=active?`<strong>${count}</strong> retirement${count===1?'':'s'} counted for ${escapeHTML(retirementWatchYearLabel(year))}. Latest roster: ${escapeHTML(retirementWatchDate(data.latest_roster_generated_at||data.latest_roster_uploaded_at))}.`:`${escapeHTML(retirementWatchYearLabel(year))} is reset to <strong>0</strong> and paused until the railroad's annual roster cleanup is complete. Start the baseline only when you're ready to resume tracking.`;
   if(btn){btn.hidden=active;btn.textContent=`Start ${retirementWatchYearLabel(year)} from latest roster`}
 }
+function retirementWatchLocalRankOverride(){
+  if(!rosterAdminState?.canPublish)return 0;
+  const fromInput=Math.round(Number(document.getElementById('trimTestRank')?.value||0));
+  if(fromInput>0)return fromInput;
+  const saved=Math.round(Number(localStorage.getItem('epl_trim_test_rank_override_v1')||0));
+  return saved>0?saved:0;
+}
 async function retirementWatchLoad(force=false){
   if(retirementWatchState.loading)return retirementWatchState.data;
   if(!force&&retirementWatchState.data&&Date.now()-retirementWatchState.loadedAt<60000){retirementWatchRender(retirementWatchState.data);return retirementWatchState.data}
   const client=getCloudClient();if(!client){retirementWatchRender(null);return null}
   const user=await cloudCurrentUser(client);if(!user){retirementWatchRender(null);return null}
   retirementWatchState.loading=true;
-  try{const {data,error}=await client.rpc('retirement_watch_summary');if(error)throw error;retirementWatchState.data=data||null;retirementWatchState.loadedAt=Date.now();retirementWatchRender(retirementWatchState.data);return retirementWatchState.data}catch(err){console.warn('Retirement Watch load failed:',err);retirementWatchRender(null);return null}finally{retirementWatchState.loading=false}
+  try{
+    const override=retirementWatchLocalRankOverride();
+    const response=override>0?await client.rpc('retirement_watch_summary_for_rank',{p_rank_override:override}):await client.rpc('retirement_watch_summary');
+    const {data,error}=response;if(error)throw error;retirementWatchState.data=data||null;retirementWatchState.loadedAt=Date.now();retirementWatchRender(retirementWatchState.data);return retirementWatchState.data
+  }catch(err){console.warn('Retirement Watch load failed:',err);retirementWatchRender(null);return null}finally{retirementWatchState.loading=false}
 }
 async function openRetirementWatch(){
   const data=await retirementWatchLoad(true);if(!data)return;
-  const year=Number(data.year||new Date().getFullYear()),count=Number(data.count||0),active=!!data.tracking_active,newest=Number(data.new_since_latest_roster||0);
-  const title=document.getElementById('retirementWatchModalTitle'),num=document.getElementById('retirementWatchModalCount'),label=document.getElementById('retirementWatchModalCountLabel'),latest=document.getElementById('retirementWatchModalLatest'),hist=document.getElementById('retirementWatchModalHistory');
+  const year=Number(data.year||new Date().getFullYear()),count=Number(data.count||0),active=!!data.tracking_active,newest=Number(data.new_since_latest_roster||0),above=Number(data.new_above_you_since_latest_roster||0),matched=!!data.seniority_match_found;
+  const title=document.getElementById('retirementWatchModalTitle'),num=document.getElementById('retirementWatchModalCount'),label=document.getElementById('retirementWatchModalCountLabel'),latest=document.getElementById('retirementWatchModalLatest'),update=document.getElementById('retirementWatchModalUpdate'),hist=document.getElementById('retirementWatchModalHistory');
   if(title)title.textContent=`🚂 Retirement Watch ${retirementWatchYearLabel(year)}`;if(num)num.textContent=String(count);if(label)label.textContent=`engineer${count===1?'':'s'} retired this year`;
-  if(latest)latest.innerHTML=active?`Latest published roster: <strong>${escapeHTML(retirementWatchDate(data.latest_roster_generated_at||data.latest_roster_uploaded_at))}</strong>${newest?`<br><strong>+${newest}</strong> new retirement${newest===1?'':'s'} detected on that roster.`:''}`:`The ${escapeHTML(retirementWatchYearLabel(year))} counter has reset to 0. Tracking will resume after a roster maintainer establishes the post-cleanup annual baseline.`;
-  const history=Array.isArray(data.history)?data.history:[];if(hist)hist.innerHTML=history.length?`<div style="font-weight:800;margin-bottom:4px">Year history</div>${history.map(h=>`<div class="retirement-watch-history-row"><span>${escapeHTML(retirementWatchYearLabel(h.year))}${h.tracking_active?'':' • paused'}</span><strong>${Number(h.count||0)}</strong></div>`).join('')}`:'';
+  if(latest)latest.innerHTML=active?`Roster: <strong>${escapeHTML(retirementWatchDate(data.latest_roster_generated_at||data.latest_roster_uploaded_at))}</strong>`:`${escapeHTML(retirementWatchYearLabel(year))} is waiting for the annual baseline.`;
+  if(update){
+    if(active&&newest>0){
+      const peopleWord=newest===1?'person has':'people have';
+      const retireWord=newest===1?'retired':'retired';
+      const relative=matched?`<br><strong>${above} out of ${newest}</strong> ${above===1?'was':'were'} above you in seniority.`:'';
+      update.innerHTML=`<strong>${newest} ${peopleWord} ${retireWord} since the last roster update.</strong>${relative}${matched?'<br><span style="font-weight:900;color:var(--brand)">Seniority intensifies 📈</span>':''}`;
+      update.hidden=false;
+    }else{update.hidden=true;update.innerHTML=''}
+  }
+  const history=Array.isArray(data.history)?data.history:[];if(hist){
+    if(history.length>1){hist.hidden=false;hist.innerHTML=`<div style="font-weight:800;margin-bottom:4px">Year history</div>${history.map(h=>`<div class="retirement-watch-history-row"><span>${escapeHTML(retirementWatchYearLabel(h.year))}</span><strong>${Number(h.count||0)}</strong></div>`).join('')}`}
+    else{hist.hidden=true;hist.innerHTML=''}
+  }
   document.getElementById('retirementWatchModal')?.classList.add('open');
 }
 function closeRetirementWatch(){document.getElementById('retirementWatchModal')?.classList.remove('open')}
@@ -8881,7 +8903,9 @@ function trimDevInitControls(){
 function trimDevRankChanged(){
   const input=document.getElementById('trimTestRank'),n=Math.round(Number(input?.value||0));
   if(n>0)localStorage.setItem(TRIM_TEST_RANK_KEY,String(n));else localStorage.removeItem(TRIM_TEST_RANK_KEY);
+  retirementWatchState.data=null;retirementWatchState.loadedAt=0;
   if(trimDevState.rows.length)trimDevLoad(false);
+  void retirementWatchLoad(true);
 }
 function trimDevProfileRank(rows){
   const ibm=String(document.getElementById('accountIBMDisplay')?.textContent||'').trim();if(!/^\d+$/.test(ibm))return null;
