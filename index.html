@@ -9652,6 +9652,37 @@ function trimDevRegularScheduleCardsHTML(row){
   const groups=trimDevRegularScheduleGroups(row);if(!groups.length)return '';
   return `<div class="trim-result-schedules">${groups.map(g=>trimDevScheduleCard(trimDevDayGroupLabel(g.days),g.schedule)).join('')}</div>`;
 }
+function trimDevYardScheduleCard(label,schedule,coveredKey='',terminal=''){
+  if(!schedule?.start||!schedule?.end)return '';
+  const report=jobCompareTimeLabel(schedule.start),release=jobCompareTimeLabel(schedule.end),sub=[coveredKey?`Covers ${coveredKey}`:'',terminal||''].filter(Boolean).join(' • ');
+  return `<div class="trim-result-schedule"><span>${escapeHTML(label)}</span><strong>Report: ${escapeHTML(report)}</strong><strong>Release: ${escapeHTML(release)}</strong>${sub?`<small>${escapeHTML(sub)}</small>`:''}</div>`;
+}
+function trimDevYardRegularScheduleCardsHTML(row){
+  if(row?.assignment_type!=='other')return '';
+  const key=normalizeCrewBookKey(row?.assignment);if(!isYardCrewKey(key))return '';
+  const job=CREW_BOOK_YARD_JOBS?.[key];if(!job?.days)return '';
+  const groups=[],bySignature=new Map();
+  CREW_BOOK_DAYS.forEach((day,i)=>{
+    const schedule=job.days?.[day]?{...job.days[day],paysMeal:false}:null;if(!schedule?.start||!schedule?.end)return;
+    const signature=`${schedule.start}|${schedule.end}|${job.terminal||''}`;
+    let group=bySignature.get(signature);if(!group){group={days:[],schedule,terminal:job.terminal||row.terminal||''};bySignature.set(signature,group);groups.push(group)}group.days.push(i+1);
+  });
+  if(!groups.length)return '';
+  return `<div class="trim-result-schedules">${groups.map(g=>trimDevYardScheduleCard(trimDevDayGroupLabel(g.days),g.schedule,'',g.terminal)).join('')}</div>`;
+}
+function trimDevYardReliefScheduleCardsHTML(row,relief){
+  if(row?.assignment_type!=='other'||relief?.type!=='yard'||!relief?.map)return '';
+  const groups=[],bySignature=new Map();
+  CREW_BOOK_DAYS.forEach((day,i)=>{
+    const covered=normalizeCrewBookKey(relief.map?.[day]);if(!covered)return;
+    const schedule=resolveYardReliefCoveredJobV8(covered,day);if(!schedule?.start||!schedule?.end)return;
+    const terminal=CREW_BOOK_YARD_JOBS?.[covered]?.terminal||'';
+    const signature=`${covered}|${schedule.start}|${schedule.end}|${terminal}`;
+    let group=bySignature.get(signature);if(!group){group={days:[],schedule,covered,terminal};bySignature.set(signature,group);groups.push(group)}group.days.push(i+1);
+  });
+  if(!groups.length)return '';
+  return `<div class="trim-result-schedules">${groups.map(g=>trimDevYardScheduleCard(trimDevDayGroupLabel(g.days),g.schedule,g.covered,g.terminal)).join('')}</div>`;
+}
 function trimDevWeeklyOtMinutes(row){
   if(row?.assignment_type==='extra_list')return null;
   const key=normalizeCrewBookKey(row?.assignment);if(!key)return null;
@@ -9716,9 +9747,11 @@ function trimDevApplyFilters(){
     const extra=r.assignment_type==='extra_list',other=r.assignment_type==='other',ipma=trimDevIpma(r),meta=extra?null:trimDevRegularCrewBookMeta(r),reliefInfo=meta?.relief||null,job=meta?.job||null;
     const chips=[`Relief: ${trimDevRestLabel(r)}`];if(!extra)chips.push(trimDevWeeklyOtLabel(r));if(!extra&&r.terminal)chips.push(`Terminal: ${r.terminal}`);if(extra&&ipma)chips.push(`IPMA: ${ipma}`);
     let detail='';
-    if(reliefInfo){const coverage=trimDevReliefCoverageText(reliefInfo);if(coverage)detail=`<div class="trim-result-detail"><strong>Covers:</strong> ${escapeHTML(coverage)}</div>`}
+    if(other&&reliefInfo?.type==='yard')detail=trimDevYardReliefScheduleCardsHTML(r,reliefInfo);
+    else if(reliefInfo){const coverage=trimDevReliefCoverageText(reliefInfo);if(coverage)detail=`<div class="trim-result-detail"><strong>Covers:</strong> ${escapeHTML(coverage)}</div>`}
+    else if(other)detail=trimDevYardRegularScheduleCardsHTML(r);
     else if(!extra&&job){detail=trimDevRegularScheduleCardsHTML(r);if(!detail&&job.type==='extraCrewOnly'&&job.extra)detail=`<div class="trim-result-schedules">${trimDevScheduleCard('Published schedule',job.extra)}</div>`}
-    const cardLabel=extra?'Guaranteed Extra List':other?'Yard / other assignment':reliefInfo?'Relief Crew':'Passenger Crew Book assignment';
+    const cardLabel=extra?'Guaranteed Extra List':other&&reliefInfo?.type==='yard'?'Yard Relief Crew':other?'Yard / other assignment':reliefInfo?'Relief Crew':'Passenger Crew Book assignment';
     const chipHTML=chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}${c.startsWith('Weekly OT:')?' trim-ot':''}">${escapeHTML(c)}</span>`).join('');
     if(extra||other)return `<div class="trim-result trim-static"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chipHTML}</div>${other&&detail?detail:''}</div>`;
     const hint=reliefInfo?'Tap to view every covered job assignment':'Tap to view the official Crew Book assignment';
