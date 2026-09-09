@@ -1320,8 +1320,19 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .bid-sheet-search-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px}.bid-sheet-search-row .field{margin:0}
     .bid-sheet-source{margin-top:8px;color:var(--muted);font-size:8.5px;line-height:1.45}
     .bid-sheet-card-terminal{font-weight:850;color:#4a5d73}.bid-sheet-unmatched{margin-top:8px;padding:8px 9px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);font-size:8.5px;line-height:1.4}
-    html[data-theme="dark"] .bid-sheet-summary{background:#241d33;border-color:#655080;color:#d8c9ed}html[data-theme="dark"] .bid-sheet-summary strong{color:#eee5fb}html[data-theme="dark"] .bid-sheet-status-pill.open{background:#123024;color:#99dfba}html[data-theme="dark"] .bid-sheet-status-pill.upcoming{background:#14283a;color:#b9d8f7}html[data-theme="dark"] .bid-sheet-status-pill.closed{background:#252b34;color:#b7c0cc}
-    @media(max-width:620px){.bid-sheet-search-row{grid-template-columns:1fr}}
+    .bid-sheet-builder{display:none;margin-top:12px;padding:13px;border:1px solid #a9c6e3;border-radius:14px;background:#f5f9fd}.bid-sheet-builder.show{display:block}
+    .bid-sheet-builder-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.bid-sheet-builder-head h3{margin:0;color:var(--brand);font-size:15px}.bid-sheet-builder-subtitle{margin-top:2px;color:var(--muted);font-size:8.5px;line-height:1.4}
+    .bid-draft-sync{display:inline-flex;align-items:center;justify-content:center;min-height:25px;padding:5px 8px;border-radius:999px;background:#e8eef6;color:#445a72;font-size:8px;font-weight:900;white-space:nowrap}.bid-draft-sync.saving{background:#fff2ca;color:#725900}.bid-draft-sync.synced{background:#e4f5ec;color:#176742}.bid-draft-sync.local{background:#edf2f7;color:#4c6075}.bid-draft-sync.error{background:#fdecec;color:var(--bad)}
+    .bid-draft-list{display:grid;gap:7px;margin-top:10px}.bid-draft-empty{padding:12px;border:1px dashed #b9cce0;border-radius:11px;background:rgba(255,255,255,.7);color:var(--muted);font-size:9px;line-height:1.5;text-align:center}
+    .bid-draft-choice{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:8px;align-items:center;padding:9px;border:1px solid #c8d8e8;border-radius:11px;background:var(--card)}
+    .bid-draft-priority{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;font-size:11px;font-weight:900}.bid-draft-assignment{font-size:11px;font-weight:900;color:var(--ink)}.bid-draft-meta{margin-top:2px;color:var(--muted);font-size:8px;line-height:1.35}
+    .bid-draft-controls{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}.bid-draft-controls .btn{min-height:36px;padding:7px 9px;font-size:8.5px}.bid-draft-controls .btn:disabled{opacity:.38}
+    .bid-sheet-builder-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.bid-sheet-builder-actions .btn{min-height:40px}.bid-sheet-builder-actions .btn:disabled{opacity:.45}
+    .bid-sheet-builder-note{margin-top:8px;color:var(--muted);font-size:8px;line-height:1.45}
+    .bid-sheet-card-actions{align-items:center}.bid-sheet-card-actions .bid-add-choice{background:var(--brand);color:#fff}.bid-sheet-card-actions .bid-add-choice.added{background:#e4f5ec;color:#176742}.bid-sheet-card-actions .bid-add-choice:disabled{opacity:1}
+    .bid-call-ready-warning{padding:11px 12px;border:1px solid #e1c468;border-radius:12px;background:#fff8d9;color:#5d4b00;font-size:10px;line-height:1.5}.bid-call-ready-list{display:grid;gap:8px;margin:12px 0 0;padding:0;list-style:none;counter-reset:bid-ready}.bid-call-ready-item{counter-increment:bid-ready;display:grid;grid-template-columns:34px minmax(0,1fr);gap:9px;align-items:center;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}.bid-call-ready-item:before{content:counter(bid-ready);display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;font-weight:900}.bid-call-ready-assignment{font-size:13px;font-weight:900;color:var(--ink)}.bid-call-ready-meta{margin-top:2px;color:var(--muted);font-size:9px}
+    html[data-theme="dark"] .bid-sheet-summary{background:#241d33;border-color:#655080;color:#d8c9ed}html[data-theme="dark"] .bid-sheet-summary strong{color:#eee5fb}html[data-theme="dark"] .bid-sheet-status-pill.open{background:#123024;color:#99dfba}html[data-theme="dark"] .bid-sheet-status-pill.upcoming{background:#14283a;color:#b9d8f7}html[data-theme="dark"] .bid-sheet-status-pill.closed{background:#252b34;color:#b7c0cc}html[data-theme="dark"] .bid-sheet-builder{background:#15273a;border-color:#365a7d}html[data-theme="dark"] .bid-draft-empty{background:#112235;border-color:#3b5874}html[data-theme="dark"] .bid-draft-sync.synced{background:#123024;color:#99dfba}html[data-theme="dark"] .bid-draft-sync.saving{background:#3d3210;color:#ffe58a}html[data-theme="dark"] .bid-draft-sync.local{background:#25364a;color:#c4d0dc}html[data-theme="dark"] .bid-draft-sync.error{background:#431e25;color:#ffb2bd}html[data-theme="dark"] .bid-sheet-card-actions .bid-add-choice.added{background:#123024;color:#99dfba}html[data-theme="dark"] .bid-call-ready-warning{background:#30280e;border-color:#806d25;color:#ffe8a1}
+    @media(max-width:620px){.bid-sheet-search-row{grid-template-columns:1fr}.bid-sheet-builder-head{align-items:center}.bid-draft-choice{grid-template-columns:34px minmax(0,1fr)}.bid-draft-controls{grid-column:1 / -1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));justify-content:stretch}.bid-draft-controls .btn{font-size:9px}.bid-sheet-builder-actions{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}}
     .trim-dev-box{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
     .trim-dev-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
     .trim-dev-head h3{margin:0;color:var(--ink);font-size:14px}.trim-dev-head p{margin:4px 0 0;color:var(--muted);font-size:9.5px;line-height:1.45}
@@ -1600,7 +1611,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
   <section id="lookupView" class="view">
     <div class="card">
-      <div class="section-title"><h2>Quick Job Lookup</h2><button class="btn small" type="button" onclick="showView('dashboard')">Dashboard</button></div>
+      <div class="section-title"><h2>Quick Job Lookup</h2><button class="btn small" id="quickLookupTopButton" type="button" onclick="quickLookupTopAction()">Dashboard</button></div>
       <p class="quick-lookup-intro">Look up one regular assignment, relief crew, Yard assignment, or supported holiday assignment. The selected date applies the correct revision and any day-specific Crew Book exception automatically. <strong>For relief crews, the full Monday–Sunday coverage is shown together so you can see every job the crew protects without changing the date.</strong> For GO 202 passenger jobs, official September 8 assignment images are loaded and become viewable beginning September 8.</p>
       <div class="quick-lookup-controls">
         <div class="field full"><label>Assignment</label><input id="quickLookupJob" type="text" autocomplete="off" autocapitalize="characters" placeholder="e.g. 293, 470, YE-1" onkeydown="if(event.key==='Enter'){event.preventDefault();runQuickJobLookup()}"></div>
@@ -1618,6 +1629,18 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <div class="section-title"><h2>Bid Sheet Assistant</h2><button class="btn small" type="button" onclick="showView('dashboard')">Dashboard</button></div>
       <p class="trim-public-intro">Shows assignments from the latest published Engineer bid sheet and matches them to the verified Crew Book. Always confirm the closing time and submit your official choices through the railroad's normal bidding process.</p>
       <div class="bid-sheet-summary" id="bidSheetSummary"></div>
+      <section class="bid-sheet-builder" id="bidSheetBuilder" aria-labelledby="bidSheetBuilderTitle">
+        <div class="bid-sheet-builder-head">
+          <div><h3 id="bidSheetBuilderTitle">My Bid Sheet</h3><div class="bid-sheet-builder-subtitle" id="bidSheetBuilderSubtitle">Your choices in call-in priority order</div></div>
+          <span class="bid-draft-sync local" id="bidSheetDraftSync" role="status" aria-live="polite">Loading draft…</span>
+        </div>
+        <div class="bid-draft-list" id="bidSheetDraftList"></div>
+        <div class="bid-sheet-builder-actions">
+          <button class="btn primary" id="bidSheetCallReadyButton" type="button" onclick="bidSheetOpenCallReady()" disabled>Call-Ready List</button>
+          <button class="btn danger" id="bidSheetClearDraftButton" type="button" onclick="bidSheetClearDraft()" disabled>Clear List</button>
+        </div>
+        <div class="bid-sheet-builder-note">This is a planning list only. Engineer Pay Log does not submit bids; call the Crew Dispatcher through the railroad's normal process.</div>
+      </section>
       <div class="bid-sheet-filters" id="bidSheetFilters">
         <div class="trim-filter-title">Assignment type</div>
         <div class="trim-check-grid">
@@ -2324,6 +2347,9 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     <div class="modal-body">
       <h3 style="margin-top:0">Bid Sheet Assistant</h3>
       <ul class="whats-new-list">
+        <li>Build a personal priority-ordered bid list with duplicate prevention and large move/remove controls.</li>
+        <li>Open a clean call-ready list, and keep the draft synced privately to your signed-in account.</li>
+        <li>Return from a yard assignment's Quick Job Lookup without losing the draft, filters, search, terminal, or scroll position.</li>
         <li>See every advertised assignment from the current engineer bid sheet in one searchable, filterable list.</li>
         <li>Numbered jobs are matched to Crew Book schedules, relief days, weekly overtime, and paid-meal information when available.</li>
         <li>Relief assignments show the jobs they cover, while Extra List assignments show their advertised terminal.</li>
@@ -2487,6 +2513,20 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <button class="btn small" type="button" onclick="closeJobCompareOfficialViewer()">Close</button>
     </div>
     <div id="jobCompareOfficialBody" class="modal-body job-compare-official-viewer"></div>
+  </div>
+</div>
+
+<div id="bidSheetCallReadyModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="bidSheetCallReadyTitle" onclick="if(event.target===this)bidSheetCloseCallReady()">
+  <div class="modal-card" style="max-width:600px">
+    <div class="modal-head" style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
+      <div><h2 id="bidSheetCallReadyTitle" style="margin:0">Call-Ready Bid List</h2><p id="bidSheetCallReadySubtitle" style="margin:4px 0 0;color:var(--muted);font-size:11px">Priority order</p></div>
+      <button class="btn small" type="button" onclick="bidSheetCloseCallReady()">Close</button>
+    </div>
+    <div class="modal-body">
+      <div class="bid-call-ready-warning"><strong>Planning aid only.</strong> Read this list to the Crew Dispatcher in the exact order shown. Engineer Pay Log does not submit bids or replace the railroad's official bidding process.</div>
+      <ol class="bid-call-ready-list" id="bidSheetCallReadyList"></ol>
+    </div>
+    <div class="modal-foot"><button class="btn primary" type="button" onclick="bidSheetCloseCallReady()">Done</button></div>
   </div>
 </div>
 
@@ -2730,7 +2770,7 @@ const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
 const APP_VERSION='10.1';
-const WHATS_NEW_VERSION='10.1-20260909-bid-sheet-assistant';
+const WHATS_NEW_VERSION='10.1-20260909-personal-bid-builder';
 const CONTACT_EMAIL='admin@engineerpaylog.com';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
 const BACKUP_REMIND_LATER_KEY='engineerPayLogBackupRemindLaterUntil';
@@ -4506,11 +4546,12 @@ function runJobComparison(showValidation=true){
 }
 
 
-function openQuickJobLookup(){showView('lookup');initQuickJobLookup()}
+function openQuickJobLookup(){bidSheetClearLookupReturn();showView('lookup');initQuickJobLookup()}
 function initQuickJobLookup(){const date=document.getElementById('quickLookupDate');if(date&&!date.value)date.value=isoLocal(new Date())}
 function clearQuickJobLookup(){const job=document.getElementById('quickLookupJob'),result=document.getElementById('quickLookupResult'),note=document.getElementById('quickLookupSourceNote');if(job)job.value='';if(result)result.innerHTML='<div class="quick-lookup-empty">Enter an assignment and date to begin.</div>';if(note)note.textContent='Quick Job Lookup uses the same verified Crew Book resolver as Crew Book Assistance and Job Comparison.'}
 function compareQuickLookupJob(key,date){
   key=normalizeCrewBookKey(key);if(!key||!date)return;
+  bidSheetClearLookupReturn();
   showView('comparison');initJobComparison();
   const dateInput=document.getElementById('jobCompareDate');if(dateInput)dateInput.value=date;
   const host=document.getElementById('jobCompareJobRows');
@@ -4640,7 +4681,7 @@ function communityCompactNoteHTML(row){
   return `<div class="shift-community-note">${badges?`<div class="community-note-badges">${badges}</div>`:''}<div class="shift-community-note-body">${escapeHTML(row.body||'')}</div><div class="shift-community-note-meta"><span>${escapeHTML(reactions)}</span><span>${escapeHTML(communityFmtDate(row.created_at))}</span></div></div>`;
 }
 function communityOpenLookupForValues(jobKey,date){
-  closeModal();showView('lookup');initQuickJobLookup();const job=document.getElementById('quickLookupJob'),d=document.getElementById('quickLookupDate');if(job)job.value=jobKey;if(d)d.value=date;runQuickJobLookup(false);
+  closeModal();bidSheetClearLookupReturn();showView('lookup');initQuickJobLookup();const job=document.getElementById('quickLookupJob'),d=document.getElementById('quickLookupDate');if(job)job.value=jobKey;if(d)d.value=date;runQuickJobLookup(false);
 }
 let communityShiftPanelRenderSeq=0;
 function communityShiftVerifyPreviewHTML(ctx){
@@ -5728,6 +5769,7 @@ const ACCOUNT_SCOPED_LOCAL_KEYS=[
   CREW_BOOK_ASSIST_SEEN_KEY,
   CREW_BOOK_ASSIST_PREF_KEY,
   TIME_SLIP_WAGE_DEFAULT_KEY,
+  'epl_bid_sheet_drafts_v1',
   'engineerPayLogWelcomeSeen_v2'
 ];
 let activeWorkspaceUserId=localStorage.getItem(ACCOUNT_WORKSPACE_OWNER_KEY)||null;
@@ -6576,6 +6618,7 @@ function accountReloadWorkspaceMemory(){
 }
 function accountRefreshWorkspaceUI(){
   accountReloadWorkspaceMemory();
+  try{bidSheetDraftResetMemory()}catch{}
   try{updateRateDisplays()}catch{}
   try{updateTraineeModeUI()}catch{}
   try{updateBackupUI()}catch{}
@@ -8968,9 +9011,198 @@ async function rosterPublishPreview(){
 // ---- Bid Sheet Assistant + developer PDF publisher ----
 const BID_SHEET_PARSER_VERSION='bid_sheet_pdf_v1';
 const BID_SHEET_CACHE_KEY='epl_bid_sheet_cache_v1';
+const BID_SHEET_DRAFT_CACHE_KEY='epl_bid_sheet_drafts_v1';
 let bidSheetPreviewState=null;
 let bidSheetAdminState={latest:null};
 let bidSheetState={snapshot:null,rows:[],loaded:false,cached:false,error:null};
+let bidSheetDraftState=bidSheetDraftEmptyState();
+let bidSheetDraftSaveTimer=null;
+let bidSheetDraftSaveInFlight=false;
+let bidSheetDraftSaveSequence=0;
+let bidSheetDraftLoadSequence=0;
+let bidSheetLookupReturnState=null;
+
+function bidSheetDraftEmptyState(){
+  return {snapshotId:'',userId:'',choices:[],loaded:false,dirty:false,saving:false,synced:false,error:null,updatedAt:null,revision:0};
+}
+function bidSheetDraftResetMemory(){
+  if(bidSheetDraftSaveTimer){clearTimeout(bidSheetDraftSaveTimer);bidSheetDraftSaveTimer=null}
+  bidSheetDraftLoadSequence++;bidSheetDraftSaveSequence++;
+  bidSheetDraftSaveInFlight=false;
+  bidSheetDraftState=bidSheetDraftEmptyState();
+}
+function bidSheetDraftCacheMap(){
+  try{const raw=localStorage.getItem(BID_SHEET_DRAFT_CACHE_KEY),parsed=raw?JSON.parse(raw):{};return parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?parsed:{}}catch{return {}}
+}
+function bidSheetDraftCacheRecord(snapshotId){
+  const record=bidSheetDraftCacheMap()[String(snapshotId||'')];
+  return record&&typeof record==='object'?record:null;
+}
+function bidSheetDraftNormalizeChoices(values){
+  const allowed=new Map((bidSheetState.rows||[]).map(row=>[String(row.assignment||'').trim().toUpperCase(),String(row.assignment||'').trim()]));
+  const choices=[],seen=new Set();
+  for(const raw of Array.isArray(values)?values:[]){
+    const key=String(raw||'').trim().toUpperCase(),assignment=allowed.get(key);
+    if(!assignment||seen.has(key))continue;
+    seen.add(key);choices.push(assignment);
+    if(choices.length>=200)break;
+  }
+  return choices;
+}
+function bidSheetDraftPersistLocal(dirty=bidSheetDraftState.dirty){
+  const state=bidSheetDraftState;if(!state.snapshotId||!state.userId||state.userId!==String(activeWorkspaceUserId||''))return;
+  try{
+    const map=bidSheetDraftCacheMap();
+    map[state.snapshotId]={choices:[...state.choices],updatedAt:state.updatedAt||new Date().toISOString(),dirty:!!dirty};
+    localStorage.setItem(BID_SHEET_DRAFT_CACHE_KEY,JSON.stringify(map));
+    accountSaveWorkspace(state.userId);
+  }catch(err){console.warn('Bid draft local save failed:',err)}
+}
+function bidSheetDraftRow(assignment){
+  const key=String(assignment||'').trim().toUpperCase();
+  return (bidSheetState.rows||[]).find(row=>String(row.assignment||'').trim().toUpperCase()===key)||null;
+}
+function bidSheetDraftHas(assignment){
+  const key=String(assignment||'').trim().toUpperCase();
+  return bidSheetDraftState.choices.some(choice=>String(choice||'').trim().toUpperCase()===key);
+}
+function bidSheetDraftTypeLabel(row){
+  const kind=bidSheetKind(row?.assignment);
+  return kind==='numbered'?'Numbered':kind==='extra_list'?'Extra List':'Yard / other';
+}
+function bidSheetDraftSyncPresentation(){
+  const state=bidSheetDraftState;
+  if(!state.loaded)return {text:'Loading draft…',cls:'local'};
+  if(state.saving)return {text:'Saving…',cls:'saving'};
+  if(state.error)return {text:'Device saved • sync issue',cls:'error',title:state.error};
+  if(state.dirty||navigator.onLine===false)return {text:'Saved on this device',cls:'local',title:'Will sync to your account when online.'};
+  if(state.synced)return {text:'Saved to your account',cls:'synced'};
+  return {text:'Saved on this device',cls:'local'};
+}
+function bidSheetDraftRender(){
+  const builder=document.getElementById('bidSheetBuilder'),list=document.getElementById('bidSheetDraftList'),sync=document.getElementById('bidSheetDraftSync'),subtitle=document.getElementById('bidSheetBuilderSubtitle'),callReady=document.getElementById('bidSheetCallReadyButton'),clear=document.getElementById('bidSheetClearDraftButton');
+  if(!builder||!list)return;
+  const hasSnapshot=!!bidSheetState.snapshot;builder.classList.toggle('show',hasSnapshot);if(!hasSnapshot)return;
+  const stateMatches=bidSheetDraftState.loaded&&bidSheetDraftState.snapshotId===String(bidSheetState.snapshot?.id||''),choices=stateMatches?bidSheetDraftState.choices:[];
+  if(subtitle)subtitle.textContent=choices.length?(choices.length+' choice'+(choices.length===1?'':'s')+' in call-in priority order'):'Your choices in call-in priority order';
+  const status=stateMatches?bidSheetDraftSyncPresentation():{text:'Loading draft…',cls:'local'};if(sync){sync.textContent=status.text;sync.className='bid-draft-sync '+status.cls;sync.title=status.title||''}
+  if(callReady)callReady.disabled=!choices.length;if(clear)clear.disabled=!choices.length;
+  if(!choices.length){list.innerHTML='<div class="bid-draft-empty">No choices yet. Add advertised assignments below, then arrange them in the exact order you plan to call in.</div>';return}
+  list.innerHTML=choices.map((assignment,index)=>{
+    const row=bidSheetDraftRow(assignment),terminal=row?.terminal||'Terminal not listed',type=bidSheetDraftTypeLabel(row);
+    return '<div class="bid-draft-choice"><div class="bid-draft-priority" aria-label="Priority '+(index+1)+'">'+(index+1)+'</div><div><div class="bid-draft-assignment">'+escapeHTML(assignment)+'</div><div class="bid-draft-meta">'+escapeHTML(terminal)+' • '+escapeHTML(type)+'</div></div><div class="bid-draft-controls"><button class="btn" type="button" onclick="bidSheetDraftMove('+index+',-1)"'+(index===0?' disabled':'')+'>↑ Move Up</button><button class="btn" type="button" onclick="bidSheetDraftMove('+index+',1)"'+(index===choices.length-1?' disabled':'')+'>↓ Move Down</button><button class="btn danger" type="button" onclick="bidSheetDraftRemove('+index+')">Remove</button></div></div>';
+  }).join('');
+}
+async function bidSheetDraftLoad(snapshotId,force=false){
+  snapshotId=String(snapshotId||'');const userId=String(activeWorkspaceUserId||'');
+  if(!snapshotId||!userId){bidSheetDraftResetMemory();bidSheetDraftRender();return}
+  if(!force&&bidSheetDraftState.loaded&&bidSheetDraftState.snapshotId===snapshotId&&bidSheetDraftState.userId===userId){if(bidSheetDraftState.dirty&&navigator.onLine!==false)bidSheetDraftScheduleSave(0);bidSheetDraftRender();return}
+  const token=++bidSheetDraftLoadSequence,local=bidSheetDraftCacheRecord(snapshotId),choices=bidSheetDraftNormalizeChoices(local?.choices);
+  bidSheetDraftState={snapshotId,userId,choices,loaded:true,dirty:!!local?.dirty,saving:false,synced:false,error:null,updatedAt:local?.updatedAt||null,revision:0};
+  bidSheetDraftRender();bidSheetApplyFilters();
+  if(navigator.onLine===false)return;
+  const client=getCloudClient();if(!client)return;
+  const user=await cloudCurrentUser(client);if(token!==bidSheetDraftLoadSequence)return;
+  if(!user||String(user.id)!==userId||!accountGuardWorkspace(user)){bidSheetDraftState.error='Account sync is unavailable. Your draft remains saved on this device.';bidSheetDraftRender();return}
+  try{
+    const {data,error}=await client.from('bid_sheet_drafts').select('choices,updated_at').eq('user_id',userId).eq('snapshot_id',snapshotId).maybeSingle();
+    if(error)throw error;if(token!==bidSheetDraftLoadSequence)return;
+    if(bidSheetDraftState.dirty){await bidSheetDraftSaveCloud();return}
+    if(data){
+      bidSheetDraftState.choices=bidSheetDraftNormalizeChoices(data.choices);bidSheetDraftState.updatedAt=data.updated_at||null;bidSheetDraftState.synced=true;bidSheetDraftState.error=null;bidSheetDraftPersistLocal(false);
+    }else if(bidSheetDraftState.choices.length){
+      bidSheetDraftState.dirty=true;bidSheetDraftPersistLocal(true);await bidSheetDraftSaveCloud();return;
+    }else{
+      bidSheetDraftState.synced=true;bidSheetDraftState.error=null;bidSheetDraftPersistLocal(false);
+    }
+  }catch(err){if(token!==bidSheetDraftLoadSequence)return;console.warn('Bid draft load failed:',err);bidSheetDraftState.error=err?.message||String(err)}
+  bidSheetDraftRender();bidSheetApplyFilters();
+}
+function bidSheetDraftScheduleSave(delay=250){
+  if(bidSheetDraftSaveTimer)clearTimeout(bidSheetDraftSaveTimer);
+  if(navigator.onLine===false){bidSheetDraftRender();return}
+  bidSheetDraftSaveTimer=setTimeout(()=>{bidSheetDraftSaveTimer=null;void bidSheetDraftSaveCloud()},Math.max(0,Number(delay)||0));
+}
+async function bidSheetDraftSaveCloud(){
+  const state=bidSheetDraftState;if(!state.loaded||!state.dirty||!state.snapshotId||!state.userId||navigator.onLine===false){bidSheetDraftRender();return}
+  if(bidSheetDraftSaveInFlight){bidSheetDraftScheduleSave(300);return}
+  const snapshotId=state.snapshotId,userId=state.userId,choices=[...state.choices],revision=state.revision,saveToken=++bidSheetDraftSaveSequence;
+  const client=getCloudClient();if(!client){state.error='Cloud connection unavailable. Your draft remains saved on this device.';bidSheetDraftRender();return}
+  bidSheetDraftSaveInFlight=true;state.saving=true;state.error=null;bidSheetDraftRender();
+  try{
+    const user=await cloudCurrentUser(client);
+    if(!user||String(user.id)!==userId||!accountGuardWorkspace(user))throw new Error('Account session unavailable.');
+    const {data,error}=await client.from('bid_sheet_drafts').upsert({user_id:userId,snapshot_id:snapshotId,choices,updated_at:new Date().toISOString()},{onConflict:'user_id,snapshot_id'}).select('choices,updated_at').single();
+    if(error)throw error;
+    if(bidSheetDraftState.snapshotId!==snapshotId||bidSheetDraftState.userId!==userId)return;
+    if(bidSheetDraftState.revision===revision){
+      bidSheetDraftState.dirty=false;bidSheetDraftState.synced=true;bidSheetDraftState.error=null;bidSheetDraftState.updatedAt=data?.updated_at||new Date().toISOString();bidSheetDraftPersistLocal(false);
+    }
+  }catch(err){
+    if(bidSheetDraftState.snapshotId===snapshotId&&bidSheetDraftState.userId===userId){console.warn('Bid draft save failed:',err);bidSheetDraftState.dirty=true;bidSheetDraftState.synced=false;bidSheetDraftState.error=err?.message||String(err);bidSheetDraftPersistLocal(true)}
+  }finally{
+    if(saveToken===bidSheetDraftSaveSequence){
+      if(bidSheetDraftState.snapshotId===snapshotId&&bidSheetDraftState.userId===userId){bidSheetDraftState.saving=false;bidSheetDraftSaveInFlight=false;bidSheetDraftRender();if(bidSheetDraftState.dirty&&!bidSheetDraftState.error)bidSheetDraftScheduleSave(100)}
+      else bidSheetDraftSaveInFlight=false;
+    }
+  }
+}
+function bidSheetDraftChanged(){
+  bidSheetDraftState.choices=bidSheetDraftNormalizeChoices(bidSheetDraftState.choices);bidSheetDraftState.revision++;bidSheetDraftState.dirty=true;bidSheetDraftState.synced=false;bidSheetDraftState.error=null;bidSheetDraftState.updatedAt=new Date().toISOString();bidSheetDraftPersistLocal(true);bidSheetDraftRender();bidSheetApplyFilters();bidSheetDraftScheduleSave();
+}
+function bidSheetDraftAdd(assignment){
+  if(!bidSheetDraftState.loaded||bidSheetDraftState.snapshotId!==String(bidSheetState.snapshot?.id||''))return;
+  const row=bidSheetDraftRow(assignment);if(!row||bidSheetDraftHas(row.assignment))return;
+  const builder=document.getElementById('bidSheetBuilder'),beforeHeight=Number(builder?.offsetHeight)||0,beforeScroll=Math.max(0,Number(window.scrollY)||0);
+  bidSheetDraftState.choices.push(String(row.assignment));bidSheetDraftChanged();
+  if(beforeHeight)requestAnimationFrame(()=>{const delta=(Number(builder?.offsetHeight)||0)-beforeHeight;if(delta)window.scrollTo({top:Math.max(0,beforeScroll+delta),behavior:'auto'})});
+}
+function bidSheetDraftMove(index,direction){
+  const choices=bidSheetDraftState.choices,from=Number(index),to=from+Number(direction);if(!Number.isInteger(from)||to<0||to>=choices.length)return;
+  [choices[from],choices[to]]=[choices[to],choices[from]];bidSheetDraftChanged();
+}
+function bidSheetDraftRemove(index){
+  const i=Number(index);if(!Number.isInteger(i)||i<0||i>=bidSheetDraftState.choices.length)return;
+  bidSheetDraftState.choices.splice(i,1);bidSheetDraftChanged();
+}
+function bidSheetClearDraft(){
+  if(!bidSheetDraftState.choices.length)return;
+  if(!confirm('Clear every choice from My Bid Sheet?\n\nThis cannot be undone.'))return;
+  bidSheetDraftState.choices=[];bidSheetDraftChanged();
+}
+function bidSheetOpenCallReady(){
+  const choices=bidSheetDraftState.choices;if(!choices.length)return;
+  const modal=document.getElementById('bidSheetCallReadyModal'),list=document.getElementById('bidSheetCallReadyList'),subtitle=document.getElementById('bidSheetCallReadySubtitle');if(!modal||!list)return;
+  const snapshot=bidSheetState.snapshot;if(subtitle)subtitle.textContent=(snapshot?.bulletin_id||'Current bulletin')+' • '+choices.length+' choice'+(choices.length===1?'':'s')+' • exact priority order';
+  list.innerHTML=choices.map(assignment=>{const row=bidSheetDraftRow(assignment);return '<li class="bid-call-ready-item"><div><div class="bid-call-ready-assignment">'+escapeHTML(assignment)+'</div><div class="bid-call-ready-meta">'+escapeHTML(row?.terminal||'Terminal not listed')+' • '+escapeHTML(bidSheetDraftTypeLabel(row))+'</div></div></li>'}).join('');
+  modal.classList.add('open');
+}
+function bidSheetCloseCallReady(){document.getElementById('bidSheetCallReadyModal')?.classList.remove('open')}
+function bidSheetCaptureViewState(){
+  return {snapshotId:String(bidSheetState.snapshot?.id||''),numbered:!!document.getElementById('bidTypeNumbered')?.checked,extra:!!document.getElementById('bidTypeExtra')?.checked,yard:!!document.getElementById('bidTypeYard')?.checked,search:String(document.getElementById('bidSheetSearch')?.value||''),terminal:String(document.getElementById('bidSheetTerminal')?.value||''),scrollY:Math.max(0,Number(window.scrollY)||0)};
+}
+function bidSheetRestoreViewState(state){
+  if(!state||state.snapshotId!==String(bidSheetState.snapshot?.id||''))return;
+  const numbered=document.getElementById('bidTypeNumbered'),extra=document.getElementById('bidTypeExtra'),yard=document.getElementById('bidTypeYard'),search=document.getElementById('bidSheetSearch'),terminal=document.getElementById('bidSheetTerminal');
+  if(numbered)numbered.checked=!!state.numbered;if(extra)extra.checked=!!state.extra;if(yard)yard.checked=!!state.yard;if(search)search.value=state.search||'';if(terminal&&[...terminal.options].some(option=>option.value===state.terminal))terminal.value=state.terminal||'';
+  bidSheetApplyFilters();requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo({top:Math.max(0,Number(state.scrollY)||0),behavior:'auto'})));
+}
+function bidSheetUpdateQuickLookupTopButton(){
+  const button=document.getElementById('quickLookupTopButton');if(!button)return;
+  button.textContent=bidSheetLookupReturnState?'← Back to Bid Sheet':'Dashboard';
+  button.setAttribute('aria-label',bidSheetLookupReturnState?'Back to Bid Sheet':'Return to Dashboard');
+}
+function bidSheetClearLookupReturn(){bidSheetLookupReturnState=null;bidSheetUpdateQuickLookupTopButton()}
+function quickLookupTopAction(){
+  if(bidSheetLookupReturnState){const state=bidSheetLookupReturnState;bidSheetClearLookupReturn();showView('bid');requestAnimationFrame(()=>bidSheetRestoreViewState(state));return}
+  showView('dashboard');
+}
+function bidSheetOpenQuickLookup(assignment,date){
+  bidSheetLookupReturnState=bidSheetCaptureViewState();bidSheetUpdateQuickLookupTopButton();showView('lookup');initQuickJobLookup();
+  const job=document.getElementById('quickLookupJob'),d=document.getElementById('quickLookupDate');if(job)job.value=assignment;if(d)d.value=date;runQuickJobLookup(false);requestAnimationFrame(()=>window.scrollTo({top:0,behavior:'auto'}));
+}
+window.addEventListener('online',()=>{if(bidSheetDraftState.dirty){bidSheetDraftState.error=null;bidSheetDraftScheduleSave(0)}});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.getElementById('bidSheetCallReadyModal')?.classList.contains('open')){event.preventDefault();bidSheetCloseCallReady()}});
 
 function bidSheetSetStatus(message='',type=''){
   const el=document.getElementById('bidSheetAdminStatus');if(!el)return;
@@ -9081,14 +9313,14 @@ async function bidSheetPublishPreview(){
 function bidSheetCacheSave(payload){try{localStorage.setItem(BID_SHEET_CACHE_KEY,JSON.stringify(payload))}catch{}}
 function bidSheetCacheLoad(){try{const raw=localStorage.getItem(BID_SHEET_CACHE_KEY);return raw?JSON.parse(raw):null}catch{return null}}
 async function bidSheetLoad(force=false){
-  if(bidSheetState.loaded&&!force){bidSheetRender();return}
+  if(bidSheetState.loaded&&!force){bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);return}
   const summary=document.getElementById('bidSheetSummary');if(summary){summary.classList.add('show');summary.textContent='Loading the latest published bid sheet...'}
   const client=getCloudClient();
-  if(!client){const cached=bidSheetCacheLoad();bidSheetState={snapshot:cached?.snapshot||null,rows:cached?.rows||[],loaded:true,cached:!!cached,error:cached?null:'Cloud connection unavailable.'};bidSheetRender();return}
+  if(!client){const cached=bidSheetCacheLoad();bidSheetState={snapshot:cached?.snapshot||null,rows:cached?.rows||[],loaded:true,cached:!!cached,error:cached?null:'Cloud connection unavailable.'};bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);return}
   try{
     const {data,error}=await client.rpc('bid_sheet_current_data');if(error)throw error;const payload=data||{snapshot:null,rows:[]};bidSheetCacheSave(payload);bidSheetState={snapshot:payload.snapshot||null,rows:Array.isArray(payload.rows)?payload.rows:[],loaded:true,cached:false,error:null};
   }catch(err){console.warn('Bid Sheet Assistant load failed:',err);const cached=bidSheetCacheLoad();bidSheetState={snapshot:cached?.snapshot||null,rows:cached?.rows||[],loaded:true,cached:!!cached,error:cached?null:(err?.message||String(err))}}
-  bidSheetRender();
+  bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',force);
 }
 function openBidSheetAssistant(){
   if(isTraineeMode()){alert('Bid Sheet Assistant is not available while Engineer Trainee Mode is active.');return}
@@ -9104,10 +9336,10 @@ function bidSheetRender(){
   const summary=document.getElementById('bidSheetSummary'),filters=document.getElementById('bidSheetFilters'),results=document.getElementById('bidSheetResults'),snapshot=bidSheetState.snapshot,rows=bidSheetState.rows;
   if(!summary||!filters||!results)return;
   summary.classList.add('show');
-  if(!snapshot){summary.innerHTML=`<strong>No published bid sheet is available.</strong><br>${bidSheetState.error?'The Bid Sheet database setup may still be pending.':'Check again after the next bulletin is posted.'}`;filters.classList.remove('show');results.classList.remove('show');return}
+  if(!snapshot){summary.innerHTML=`<strong>No published bid sheet is available.</strong><br>${bidSheetState.error?'The Bid Sheet database setup may still be pending.':'Check again after the next bulletin is posted.'}`;filters.classList.remove('show');results.classList.remove('show');bidSheetDraftRender();return}
   const status=bidSheetStatus(snapshot),cached=bidSheetState.cached?' • saved offline copy':'';
   summary.innerHTML=`<strong>${escapeHTML(snapshot.bulletin_name||snapshot.bulletin_id||'Engineer Bid Sheet')}</strong><br>${escapeHTML(snapshot.bulletin_id||'')} • ${Number(snapshot.row_count||rows.length)} advertised assignment${Number(snapshot.row_count||rows.length)===1?'':'s'}<br>Posted ${escapeHTML(bidSheetDateLabel(snapshot.posted_date))} • Effective ${escapeHTML(bidSheetDateLabel(snapshot.effective_date))}<br><span class="bid-sheet-status-pill ${status.key}">${escapeHTML(status.label)}</span><div class="bid-sheet-source">Published ${escapeHTML(rosterDateDisplay(snapshot.uploaded_at))}${escapeHTML(cached)}</div>`;
-  bidSheetTerminalOptions(rows);filters.classList.add('show');results.classList.add('show');bidSheetApplyFilters();
+  bidSheetDraftRender();bidSheetTerminalOptions(rows);filters.classList.add('show');results.classList.add('show');bidSheetApplyFilters();
 }
 function bidSheetTerminalOptions(rows){
   const select=document.getElementById('bidSheetTerminal');if(!select)return;const prev=select.value,values=[...new Set((rows||[]).map(r=>String(r.terminal||'').trim()).filter(Boolean))].sort();
@@ -9139,7 +9371,7 @@ function bidSheetScheduleHTML(stats){
 function bidSheetOpenDetails(assignment){
   const snapshot=bidSheetState.snapshot,date=snapshot?.effective_date||isoLocal(new Date()),key=normalizeCrewBookKey(assignment),relief=jobCompareReliefCrewDefinition(key,date);
   if(relief){const modal=document.getElementById('jobCompareOfficialModal'),body=document.getElementById('jobCompareOfficialBody'),title=document.getElementById('jobCompareOfficialTitle'),sub=document.getElementById('jobCompareOfficialSubtitle');if(!modal||!body)return;if(title)title.textContent=`Relief Crew ${key} • Covered Assignments`;if(sub)sub.textContent=`Effective ${bidSheetDateLabel(date)}`;body.innerHTML='<div class="crewbook-temporary-revision-note"><strong>Note:</strong> This does not account for temporary revisions such as track work programs.</div>'+trimDevReliefCoveredImagesHTML(relief);modal.classList.add('open');return}
-  if(isYardCrewKey(key)||isYardReliefKey(key)){showView('lookup');initQuickJobLookup();const job=document.getElementById('quickLookupJob'),d=document.getElementById('quickLookupDate');if(job)job.value=key;if(d)d.value=date;runQuickJobLookup(false);return}
+  if(isYardCrewKey(key)||isYardReliefKey(key)){bidSheetOpenQuickLookup(key,date);return}
   const hit=crewBookLookupJobV8(key,date),modal=document.getElementById('jobCompareOfficialModal'),body=document.getElementById('jobCompareOfficialBody'),title=document.getElementById('jobCompareOfficialTitle'),sub=document.getElementById('jobCompareOfficialSubtitle');if(!modal||!body)return;if(title)title.textContent=`Job ${key} • Official Assignment`;if(sub)sub.textContent=`Bid sheet effective ${bidSheetDateLabel(date)}`;body.innerHTML=crewBookOfficialViewerBodyHTML(key,date,hit);modal.classList.add('open');
 }
 function bidSheetApplyFilters(){
@@ -9153,7 +9385,10 @@ function bidSheetApplyFilters(){
     const chipHTML=chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}${c.startsWith('Weekly OT:')?' trim-ot':''}">${escapeHTML(c)}</span>`).join('');let detail='';
     if(relief){const coverage=trimDevReliefCoverageText(relief);if(coverage)detail=`<div class="trim-result-detail"><strong>Covers:</strong> ${escapeHTML(coverage)}</div>`;detail+=bidSheetScheduleHTML(stats)}else if(stats)detail=bidSheetScheduleHTML(stats);else if(!known)detail='<div class="bid-sheet-unmatched">This assignment is listed on the official bid sheet, but structured Crew Book details are not currently available in Engineer Pay Log.</div>';
     const typeLabel=extraJob?'Guaranteed Extra List':relief?'Relief Crew':kind==='numbered'?'Numbered Crew Book assignment':'Yard / other assignment',clickable=!extraJob&&known;
-    return `<div class="trim-result${clickable?'':' trim-static'}"${clickable?` role="button" tabindex="0" data-bid-assignment="${escapeHTML(String(r.assignment))}" onclick="bidSheetOpenDetails(this.dataset.bidAssignment)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();bidSheetOpenDetails(this.dataset.bidAssignment)}"`:''}><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(typeLabel)}</div></div><div class="trim-result-rank bid-sheet-card-terminal">${escapeHTML(r.terminal||'')}</div></div><div class="trim-result-meta">${chipHTML}</div>${detail}${clickable?`<div class="trim-result-hint">${escapeHTML(isYardCrewKey(key)||isYardReliefKey(key)?'Tap to open Crew Book details':'Tap to view the official Crew Book assignment')}</div>`:''}</div>`;
+    const draftReady=bidSheetDraftState.loaded&&bidSheetDraftState.snapshotId===String(bidSheetState.snapshot?.id||''),added=draftReady&&bidSheetDraftHas(r.assignment),safeAssignment=escapeHTML(String(r.assignment));
+    const detailAction=clickable?'<button class="btn" type="button" data-bid-assignment="'+safeAssignment+'" onclick="bidSheetOpenDetails(this.dataset.bidAssignment)">'+escapeHTML(isYardCrewKey(key)||isYardReliefKey(key)?'Open Crew Book Details':'View Official Assignment')+'</button>':'';
+    const addAction='<button class="btn bid-add-choice'+(added?' added':'')+'" type="button" data-bid-assignment="'+safeAssignment+'" onclick="bidSheetDraftAdd(this.dataset.bidAssignment)"'+(!draftReady||added?' disabled':'')+'>'+(draftReady?(added?'✓ Added':'Add to My Bid Sheet'):'Loading Draft…')+'</button>';
+    return '<div class="trim-result trim-static"><div class="trim-result-top"><div><div class="trim-result-job">'+escapeHTML(r.assignment)+'</div><div class="trim-result-type">'+escapeHTML(typeLabel)+'</div></div><div class="trim-result-rank bid-sheet-card-terminal">'+escapeHTML(r.terminal||'')+'</div></div><div class="trim-result-meta">'+chipHTML+'</div>'+detail+'<div class="trim-result-actions bid-sheet-card-actions">'+detailAction+addAction+'</div></div>';
   }).join('');
 }
 function bidSheetClearFilters(){
@@ -9596,7 +9831,7 @@ void initCloudBridgeTest();
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260909-bid-sheet').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260909-personal-bid-builder').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
