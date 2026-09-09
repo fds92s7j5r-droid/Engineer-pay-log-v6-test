@@ -9089,6 +9089,17 @@ function bidLifecycleCurrentAwardPayload(){
 function bidLifecycleResultsAvailable(){
   const current=bidLifecycleCurrentAwardPayload();if(rosterAdminState.canPublish&&bidLifecycleTestState.results==='pending')return false;if(rosterAdminState.canPublish&&bidLifecycleTestState.results==='posted')return !!current;return !!current;
 }
+function bidLifecycleExpectedAwardsDate(snapshot){
+  const effective=String(snapshot?.effective_date||'');
+  if(/^\d{4}-\d{2}-\d{2}$/.test(effective)){
+    const [y,m,d]=effective.split('-').map(Number),dt=new Date(Date.UTC(y,m-1,d));dt.setUTCDate(dt.getUTCDate()-1);return `${dt.getUTCFullYear()}-${String(dt.getUTCMonth()+1).padStart(2,'0')}-${String(dt.getUTCDate()).padStart(2,'0')}`;
+  }
+  const close=String(snapshot?.close_date||'');
+  if(/^\d{4}-\d{2}-\d{2}$/.test(close)){
+    const [y,m,d]=close.split('-').map(Number),dt=new Date(Date.UTC(y,m-1,d));dt.setUTCDate(dt.getUTCDate()+1);return `${dt.getUTCFullYear()}-${String(dt.getUTCMonth()+1).padStart(2,'0')}-${String(dt.getUTCDate()).padStart(2,'0')}`;
+  }
+  return '';
+}
 function bidLifecyclePhase(){
   const s=bidSheetState.snapshot;if(!s)return {key:'none',date:bidLifecycleDate(),results:false};const today=bidLifecycleDate(),results=bidLifecycleResultsAvailable();
   if(s.open_date&&today<s.open_date)return {key:'upcoming',date:today,results};
@@ -9122,7 +9133,20 @@ function bidLifecycleRender(){
   let cls='',kicker='',title='',copy='',actions=`<button class="btn" type="button" onclick="openBidSheetAssistant()">View Bid Sheet</button>`;
   if(phase.key==='upcoming'){cls='';kicker='Upcoming bid sheet';title=`${bulletin} opens ${escapeHTML(bidSheetDateLabel(s.open_date))}`;copy=`${Number(s.row_count||bidSheetState.rows.length)} advertised assignments are available to review. Building or changing a bid list is locked until the opening date.`}
   else if(phase.key==='open'){cls='open';kicker='Bid sheet open';title=`${bulletin} closes ${escapeHTML(bidSheetDateLabel(s.close_date))}`;copy=choices?`${choices} choice${choices===1?'':'s'} saved in your call-in priority order.`:'Build your personal priority list before the bulletin closes.';if(choices)actions+=`<button class="btn primary" type="button" onclick="bidSheetOpenCallReady()">Call-Ready List</button>`}
-  else if(phase.key==='results_pending'){cls='pending';kicker='Bidding closed';title=`${bulletin} results pending`;copy=`Your saved bid list is locked. Engineer Pay Log has not published Bulletin Awards for this bid sheet yet.`;if(choices)actions+=`<button class="btn" type="button" onclick="bidSheetOpenCallReady()">View Saved List</button>`}
+  else if(phase.key==='results_pending'){
+    cls='pending';
+    const expectedAwardsDate=bidLifecycleExpectedAwardsDate(s),isExpectedAwardsDay=!!expectedAwardsDate&&phase.date===expectedAwardsDate;
+    if(isExpectedAwardsDay){
+      kicker='Results expected today';
+      title=`${bulletin} Bulletin Awards are due today`;
+      copy=`Engineer Pay Log has not yet been updated with the Bulletin Awards. The railroad may post the official results before they appear here. Check back later. Once the awards are added to Engineer Pay Log, the app will automatically check whether an award matches your account. Engineer Pay Log is an unofficial reference; always use the railroad's normal process for official results.`;
+    }else{
+      kicker='Bidding closed';
+      title=`${bulletin} results pending in Engineer Pay Log`;
+      copy=`Engineer Pay Log has not yet been updated with Bulletin Awards for this bid sheet. The railroad may already have posted the official results. Your saved bid list remains locked and available for personal reference; always use the railroad's normal process for official results.`;
+    }
+    if(choices)actions+=`<button class="btn" type="button" onclick="bidSheetOpenCallReady()">View Saved List</button>`
+  }
   else {cls='results';kicker=phase.key==='effective'?'Results posted • effective today':'Results posted';if(p?.reason==='missing_employee_number'){title=`${bulletin} results are available`;copy='Add or verify your IBM / employee number in Account settings so Engineer Pay Log can privately check your result.';actions+=`<button class="btn" type="button" onclick="showView('settings')">Open Account Settings</button>`}else{title=phase.key==='effective'?`${bulletin} is effective today`:`${bulletin} results are posted`;copy="No award was matched to this account. Engineer Pay Log is an unofficial reference; use the railroad's normal process to verify results."}}
   host.className=`bid-lifecycle-alert show ${cls}`;host.innerHTML=`<div class="bid-lifecycle-kicker">${kicker}</div><div class="bid-lifecycle-title">${title}</div><div class="bid-lifecycle-copy">${copy}</div><div class="bid-lifecycle-actions">${actions}</div>`;
 }
