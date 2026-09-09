@@ -1669,7 +1669,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
   <section id="trimView" class="view">
     <div class="card">
       <div class="section-title"><h2>Trim Assistant</h2><button class="btn small" type="button" onclick="showView('dashboard')">Dashboard</button></div>
-      <p class="trim-public-intro">Uses the latest published Engineer seniority roster to show currently ownable passenger and Extra List assignments below your roster position. Roster ownership can change daily during bids, trims, and picks, so always check the roster freshness shown below.</p>
+      <p class="trim-public-intro">Uses the latest published Engineer seniority roster to show currently ownable passenger, Extra List, and yard / other assignments below your roster position. Roster ownership can change daily during bids, trims, and picks, so always check the roster freshness shown below.</p>
 
       <div class="trim-dev-override" id="trimDevOverride">
         <div class="trim-dev-override-title">Developer testing</div>
@@ -1686,6 +1686,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         <div class="trim-check-grid">
           <label class="trim-check"><input type="checkbox" id="trimTypeRegular" checked onchange="trimDevApplyFilters()"> Passenger jobs</label>
           <label class="trim-check"><input type="checkbox" id="trimTypeEx1" checked onchange="trimDevApplyFilters()"> Extra List</label>
+          <label class="trim-check"><input type="checkbox" id="trimTypeOther" checked onchange="trimDevApplyFilters()"> Yard / other</label>
         </div>
         <div class="trim-filter-title">Relief days <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— selecting multiple requires all selected days</span></div>
         <div class="trim-check-grid" id="trimReliefChecks">
@@ -1706,7 +1707,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <label class="trim-check"><input type="checkbox" value="12:59 PM" onchange="trimDevApplyFilters()"> 12:59 PM</label>
         </div>
         <div class="trim-dev-filter-row"><div class="field"><label>Terminal</label><select id="trimTerminal" onchange="trimDevApplyFilters()"><option value="">All terminals</option></select></div></div>
-        <div class="trim-dev-rank-note">IPMA selections filter only Extra List results. Passenger jobs remain visible when Passenger jobs is selected.<br>Schedule previews resolve each worked day individually and group matching days. Weekly OT totals exclude paid meal-period allowances.</div>
+        <div class="trim-dev-rank-note">IPMA selections filter only Extra List results. Passenger and Yard / other assignments remain visible when their assignment-type filters are selected.<br>Schedule previews resolve each worked day individually and group matching days. Weekly OT totals exclude paid meal-period allowances.</div>
       </div>
       <div class="trim-dev-results" id="trimDevResults">
         <div class="trim-result-toolbar"><span id="trimDevResultCount"></span><button class="btn" type="button" onclick="trimDevClearFilters()">Clear Filters</button></div>
@@ -2554,8 +2555,13 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     <div class="modal-body">
       <div class="bid-call-ready-warning"><strong>Planning aid only.</strong> Read this list to the Crew Dispatcher in the exact order shown. Engineer Pay Log does not submit bids or replace the railroad's official bidding process.</div>
       <ol class="bid-call-ready-list" id="bidSheetCallReadyList"></ol>
+      <div class="bid-sheet-builder-note" style="margin-top:12px"><strong>Crew Dispatcher:</strong> 1 (718) 558-3780</div>
     </div>
-    <div class="modal-foot"><button class="btn primary" type="button" onclick="bidSheetCloseCallReady()">Done</button></div>
+    <div class="modal-foot" style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="btn primary" href="tel:+17185583780">☎ Call Crew Dispatcher</a>
+      <button class="btn" type="button" onclick="bidSheetExportPDF()">Export PDF</button>
+      <button class="btn" type="button" onclick="bidSheetCloseCallReady()">Done</button>
+    </div>
   </div>
 </div>
 
@@ -9208,6 +9214,33 @@ function bidSheetOpenCallReady(){
   modal.classList.add('open');
 }
 function bidSheetCloseCallReady(){document.getElementById('bidSheetCallReadyModal')?.classList.remove('open')}
+function bidSheetExportPDF(){
+  const choices=[...(bidSheetDraftState.choices||[])];if(!choices.length){alert('Add at least one assignment to My Bid Sheet before exporting.');return}
+  const snapshot=bidSheetState.snapshot||{},bulletin=String(snapshot.bulletin_id||'Current_Bulletin'),effective=bidSheetDateLabel(snapshot.effective_date),closeDate=bidSheetDateLabel(snapshot.close_date),posted=bidSheetDateLabel(snapshot.posted_date);
+  const rows=choices.map((assignment,index)=>{const row=bidSheetDraftRow(assignment);return {priority:index+1,assignment:String(assignment),terminal:String(row?.terminal||'Terminal not listed'),type:bidSheetDraftTypeLabel(row)}});
+  const W=612,H=792,M=36,navy='0.055 0.145 0.285',blue='0.09 0.34 0.63',muted='0.35 0.40 0.48',line='0.84 0.87 0.91',pale='0.96 0.975 0.99',gold='0.67 0.48 0.06',paleGold='1 0.975 0.86';
+  const enc=new TextEncoder(),esc=pdfEscape,pages=[];let ops=[],y=M,pageNo=0;
+  const txt=(x,yt,t,size=9,bold=false,color=navy)=>ops.push(`${color} rg BT /${bold?'F2':'F1'} ${size} Tf 1 0 0 1 ${Number(x).toFixed(1)} ${(H-Number(yt)).toFixed(1)} Tm (${esc(t)}) Tj ET`);
+  const rect=(x,yt,w,h,fill='1 1 1',stroke=line)=>ops.push(`${fill} rg ${stroke} RG ${Number(x).toFixed(1)} ${(H-Number(yt)-Number(h)).toFixed(1)} ${Number(w).toFixed(1)} ${Number(h).toFixed(1)} re B`);
+  const fillRect=(x,yt,w,h,fill)=>ops.push(`${fill} rg ${Number(x).toFixed(1)} ${(H-Number(yt)-Number(h)).toFixed(1)} ${Number(w).toFixed(1)} ${Number(h).toFixed(1)} re f`);
+  const footer=()=>{txt(M,H-20,'Engineer Pay Log • Personal Bid Sheet Reference',7,false,muted);txt(W-M-44,H-20,`Page ${pageNo}`,7,false,muted)};
+  const header=()=>{fillRect(0,0,W,96,navy);txt(M,38,'ENGINEER PAY LOG',22,true,'1 1 1');txt(M,62,'PERSONAL BID SHEET REFERENCE',12,true,'0.82 0.89 0.98');txt(M,82,'NOT AN OFFICIAL BID SUBMISSION',8.5,true,'1 0.80 0.30');y=116};
+  const newPage=()=>{if(ops.length){footer();pages.push(ops.join('\n'))}ops=[];pageNo++;header()};
+  newPage();
+  rect(M,y,W-2*M,62,pale,line);txt(M+14,y+18,bulletin,12,true,navy);txt(M+14,y+35,`Posted: ${posted}`,8,false,muted);txt(M+14,y+50,`Effective: ${effective} • Closes: ${closeDate}`,8,false,muted);txt(W-M-150,y+18,`${rows.length} choice${rows.length===1?'':'s'}`,10,true,blue);y+=76;
+  for(const row of rows){if(y+46>H-70)newPage();rect(M,y,W-2*M,38,'1 1 1',line);fillRect(M,y,38,38,navy);txt(M+14,y+24,String(row.priority),12,true,'1 1 1');txt(M+52,y+17,row.assignment,12,true,navy);txt(M+52,y+31,`${row.terminal} • ${row.type}`,8,false,muted);y+=46}
+  if(y+88>H-68)newPage();rect(M,y,W-2*M,72,paleGold,'0.86 0.72 0.29');txt(M+14,y+18,'PLANNING AID ONLY',9,true,gold);const note=pdfWrap('Engineer Pay Log does not submit bids. Read these choices to the Crew Dispatcher in the exact priority order shown and follow the railroad\'s official bidding process.',W-2*M-28,8,false);let ny=y+34;for(const lineText of note){txt(M+14,ny,lineText,8,false,navy);ny+=11}txt(M+14,y+61,'Crew Dispatcher: 1 (718) 558-3780',8.5,true,navy);
+  footer();pages.push(ops.join('\n'));
+  const chunks=[],objects=[],strBytes=value=>enc.encode(value),addObj=parts=>{objects.push(Array.isArray(parts)?parts:[strBytes(parts)]);return objects.length};
+  const font1=addObj('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>'),font2=addObj('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>'),contentIds=[],pageIds=[];
+  for(const content of pages){const b=strBytes(content);contentIds.push(addObj([strBytes(`<< /Length ${b.length} >>\nstream\n`),b,strBytes('\nendstream')]));pageIds.push(addObj('PAGE'))}
+  const pagesId=addObj('PAGES'),catalogId=addObj(`<< /Type /Catalog /Pages ${objects.length} 0 R >>`);
+  pageIds.forEach((id,i)=>{objects[id-1]=[strBytes(`<< /Type /Page /Parent ${pagesId} 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 ${font1} 0 R /F2 ${font2} 0 R >> >> /Contents ${contentIds[i]} 0 R >>`)]});
+  objects[pagesId-1]=[strBytes(`<< /Type /Pages /Kids [${pageIds.map(id=>id+' 0 R').join(' ')}] /Count ${pageIds.length} >>`)];objects[catalogId-1]=[strBytes(`<< /Type /Catalog /Pages ${pagesId} 0 R >>`)];
+  const pdfHeader=strBytes('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');let total=pdfHeader.length;chunks.push(pdfHeader);const offsets=[0];objects.forEach((parts,i)=>{offsets[i+1]=total;const pre=strBytes(`${i+1} 0 obj\n`),post=strBytes('\nendobj\n');chunks.push(pre);total+=pre.length;for(const part of parts){chunks.push(part);total+=part.length}chunks.push(post);total+=post.length});
+  const xref=total;let tail=`xref\n0 ${objects.length+1}\n0000000000 65535 f \n`;for(let i=1;i<=objects.length;i++)tail+=String(offsets[i]).padStart(10,'0')+' 00000 n \n';tail+=`trailer\n<< /Size ${objects.length+1} /Root ${catalogId} 0 R >>\nstartxref\n${xref}\n%%EOF`;chunks.push(strBytes(tail));total+=strBytes(tail).length;
+  const pdf=new Uint8Array(total);let pos=0;for(const chunk of chunks){pdf.set(chunk,pos);pos+=chunk.length}const link=document.createElement('a'),url=URL.createObjectURL(new Blob([pdf],{type:'application/pdf'}));link.href=url;link.download=`Engineer_Pay_Log_Bid_Sheet_${bulletin.replace(/[^A-Za-z0-9_-]+/g,'_')}.pdf`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
 function bidSheetCaptureViewState(){
   return {snapshotId:String(bidSheetState.snapshot?.id||''),numbered:!!document.getElementById('bidTypeNumbered')?.checked,extra:!!document.getElementById('bidTypeExtra')?.checked,yard:!!document.getElementById('bidTypeYard')?.checked,search:String(document.getElementById('bidSheetSearch')?.value||''),terminal:String(document.getElementById('bidSheetTerminal')?.value||''),scrollY:Math.max(0,Number(window.scrollY)||0)};
 }
@@ -9550,7 +9583,7 @@ function trimDevRestLabel(row){const days=trimDevRestDays(row);return days.lengt
 function trimDevIpma(row){if(row?.assignment_type!=='extra_list')return null;const job=String(row.assignment||'').replace(/^EX/i,'').replace(/\D/g,'');return TRIM_EX1_IPMA[job]||null}
 function trimDevTerminalOptions(rows){
   const select=document.getElementById('trimTerminal');if(!select)return;const prev=select.value;
-  const values=[...new Set(rows.filter(r=>r.assignment_type==='regular').map(r=>String(r.terminal||'').trim()).filter(Boolean))].sort();
+  const values=[...new Set(rows.filter(r=>r.assignment_type==='regular'||r.assignment_type==='other').map(r=>String(r.terminal||'').trim()).filter(Boolean))].sort();
   select.innerHTML='<option value="">All terminals</option>'+values.map(v=>`<option value="${escapeHTML(v)}">${escapeHTML(v)}</option>`).join('');if(values.includes(prev))select.value=prev;
 }
 async function trimDevLoad(showStatus=true){
@@ -9566,8 +9599,8 @@ async function trimDevLoad(showStatus=true){
     if(!rosterAdminState.latest)await rosterLoadLatestSnapshot();const rows=await rosterGetLatestRows();
     if(!rows?.length){if(summary){summary.classList.add('show');summary.textContent='No published roster rows are available yet.'}filters?.classList.remove('show');results?.classList.remove('show');return}
     const rankInfo=trimDevEffectiveRank(rows);trimDevState.rows=rows;trimDevState.rank=rankInfo.rank;trimDevState.source='override';trimDevState.sourceGeneratedAt=rosterAdminState.latest?.source_generated_at||null;trimDevState.uploadedAt=rosterAdminState.latest?.uploaded_at||null;trimDevState.rowCount=Number(rosterAdminState.latest?.row_count||rows.length);
-    const below=rows.filter(r=>Number(r.rank)>rankInfo.rank&&(r.assignment_type==='regular'||r.assignment_type==='extra_list')),regular=below.filter(r=>r.assignment_type==='regular').length,extra=below.filter(r=>r.assignment_type==='extra_list').length;
-    if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Testing as roster rank ${rankInfo.rank}</strong> (local override)<br>${below.length} currently ownable assignments below this rank • ${regular} passenger • ${extra} Extra List<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(trimDevState.sourceGeneratedAt||trimDevState.uploadedAt))} • Crew Book: GO 202 Rev. 7 + Paper Rev. 8</span>${trimRosterFreshnessHTML(trimDevState.sourceGeneratedAt||trimDevState.uploadedAt)}`}
+    const below=rows.filter(r=>Number(r.rank)>rankInfo.rank&&(r.assignment_type==='regular'||r.assignment_type==='extra_list'||r.assignment_type==='other')),regular=below.filter(r=>r.assignment_type==='regular').length,extra=below.filter(r=>r.assignment_type==='extra_list').length,other=below.filter(r=>r.assignment_type==='other').length;
+    if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Testing as roster rank ${rankInfo.rank}</strong> (local override)<br>${below.length} currently ownable assignments below this rank • ${regular} passenger • ${extra} Extra List • ${other} Yard / other<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(trimDevState.sourceGeneratedAt||trimDevState.uploadedAt))} • Crew Book: GO 202 Rev. 7 + Paper Rev. 8</span>${trimRosterFreshnessHTML(trimDevState.sourceGeneratedAt||trimDevState.uploadedAt)}`}
     if(note)note.textContent=rankInfo.profileRank?`Local override ${rankInfo.rank} is active. Profile would otherwise match rank ${rankInfo.profileRank}.`:`Local override ${rankInfo.rank} is active. It does not modify this account's profile.`;
     trimDevTerminalOptions(below);filters?.classList.add('show');results?.classList.add('show');trimDevApplyFilters();return;
   }
@@ -9577,14 +9610,14 @@ async function trimDevLoad(showStatus=true){
   trimDevState.sourceGeneratedAt=payload.source_generated_at||null;trimDevState.uploadedAt=payload.uploaded_at||null;trimDevState.rowCount=Number(payload.row_count||0);
   if(!payload.match_found){trimDevState.rows=[];trimDevState.rank=null;trimDevState.source='profile';if(summary){summary.classList.add('show');const why=payload.reason==='missing_employee_number'?'Your profile does not have an IBM / employee number saved.':'Your saved IBM / employee number was not found in the latest roster.';summary.innerHTML=`<strong>We could not match you to the current roster.</strong><br>${escapeHTML(why)} Check <strong>Settings → Account → Edit Profile</strong>, then try again.<br><span style="font-size:9px">Latest roster: ${escapeHTML(rosterDateDisplay(payload.source_generated_at||payload.uploaded_at))}</span>${trimRosterFreshnessHTML(payload.source_generated_at||payload.uploaded_at)}`}filters?.classList.remove('show');results?.classList.remove('show');return}
   trimDevState.rows=Array.isArray(payload.jobs)?payload.jobs:[];trimDevState.rank=Number(payload.own_rank||0);trimDevState.source='profile';
-  const regular=Number(payload.regular_count||0),extra=Number(payload.extra_list_count||0),below=regular+extra;
-  if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Roster rank ${trimDevState.rank}</strong><br>${below} currently ownable assignments below you • ${regular} passenger • ${extra} Extra List<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(payload.source_generated_at||payload.uploaded_at))} • Crew Book: GO 202 Rev. 7 + Paper Rev. 8</span>${trimRosterFreshnessHTML(payload.source_generated_at||payload.uploaded_at)}`}
+  const regular=Number(payload.regular_count||0),extra=Number(payload.extra_list_count||0),other=Number(payload.other_count||0),below=regular+extra+other;
+  if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Roster rank ${trimDevState.rank}</strong><br>${below} currently ownable assignments below you • ${regular} passenger • ${extra} Extra List • ${other} Yard / other<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(payload.source_generated_at||payload.uploaded_at))} • Crew Book: GO 202 Rev. 7 + Paper Rev. 8</span>${trimRosterFreshnessHTML(payload.source_generated_at||payload.uploaded_at)}`}
   trimDevTerminalOptions(trimDevState.rows);filters?.classList.add('show');results?.classList.add('show');trimDevApplyFilters();
 }
 function trimDevCheckedValues(containerId){return [...document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)].map(x=>x.value)}
 function trimDevRegularCrewBookMeta(row){
   try{
-    if(row.assignment_type!=='regular')return null;const key=String(row.assignment||'').trim(),rev=crewBookPassengerRevision(TRIM_CREW_BOOK_DATE),relief=jobCompareReliefCrewDefinition(key,TRIM_CREW_BOOK_DATE);
+    if(row.assignment_type!=='regular'&&row.assignment_type!=='other')return null;const key=String(row.assignment||'').trim(),rev=crewBookPassengerRevision(TRIM_CREW_BOOK_DATE),relief=jobCompareReliefCrewDefinition(key,TRIM_CREW_BOOK_DATE);
     if(relief)return {relief,job:null,revision:rev};
     const hit=crewBookLookupJobV8(key,TRIM_CREW_BOOK_DATE);if(!hit?.job)return null;return {relief:null,job:hit.job,revision:hit.revision||rev};
   }catch{return null}
@@ -9670,30 +9703,30 @@ function trimDevOpenCrewBook(assignment){
 
 function trimDevApplyFilters(){
   if(!trimDevState.rows.length||!trimDevState.rank)return;
-  const regularOn=!!document.getElementById('trimTypeRegular')?.checked,extraOn=!!document.getElementById('trimTypeEx1')?.checked;
+  const regularOn=!!document.getElementById('trimTypeRegular')?.checked,extraOn=!!document.getElementById('trimTypeEx1')?.checked,otherOn=!!document.getElementById('trimTypeOther')?.checked;
   const relief=trimDevCheckedValues('trimReliefChecks').map(Number),ipmas=trimDevCheckedValues('trimIpmaChecks'),terminal=String(document.getElementById('trimTerminal')?.value||'');
-  let rows=trimDevState.rows.filter(r=>Number(r.rank)>trimDevState.rank&&(r.assignment_type==='regular'||r.assignment_type==='extra_list'));
-  rows=rows.filter(r=>r.assignment_type==='regular'?regularOn:extraOn);
+  let rows=trimDevState.rows.filter(r=>Number(r.rank)>trimDevState.rank&&(r.assignment_type==='regular'||r.assignment_type==='extra_list'||r.assignment_type==='other'));
+  rows=rows.filter(r=>r.assignment_type==='regular'?regularOn:r.assignment_type==='extra_list'?extraOn:otherOn);
   if(relief.length)rows=rows.filter(r=>{const d=trimDevRestDays(r);return relief.every(x=>d.includes(x))});
-  if(ipmas.length)rows=rows.filter(r=>r.assignment_type==='regular'||ipmas.includes(trimDevIpma(r)));
+  if(ipmas.length)rows=rows.filter(r=>r.assignment_type!=='extra_list'||ipmas.includes(trimDevIpma(r)));
   if(terminal)rows=rows.filter(r=>r.assignment_type==='extra_list'||String(r.terminal||'')===terminal);
   const count=document.getElementById('trimDevResultCount'),list=document.getElementById('trimDevResultList');if(count)count.textContent=`${rows.length} match${rows.length===1?'':'es'} • sorted by seniority`;
   if(!list)return;if(!rows.length){list.innerHTML='<div class="trim-dev-empty">No ownable assignments match these filters.</div>';return}
   list.innerHTML=rows.map(r=>{
-    const extra=r.assignment_type==='extra_list',ipma=trimDevIpma(r),meta=extra?null:trimDevRegularCrewBookMeta(r),reliefInfo=meta?.relief||null,job=meta?.job||null;
+    const extra=r.assignment_type==='extra_list',other=r.assignment_type==='other',ipma=trimDevIpma(r),meta=extra?null:trimDevRegularCrewBookMeta(r),reliefInfo=meta?.relief||null,job=meta?.job||null;
     const chips=[`Relief: ${trimDevRestLabel(r)}`];if(!extra)chips.push(trimDevWeeklyOtLabel(r));if(!extra&&r.terminal)chips.push(`Terminal: ${r.terminal}`);if(extra&&ipma)chips.push(`IPMA: ${ipma}`);
     let detail='';
     if(reliefInfo){const coverage=trimDevReliefCoverageText(reliefInfo);if(coverage)detail=`<div class="trim-result-detail"><strong>Covers:</strong> ${escapeHTML(coverage)}</div>`}
     else if(!extra&&job){detail=trimDevRegularScheduleCardsHTML(r);if(!detail&&job.type==='extraCrewOnly'&&job.extra)detail=`<div class="trim-result-schedules">${trimDevScheduleCard('Published schedule',job.extra)}</div>`}
-    const cardLabel=extra?'Guaranteed Extra List':reliefInfo?'Relief Crew':'Passenger Crew Book assignment';
+    const cardLabel=extra?'Guaranteed Extra List':other?'Yard / other assignment':reliefInfo?'Relief Crew':'Passenger Crew Book assignment';
     const chipHTML=chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}${c.startsWith('Weekly OT:')?' trim-ot':''}">${escapeHTML(c)}</span>`).join('');
-    if(extra)return `<div class="trim-result trim-static"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chipHTML}</div></div>`;
+    if(extra||other)return `<div class="trim-result trim-static"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chipHTML}</div>${other&&detail?detail:''}</div>`;
     const hint=reliefInfo?'Tap to view every covered job assignment':'Tap to view the official Crew Book assignment';
     return `<div class="trim-result" role="button" tabindex="0" data-trim-assignment="${escapeHTML(String(r.assignment))}" onclick="trimDevOpenCrewBook(this.dataset.trimAssignment)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();trimDevOpenCrewBook(this.dataset.trimAssignment)}"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chipHTML}</div>${detail}<div class="trim-result-hint">${escapeHTML(hint)}</div></div>`;
   }).join('');
 }
 function trimDevClearFilters(){
-  const reg=document.getElementById('trimTypeRegular'),ex=document.getElementById('trimTypeEx1');if(reg)reg.checked=true;if(ex)ex.checked=true;
+  const reg=document.getElementById('trimTypeRegular'),ex=document.getElementById('trimTypeEx1'),other=document.getElementById('trimTypeOther');if(reg)reg.checked=true;if(ex)ex.checked=true;if(other)other.checked=true;
   for(const id of ['trimReliefChecks','trimIpmaChecks'])document.querySelectorAll(`#${id} input[type="checkbox"]`).forEach(x=>x.checked=false);
   const t=document.getElementById('trimTerminal');if(t)t.value='';trimDevApplyFilters();
 }
