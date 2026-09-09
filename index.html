@@ -1333,6 +1333,9 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .bid-call-ready-warning{padding:11px 12px;border:1px solid #e1c468;border-radius:12px;background:#fff8d9;color:#5d4b00;font-size:10px;line-height:1.5}.bid-call-ready-list{display:grid;gap:8px;margin:12px 0 0;padding:0;list-style:none;counter-reset:bid-ready}.bid-call-ready-item{counter-increment:bid-ready;display:grid;grid-template-columns:34px minmax(0,1fr);gap:9px;align-items:center;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}.bid-call-ready-item:before{content:counter(bid-ready);display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;font-weight:900}.bid-call-ready-assignment{font-size:13px;font-weight:900;color:var(--ink)}.bid-call-ready-meta{margin-top:2px;color:var(--muted);font-size:9px}
     html[data-theme="dark"] .bid-sheet-summary{background:#241d33;border-color:#655080;color:#d8c9ed}html[data-theme="dark"] .bid-sheet-summary strong{color:#eee5fb}html[data-theme="dark"] .bid-sheet-status-pill.open{background:#123024;color:#99dfba}html[data-theme="dark"] .bid-sheet-status-pill.upcoming{background:#14283a;color:#b9d8f7}html[data-theme="dark"] .bid-sheet-status-pill.closed{background:#252b34;color:#b7c0cc}html[data-theme="dark"] .bid-sheet-builder{background:#15273a;border-color:#365a7d}html[data-theme="dark"] .bid-draft-empty{background:#112235;border-color:#3b5874}html[data-theme="dark"] .bid-draft-sync.synced{background:#123024;color:#99dfba}html[data-theme="dark"] .bid-draft-sync.saving{background:#3d3210;color:#ffe58a}html[data-theme="dark"] .bid-draft-sync.local{background:#25364a;color:#c4d0dc}html[data-theme="dark"] .bid-draft-sync.error{background:#431e25;color:#ffb2bd}html[data-theme="dark"] .bid-sheet-card-actions .bid-add-choice.added{background:#123024;color:#99dfba}html[data-theme="dark"] .bid-call-ready-warning{background:#30280e;border-color:#806d25;color:#ffe8a1}
     @media(max-width:620px){.bid-sheet-search-row{grid-template-columns:1fr}.bid-sheet-builder-head{align-items:center}.bid-draft-choice{grid-template-columns:34px minmax(0,1fr)}.bid-draft-controls{grid-column:1 / -1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));justify-content:stretch}.bid-draft-controls .btn{font-size:9px}.bid-sheet-builder-actions{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}}
+    .award-alert{display:none;margin:0 0 14px;padding:15px 16px;border:1px solid #d6b45b;border-radius:16px;background:#fff9e8;box-shadow:var(--shadow)}.award-alert.show{display:block}.award-alert-kicker{font-size:8.5px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;color:#8a6410}.award-alert-title{margin-top:3px;font-size:17px;font-weight:950;color:#3d2d09}.award-alert-meta{margin-top:4px;font-size:10px;font-weight:800;color:#70551b}.award-alert-warning{margin-top:10px;padding:10px 11px;border:1px solid #e5cf91;border-radius:11px;background:rgba(255,255,255,.62);font-size:10px;line-height:1.45;color:#4e4328}.award-alert-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}.award-alert-confirmed{display:inline-flex;align-items:center;margin-top:9px;padding:5px 8px;border-radius:999px;background:#e4f5ec;color:#176742;font-size:8.5px;font-weight:900}.award-alert .btn:disabled{opacity:.48}.award-admin-card{display:none}.award-admin-card.show{display:block}.award-admin-diff{margin-top:10px;padding:10px 11px;border:1px solid var(--line);border-radius:11px;background:var(--card);font-size:9.5px;line-height:1.5}
+    html[data-theme="dark"] .award-alert{background:#30280e;border-color:#806d25}html[data-theme="dark"] .award-alert-title{color:#ffe8a1}html[data-theme="dark"] .award-alert-kicker,html[data-theme="dark"] .award-alert-meta{color:#e4c76c}html[data-theme="dark"] .award-alert-warning{background:#261f0a;border-color:#695a23;color:#f3e5bd}html[data-theme="dark"] .award-alert-confirmed{background:#123024;color:#99dfba}
+    @media(max-width:620px){.award-alert-actions{display:grid;grid-template-columns:1fr 1fr}.award-alert-actions .btn:last-child:nth-child(3){grid-column:1/-1}}
     .trim-dev-box{margin-top:16px;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--bg)}
     .trim-dev-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
     .trim-dev-head h3{margin:0;color:var(--ink);font-size:14px}.trim-dev-head p{margin:4px 0 0;color:var(--muted);font-size:9.5px;line-height:1.45}
@@ -1527,6 +1530,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     <div id="timeSlipDeadlineBanner" class="time-slip-deadline-banner" role="status"></div>
     <div id="timeSlipWageBanner" class="time-slip-wage-banner" role="status"></div>
     <div id="dashboardCommunityNotes" class="dashboard-community-notes" role="status"></div>
+    <div id="dashboardAwardAlert" class="award-alert" role="status" aria-live="polite"></div>
     <div class="grid dashboard-grid">
       <div class="card span4 stat"><div class="label">This month</div><div class="value" id="monthTotal">$0.00</div><div class="sub" id="monthCount">0 paid shifts</div></div>
       <div class="card span4 stat"><div class="label"><span id="yearTotalLabel">Current year</span> total</div><div class="value" id="yearTotal">$0.00</div><div class="sub" id="yearHours">0:00 actual hours</div></div>
@@ -1644,7 +1648,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <div class="bid-sheet-filters" id="bidSheetFilters">
         <div class="trim-filter-title">Assignment type</div>
         <div class="trim-check-grid">
-          <label class="trim-check"><input type="checkbox" id="bidTypeNumbered" checked onchange="bidSheetApplyFilters()"> Numbered jobs</label>
+          <label class="trim-check"><input type="checkbox" id="bidTypeNumbered" checked onchange="bidSheetApplyFilters()"> Passenger jobs</label>
           <label class="trim-check"><input type="checkbox" id="bidTypeExtra" checked onchange="bidSheetApplyFilters()"> Extra List</label>
           <label class="trim-check"><input type="checkbox" id="bidTypeYard" checked onchange="bidSheetApplyFilters()"> Yard / other</label>
         </div>
@@ -1665,7 +1669,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
   <section id="trimView" class="view">
     <div class="card">
       <div class="section-title"><h2>Trim Assistant</h2><button class="btn small" type="button" onclick="showView('dashboard')">Dashboard</button></div>
-      <p class="trim-public-intro">Uses the latest published Engineer seniority roster to show currently ownable numbered and Extra List assignments below your roster position. Roster ownership can change daily during bids, trims, and picks, so always check the roster freshness shown below.</p>
+      <p class="trim-public-intro">Uses the latest published Engineer seniority roster to show currently ownable passenger and Extra List assignments below your roster position. Roster ownership can change daily during bids, trims, and picks, so always check the roster freshness shown below.</p>
 
       <div class="trim-dev-override" id="trimDevOverride">
         <div class="trim-dev-override-title">Developer testing</div>
@@ -1680,7 +1684,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <div class="trim-dev-filters" id="trimDevFilters">
         <div class="trim-filter-title">Assignment type</div>
         <div class="trim-check-grid">
-          <label class="trim-check"><input type="checkbox" id="trimTypeRegular" checked onchange="trimDevApplyFilters()"> Numbered jobs</label>
+          <label class="trim-check"><input type="checkbox" id="trimTypeRegular" checked onchange="trimDevApplyFilters()"> Passenger jobs</label>
           <label class="trim-check"><input type="checkbox" id="trimTypeEx1" checked onchange="trimDevApplyFilters()"> Extra List</label>
         </div>
         <div class="trim-filter-title">Relief days <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— selecting multiple requires all selected days</span></div>
@@ -1702,7 +1706,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <label class="trim-check"><input type="checkbox" value="12:59 PM" onchange="trimDevApplyFilters()"> 12:59 PM</label>
         </div>
         <div class="trim-dev-filter-row"><div class="field"><label>Terminal</label><select id="trimTerminal" onchange="trimDevApplyFilters()"><option value="">All terminals</option></select></div></div>
-        <div class="trim-dev-rank-note">IPMA selections filter only Extra List results. Numbered jobs remain visible when Numbered jobs is selected.<br>Schedule previews resolve each worked day individually and group matching days. Weekly OT totals exclude paid meal-period allowances.</div>
+        <div class="trim-dev-rank-note">IPMA selections filter only Extra List results. Passenger jobs remain visible when Passenger jobs is selected.<br>Schedule previews resolve each worked day individually and group matching days. Weekly OT totals exclude paid meal-period allowances.</div>
       </div>
       <div class="trim-dev-results" id="trimDevResults">
         <div class="trim-result-toolbar"><span id="trimDevResultCount"></span><button class="btn" type="button" onclick="trimDevClearFilters()">Clear Filters</button></div>
@@ -1845,7 +1849,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <div class="roster-admin-validation" id="rosterAdminValidation"></div>
           <div class="roster-admin-diff" id="rosterAdminDiff" style="display:none"></div>
           <div class="roster-admin-rules">
-            Import rules: numbered assignments are regular jobs; EX1 assignments are ownable Guaranteed Extra List jobs; EX2 assignments are Subject To Bid and are excluded from ownable jobs; ET assignments are trainee placeholders and are excluded. Other assignment families are preserved but not treated as ownable until their rules are defined.<br><br>
+            Import rules: passenger assignments are regular jobs; EX1 assignments are ownable Guaranteed Extra List jobs; EX2 assignments are Subject To Bid and are excluded from ownable jobs; ET assignments are trainee placeholders and are excluded. Other assignment families are preserved but not treated as ownable until their rules are defined.<br><br>
             Employee names are <strong>not uploaded</strong>. Employee numbers are stored privately only so a signed-in engineer can later be matched to their own roster rank.
           </div>
           <div class="roster-admin-actions">
@@ -1876,6 +1880,31 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <div class="roster-admin-actions">
             <button id="bidSheetPublishBtn" class="btn primary" type="button" onclick="bidSheetPublishPreview()" disabled>Publish Bid Sheet</button>
             <button class="btn" type="button" onclick="bidSheetClearPreview()">Clear</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card span12 settings-card award-admin-card" id="awardAdminCard">
+        <div class="section-title settings-heading">
+          <div><h2>Bulletin Awards Maintenance</h2><p>Developer-only publisher for private award matching. Employee names are never uploaded.</p></div>
+          <span class="roster-admin-badge">Developer</span>
+        </div>
+        <div id="awardAdminLatest" class="account-sync-detail">Checking the latest published awards...</div>
+        <div class="roster-admin-drop">
+          <div class="field full">
+            <label>RPCS Bulletin Awards PDF</label>
+            <input id="awardPdfInput" type="file" accept="application/pdf,.pdf" onchange="awardHandlePdfFile(event)">
+          </div>
+          <div class="roster-admin-status" id="awardAdminStatus">Choose the Bulletin Awards PDF exported with Show All entries.</div>
+        </div>
+        <div class="roster-admin-preview" id="awardAdminPreview">
+          <div class="roster-admin-grid" id="awardAdminStats"></div>
+          <div class="roster-admin-validation" id="awardAdminValidation"></div>
+          <div class="award-admin-diff" id="awardAdminDiff"></div>
+          <div class="roster-admin-rules">The importer verifies Bulletin Awards, bulletin identity/dates, EN/BLE structure, duplicate assignments and employee numbers, and differences from the related published bid sheet. The Employee Name column is deliberately discarded before publish.</div>
+          <div class="roster-admin-actions">
+            <button id="awardPublishBtn" class="btn primary" type="button" onclick="awardPublishPreview()" disabled>Publish Awards</button>
+            <button class="btn" type="button" onclick="awardClearPreview()">Clear</button>
           </div>
         </div>
       </div>
@@ -2351,7 +2380,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         <li>Open a clean call-ready list, and keep the draft synced privately to your signed-in account.</li>
         <li>Return from a yard assignment's Quick Job Lookup without losing the draft, filters, search, terminal, or scroll position.</li>
         <li>See every advertised assignment from the current engineer bid sheet in one searchable, filterable list.</li>
-        <li>Numbered jobs are matched to Crew Book schedules, relief days, weekly overtime, and paid-meal information when available.</li>
+        <li>Passenger jobs are matched to Crew Book schedules, relief days, weekly overtime, and paid-meal information when available.</li>
         <li>Relief assignments show the jobs they cover, while Extra List assignments show their advertised terminal.</li>
         <li>The sheet status and closing date stay visible so you can make bid decisions before the bulletin closes.</li>
       </ul>
@@ -2770,7 +2799,7 @@ const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
 const APP_VERSION='10.1';
-const WHATS_NEW_VERSION='10.1-20260909-personal-bid-builder';
+const WHATS_NEW_VERSION='10.1-20260909-passenger-terminology';
 const CONTACT_EMAIL='admin@engineerpaylog.com';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
 const BACKUP_REMIND_LATER_KEY='engineerPayLogBackupRemindLaterUntil';
@@ -6938,6 +6967,7 @@ async function accountSaveProfile(){
   const {error:profileError}=await client.from('profiles').update({full_name:fullName,ibm_number:ibm,updated_at:new Date().toISOString()}).eq('user_id',user.id);
   if(profileError)console.warn('Profile table update failed; auth metadata was saved:',profileError.message);
   accountUpdateProfileUI({full_name:fullName,ibm_number:ibm});
+  void awardLoad(true);
   accountSetProfileMessage(profileError?'Saved to your account. Profile table refresh will be retried later.':'Profile saved.','success');
   setTimeout(()=>accountCancelProfileEdit(),700);
   return authData?.user||user;
@@ -8691,7 +8721,7 @@ function renderDashboard(){
   if(netBlock)netBlock.style.display=showNet?'block':'none';
   if(netAmount&&showNet)netAmount.textContent=money(pi.total*netRate);
   const p=document.getElementById('dashPendingSlips');if(p)p.textContent=String(shifts.filter(s=>s.timeSlip&&['Needs Submission','Pending'].includes(timeSlipDisplayStatus(s))).length);
-  renderTimeSlipDeadlineBanner();renderTimeSlipWageBanner();void renderDashboardCommunityNotes();
+  renderTimeSlipDeadlineBanner();renderTimeSlipWageBanner();void renderDashboardCommunityNotes();void awardLoad(false);
   const f=document.getElementById('dashSavedJobs');if(f)f.textContent=String(savedJobs.length);updateBackupUI();void retirementWatchLoad(false);
 }
 function renderHistory(){
@@ -8864,8 +8894,8 @@ function rosterDateDisplay(value){
   try{return new Date(value).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}catch{return String(value)}
 }
 async function rosterCheckAdmin(force=false){
-  const card=document.getElementById('rosterAdminCard'),bidCard=document.getElementById('bidSheetAdminCard');if(!card&&!bidCard)return false;
-  const toggleCards=show=>{card?.classList.toggle('show',show);bidCard?.classList.toggle('show',show)};
+  const card=document.getElementById('rosterAdminCard'),bidCard=document.getElementById('bidSheetAdminCard'),awardCard=document.getElementById('awardAdminCard');if(!card&&!bidCard&&!awardCard)return false;
+  const toggleCards=show=>{card?.classList.toggle('show',show);bidCard?.classList.toggle('show',show);awardCard?.classList.toggle('show',show)};
   if(rosterAdminState.checked&&!force){toggleCards(!!rosterAdminState.canPublish);trimDevUpdateModeAvailability();return rosterAdminState.canPublish}
   const client=getCloudClient();if(!client){toggleCards(false);return false}
   const user=await cloudCurrentUser(client);if(!user){toggleCards(false);return false}
@@ -8875,7 +8905,7 @@ async function rosterCheckAdmin(force=false){
     if(error)throw error;
     rosterAdminState.checked=true;rosterAdminState.canPublish=!!data?.can_publish;
     toggleCards(rosterAdminState.canPublish);
-    if(rosterAdminState.canPublish){await rosterLoadLatestSnapshot();await bidSheetLoadAdminLatest();await retirementWatchLoad(true);trimDevInitControls();}trimDevUpdateModeAvailability();
+    if(rosterAdminState.canPublish){await rosterLoadLatestSnapshot();await bidSheetLoadAdminLatest();await awardLoadAdminLatest();await retirementWatchLoad(true);trimDevInitControls();}trimDevUpdateModeAvailability();
     return rosterAdminState.canPublish;
   }catch(err){console.warn('Roster admin check failed:',err);rosterAdminState.checked=true;rosterAdminState.canPublish=false;toggleCards(false);return false}
 }
@@ -8980,9 +9010,9 @@ function rosterDiffRows(previous,current){
 async function rosterRenderPreview(parsed){
   const host=document.getElementById('rosterAdminPreview'),stats=document.getElementById('rosterAdminStats'),validation=document.getElementById('rosterAdminValidation'),diffEl=document.getElementById('rosterAdminDiff'),publish=document.getElementById('rosterPublishBtn');if(!host||!stats||!validation||!publish)return;
   const c=parsed.counts,ownable=c.regular+c.extra_list,retiredCount=parsed.rows.filter(r=>String(r.st_rs||'').toUpperCase()==='99/Z2').length;
-  stats.innerHTML=[['Rows',parsed.rows.length],['Ownable',ownable],['Numbered jobs',c.regular],['EX1 Extra List',c.extra_list],['EX2 excluded',c.subject_to_bid],['ET excluded',c.trainee],['99/Z2 retired',retiredCount]].map(([label,value])=>`<div class="roster-admin-stat"><strong>${Number(value)}</strong><span>${escapeHTML(label)}</span></div>`).join('');
+  stats.innerHTML=[['Rows',parsed.rows.length],['Ownable',ownable],['Passenger jobs',c.regular],['EX1 Extra List',c.extra_list],['EX2 excluded',c.subject_to_bid],['ET excluded',c.trainee],['99/Z2 retired',retiredCount]].map(([label,value])=>`<div class="roster-admin-stat"><strong>${Number(value)}</strong><span>${escapeHTML(label)}</span></div>`).join('');
   const details=[`<strong>${parsed.valid?'Validation passed':'Validation failed'}</strong>`,`${parsed.pages} pages • ${parsed.rows.length} parsed rows${parsed.declaredTotal?` • PDF total ${parsed.declaredTotal}`:''}`,`Roster generated: ${escapeHTML(parsed.timestamp.label)}`,`Other/unclassified: ${c.other} • Blank assignments: ${c.blank}`];
-  if(parsed.mine)details.push(`Your profile matched roster rank ${parsed.mine.rank}.${parsed.belowOwnable!==null?` ${parsed.belowOwnable} currently ownable numbered/EX1 assignments are below you in this snapshot.`:''}`);else details.push('Your profile employee number was not matched in this PDF. The roster can still be published, but check your profile before testing Trim Assistant results.');
+  if(parsed.mine)details.push(`Your profile matched roster rank ${parsed.mine.rank}.${parsed.belowOwnable!==null?` ${parsed.belowOwnable} currently ownable passenger/EX1 assignments are below you in this snapshot.`:''}`);else details.push('Your profile employee number was not matched in this PDF. The roster can still be published, but check your profile before testing Trim Assistant results.');
   if(parsed.errors.length)details.push(...parsed.errors.map(x=>`Error: ${escapeHTML(x)}`));if(parsed.warnings.length)details.push(...parsed.warnings.map(x=>`Warning: ${escapeHTML(x)}`));
   validation.className=`roster-admin-validation${parsed.errors.length?' error':parsed.warnings.length?' warn':''}`;validation.innerHTML=details.join('<br>');
   if(!rosterAdminState.latest)await rosterLoadLatestSnapshot();const previous=await rosterGetLatestRows(),diff=rosterDiffRows(previous,parsed.rows);
@@ -9068,7 +9098,7 @@ function bidSheetDraftHas(assignment){
 }
 function bidSheetDraftTypeLabel(row){
   const kind=bidSheetKind(row?.assignment);
-  return kind==='numbered'?'Numbered':kind==='extra_list'?'Extra List':'Yard / other';
+  return kind==='numbered'?'Passenger':kind==='extra_list'?'Extra List':'Yard / other';
 }
 function bidSheetDraftSyncPresentation(){
   const state=bidSheetDraftState;
@@ -9277,7 +9307,7 @@ async function bidSheetHandlePdfFile(event){
 function bidSheetRenderAdminPreview(parsed){
   const host=document.getElementById('bidSheetAdminPreview'),stats=document.getElementById('bidSheetAdminStats'),validation=document.getElementById('bidSheetAdminValidation'),publish=document.getElementById('bidSheetPublishBtn');if(!host||!stats||!validation||!publish)return;
   const c=parsed.counts;
-  stats.innerHTML=[['Assignments',parsed.rows.length],['Numbered',c.numbered],['Extra List',c.extra_list],['Yard / other',c.yard_other],['Pages',parsed.pages],['PDF total',parsed.declaredTotal??'—']].map(([label,value])=>`<div class="roster-admin-stat"><strong>${escapeHTML(String(value))}</strong><span>${escapeHTML(label)}</span></div>`).join('');
+  stats.innerHTML=[['Assignments',parsed.rows.length],['Passenger',c.numbered],['Extra List',c.extra_list],['Yard / other',c.yard_other],['Pages',parsed.pages],['PDF total',parsed.declaredTotal??'—']].map(([label,value])=>`<div class="roster-admin-stat"><strong>${escapeHTML(String(value))}</strong><span>${escapeHTML(label)}</span></div>`).join('');
   const details=[`<strong>${parsed.valid?'Validation passed':'Validation failed'}</strong>`,`${escapeHTML(parsed.bulletinId||'Unknown bulletin')} • opens ${escapeHTML(bidSheetDateLabel(parsed.openDate))} • closes ${escapeHTML(bidSheetDateLabel(parsed.closeDate))} • effective ${escapeHTML(bidSheetDateLabel(parsed.effectiveDate))}`,`<strong>Assignments:</strong> ${parsed.rows.map(r=>escapeHTML(r.assignment)).join(', ')}`];
   if(parsed.errors.length)details.push(...parsed.errors.map(x=>`Error: ${escapeHTML(x)}`));if(parsed.warnings.length)details.push(...parsed.warnings.map(x=>`Warning: ${escapeHTML(x)}`));
   validation.className=`roster-admin-validation${parsed.errors.length?' error':parsed.warnings.length?' warn':''}`;validation.innerHTML=details.join('<br>');publish.disabled=!parsed.valid;host.classList.add('show');
@@ -9384,7 +9414,7 @@ function bidSheetApplyFilters(){
     const chips=[`Terminal: ${r.terminal||'—'}`];if(extraJob){chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);const ipma=trimDevIpma({assignment:r.assignment,assignment_type:'extra_list'});if(ipma)chips.push(`IPMA: ${ipma}`)}else{chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);if(stats)chips.push(`Weekly OT: ${fmtMinutes(stats.overtime)}`);if(stats)chips.push(`Paid meals: ${stats.meals}`)}
     const chipHTML=chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}${c.startsWith('Weekly OT:')?' trim-ot':''}">${escapeHTML(c)}</span>`).join('');let detail='';
     if(relief){const coverage=trimDevReliefCoverageText(relief);if(coverage)detail=`<div class="trim-result-detail"><strong>Covers:</strong> ${escapeHTML(coverage)}</div>`;detail+=bidSheetScheduleHTML(stats)}else if(stats)detail=bidSheetScheduleHTML(stats);else if(!known)detail='<div class="bid-sheet-unmatched">This assignment is listed on the official bid sheet, but structured Crew Book details are not currently available in Engineer Pay Log.</div>';
-    const typeLabel=extraJob?'Guaranteed Extra List':relief?'Relief Crew':kind==='numbered'?'Numbered Crew Book assignment':'Yard / other assignment',clickable=!extraJob&&known;
+    const typeLabel=extraJob?'Guaranteed Extra List':relief?'Relief Crew':kind==='numbered'?'Passenger Crew Book assignment':'Yard / other assignment',clickable=!extraJob&&known;
     const draftReady=bidSheetDraftState.loaded&&bidSheetDraftState.snapshotId===String(bidSheetState.snapshot?.id||''),added=draftReady&&bidSheetDraftHas(r.assignment),safeAssignment=escapeHTML(String(r.assignment));
     const detailAction=clickable?'<button class="btn" type="button" data-bid-assignment="'+safeAssignment+'" onclick="bidSheetOpenDetails(this.dataset.bidAssignment)">'+escapeHTML(isYardCrewKey(key)||isYardReliefKey(key)?'Open Crew Book Details':'View Official Assignment')+'</button>':'';
     const addAction='<button class="btn bid-add-choice'+(added?' added':'')+'" type="button" data-bid-assignment="'+safeAssignment+'" onclick="bidSheetDraftAdd(this.dataset.bidAssignment)"'+(!draftReady||added?' disabled':'')+'>'+(draftReady?(added?'✓ Added':'Add to My Bid Sheet'):'Loading Draft…')+'</button>';
@@ -9395,6 +9425,73 @@ function bidSheetClearFilters(){
   for(const id of ['bidTypeNumbered','bidTypeExtra','bidTypeYard']){const el=document.getElementById(id);if(el)el.checked=true}const search=document.getElementById('bidSheetSearch');if(search)search.value='';const terminal=document.getElementById('bidSheetTerminal');if(terminal)terminal.value='';bidSheetApplyFilters();
 }
 // ---- End Bid Sheet Assistant ----
+
+// ---- Piece 4: private Bulletin Awards importer + signed-in award match ----
+const AWARD_PARSER_VERSION='bulletin_awards_pdf_v1';
+let awardPreviewState=null;
+let awardAdminState={latest:null};
+let awardState={loaded:false,loading:false,userId:'',payload:null,error:null};
+let awardLoadPromise=null;
+
+function awardSetStatus(message='',type=''){
+  const el=document.getElementById('awardAdminStatus');if(!el)return;el.textContent=message;el.className=`roster-admin-status${type?' '+type:''}`;
+}
+function awardParseLine(items,pageNumber,rowOrder){
+  const assignment=rosterColumnText(items,45,125,true).toUpperCase();
+  const employeeId=rosterColumnText(items,125,210,true);
+  if(!/^(?:\d{1,4}|[A-Z]{1,6}-?\d{1,4})$/.test(assignment)||!/^\d{4,6}$/.test(employeeId))return null;
+  const position=rosterColumnText(items,210,275,true).toUpperCase(),rankText=rosterColumnText(items,275,335,true),roster=rosterColumnText(items,335,385,true).toUpperCase(),firstRankText=rosterColumnText(items,465,525,true),firstRoster=rosterColumnText(items,525,595,true).toUpperCase();
+  return {assignment,employee_id:employeeId,position_code:position,rank:/^\d{1,4}$/.test(rankText)?Number(rankText):null,roster,first_rank:/^\d{1,4}$/.test(firstRankText)?Number(firstRankText):null,first_roster:firstRoster,source_page:pageNumber,row_order:rowOrder};
+}
+async function awardParsePdf(file){
+  const pdfjs=await rosterLoadPdfJs(),buffer=await file.arrayBuffer(),sha256=await rosterSha256(buffer),pdf=await pdfjs.getDocument({data:new Uint8Array(buffer)}).promise;if(pdf.numPages<1||pdf.numPages>20)throw new Error(`Unexpected awards length: ${pdf.numPages} pages.`);
+  const rows=[],allText=[];
+  for(let pageNum=1;pageNum<=pdf.numPages;pageNum++){
+    awardSetStatus(`Reading Bulletin Awards PDF... page ${pageNum} of ${pdf.numPages}`);const page=await pdf.getPage(pageNum),content=await page.getTextContent(),pageText=content.items.map(i=>String(i.str||'')).join(' ');allText.push(pageText);const lines=rosterClusterPageItems(content.items);for(const line of lines){const row=awardParseLine(line.items,pageNum,rows.length+1);if(row)rows.push(row)}
+  }
+  const text=allText.join(' ').normalize('NFKC').replace(/ﬀ/g,'ff').replace(/ﬁ/g,'fi').replace(/ﬂ/g,'fl').replace(/E\s*f\s*f\s*ective/gi,'Effective'),titleOk=/Bulletin\s+Awards/i.test(text)&&/ENGINE\s+SERVICE\s+BULLETIN/i.test(text),bulletinId=(text.match(/Bulletin\s*ID\s*:\s*([A-Z0-9-]+)/i)||[])[1]||null,bulletinSuffix=(text.match(/ENGINE\s+SERVICE\s+BULLETIN\s+([A-Z0-9-]+)/i)||[])[1]||null,bulletinName=bulletinSuffix?`ENGINE SERVICE BULLETIN ${bulletinSuffix}`:'ENGINE SERVICE BULLETIN',sequenceMatch=text.match(/Sequence\s*:\s*(\d+)/i),sequence=sequenceMatch?Number(sequenceMatch[1]):null,openDate=bidSheetDateFromText(text,'Open'),effectiveDate=bidSheetDateFromText(text,'Effective'),closeDate=bidSheetDateFromText(text,'Close'),postedDate=bidSheetDateFromText(text,'Posted'),declaredMatch=text.match(/Showing\s+1\s+to\s+(\d+)\s+of\s+(\d+)\s+entries/i),declaredTotal=declaredMatch?Number(declaredMatch[2]):null;
+  const duplicateAssignments=[...new Set(rows.map(r=>r.assignment).filter((a,i,arr)=>arr.indexOf(a)!==i))],duplicateEmployees=[...new Set(rows.map(r=>r.employee_id).filter((a,i,arr)=>arr.indexOf(a)!==i))],warnings=[],errors=[];
+  if(!titleOk)errors.push('This does not look like a Bulletin Awards export.');if(!bulletinId)errors.push('The Bulletin ID could not be read.');if(sequence===null)errors.push('The bulletin sequence could not be read.');if(!openDate||!effectiveDate||!closeDate||!postedDate)errors.push('One or more bulletin dates could not be read.');if(rows.length<1)errors.push('No award rows were detected.');if(rows.length>200)errors.push(`Unexpectedly high award count: ${rows.length}.`);if(declaredTotal!==null&&declaredTotal!==rows.length)errors.push(`The PDF says ${declaredTotal} entries, but ${rows.length} rows were parsed.`);if(duplicateAssignments.length)errors.push(`Duplicate assignments detected: ${duplicateAssignments.join(', ')}.`);if(duplicateEmployees.length)errors.push(`Duplicate employee numbers detected in ${duplicateEmployees.length} row${duplicateEmployees.length===1?'':'s'}.`);if(rows.some(r=>r.position_code!=='EN'))errors.push('One or more award rows are not EN positions.');if(rows.some(r=>r.roster!=='BLE'||r.first_roster!=='BLE'))errors.push('One or more award rows have an unexpected roster value.');if(rows.some(r=>!r.rank||!r.first_rank))errors.push('One or more award ranks could not be read.');if(!declaredTotal)warnings.push('The declared entry total could not be read; review the parsed assignment list carefully.');
+  return {file,rows,sha256,pages:pdf.numPages,titleOk,bulletinId,bulletinName,sequence,openDate,effectiveDate,closeDate,postedDate,declaredTotal,warnings,errors,relatedBid:null,bidRows:[],differences:null,valid:false};
+}
+async function awardLoadRelatedBid(parsed){
+  const client=getCloudClient();if(!client){parsed.errors.push('Cloud connection is required to compare this Awards PDF with its published bid sheet.');parsed.valid=false;return parsed}
+  const {data:bid,error}=await client.from('bid_sheet_snapshots').select('id,bulletin_id,sequence_number,open_date,effective_date,close_date,posted_date,row_count,status').eq('status','published').eq('bulletin_id',parsed.bulletinId).order('uploaded_at',{ascending:false}).limit(1).maybeSingle();if(error)throw error;if(!bid){parsed.errors.push(`No published bid sheet was found for ${parsed.bulletinId||'this bulletin'}.`);parsed.valid=false;return parsed}
+  parsed.relatedBid=bid;if(Number(bid.sequence_number)!==Number(parsed.sequence))parsed.errors.push(`Sequence mismatch: bid sheet ${bid.sequence_number??'unknown'}, awards ${parsed.sequence??'unknown'}.`);for(const [field,label] of [['open_date','Open'],['close_date','Close'],['posted_date','Posted'],['effective_date','Effective']])if(String(bid[field]||'')!==String(({open_date:parsed.openDate,close_date:parsed.closeDate,posted_date:parsed.postedDate,effective_date:parsed.effectiveDate})[field]||''))parsed.errors.push(`${label} date does not match the related published bid sheet.`);
+  const {data:rows,error:rowError}=await client.from('bid_sheet_rows').select('assignment,row_order').eq('snapshot_id',bid.id).order('row_order');if(rowError)throw rowError;parsed.bidRows=rows||[];const awardSet=new Set(parsed.rows.map(r=>r.assignment)),bidSet=new Set(parsed.bidRows.map(r=>String(r.assignment||'').toUpperCase())),extra=parsed.rows.map(r=>r.assignment).filter(a=>!bidSet.has(a)),missing=parsed.bidRows.map(r=>String(r.assignment||'').toUpperCase()).filter(a=>!awardSet.has(a));parsed.differences={extra,missing,bidCount:parsed.bidRows.length,awardCount:parsed.rows.length};if(extra.length||missing.length||parsed.rows.length!==parsed.bidRows.length){const parts=[];if(extra.length)parts.push(`Awards-only: ${extra.join(', ')}`);if(missing.length)parts.push(`Bid-sheet-only: ${missing.join(', ')}`);parsed.warnings.push(`Assignment difference from published bid sheet (${parsed.bidRows.length} bid / ${parsed.rows.length} awards). ${parts.join(' • ')}`)}parsed.valid=parsed.errors.length===0;return parsed;
+}
+async function awardHandlePdfFile(event){
+  const file=event?.target?.files?.[0];if(!file)return;awardClearPreview(false);if(!await rosterCheckAdmin()){awardSetStatus('This account is not authorized to publish Bulletin Awards.','error');return}if(!/\.pdf$/i.test(file.name)){awardSetStatus('Choose the PDF export from Bulletin Awards.','error');return}if(file.size>10*1024*1024){awardSetStatus('That PDF is unexpectedly large. Export Show All again and retry.','error');return}awardSetStatus('Loading the Bulletin Awards parser...');try{const parsed=await awardParsePdf(file);await awardLoadRelatedBid(parsed);awardPreviewState=parsed;awardRenderAdminPreview(parsed)}catch(err){console.error('Awards PDF parse failed:',err);awardPreviewState=null;awardSetStatus(`Could not read this Awards PDF: ${err?.message||err}`,'error')}
+}
+function awardRenderAdminPreview(parsed){
+  const host=document.getElementById('awardAdminPreview'),stats=document.getElementById('awardAdminStats'),validation=document.getElementById('awardAdminValidation'),diff=document.getElementById('awardAdminDiff'),publish=document.getElementById('awardPublishBtn');if(!host||!stats||!validation||!publish)return;const d=parsed.differences;stats.innerHTML=[['Awards',parsed.rows.length],['Bid sheet',d?.bidCount??'—'],['Awards-only',d?.extra?.length??'—'],['Bid-only',d?.missing?.length??'—'],['Pages',parsed.pages],['PDF total',parsed.declaredTotal??'—']].map(([label,value])=>`<div class="roster-admin-stat"><strong>${escapeHTML(String(value))}</strong><span>${escapeHTML(label)}</span></div>`).join('');const details=[`<strong>${parsed.valid?'Validation passed':'Validation failed'}</strong>`,`${escapeHTML(parsed.bulletinId||'Unknown bulletin')} • opens ${escapeHTML(bidSheetDateLabel(parsed.openDate))} • closes ${escapeHTML(bidSheetDateLabel(parsed.closeDate))} • effective ${escapeHTML(bidSheetDateLabel(parsed.effectiveDate))}`,`<strong>Award assignments:</strong> ${parsed.rows.map(r=>escapeHTML(r.assignment)).join(', ')}`];if(parsed.errors.length)details.push(...parsed.errors.map(x=>`Error: ${escapeHTML(x)}`));if(parsed.warnings.length)details.push(...parsed.warnings.map(x=>`Warning: ${escapeHTML(x)}`));validation.className=`roster-admin-validation${parsed.errors.length?' error':parsed.warnings.length?' warn':''}`;validation.innerHTML=details.join('<br>');if(diff){if(d)diff.innerHTML=`<strong>Bid-sheet comparison</strong><br>${d.bidCount} advertised • ${d.awardCount} awarded<br>${d.extra.length?`Awards-only: ${escapeHTML(d.extra.join(', '))}`:'No awards-only assignments.'}<br>${d.missing.length?`Bid-sheet-only: ${escapeHTML(d.missing.join(', '))}`:'No bid-sheet-only assignments.'}`;else diff.textContent='Related bid-sheet comparison is unavailable.'}publish.disabled=!parsed.valid;host.classList.add('show');awardSetStatus(parsed.valid?(parsed.warnings.length?'Awards parsed with a review warning. Review the bid-sheet difference, then publish if correct.':'Awards parsed successfully. Review and publish when ready.'):'Awards parsed, but validation failed. Nothing has been published.',parsed.valid?'success':'error');
+}
+function awardClearPreview(clearInput=true){awardPreviewState=null;document.getElementById('awardAdminPreview')?.classList.remove('show');const b=document.getElementById('awardPublishBtn');if(b)b.disabled=true;if(clearInput){const input=document.getElementById('awardPdfInput');if(input)input.value=''}awardSetStatus('Choose the Bulletin Awards PDF exported with Show All entries.');}
+async function awardLoadAdminLatest(){
+  if(!rosterAdminState.canPublish)return null;const client=getCloudClient(),el=document.getElementById('awardAdminLatest');if(!client)return null;try{const {data,error}=await client.from('award_snapshots').select('id,bulletin_id,effective_date,row_count,uploaded_at,status').eq('status','published').order('effective_date',{ascending:false}).order('uploaded_at',{ascending:false}).limit(1).maybeSingle();if(error)throw error;awardAdminState.latest=data||null;if(el)el.innerHTML=data?`<strong>Latest published awards:</strong> ${escapeHTML(data.bulletin_id)} • ${Number(data.row_count||0)} awards • effective ${escapeHTML(bidSheetDateLabel(data.effective_date))}`:'<strong>No Bulletin Awards have been published yet.</strong> Upload the official results after they are posted.';return data||null}catch(err){console.warn('Latest awards load failed:',err);if(el)el.textContent='Awards database setup is required before publishing.';return null}
+}
+async function awardPublishPreview(){
+  const parsed=awardPreviewState;if(!parsed?.valid||!parsed.relatedBid?.id)return;if(!await rosterCheckAdmin(true)){awardSetStatus('This account is no longer authorized to publish awards.','error');return}const client=getCloudClient(),user=rosterAdminState.user||await cloudCurrentUser(client);if(!client||!user)return;const diff=parsed.differences,warning=diff&&(diff.extra.length||diff.missing.length)?`\n\nReview warning: ${diff.bidCount} advertised / ${diff.awardCount} awarded${diff.extra.length?`\nAwards-only: ${diff.extra.join(', ')}`:''}${diff.missing.length?`\nBid-only: ${diff.missing.join(', ')}`:''}`:'';if(!confirm(`Publish Bulletin Awards ${parsed.bulletinId}?\n\n${parsed.rows.length} private award rows\nEffective ${bidSheetDateLabel(parsed.effectiveDate)}${warning}\n\nEmployee names will NOT be uploaded.`))return;const btn=document.getElementById('awardPublishBtn');if(btn){btn.disabled=true;btn.textContent='Publishing...'}awardSetStatus('Checking for a duplicate Awards PDF...');let snapshotId=null;try{const {data:existing,error:existingError}=await client.from('award_snapshots').select('id,status,bulletin_id').eq('source_sha256',parsed.sha256).maybeSingle();if(existingError)throw existingError;if(existing)throw new Error(`This exact Awards PDF was already uploaded${existing.status==='published'?' and published':''}.`);const metadata={pages:parsed.pages,declared_total:parsed.declaredTotal,bid_sheet_row_count:parsed.differences?.bidCount??null,awards_only_assignments:parsed.differences?.extra||[],bid_only_assignments:parsed.differences?.missing||[]};const {data:snapshot,error:snapshotError}=await client.from('award_snapshots').insert({bid_sheet_snapshot_id:parsed.relatedBid.id,bulletin_id:parsed.bulletinId,bulletin_name:parsed.bulletinName,sequence_number:parsed.sequence,open_date:parsed.openDate,effective_date:parsed.effectiveDate,close_date:parsed.closeDate,posted_date:parsed.postedDate,source_file_name:parsed.file.name,source_sha256:parsed.sha256,row_count:parsed.rows.length,uploaded_by:user.id,status:'draft',parser_version:AWARD_PARSER_VERSION,metadata}).select('id').single();if(snapshotError)throw snapshotError;snapshotId=snapshot.id;const cleanRows=parsed.rows.map(r=>({snapshot_id:snapshotId,assignment:r.assignment,employee_id:r.employee_id,position_code:r.position_code,rank:r.rank,roster:r.roster,first_rank:r.first_rank,first_roster:r.first_roster,source_page:r.source_page,row_order:r.row_order}));const {error:rowsError}=await client.from('award_rows').insert(cleanRows);if(rowsError)throw rowsError;const {error:publishError}=await client.from('award_snapshots').update({status:'published'}).eq('id',snapshotId);if(publishError)throw publishError;awardSetStatus(`Published ${parsed.bulletinId} with ${parsed.rows.length} private award rows. Employee names were not stored.`,'success');awardPreviewState=null;document.getElementById('awardAdminPreview')?.classList.remove('show');const input=document.getElementById('awardPdfInput');if(input)input.value='';awardState.loaded=false;await awardLoadAdminLatest();await awardLoad(true)}catch(err){console.error('Awards publish failed:',err);if(snapshotId){try{await client.from('award_snapshots').delete().eq('id',snapshotId)}catch{}}awardSetStatus(`Awards were not published: ${err?.message||err}`,'error')}finally{if(btn){btn.disabled=!awardPreviewState?.valid;btn.textContent='Publish Awards'}}
+}
+function awardRender(){
+  const host=document.getElementById('dashboardAwardAlert');if(!host)return;const p=awardState.payload;if(!awardState.loaded||awardState.userId!==String(activeWorkspaceUserId||'')||!p?.results_available||!p?.match_found){host.classList.remove('show');host.innerHTML='';return}const assignment=String(p.award?.assignment||''),effective=p.snapshot?.effective_date,confirmed=!!p.confirmed_at,kind=bidSheetKind(assignment),canMyJob=kind!=='extra_list';host.innerHTML=`<div class="award-alert-kicker">Bulletin award • ${escapeHTML(p.snapshot?.bulletin_id||'')}</div><div class="award-alert-title">You may have been awarded Job ${escapeHTML(assignment)}</div><div class="award-alert-meta">Effective ${escapeHTML(bidSheetDateLabel(effective))}</div><div class="award-alert-warning"><strong>Required confirmation:</strong> Engineer Pay Log is an unofficial reference. You are required to call the Crew Dispatcher to confirm this award before relying on it or reporting for the assignment.</div>${confirmed?`<div class="award-alert-confirmed">✓ You recorded that you called and confirmed this award</div>`:''}<div class="award-alert-actions"><button class="btn" type="button" onclick="awardViewAssignment()">View Assignment</button>${confirmed?'':`<button class="btn primary" type="button" onclick="awardConfirmCurrent()">I Called and Confirmed</button>`}${canMyJob?`<button class="btn" type="button" onclick="awardSetAsMyJob()"${confirmed?'':' disabled title="Available after you record confirmation"'}>Set as My Job</button>`:''}</div>${kind==='extra_list'&&confirmed?'<div class="award-alert-meta">Extra List assignments do not use My Job.</div>':''}`;host.classList.add('show');
+}
+async function awardLoad(force=false){
+  const client=getCloudClient();if(!client){awardState={loaded:true,loading:false,userId:String(activeWorkspaceUserId||''),payload:null,error:'Cloud unavailable'};awardRender();return null}const user=await cloudCurrentUser(client);if(!user){awardState={loaded:true,loading:false,userId:'',payload:null,error:null};awardRender();return null}const uid=String(user.id||'');if(!force&&awardState.loaded&&awardState.userId===uid){awardRender();return awardState.payload}if(!force&&awardState.loading&&awardState.userId===uid&&awardLoadPromise)return awardLoadPromise;awardState={loaded:false,loading:true,userId:uid,payload:null,error:null};awardLoadPromise=(async()=>{try{const {data,error}=await client.rpc('award_current_match');if(error)throw error;awardState={loaded:true,loading:false,userId:uid,payload:data||null,error:null}}catch(err){console.warn('Private award match load failed:',err);awardState={loaded:true,loading:false,userId:uid,payload:null,error:err?.message||String(err)}}finally{awardLoadPromise=null;awardRender()}return awardState.payload})();return awardLoadPromise;
+}
+async function awardConfirmCurrent(){
+  const p=awardState.payload,assignment=String(p?.award?.assignment||'');if(!p?.match_found||!assignment)return;if(!confirm(`Record that you personally called the Crew Dispatcher and confirmed Job ${assignment}?\n\nOnly tap OK if you actually made the required confirmation call.`))return;const client=getCloudClient();if(!client)return;try{const {data,error}=await client.rpc('award_confirm_current');if(error)throw error;awardState.payload={...p,confirmed_at:data?.confirmed_at||new Date().toISOString()};awardRender()}catch(err){alert(`Confirmation could not be saved: ${err?.message||err}`)}
+}
+async function awardViewAssignment(){const p=awardState.payload,assignment=String(p?.award?.assignment||'');if(!assignment)return;await bidSheetLoad(false);bidSheetOpenDetails(assignment)}
+function awardCrewBookWeekDates(effectiveDate){const monday=new Date(`${bidSheetWeekStart(effectiveDate)}T12:00:00`);return MY_JOB_RELIEF_DAYS.map((day,i)=>{const d=new Date(monday);d.setDate(monday.getDate()+i);return {day,date:isoLocal(d)}})}
+function awardBuildMyJob(assignment,effectiveDate){
+  const key=normalizeCrewBookKey(assignment),kind=bidSheetKind(key);if(kind==='extra_list')throw new Error('Extra List assignments do not use My Job.');const relief=jobCompareReliefCrewDefinition(key,effectiveDate),week=awardCrewBookWeekDates(effectiveDate);if(relief){const reliefDays={};for(const {day,date} of week){const resolved=jobCompareResolveForDay(key,date),x=resolved?.schedule;if(!x){if(resolved?.hit?.reliefCrew){reliefDays[day]={reliefDay:true,assignment:'',location:'',start:'',end:'',paysMeal:false};continue}throw new Error(`Crew Book details for ${day} could not be resolved.`)}const covered=String(resolved?.hit?.coveredKey||'').trim(),location=String(x.location||resolved?.hit?.job?.terminal||'').trim();if(!covered||!location||!x.start||!x.end)throw new Error(`Crew Book details for ${day} are incomplete.`);reliefDays[day]={reliefDay:false,assignment:covered,location,start:x.start,end:x.end,paysMeal:!!x.paysMeal}}return {enabled:true,type:'relief',reliefCrewNumber:key,reliefDays}}
+  const regularDays={};let location='';for(const {day,date} of week){const resolved=jobCompareResolveForDay(key,date),x=resolved?.schedule;if(!x){if(resolved?.hit){regularDays[day]={reliefDay:true,location:'',start:'',end:'',paysMeal:false};continue}throw new Error(`Crew Book details for ${day} could not be resolved.`)}const loc=String(x.location||resolved?.hit?.job?.terminal||'').trim();if(!loc||!x.start||!x.end)throw new Error(`Crew Book details for ${day} are incomplete.`);if(!location)location=loc;regularDays[day]={reliefDay:false,location:loc,start:x.start,end:x.end,paysMeal:!!x.paysMeal}}if(!location)throw new Error('No active Crew Book days were found for this assignment.');return {enabled:true,type:'regular',assignment:key,location,regularDays};
+}
+async function awardSetAsMyJob(){
+  const p=awardState.payload;if(!p?.match_found||!p.confirmed_at){alert('Record that you called and confirmed the award first.');return}const assignment=String(p.award?.assignment||''),effective=String(p.snapshot?.effective_date||'');let value;try{value=awardBuildMyJob(assignment,effective)}catch(err){alert(`My Job could not be filled automatically: ${err?.message||err}`);return}if(!confirm(`Set Job ${assignment} as My Job using the Crew Book schedule effective ${bidSheetDateLabel(effective)}?\n\nThis replaces your current My Job quick-entry setup.`))return;localStorage.setItem(MY_JOB_KEY,JSON.stringify(value));const box=document.getElementById('myJobEnabled');if(box)box.checked=true;loadMyJobSettings();renderMyJobUI();renderMyJobWeekPreview();await cloudMirrorMyJob();alert(`Job ${assignment} is now saved as My Job.`);
+}
+// ---- End Piece 4 private Bulletin Awards ----
 
 // ---- Maintainer-only Trim Assistant developer preview ----
 const TRIM_CREW_BOOK_DATE=CREW_BOOK_REV7_EFFECTIVE;
@@ -9470,7 +9567,7 @@ async function trimDevLoad(showStatus=true){
     if(!rows?.length){if(summary){summary.classList.add('show');summary.textContent='No published roster rows are available yet.'}filters?.classList.remove('show');results?.classList.remove('show');return}
     const rankInfo=trimDevEffectiveRank(rows);trimDevState.rows=rows;trimDevState.rank=rankInfo.rank;trimDevState.source='override';trimDevState.sourceGeneratedAt=rosterAdminState.latest?.source_generated_at||null;trimDevState.uploadedAt=rosterAdminState.latest?.uploaded_at||null;trimDevState.rowCount=Number(rosterAdminState.latest?.row_count||rows.length);
     const below=rows.filter(r=>Number(r.rank)>rankInfo.rank&&(r.assignment_type==='regular'||r.assignment_type==='extra_list')),regular=below.filter(r=>r.assignment_type==='regular').length,extra=below.filter(r=>r.assignment_type==='extra_list').length;
-    if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Testing as roster rank ${rankInfo.rank}</strong> (local override)<br>${below.length} currently ownable assignments below this rank • ${regular} numbered • ${extra} Extra List<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(trimDevState.sourceGeneratedAt||trimDevState.uploadedAt))} • Crew Book: GO 202 Rev. 7 + Paper Rev. 8</span>${trimRosterFreshnessHTML(trimDevState.sourceGeneratedAt||trimDevState.uploadedAt)}`}
+    if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Testing as roster rank ${rankInfo.rank}</strong> (local override)<br>${below.length} currently ownable assignments below this rank • ${regular} passenger • ${extra} Extra List<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(trimDevState.sourceGeneratedAt||trimDevState.uploadedAt))} • Crew Book: GO 202 Rev. 7 + Paper Rev. 8</span>${trimRosterFreshnessHTML(trimDevState.sourceGeneratedAt||trimDevState.uploadedAt)}`}
     if(note)note.textContent=rankInfo.profileRank?`Local override ${rankInfo.rank} is active. Profile would otherwise match rank ${rankInfo.profileRank}.`:`Local override ${rankInfo.rank} is active. It does not modify this account's profile.`;
     trimDevTerminalOptions(below);filters?.classList.add('show');results?.classList.add('show');trimDevApplyFilters();return;
   }
@@ -9481,7 +9578,7 @@ async function trimDevLoad(showStatus=true){
   if(!payload.match_found){trimDevState.rows=[];trimDevState.rank=null;trimDevState.source='profile';if(summary){summary.classList.add('show');const why=payload.reason==='missing_employee_number'?'Your profile does not have an IBM / employee number saved.':'Your saved IBM / employee number was not found in the latest roster.';summary.innerHTML=`<strong>We could not match you to the current roster.</strong><br>${escapeHTML(why)} Check <strong>Settings → Account → Edit Profile</strong>, then try again.<br><span style="font-size:9px">Latest roster: ${escapeHTML(rosterDateDisplay(payload.source_generated_at||payload.uploaded_at))}</span>${trimRosterFreshnessHTML(payload.source_generated_at||payload.uploaded_at)}`}filters?.classList.remove('show');results?.classList.remove('show');return}
   trimDevState.rows=Array.isArray(payload.jobs)?payload.jobs:[];trimDevState.rank=Number(payload.own_rank||0);trimDevState.source='profile';
   const regular=Number(payload.regular_count||0),extra=Number(payload.extra_list_count||0),below=regular+extra;
-  if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Roster rank ${trimDevState.rank}</strong><br>${below} currently ownable assignments below you • ${regular} numbered • ${extra} Extra List<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(payload.source_generated_at||payload.uploaded_at))} • Crew Book: GO 202 Rev. 7 + Paper Rev. 8</span>${trimRosterFreshnessHTML(payload.source_generated_at||payload.uploaded_at)}`}
+  if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Roster rank ${trimDevState.rank}</strong><br>${below} currently ownable assignments below you • ${regular} passenger • ${extra} Extra List<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(payload.source_generated_at||payload.uploaded_at))} • Crew Book: GO 202 Rev. 7 + Paper Rev. 8</span>${trimRosterFreshnessHTML(payload.source_generated_at||payload.uploaded_at)}`}
   trimDevTerminalOptions(trimDevState.rows);filters?.classList.add('show');results?.classList.add('show');trimDevApplyFilters();
 }
 function trimDevCheckedValues(containerId){return [...document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)].map(x=>x.value)}
@@ -9588,7 +9685,7 @@ function trimDevApplyFilters(){
     let detail='';
     if(reliefInfo){const coverage=trimDevReliefCoverageText(reliefInfo);if(coverage)detail=`<div class="trim-result-detail"><strong>Covers:</strong> ${escapeHTML(coverage)}</div>`}
     else if(!extra&&job){detail=trimDevRegularScheduleCardsHTML(r);if(!detail&&job.type==='extraCrewOnly'&&job.extra)detail=`<div class="trim-result-schedules">${trimDevScheduleCard('Published schedule',job.extra)}</div>`}
-    const cardLabel=extra?'Guaranteed Extra List':reliefInfo?'Relief Crew':'Numbered Crew Book assignment';
+    const cardLabel=extra?'Guaranteed Extra List':reliefInfo?'Relief Crew':'Passenger Crew Book assignment';
     const chipHTML=chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}${c.startsWith('Weekly OT:')?' trim-ot':''}">${escapeHTML(c)}</span>`).join('');
     if(extra)return `<div class="trim-result trim-static"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chipHTML}</div></div>`;
     const hint=reliefInfo?'Tap to view every covered job assignment':'Tap to view the official Crew Book assignment';
@@ -9605,7 +9702,7 @@ function trimDevClearFilters(){
 // ---- End developer roster PDF importer ----
 
 function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();trimDevUpdateModeAvailability();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI()}
-function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){trimDevUpdateModeAvailability();void renderDashboardCommunityNotes();setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='trim')void trimDevLoad(false);if(v==='bid')void bidSheetLoad(false);if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility();void rosterCheckAdmin()}renderMyJobUI()}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){trimDevUpdateModeAvailability();void renderDashboardCommunityNotes();void awardLoad(false);setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='trim')void trimDevLoad(false);if(v==='bid')void bidSheetLoad(false);if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility();void rosterCheckAdmin()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
   return shifts.filter(s=>[
@@ -9831,7 +9928,7 @@ void initCloudBridgeTest();
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260909-personal-bid-builder').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260909-piece4-awards').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
