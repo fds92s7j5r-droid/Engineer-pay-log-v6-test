@@ -1675,7 +1675,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <div class="field"><label>Search</label><input id="bidSheetSearch" type="search" placeholder="Job or terminal" oninput="bidSheetApplyFilters()"></div>
           <div class="field"><label>Terminal</label><select id="bidSheetTerminal" onchange="bidSheetApplyFilters()"><option value="">All terminals</option></select></div>
         </div>
-        <div class="bid-sheet-source">Crew Book details are shown for the bid sheet's effective date. Temporary programs, special events, track work, and day-to-day instructions may not be reflected.</div>
+        <div class="bid-sheet-source">Crew Book details are shown for the bid sheet's effective date. Weekly OT excludes paid meal-period allowances; paid meals are shown separately with an estimated value at your pay rate. Temporary programs, special events, track work, and day-to-day instructions may not be reflected.</div>
       </div>
       <div class="bid-sheet-results" id="bidSheetResults">
         <div class="trim-result-toolbar"><span id="bidSheetResultCount"></span><button class="btn" type="button" onclick="bidSheetClearFilters()">Clear Filters</button></div>
@@ -1726,7 +1726,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <label class="trim-check"><input type="checkbox" value="12:59 PM" onchange="trimDevApplyFilters()"> 12:59 PM</label>
         </div>
         <div class="trim-dev-filter-row"><div class="field"><label>Terminal</label><select id="trimTerminal" onchange="trimDevApplyFilters()"><option value="">All terminals</option></select></div></div>
-        <div class="trim-dev-rank-note">IPMA selections filter only Extra List results. Passenger and Yard / other assignments remain visible when their assignment-type filters are selected.<br>Schedule previews resolve each worked day individually and group matching days. Weekly OT totals exclude paid meal-period allowances.</div>
+        <div class="trim-dev-rank-note">IPMA selections filter only Extra List results. Passenger and Yard / other assignments remain visible when their assignment-type filters are selected.<br>Schedule previews resolve each worked day individually and group matching days. Weekly OT excludes paid meal-period allowances; paid meals are shown separately with an estimated value at your pay rate.</div>
       </div>
       <div class="trim-dev-results" id="trimDevResults">
         <div class="trim-result-toolbar"><span id="trimDevResultCount"></span><button class="btn" type="button" onclick="trimDevClearFilters()">Clear Filters</button></div>
@@ -9727,7 +9727,7 @@ function bidSheetApplyFilters(){
   const effective=bidSheetState.snapshot?.effective_date||isoLocal(new Date());
   list.innerHTML=shown.map(r=>{
     const key=normalizeCrewBookKey(r.assignment),kind=bidSheetKind(r.assignment),extraJob=kind==='extra_list',relief=extraJob?null:jobCompareReliefCrewDefinition(key,effective),hit=extraJob?null:crewBookLookupJobV8(key,effective),known=!!relief||!!hit||extraJob,stats=extraJob?null:bidSheetWeekStats(r,key,effective);
-    const chips=[`Terminal: ${r.terminal||'—'}`];if(extraJob){chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);const ipma=trimDevIpma({assignment:r.assignment,assignment_type:'extra_list'});if(ipma)chips.push(`IPMA: ${ipma}`)}else{chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);if(stats)chips.push(`Weekly OT: ${fmtMinutes(stats.overtime)}`);if(stats)chips.push(`Paid meals: ${stats.meals}`)}
+    const chips=[`Terminal: ${r.terminal||'—'}`];if(extraJob){chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);const ipma=trimDevIpma({assignment:r.assignment,assignment_type:'extra_list'});if(ipma)chips.push(`IPMA: ${ipma}`)}else{chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);if(stats)chips.push(`Weekly OT: ${fmtMinutes(stats.overtime)}`);if(stats){const pct=payScaleForDate(effective),mealValue=pct?otPay(stats.meals*20,pct):null;chips.push(`Paid meals: ${stats.meals}${mealValue!=null?` • est. ${money(mealValue)}`:''}`)}}
     const chipHTML=chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}${c.startsWith('Weekly OT:')?' trim-ot':''}">${escapeHTML(c)}</span>`).join('');let detail='';
     if(relief){const coverage=trimDevReliefCoverageText(relief);if(coverage)detail=`<div class="trim-result-detail"><strong>Covers:</strong> ${escapeHTML(coverage)}</div>`;detail+=bidSheetScheduleHTML(stats)}else if(stats)detail=bidSheetScheduleHTML(stats);else if(!known)detail='<div class="bid-sheet-unmatched">This assignment is listed on the official bid sheet, but structured Crew Book details are not currently available in Engineer Pay Log.</div>';
     const typeLabel=extraJob?'Guaranteed Extra List':relief?'Relief Crew':kind==='numbered'?'Passenger Crew Book assignment':'Yard / other assignment',clickable=!extraJob&&known;
@@ -9987,6 +9987,24 @@ function trimDevWeeklyOtLabel(row){
   if(row?.assignment_type==='extra_list')return 'Weekly OT: Variable';
   const mins=trimDevWeeklyOtMinutes(row);return mins==null?'Weekly OT: —':`Weekly OT: ${fmtMinutes(mins)}`;
 }
+function trimDevWeeklyMealCount(row){
+  if(row?.assignment_type==='extra_list')return null;
+  const key=normalizeCrewBookKey(row?.assignment);if(!key)return null;
+  const reliefInfo=jobCompareReliefCrewDefinition(key,TRIM_CREW_BOOK_DATE),restDays=new Set(trimDevRestDays(row));
+  let meals=0,found=false;const monday=new Date(`${TRIM_STANDARD_WEEK_START}T12:00:00`);
+  for(let i=0;i<7;i++){
+    if(!reliefInfo&&restDays.has(i+1))continue;
+    const d=new Date(monday);d.setDate(monday.getDate()+i);const resolved=jobCompareResolveForDay(key,isoLocal(d)),schedule=resolved?.schedule;
+    if(!schedule?.start||!schedule?.end)continue;
+    found=true;if(schedule.paysMeal)meals++;
+  }
+  return found?meals:null;
+}
+function trimDevWeeklyMealLabel(row){
+  const meals=trimDevWeeklyMealCount(row);if(meals==null)return 'Paid meals: —';
+  const pct=payScaleForDate(TRIM_CREW_BOOK_DATE),value=pct?otPay(meals*20,pct):null;
+  return `Paid meals: ${meals}${value!=null?` • est. ${money(value)}`:''}`;
+}
 function trimDevReliefCoveredJobs(relief){
   if(!relief?.map)return [];const grouped=new Map();
   CREW_BOOK_DAYS.forEach((day,i)=>{const key=normalizeCrewBookKey(relief.map?.[day]);if(!key)return;if(!grouped.has(key))grouped.set(key,[]);grouped.get(key).push(TRIM_DAY_NAMES[i+1]||jobCompareDayLabel(day))});
@@ -10028,7 +10046,7 @@ function trimDevApplyFilters(){
   if(!list)return;if(!rows.length){list.innerHTML='<div class="trim-dev-empty">No ownable assignments match these filters.</div>';return}
   list.innerHTML=rows.map(r=>{
     const extra=r.assignment_type==='extra_list',other=r.assignment_type==='other',ipma=trimDevIpma(r),meta=extra?null:trimDevRegularCrewBookMeta(r),reliefInfo=meta?.relief||null,job=meta?.job||null;
-    const chips=[`Relief: ${trimDevRestLabel(r)}`];if(!extra)chips.push(trimDevWeeklyOtLabel(r));if(!extra&&r.terminal)chips.push(`Terminal: ${r.terminal}`);if(extra&&ipma)chips.push(`IPMA: ${ipma}`);
+    const chips=[`Relief: ${trimDevRestLabel(r)}`];if(!extra){chips.push(trimDevWeeklyOtLabel(r));chips.push(trimDevWeeklyMealLabel(r))}if(!extra&&r.terminal)chips.push(`Terminal: ${r.terminal}`);if(extra&&ipma)chips.push(`IPMA: ${ipma}`);
     let detail='';
     if(other&&reliefInfo?.type==='yard')detail=trimDevYardReliefScheduleCardsHTML(r,reliefInfo);
     else if(reliefInfo){const coverage=trimDevReliefCoverageText(reliefInfo);if(coverage)detail=`<div class="trim-result-detail"><strong>Covers:</strong> ${escapeHTML(coverage)}</div>`}
