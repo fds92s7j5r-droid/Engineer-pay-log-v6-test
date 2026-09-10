@@ -8440,6 +8440,11 @@ async function cloudTombstoneShift(shift){
     setCloudTestStatus(`Shift deleted locally. Cloud tombstone unavailable: ${err?.message||err}`);
   }
 }
+function accountStartupTimeout(promise,ms=8000){
+  let timer;
+  const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Account session check timed out')),Math.max(1000,Number(ms)||8000))});
+  return Promise.race([Promise.resolve(promise),timeout]).finally(()=>clearTimeout(timer));
+}
 async function initCloudBridgeTest(){
   const gate=document.getElementById('accountGate');if(gate)gate.style.display='flex';
   const checking=document.getElementById('accountGateChecking');if(checking)checking.style.display='block';
@@ -8452,7 +8457,25 @@ async function initCloudBridgeTest(){
     return;
   }
   let user=null;
-  try{const {data:{session}}=await client.auth.getSession();user=session?.user||null}catch{}
+  try{
+    const result=await accountStartupTimeout(client.auth.getSession(),8000);
+    user=result?.data?.session?.user||null;
+  }catch(err){
+    console.warn('Account startup session check did not finish:',err);
+    const lastEmail=localStorage.getItem(ACCOUNT_LAST_EMAIL_KEY)||'';
+    const workspaceOwner=localStorage.getItem(ACCOUNT_WORKSPACE_OWNER_KEY)||'';
+    if(lastEmail&&workspaceOwner){
+      activeWorkspaceUserId=workspaceOwner;
+      accountUpdateIdentity({email:lastEmail});
+      accountHideGate();
+      setCloudTestStatus('Account check is taking longer than expected. Your saved local workspace is available; cloud sync will retry automatically.');
+      setTimeout(()=>{void cloudRunAutomaticAccountSyncWithRetry('startup-retry')},3000);
+    }else{
+      accountShowGate('Account check could not finish. Please sign in again.');
+      setCloudTestStatus('Account session check could not finish. Sign in again to continue.');
+    }
+    return;
+  }
   if(accountRecoveryIntent){
     if(user){
       accountUpdateIdentity(user);await accountLoadProfile(user,client);
@@ -10285,17 +10308,25 @@ function exportJSON(){const exported=new Date().toISOString();download('Engineer
 function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const data=JSON.parse(r.result);if(!data||!Array.isArray(data.shifts))throw 0;previewRestore(data)}catch{alert('That backup file could not be read or does not contain a valid Engineer Pay Log backup.')}};r.readAsText(f);e.target.value=''}
 function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
 function clearAll(){if(confirm('Delete every saved shift from this browser?')){shifts=[];persist();renderAll()}}
-syncCrewBookAssistPreference();
-ensureMealPeriodUI();
-renderAll();
-initTerminalSelect();
-void initCloudBridgeTest();
+try{
+  syncCrewBookAssistPreference();
+  ensureMealPeriodUI();
+  renderAll();
+  initTerminalSelect();
+}catch(err){
+  console.error('Initial Engineer Pay Log render failed:',err);
+}
+void initCloudBridgeTest().catch(err=>{
+  console.error('Account startup failed:',err);
+  accountShowGate('Account check could not finish. Please sign in again.');
+  setCloudTestStatus(`Account startup failed: ${err?.message||err}`);
+});
 </script>
 
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260909-piece5-lifecycle').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260909-trim-bid-meals-startupfix-r2').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
