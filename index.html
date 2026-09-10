@@ -16,7 +16,7 @@
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.4/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 
   <style>
@@ -1073,8 +1073,6 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .account-login-icon{display:block;width:68px;height:68px;margin:0 auto 12px;border-radius:16px}
     .account-login-brand{text-align:center;margin-bottom:22px}.account-login-brand h1{font-size:24px;margin:0;color:var(--text)}.account-login-brand p{margin:5px 0 0;color:var(--muted);font-size:12px}
     .account-gate-checking{text-align:center;color:var(--muted);padding:18px 0}
-    .account-startup-debug{margin:10px auto 0;max-width:460px;text-align:left;font:11px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;color:#4c6178;background:#f4f7fb;border:1px solid #d7e1ed;border-radius:10px;padding:9px 10px;white-space:pre-wrap;word-break:break-word}
-    html[data-theme="dark"] .account-startup-debug{background:#101d2d;border-color:#315f91;color:#b9d8f7}
     .account-screen-title{text-align:center;margin:0 0 4px;font-size:19px}.account-screen-subtitle{text-align:center;margin:0 0 18px;color:var(--muted);font-size:11px;line-height:1.45}
     .account-login-primary,.account-login-secondary{width:100%;justify-content:center;margin-top:12px}.account-login-secondary{margin-top:8px}
     .account-text-link{display:block;width:100%;border:0;background:transparent;color:var(--accent);font:inherit;font-size:12px;font-weight:800;text-align:center;padding:10px 4px;cursor:pointer}
@@ -1397,46 +1395,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <h1>Engineer Pay Log</h1>
       <p>Digital time book for LIRR Engineers</p>
     </div>
-    <div id="accountGateChecking" class="account-gate-checking">Checking your account…
-      <div id="accountStartupDebug" class="account-startup-debug">BOOT DIAGNOSTIC R7 · static HTML loaded</div>
-    </div>
-    <script>
-      (function(){
-        var lines=[];
-        var start=(window.performance&&performance.now)?performance.now():Date.now();
-        function stamp(){var n=(window.performance&&performance.now)?performance.now():Date.now();return '+'+Math.max(0,Math.round(n-start))+'ms';}
-        function draw(){
-          var el=document.getElementById('accountStartupDebug');
-          if(el)el.textContent='BOOT DIAGNOSTIC R7\n'+lines.slice(-12).join('\n');
-        }
-        function log(msg){lines.push(stamp()+' '+String(msg));draw();try{console.log('[EPL boot R7]',msg)}catch(e){}}
-        window.__eplBootDiagLog=log;
-        log('early inline script reached');
-        try{
-          localStorage.setItem('__epl_r7_ls','1');
-          var got=localStorage.getItem('__epl_r7_ls');
-          localStorage.removeItem('__epl_r7_ls');
-          log('localStorage '+(got==='1'?'OK':'unexpected'));
-        }catch(e){log('localStorage ERROR '+(e&&e.name?e.name:String(e)));}
-        try{
-          sessionStorage.setItem('__epl_r7_ss','1');
-          var got2=sessionStorage.getItem('__epl_r7_ss');
-          sessionStorage.removeItem('__epl_r7_ss');
-          log('sessionStorage '+(got2==='1'?'OK':'unexpected'));
-        }catch(e){log('sessionStorage ERROR '+(e&&e.name?e.name:String(e)));}
-        window.addEventListener('error',function(ev){
-          var msg=ev&&ev.message?ev.message:'unknown error';
-          var loc=ev&&ev.filename?(' @ '+ev.filename.split('/').pop()+':'+(ev.lineno||'?')+':'+(ev.colno||'?')):'';
-          log('WINDOW ERROR '+msg+loc);
-        },true);
-        window.addEventListener('unhandledrejection',function(ev){
-          var r=ev&&ev.reason;log('UNHANDLED '+(r&&r.message?r.message:String(r||'rejection')));
-        });
-        setTimeout(function(){log('heartbeat 0.5s supabase='+(!!window.supabase));},500);
-        setTimeout(function(){log('heartbeat 2s');},2000);
-        setTimeout(function(){log('heartbeat 8s');},8000);
-      })();
-    </script>
+    <div id="accountGateChecking" class="account-gate-checking">Checking your account…</div>
     <div id="accountGateForm" style="display:none">
       <div id="accountOnboardingPanel" class="account-onboarding" style="display:none">
         <div class="account-onboarding-hero">
@@ -3231,6 +3190,18 @@ function cleanStructuredStatus(notes,shiftType){
   if(!shiftType)return notes||'';
   return (notes||'').replace(/^Status:\s*(Own|Pick|Hung|Extra Extra|Hold Down|XX)(?:\s*\([^\n]*\))?\s*\n?/im,'').trim();
 }
+const TIME_SLIP_CLAIM_TYPES=[
+  {key:'03',code:'03',card:'03 · Meal',label:'03 · Meal period claim',title:'Meal period claim'},
+  {key:'04',code:'04',card:'04 · Outside Assignment',label:'04 · Operation of trains outside of my normal assignment',title:'Operation of trains outside of my normal assignment'},
+  {key:'05',code:'05',card:'05 · OT',label:'05 · Overtime above Crew Book earnings',title:'Overtime above the crew assignment book earnings'},
+  {key:'08',code:'08',card:'08 · Runaround',label:'08 · Runaround claim',title:'Runaround claim'},
+  {key:'09',code:'09',card:'09 · 2 Classes',label:'09 · Two classes of service',title:'Used in two (2) classes of service'},
+  {key:'11-commingle',code:'11',card:'11 · Commingle',label:'11 · Commingle',title:'Commingle'},
+  {key:'11-misc',code:'11',card:'11 · Misc.',label:'11 · Miscellaneous claim',title:'Miscellaneous claim'},
+  {key:'13',code:'13',card:'13 · Night Diff',label:'13 · Night differential above Crew Book earnings',title:'Night differential above the crew assignment book earnings'}
+];
+const TIME_SLIP_CLAIM_TYPE_KEYS=new Set(TIME_SLIP_CLAIM_TYPES.map(x=>x.key));
+
 function upgradeShift(s){
   const extras=s.extras||'', claims=s.claims||'';
   if(s.shiftType===undefined)s.shiftType=inferShiftType(s);
@@ -5489,17 +5460,6 @@ function toggleOTCompletion(){
   if(fields)fields.style.display=on?'block':'none';
   if(!on){const t=document.getElementById('otCompletionTime');if(t)t.value=''}
 }
-const TIME_SLIP_CLAIM_TYPES=[
-  {key:'03',code:'03',card:'03 · Meal',label:'03 · Meal period claim',title:'Meal period claim'},
-  {key:'04',code:'04',card:'04 · Outside Assignment',label:'04 · Operation of trains outside of my normal assignment',title:'Operation of trains outside of my normal assignment'},
-  {key:'05',code:'05',card:'05 · OT',label:'05 · Overtime above Crew Book earnings',title:'Overtime above the crew assignment book earnings'},
-  {key:'08',code:'08',card:'08 · Runaround',label:'08 · Runaround claim',title:'Runaround claim'},
-  {key:'09',code:'09',card:'09 · 2 Classes',label:'09 · Two classes of service',title:'Used in two (2) classes of service'},
-  {key:'11-commingle',code:'11',card:'11 · Commingle',label:'11 · Commingle',title:'Commingle'},
-  {key:'11-misc',code:'11',card:'11 · Misc.',label:'11 · Miscellaneous claim',title:'Miscellaneous claim'},
-  {key:'13',code:'13',card:'13 · Night Diff',label:'13 · Night differential above Crew Book earnings',title:'Night differential above the crew assignment book earnings'}
-];
-const TIME_SLIP_CLAIM_TYPE_KEYS=new Set(TIME_SLIP_CLAIM_TYPES.map(x=>x.key));
 function normalizeTimeSlipClaimTypes(types){
   const out=[];
   for(const raw of Array.isArray(types)?types:[]){
@@ -7186,65 +7146,23 @@ function setCloudTestStatus(message){
   accountUpdateSyncSummary(message);
 }
 function cloudConfigFromUI(){return {url:CLOUD_PROJECT_URL,key:CLOUD_PUBLISHABLE_KEY}}
-const ACCOUNT_AUTH_DIAG_STARTED=(typeof performance!=='undefined'&&performance.now)?performance.now():Date.now();
-let accountAuthDiagLines=[];
-function accountAuthDiag(message){
-  try{if(typeof window.__eplBootDiagLog==='function')window.__eplBootDiagLog('MAIN '+String(message||''))}catch{}
-  const now=(typeof performance!=='undefined'&&performance.now)?performance.now():Date.now();
-  const elapsed=Math.max(0,Math.round(now-ACCOUNT_AUTH_DIAG_STARTED));
-  const line=`+${elapsed}ms ${String(message||'')}`;
-  accountAuthDiagLines.push(line);if(accountAuthDiagLines.length>14)accountAuthDiagLines=accountAuthDiagLines.slice(-14);
-  const el=document.getElementById('accountStartupDebug');if(el)el.textContent=`AUTH DIAGNOSTIC R6\n${accountAuthDiagLines.join('\n')}`;
-  try{console.log('[EPL auth diag]',line)}catch{}
-}
-function accountAuthDiagStorage(){
-  let ls='error',ss='error',last='no',owner='no';
-  try{localStorage.setItem('__epl_diag_ls','1');localStorage.removeItem('__epl_diag_ls');ls='ok';last=localStorage.getItem(ACCOUNT_LAST_EMAIL_KEY)?'yes':'no';owner=localStorage.getItem(ACCOUNT_WORKSPACE_OWNER_KEY)?'yes':'no'}catch(e){ls=`ERR ${e?.name||'storage'}`}
-  try{sessionStorage.setItem('__epl_diag_ss','1');sessionStorage.removeItem('__epl_diag_ss');ss='ok'}catch(e){ss=`ERR ${e?.name||'storage'}`}
-  accountAuthDiag(`storage local=${ls} session=${ss} lastEmail=${last} workspace=${owner}`);
-}
-accountAuthDiag('main script reached');
-setTimeout(()=>accountAuthDiag('timer heartbeat 1s'),1000);
-setTimeout(()=>accountAuthDiag('timer heartbeat 3s'),3000);
-setTimeout(()=>accountAuthDiag('timer heartbeat 9s'),9000);
-try{
-  if(navigator?.locks?.query){navigator.locks.query().then(v=>accountAuthDiag(`webLocks held=${v?.held?.length||0} pending=${v?.pending?.length||0}`)).catch(e=>accountAuthDiag(`webLocks query ERR ${e?.name||e}`))}
-  else accountAuthDiag('webLocks API unavailable');
-}catch(e){accountAuthDiag(`webLocks probe ERR ${e?.name||e}`)}
-function accountBindRecoveryListener(client=cloudClient){
-  if(!client||accountRecoveryListenerBound)return;
-  accountRecoveryListenerBound=true;
-  client.auth.onAuthStateChange((event,session)=>{
-    if(event==='PASSWORD_RECOVERY'){
-      accountRecoveryIntent=true;
-      setTimeout(()=>{accountShowPasswordUpdate();setCloudTestStatus('Password reset link verified. Choose a new password to continue.')},0);
-    }
-  });
-}
 function getCloudClient(){
-  if(cloudClient){accountAuthDiag('getCloudClient: reuse existing client');return cloudClient;}
-  accountAuthDiag(`getCloudClient: supabase=${!!window.supabase}`);
+  if(cloudClient)return cloudClient;
   if(!(window.supabase&&typeof window.supabase.createClient==='function')){
-    setCloudTestStatus('Supabase library did not load. Check your connection and refresh.');
+    setCloudTestStatus('Supabase library did not load. Check the internet connection and refresh.');
     return null;
   }
   try{
-    // Do not subscribe to auth-state events while the Supabase client is still
-    // restoring its persisted session. Recent auth-js builds can deadlock the
-    // initialization path when a listener and session refresh race on reload.
-    const authStorage={
-      getItem:(key)=>{try{return window.sessionStorage.getItem(key)}catch{return null}},
-      setItem:(key,value)=>{try{window.sessionStorage.setItem(key,value)}catch{}},
-      removeItem:(key)=>{try{window.sessionStorage.removeItem(key)}catch{}}
-    };
-    // TEST BUILD: keep Supabase auth session in per-tab sessionStorage instead of
-    // localStorage. This is specifically to isolate iOS Safari Private Browsing
-    // startup hangs while preserving normal account data/workspace storage.
-    accountAuthDiag('createClient: before');
-    cloudClient=window.supabase.createClient(CLOUD_PROJECT_URL,CLOUD_PUBLISHABLE_KEY,{
-      auth:{storage:authStorage,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
-    });
-    accountAuthDiag('createClient: returned');
+    cloudClient=window.supabase.createClient(CLOUD_PROJECT_URL,CLOUD_PUBLISHABLE_KEY);
+    if(!accountRecoveryListenerBound){
+      accountRecoveryListenerBound=true;
+      cloudClient.auth.onAuthStateChange((event,session)=>{
+        if(event==='PASSWORD_RECOVERY'){
+          accountRecoveryIntent=true;
+          setTimeout(()=>{accountShowPasswordUpdate();setCloudTestStatus('Password reset link verified. Choose a new password to continue.')},0);
+        }
+      });
+    }
     return cloudClient;
   }
   catch(err){console.warn('Cloud client initialization failed:',err);setCloudTestStatus(`Configuration error: ${err?.message||err}`);return null}
@@ -8528,14 +8446,10 @@ async function cloudTombstoneShift(shift){
     setCloudTestStatus(`Shift deleted locally. Cloud tombstone unavailable: ${err?.message||err}`);
   }
 }
-function accountStartupTimeout(work,ms=8000){
+function accountStartupTimeout(promise,ms=8000){
   let timer;
-  // Start the timeout before invoking auth work. On some iPhone Safari refreshes,
-  // Supabase session restoration can wait on the browser auth lock; the local app
-  // must never remain trapped behind the account gate while that resolves.
   const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Account session check timed out')),Math.max(1000,Number(ms)||8000))});
-  const task=Promise.resolve().then(()=>typeof work==='function'?work():work);
-  return Promise.race([task,timeout]).finally(()=>clearTimeout(timer));
+  return Promise.race([Promise.resolve(promise),timeout]).finally(()=>clearTimeout(timer));
 }
 function accountPostStartupLoads(force=true){
   accountStartupResolved=true;
@@ -8558,52 +8472,29 @@ async function accountLoadProfileForStartup(user,client){
   }
 }
 async function initCloudBridgeTest(){
-  accountAuthDiag('initCloudBridgeTest: entered');
-  accountAuthDiagStorage();
   const gate=document.getElementById('accountGate');if(gate)gate.style.display='flex';
   const checking=document.getElementById('accountGateChecking');if(checking)checking.style.display='block';
   const form=document.getElementById('accountGateForm');if(form)form.style.display='none';
-
-  const lastEmail=localStorage.getItem(ACCOUNT_LAST_EMAIL_KEY)||'';
-  const workspaceOwner=localStorage.getItem(ACCOUNT_WORKSPACE_OWNER_KEY)||'';
-  let localStartupOpened=false;
-  const openStoredWorkspace=()=>{
-    accountAuthDiag(`openStoredWorkspace: called lastEmail=${!!lastEmail} owner=${!!workspaceOwner}`);
-    if(localStartupOpened||!lastEmail||!workspaceOwner)return false;
-    activeWorkspaceUserId=workspaceOwner;
-    accountUpdateIdentity({email:lastEmail});
-    accountHideGate();
-    accountStartupResolved=true;
-    localStartupOpened=true;
-    setCloudTestStatus('Your saved Engineer Pay Log is ready. Restoring the cloud session in the background…');
-    return true;
-  };
-  // Offline-first startup: a known local account workspace should become usable
-  // quickly even if Safari is slow restoring the Supabase auth session.
-  const localStartupTimer=setTimeout(()=>{accountAuthDiag('local fallback timer fired');openStoredWorkspace()},1500);
-
-  accountAuthDiag('startup: before getCloudClient');
   const client=getCloudClient();
-  accountAuthDiag(`startup: after getCloudClient client=${!!client}`);
   if(!client){
-    clearTimeout(localStartupTimer);
-    if(openStoredWorkspace())setCloudTestStatus('Offline. Your local Engineer Pay Log data is available; changes will sync when the connection returns.');
+    const lastEmail=localStorage.getItem(ACCOUNT_LAST_EMAIL_KEY)||'';
+    if(lastEmail){accountUpdateIdentity({email:lastEmail});accountHideGate();accountStartupResolved=true;setCloudTestStatus('Offline. Your local Engineer Pay Log data is available; changes will sync when the connection returns.')}
     else accountShowGate('Engineer Pay Log Cloud could not load. Check your connection and refresh to sign in.');
     return;
   }
   let user=null;
   try{
-    accountAuthDiag('startup: before getSession');
-    const result=await accountStartupTimeout(()=>client.auth.getSession(),8000);
-    accountAuthDiag(`startup: getSession resolved session=${!!result?.data?.session}`);
+    const result=await accountStartupTimeout(client.auth.getSession(),8000);
     user=result?.data?.session?.user||null;
-    accountBindRecoveryListener(client);
-    accountAuthDiag('startup: recovery listener bound');
   }catch(err){
-    accountAuthDiag(`startup: getSession/timeout catch ${err?.message||err}`);
-    clearTimeout(localStartupTimer);
     console.warn('Account startup session check did not finish:',err);
-    if(openStoredWorkspace()){
+    const lastEmail=localStorage.getItem(ACCOUNT_LAST_EMAIL_KEY)||'';
+    const workspaceOwner=localStorage.getItem(ACCOUNT_WORKSPACE_OWNER_KEY)||'';
+    if(lastEmail&&workspaceOwner){
+      activeWorkspaceUserId=workspaceOwner;
+      accountUpdateIdentity({email:lastEmail});
+      accountHideGate();
+      accountStartupResolved=true;
       setCloudTestStatus('Account check is taking longer than expected. Your saved local workspace is available; cloud sync will retry automatically.');
       setTimeout(()=>{void cloudRunAutomaticAccountSyncWithRetry('startup-retry')},3000);
     }else{
@@ -8613,7 +8504,6 @@ async function initCloudBridgeTest(){
     }
     return;
   }
-  clearTimeout(localStartupTimer);
   if(accountRecoveryIntent){
     if(user){
       accountUpdateIdentity(user);await accountLoadProfileForStartup(user,client);
@@ -10466,7 +10356,7 @@ void initCloudBridgeTest().catch(err=>{
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260910-r6-auth-diagnostic').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260909-trim-bid-meals-startupfix-r3-auth-order').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });

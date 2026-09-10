@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-1-followup-job164-imagefix-r6-auth-diagnostic-20260910';
+const CACHE_NAME='engineer-pay-log-v10-1-followup-r8-claim-init-order-job164-20260910';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(
