@@ -169,6 +169,18 @@
     .time-slip-deadline-info{padding:11px 12px;border:1px solid #dfc24d;border-radius:12px;background:#fffdf0;color:#5f4a00;font-size:12px;line-height:1.45}
     .time-slip-deadline-info strong{display:block;font-size:14px;color:#4f3d00;margin-bottom:2px}.time-slip-deadline-info.warning{background:#fff4cf;border-color:#e2b53c}.time-slip-deadline-info.urgent,.time-slip-deadline-info.overdue{background:#fff0ee;border-color:#df7b72;color:#852720}.time-slip-deadline-info.urgent strong,.time-slip-deadline-info.overdue strong{color:#852720}
     .time-slip-status-hint{font-size:10.5px;color:var(--muted);line-height:1.4;margin-top:5px;min-height:14px}
+    .time-slip-claim-code-panel{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+    .time-slip-claim-code-lead{font-size:12px;color:var(--muted);line-height:1.45;margin:4px 0 10px}
+    .time-slip-claim-code-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .time-slip-claim-option{display:flex;align-items:flex-start;gap:9px;padding:10px 11px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer}
+    .time-slip-claim-option input{margin-top:2px;transform:scale(1.08)}
+    .time-slip-claim-option-main{min-width:0}
+    .time-slip-claim-option-title{font-size:12px;font-weight:900;color:var(--ink);line-height:1.25}
+    .time-slip-claim-option-sub{font-size:10.5px;color:var(--muted);line-height:1.35;margin-top:2px}
+    .time-slip-claim-code-note{font-size:10.5px;color:var(--muted);line-height:1.4;margin-top:8px}
+    .time-slip-claim-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+    .time-slip-code-badge{display:inline-flex;align-items:center;padding:4px 7px;border-radius:999px;background:#eaf2fb;border:1px solid #b9d0ea;color:#173b63;font-size:10px;font-weight:900;line-height:1.15}
+    @media(max-width:520px){.time-slip-claim-code-grid{grid-template-columns:1fr}}
     .time-slip-wage-panel{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
     .time-slip-wage-lead{font-size:12px;color:var(--muted);line-height:1.45;margin:4px 0 10px}
     .time-slip-wage-actions{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
@@ -470,6 +482,8 @@
     html[data-theme="dark"] .badge.ot{background:#4a3515!important;color:#ffd77e!important}
     html[data-theme="dark"] .badge.holiday{background:#3b2850!important;color:#dfbdff!important}
     html[data-theme="dark"] .badge.timeslip{background:#4a3c15!important;color:#ffe582!important;border-color:#79652b!important}
+    html[data-theme="dark"] .time-slip-claim-option{background:#17263a!important;border-color:#344960!important}
+    html[data-theme="dark"] .time-slip-code-badge{background:#18314d!important;border-color:#355e87!important;color:#b9dbff!important}
 
     html[data-theme="dark"] .history-view-toggle{
       background:#0a1727!important;
@@ -2708,6 +2722,21 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
               <div class="field full"><label>Status</label><select id="timeSlipStatus" onchange="handleTimeSlipStatusChange()"><option value="Pending">Pending</option><option value="Paid">Paid</option><option value="Denied">Denied</option></select><div id="timeSlipStatusHint" class="time-slip-status-hint"></div></div>
               <div class="field full"><label>Date Paid / Denied</label><input id="timeSlipResolved" type="date"></div>
             </div>
+            <div class="time-slip-claim-code-panel">
+              <div class="subhead">Claim Type / Code</div>
+              <p class="time-slip-claim-code-lead">Choose the exception claim code(s) that apply to this Time Slip. These labels are for personal tracking and do not change pay calculations.</p>
+              <div class="time-slip-claim-code-grid">
+                <label class="time-slip-claim-option"><input type="checkbox" data-timeslip-claim-key="03" onchange="handleTimeSlipClaimTypeChange(this)"><span class="time-slip-claim-option-main"><span class="time-slip-claim-option-title">03 · Meal period claim</span></span></label>
+                <label class="time-slip-claim-option"><input type="checkbox" data-timeslip-claim-key="04" onchange="handleTimeSlipClaimTypeChange(this)"><span class="time-slip-claim-option-main"><span class="time-slip-claim-option-title">04 · Outside normal assignment</span><span class="time-slip-claim-option-sub">Operation of trains outside of normal assignment</span></span></label>
+                <label class="time-slip-claim-option"><input type="checkbox" data-timeslip-claim-key="05" onchange="handleTimeSlipClaimTypeChange(this)"><span class="time-slip-claim-option-main"><span class="time-slip-claim-option-title">05 · Overtime above Crew Book earnings</span></span></label>
+                <label class="time-slip-claim-option"><input type="checkbox" data-timeslip-claim-key="08" onchange="handleTimeSlipClaimTypeChange(this)"><span class="time-slip-claim-option-main"><span class="time-slip-claim-option-title">08 · Runaround claim</span></span></label>
+                <label class="time-slip-claim-option"><input type="checkbox" data-timeslip-claim-key="09" onchange="handleTimeSlipClaimTypeChange(this)"><span class="time-slip-claim-option-main"><span class="time-slip-claim-option-title">09 · Two classes of service</span><span class="time-slip-claim-option-sub">Used in two (2) classes of service</span></span></label>
+                <label class="time-slip-claim-option"><input type="checkbox" data-timeslip-claim-key="11-commingle" onchange="handleTimeSlipClaimTypeChange(this)"><span class="time-slip-claim-option-main"><span class="time-slip-claim-option-title">11 · Commingle</span><span class="time-slip-claim-option-sub">Common miscellaneous claim</span></span></label>
+                <label class="time-slip-claim-option"><input type="checkbox" data-timeslip-claim-key="11-misc" onchange="handleTimeSlipClaimTypeChange(this)"><span class="time-slip-claim-option-main"><span class="time-slip-claim-option-title">11 · Miscellaneous claim</span></span></label>
+                <label class="time-slip-claim-option"><input type="checkbox" data-timeslip-claim-key="13" onchange="handleTimeSlipClaimTypeChange(this)"><span class="time-slip-claim-option-main"><span class="time-slip-claim-option-title">13 · Night differential above Crew Book earnings</span></span></label>
+              </div>
+              <div class="time-slip-claim-code-note">Commingle is tracked as Code 11. “Commingle” and generic “Miscellaneous claim” are separate app entries for convenience, but both represent official Code 11.</div>
+            </div>
             <div class="time-slip-wage-panel">
               <div class="subhead">Wage Examiners Follow-Up</div>
               <p class="time-slip-wage-lead">For submitted slips that are still Pending, Engineer Pay Log can remind you to call Wage Examiners before the 30-day window ends and keep a record of your follow-up.</p>
@@ -3204,6 +3233,9 @@ function upgradeShift(s){
   if(s.timeSlipLocation===undefined)s.timeSlipLocation='';
   if(s.timeSlipStatus===undefined)s.timeSlipStatus='Pending';
   if(s.timeSlipResolved===undefined)s.timeSlipResolved='';
+  if(!Array.isArray(s.timeSlipClaimTypes))s.timeSlipClaimTypes=[];
+  s.timeSlipClaimTypes=s.timeSlipClaimTypes.map(x=>String(x||'')).filter(x=>TIME_SLIP_CLAIM_TYPE_KEYS.has(x));
+  if(s.timeSlipClaimTypes.includes('11-commingle')&&s.timeSlipClaimTypes.includes('11-misc'))s.timeSlipClaimTypes=s.timeSlipClaimTypes.filter(x=>x!=='11-misc');
   if(!s.timeSlipPhotos||typeof s.timeSlipPhotos!=='object'||Array.isArray(s.timeSlipPhotos))s.timeSlipPhotos={};
   if(s.timeSlipWageReminderDays===undefined)s.timeSlipWageReminderDays=null;
   if(!Array.isArray(s.timeSlipFollowUps))s.timeSlipFollowUps=[];
@@ -5119,6 +5151,7 @@ function formData(){
     timeSlipLocation:$('timeSlipFlag').checked?$('timeSlipLocation').value.trim():'',
     timeSlipStatus:$('timeSlipFlag').checked?($('timeSlipStatus').value||'Pending'):'Pending',
     timeSlipResolved:$('timeSlipFlag').checked?$('timeSlipResolved').value:'',
+    timeSlipClaimTypes:$('timeSlipFlag').checked?collectTimeSlipClaimTypes():[],
     timeSlipWageReminderDays:$('timeSlipFlag').checked?parseTimeSlipWageReminderOverride($('timeSlipWageReminderDays').value):null,
     timeSlipFollowUps:(()=>{const old=shifts.find(x=>x.id===$('editId').value);return old&&Array.isArray(old.timeSlipFollowUps)?old.timeSlipFollowUps:[]})(),
     timeSlipPhotos:(()=>{const old=shifts.find(x=>x.id===$('editId').value);return old&&old.timeSlipPhotos&&typeof old.timeSlipPhotos==='object'?old.timeSlipPhotos:{}})(),
@@ -5426,6 +5459,37 @@ function toggleOTCompletion(){
   if(fields)fields.style.display=on?'block':'none';
   if(!on){const t=document.getElementById('otCompletionTime');if(t)t.value=''}
 }
+const TIME_SLIP_CLAIM_TYPES=[
+  {key:'03',code:'03',card:'03 · Meal',label:'Meal period claim'},
+  {key:'04',code:'04',card:'04 · Outside Assignment',label:'Operation of trains outside of normal assignment'},
+  {key:'05',code:'05',card:'05 · OT',label:'Overtime above the crew assignment book earnings'},
+  {key:'08',code:'08',card:'08 · Runaround',label:'Runaround claim'},
+  {key:'09',code:'09',card:'09 · 2 Classes',label:'Used in two (2) classes of service'},
+  {key:'11-commingle',code:'11',card:'11 · Commingle',label:'Commingle'},
+  {key:'11-misc',code:'11',card:'11 · Misc.',label:'Miscellaneous claim'},
+  {key:'13',code:'13',card:'13 · Night Diff',label:'Night differential above the crew assignment book earnings'}
+];
+const TIME_SLIP_CLAIM_TYPE_KEYS=new Set(TIME_SLIP_CLAIM_TYPES.map(x=>x.key));
+function collectTimeSlipClaimTypes(){
+  return [...document.querySelectorAll('[data-timeslip-claim-key]:checked')].map(el=>String(el.dataset.timeslipClaimKey||'')).filter(x=>TIME_SLIP_CLAIM_TYPE_KEYS.has(x));
+}
+function setTimeSlipClaimTypes(types){
+  const selected=new Set(Array.isArray(types)?types.map(x=>String(x||'')):[]);
+  if(selected.has('11-commingle')&&selected.has('11-misc'))selected.delete('11-misc');
+  document.querySelectorAll('[data-timeslip-claim-key]').forEach(el=>{el.checked=selected.has(String(el.dataset.timeslipClaimKey||''))});
+}
+function handleTimeSlipClaimTypeChange(el){
+  if(!el?.checked)return;
+  const key=String(el.dataset.timeslipClaimKey||'');
+  if(key==='11-commingle'||key==='11-misc'){
+    const other=key==='11-commingle'?'11-misc':'11-commingle';
+    const otherEl=document.querySelector(`[data-timeslip-claim-key="${other}"]`);if(otherEl)otherEl.checked=false;
+  }
+}
+function timeSlipClaimBadgeHTML(s){
+  const keys=Array.isArray(s?.timeSlipClaimTypes)?s.timeSlipClaimTypes:[];
+  return keys.map(key=>TIME_SLIP_CLAIM_TYPES.find(x=>x.key===String(key))).filter(Boolean).map(meta=>`<span class="time-slip-code-badge" title="${escapeHTML(meta.label)}">${escapeHTML(meta.card)}</span>`).join('');
+}
 function toggleTimeSlip(){
   const $=id=>document.getElementById(id);
   const checked=$('timeSlipFlag').checked;
@@ -5496,7 +5560,7 @@ function newShift(){if(!billingRequireWriteAccess())return;
   $('shiftForm').reset();setLocationUI('');setShiftTypeUI('');$('editId').value='';$('shiftRuleMode').value=isTraineeMode()?'trainee':'engineer';$('legacyExtras').value='';$('legacyClaims').value='';
   $('formTitle').textContent='Add shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';
   $('date').value=new Date().toISOString().slice(0,10);$('holidayFlag').checked=isContractHoliday($('date').value);$('holidayPayEligibleFlag').checked=$('holidayFlag').checked;
-  $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';$('timeSlipWageReminderDays').value='';
+  $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';$('timeSlipWageReminderDays').value='';setTimeSlipClaimTypes([]);
   renderTimeSlipDeadlinePreview();
   applyEntryMode();handleSecretUnpaidSick();$('specialShift').value='';$('specialCategory').value='';$('classFlag').checked=false;$('conductorName').value='';$('brakemanName').value='';$('engineerName').value='';$('engineerIBM').value='';$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('unscheduledOTFlag').checked=false;$('crewBookReleaseTime').value='';$('twoClassesPullTime').value='';
   $('vacationGrossInput').value='';$('vacationGrossInput').dataset.vacationYear='';$('vacationReliefPair').value='';
@@ -5514,7 +5578,7 @@ function editShift(id){if(!billingRequireWriteAccess())return;
   setLocationUI(s.location||'');setShiftTypeUI(s.shiftType||'');$('legacyExtras').value=s.extras||'';$('legacyClaims').value=s.claims||'';
   $('notes').value=s.notes||'';$('engineerName').value=s.engineerName||'';$('engineerIBM').value=s.engineerIBM||'';$('classFlag').checked=!!s.classDay;$('conductorName').value=s.conductorName||'';$('brakemanName').value=s.brakemanName||'';
   $('specialShift').value=s.specialShift||'';$('specialCategory').value=s.specialCategory||'';$('vacationReliefPair').value=s.vacationReliefPair||'';
-  $('timeSlipFlag').checked=!!s.timeSlip;$('timeSlipWritten').value=s.timeSlipWritten||'';$('timeSlipSubmitted').value=s.timeSlipSubmitted||'';$('timeSlipLocation').value=s.timeSlipLocation||'';$('timeSlipStatus').value=s.timeSlipStatus||'Pending';$('timeSlipResolved').value=s.timeSlipResolved||'';$('timeSlipWageReminderDays').value=s.timeSlipWageReminderDays===null||s.timeSlipWageReminderDays===undefined?'':String(s.timeSlipWageReminderDays);
+  $('timeSlipFlag').checked=!!s.timeSlip;$('timeSlipWritten').value=s.timeSlipWritten||'';$('timeSlipSubmitted').value=s.timeSlipSubmitted||'';$('timeSlipLocation').value=s.timeSlipLocation||'';$('timeSlipStatus').value=s.timeSlipStatus||'Pending';$('timeSlipResolved').value=s.timeSlipResolved||'';$('timeSlipWageReminderDays').value=s.timeSlipWageReminderDays===null||s.timeSlipWageReminderDays===undefined?'':String(s.timeSlipWageReminderDays);setTimeSlipClaimTypes(s.timeSlipClaimTypes||[]);
   renderTimeSlipDeadlinePreview();
   $('holidayFlag').checked=!!s.holiday;$('holidayPayEligibleFlag').checked=s.holidayPayEligible!==false&&!!s.holiday;$('ssotFlag').checked=!!s.ssot;$('rdFlag').checked=!!s.rd;
   $('paysMealFlag').checked=!!s.paysMeal;$('mpteFlag').checked=!!s.mpte;$('freightMealFlag').checked=!!s.freightMeal;$('fuelClaimFlag').checked=!!s.fuelClaim;$('otCompletionFlag').checked=!!s.otCompletion;$('otCompletionTime').value=s.otCompletionTime||'';$('unscheduledOTFlag').checked=!!s.unscheduledOT;$('crewBookReleaseTime').value=s.crewBookReleaseTime||'';$('poneFlag').checked=!!s.pone;$('traineeCount').value=Math.min(2,Math.max(1,Number(s.traineeCount)||1));
@@ -5545,7 +5609,7 @@ function duplicateShift(id){if(!billingRequireWriteAccess())return;
   $('runaroundFlag').checked=false;$('a2Flag').checked=false;$('miscPenaltyFlag').checked=false;
   $('traineeCount').value=1;$('yardCertCount').value=1;$('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;$('miscPenaltyDescription').value='';$('miscPenaltyHours').value=0;$('miscPenaltyMinutes').value=0;$('miscPenaltyStraight').checked=true;
 
-  $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';$('timeSlipWageReminderDays').value='';
+  $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';$('timeSlipWageReminderDays').value='';setTimeSlipClaimTypes([]);
   renderTimeSlipDeadlinePreview();
   $('vacationGrossInput').value='';$('vacationGrossInput').dataset.vacationYear='';$('vacationReliefPair').value=s.specialShift==='Vacation Week'?(s.vacationReliefPair||vacationReliefPairFromMyJob()):'';
 
@@ -8523,7 +8587,8 @@ function timeSlipCard(s){
   let deadlineLine='';
   if(info)deadlineLine=`<span class="time-slip-deadline-line ${info.level}">Due ${escapeHTML(formatDateShort(info.due))} • ${escapeHTML(info.message)}</span>`;
   const wageInfo=timeSlipWageReminderInfoFor(s);const wageLine=wageInfo?`<span class="time-slip-wage-line ${wageInfo.level}">☎ ${escapeHTML(wageInfo.message)}</span>`:'';
-  return `<div class="shift timeslip"><div class="shift-date">${dateLabel(s.date)}</div><div class="shift-main"><div class="shift-title">${escapeHTML(s.assignment||'Shift')} <span class="badge timeslip">${escapeHTML(status)}</span></div><div class="shift-sub">${firstLine}${secondBits.length?`<br>${secondBits.join(' • ')}`:''}${deadlineLine}${wageLine}</div></div><div><button class="btn small" onclick="editShift('${s.id}')">Edit</button></div></div>`;
+  const claimBadges=timeSlipClaimBadgeHTML(s);
+  return `<div class="shift timeslip"><div class="shift-date">${dateLabel(s.date)}</div><div class="shift-main"><div class="shift-title">${escapeHTML(s.assignment||'Shift')} <span class="badge timeslip">${escapeHTML(status)}</span></div>${claimBadges?`<div class="time-slip-claim-badges">${claimBadges}</div>`:''}<div class="shift-sub">${firstLine}${secondBits.length?`<br>${secondBits.join(' • ')}`:''}${deadlineLine}${wageLine}</div></div><div><button class="btn small" onclick="editShift('${s.id}')">Edit</button></div></div>`;
 }
 function renderTimeSlipCenter(){
   const el=document.getElementById('timeSlipCenter');if(!el)return;
