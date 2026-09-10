@@ -5945,6 +5945,11 @@ const ACCOUNT_SCOPED_LOCAL_KEYS=[
 ];
 let activeWorkspaceUserId=localStorage.getItem(ACCOUNT_WORKSPACE_OWNER_KEY)||null;
 let cloudClient=null;
+// Do not start account-dependent feature loads until the saved auth session has been resolved.
+// Starting multiple Supabase auth calls during initial render can deadlock Safari's auth lock and
+// can also cache a false 'no bid sheet' result before the user session is restored.
+let accountStartupResolved=false;
+let accountPostStartupLoadsStarted=false;
 let accountRecoveryIntent=new URLSearchParams(window.location.search).get('password-recovery')==='1';
 let accountRecoveryListenerBound=false;
 const CLOUD_SETTINGS_TABLE='user_settings_v1';
@@ -8445,6 +8450,26 @@ function accountStartupTimeout(promise,ms=8000){
   const timeout=new Promise((_,reject)=>{timer=setTimeout(()=>reject(new Error('Account session check timed out')),Math.max(1000,Number(ms)||8000))});
   return Promise.race([Promise.resolve(promise),timeout]).finally(()=>clearTimeout(timer));
 }
+function accountPostStartupLoads(force=true){
+  accountStartupResolved=true;
+  if(accountPostStartupLoadsStarted&&!force)return;
+  accountPostStartupLoadsStarted=true;
+  // Run only after the account gate has resolved so feature RPCs cannot compete with auth startup.
+  setTimeout(()=>{
+    void bidLifecycleLoad(!!force);
+    void retirementWatchLoad(!!force);
+    void renderDashboardCommunityNotes();
+  },0);
+}
+async function accountLoadProfileForStartup(user,client){
+  try{return await accountStartupTimeout(accountLoadProfile(user,client),6000)}
+  catch(err){
+    console.warn('Profile startup load timed out; using auth metadata fallback:',err);
+    const fallback={full_name:String(user?.user_metadata?.full_name||'').trim(),ibm_number:String(user?.user_metadata?.ibm_number||'').trim()};
+    accountUpdateProfileUI(fallback);
+    return fallback;
+  }
+}
 async function initCloudBridgeTest(){
   const gate=document.getElementById('accountGate');if(gate)gate.style.display='flex';
   const checking=document.getElementById('accountGateChecking');if(checking)checking.style.display='block';
@@ -8452,7 +8477,7 @@ async function initCloudBridgeTest(){
   const client=getCloudClient();
   if(!client){
     const lastEmail=localStorage.getItem(ACCOUNT_LAST_EMAIL_KEY)||'';
-    if(lastEmail){accountUpdateIdentity({email:lastEmail});accountHideGate();setCloudTestStatus('Offline. Your local Engineer Pay Log data is available; changes will sync when the connection returns.')}
+    if(lastEmail){accountUpdateIdentity({email:lastEmail});accountHideGate();accountStartupResolved=true;setCloudTestStatus('Offline. Your local Engineer Pay Log data is available; changes will sync when the connection returns.')}
     else accountShowGate('Engineer Pay Log Cloud could not load. Check your connection and refresh to sign in.');
     return;
   }
@@ -8468,9 +8493,11 @@ async function initCloudBridgeTest(){
       activeWorkspaceUserId=workspaceOwner;
       accountUpdateIdentity({email:lastEmail});
       accountHideGate();
+      accountStartupResolved=true;
       setCloudTestStatus('Account check is taking longer than expected. Your saved local workspace is available; cloud sync will retry automatically.');
       setTimeout(()=>{void cloudRunAutomaticAccountSyncWithRetry('startup-retry')},3000);
     }else{
+      accountStartupResolved=true;
       accountShowGate('Account check could not finish. Please sign in again.');
       setCloudTestStatus('Account session check could not finish. Sign in again to continue.');
     }
@@ -8478,7 +8505,7 @@ async function initCloudBridgeTest(){
   }
   if(accountRecoveryIntent){
     if(user){
-      accountUpdateIdentity(user);await accountLoadProfile(user,client);
+      accountUpdateIdentity(user);await accountLoadProfileForStartup(user,client);
       accountShowPasswordUpdate();setCloudTestStatus('Password reset link verified. Choose a new password to continue.');
     }else{
       accountRecoveryIntent=false;
@@ -8489,25 +8516,27 @@ async function initCloudBridgeTest(){
   }
   if(user){
     if(accountShouldShowMigrationHandoff(user)){
-      accountUpdateIdentity(user);await accountLoadProfile(user,client);
+      accountUpdateIdentity(user);await accountLoadProfileForStartup(user,client);
       accountShowMigrationHandoff();
       setCloudTestStatus('Account confirmed. Existing local data was detected when this account was created, but it is not stored in this browser window. Return to the original Engineer Pay Log app and sign in there to connect the time book.');
       return;
     }
     if(accountNeedsExplicitLegacyClaim(user)){
-      accountUpdateIdentity(user);await accountLoadProfile(user,client);
+      accountUpdateIdentity(user);await accountLoadProfileForStartup(user,client);
       accountShowGate('Account confirmed. For safety, existing local data on this device was not connected automatically. Return to the device whose time book you intend to migrate and sign in there.');
       setCloudTestStatus(`Signed-in session detected for ${user.email||'this account'}, but this device has unclaimed local data. Automatic migration and cloud upload are paused until an explicit sign-in on the intended migration device.`);
       return;
     }
     const workspaceResult=accountActivateWorkspace(user);
     if(activeWorkspaceUserId===String(user.id||''))void accountMarkMigrationComplete(user,client);
-    accountUpdateIdentity(user);await accountLoadProfile(user,client);
+    accountUpdateIdentity(user);await accountLoadProfileForStartup(user,client);
     if(workspaceResult.migrated&&getHireDate()&&typeof prepareWelcomeForMigratedUser==='function')prepareWelcomeForMigratedUser();
     accountHideGate();
+    accountPostStartupLoads(true);
     if(navigator.onLine===false)setCloudTestStatus(`Offline. Signed in as ${user.email||'authenticated user'}; ${workspaceResult.switched?'this account\'s local workspace is loaded and ':''}changes will sync automatically when your connection returns.`);
     else{setCloudTestStatus(`Signed in as ${user.email||'authenticated user'}. Saved session restored; checking for safe sync changes…`);setTimeout(()=>{void cloudRunAutomaticAccountSyncWithRetry('startup')},350)}
   }else{
+    accountStartupResolved=true;
     accountUpdateIdentity(null);accountUpdateProfileUI({});setCloudTestStatus('Signed out. Sign in to access your Engineer Pay Log account.');
     if(ACCOUNT_ENTRY_INTENT==='signup')accountShowSignup();
     else if(ACCOUNT_ENTRY_INTENT==='signin')accountShowSignIn();
@@ -8950,8 +8979,8 @@ function renderDashboard(){
   if(netBlock)netBlock.style.display=showNet?'block':'none';
   if(netAmount&&showNet)netAmount.textContent=money(pi.total*netRate);
   const p=document.getElementById('dashPendingSlips');if(p)p.textContent=String(shifts.filter(s=>s.timeSlip&&['Needs Submission','Pending'].includes(timeSlipDisplayStatus(s))).length);
-  renderTimeSlipDeadlineBanner();renderTimeSlipWageBanner();void renderDashboardCommunityNotes();void bidLifecycleLoad(false);
-  const f=document.getElementById('dashSavedJobs');if(f)f.textContent=String(savedJobs.length);updateBackupUI();void retirementWatchLoad(false);
+  renderTimeSlipDeadlineBanner();renderTimeSlipWageBanner();if(accountStartupResolved){void renderDashboardCommunityNotes();void bidLifecycleLoad(false)}
+  const f=document.getElementById('dashSavedJobs');if(f)f.textContent=String(savedJobs.length);updateBackupUI();if(accountStartupResolved)void retirementWatchLoad(false);
 }
 function renderHistory(){
   if(getHistoryView()==='calendar'){renderHistoryCalendar();return}
@@ -9678,7 +9707,7 @@ async function bidSheetPublishPreview(){
 function bidSheetCacheSave(payload){try{localStorage.setItem(BID_SHEET_CACHE_KEY,JSON.stringify(payload))}catch{}}
 function bidSheetCacheLoad(){try{const raw=localStorage.getItem(BID_SHEET_CACHE_KEY);return raw?JSON.parse(raw):null}catch{return null}}
 async function bidSheetLoad(force=false){
-  if(bidSheetState.loaded&&!force){bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);return}
+  if(bidSheetState.loaded&&!force&&!bidSheetState.error){bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);return}
   const summary=document.getElementById('bidSheetSummary');if(summary){summary.classList.add('show');summary.textContent='Loading the latest published bid sheet...'}
   const client=getCloudClient();
   if(!client){const cached=bidSheetCacheLoad();bidSheetState={snapshot:cached?.snapshot||null,rows:cached?.rows||[],loaded:true,cached:!!cached,error:cached?null:'Cloud connection unavailable.'};bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);return}
@@ -10326,7 +10355,7 @@ void initCloudBridgeTest().catch(err=>{
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260909-trim-bid-meals-startupfix-r2').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260909-trim-bid-meals-startupfix-r3-auth-order').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
