@@ -4779,7 +4779,7 @@ function quickLookupResultHTML(key,date){
   return `<article class="quick-lookup-card"><div class="quick-lookup-head"><div class="quick-lookup-titleline"><div class="quick-lookup-job">${escapeHTML(displayKey)}</div><div class="quick-lookup-source">${escapeHTML(source)}</div></div><div class="quick-lookup-terminal">${escapeHTML(terminal)}</div><div class="quick-lookup-state">${escapeHTML(state)} • ${escapeHTML(date)}</div></div><div class="quick-lookup-grid"><div class="quick-lookup-fact"><div class="label">Report</div><div class="value">${escapeHTML(jobCompareTimeLabel(x.start))}</div></div><div class="quick-lookup-fact"><div class="label">Release</div><div class="value">${escapeHTML(jobCompareTimeLabel(x.end))}</div></div><div class="quick-lookup-fact"><div class="label">Duration</div><div class="value">${escapeHTML(fmtMinutes(duration))}</div></div><div class="quick-lookup-fact"><div class="label">Meal</div><div class="value">${x.paysMeal?'Pays Meal Period':'No paid meal period'}</div></div></div><div class="quick-lookup-relief"><strong>${escapeHTML(reliefLabel)}</strong>${escapeHTML(reliefText)}</div><div class="quick-lookup-exception${exception?'':' none'}"><strong>Date-specific notes</strong>${escapeHTML(exception||'No additional day-specific exception is being applied beyond the published schedule shown above.')}</div><div class="quick-lookup-card-actions"><button class="btn small" type="button" onclick="compareQuickLookupJob('${escapeHTML(String(key))}','${escapeHTML(date)}')">Compare This Job</button></div>${communityJobPanelShellHTML(key,date)}${official}</article>`;
 }
 
-const COMMUNITY_NOTES_CHANNEL='production';
+const COMMUNITY_NOTES_CHANNEL=(/\.github\.io$/i.test(window.location.hostname)||window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1')?'test_v1':'production';
 let COMMUNITY_NOTE_ROWS=new Map();
 let COMMUNITY_CONTEXT=null;
 function communityRevisionMeta(key,date){
@@ -10456,7 +10456,7 @@ void initCloudBridgeTest().catch(err=>{
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260909-trim-bid-meals-startupfix-r3-auth-order').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260910-devtools-community-moderation-r2-channel-fix').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
