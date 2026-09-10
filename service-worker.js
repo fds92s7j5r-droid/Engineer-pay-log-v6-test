@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-1-followup-trim-bid-meal-value-20260909-r3-auth-order';
+const CACHE_NAME='engineer-pay-log-v10-1-followup-job164-imagefix-20260909';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(
