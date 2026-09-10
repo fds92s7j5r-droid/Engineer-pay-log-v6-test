@@ -1585,6 +1585,8 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
             <h3>Expected Paycheck</h3>
             <div class="estimate-label">Gross Estimate</div>
             <div class="big" id="dashPaycheckAmount">$0.00</div>
+            <label class="check" style="margin-top:8px;align-items:flex-start"><input id="dashIncludePendingSlips" type="checkbox" onchange="togglePendingTimeSlipEstimate(this)"> <span>Include pending Time Slips?</span></label>
+            <div id="dashPendingSlipEstimateNote" class="mini" style="margin-top:5px"></div>
             <div id="dashNetEstimateBlock" class="net-estimate-block" style="display:none">
               <div class="estimate-label">Net Estimate</div>
               <div class="net-estimate-amount" id="dashNetEstimate">$0.00</div>
@@ -1776,6 +1778,10 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     <div class="card">
       <div class="section-title"><h2>Expected Paycheck</h2><button class="btn small" onclick="showView('dashboard')">Dashboard</button></div>
       <p class="notice">Estimated gross earnings only. Pay periods run Wednesday through Tuesday and are paid the following Thursday.</p>
+      <div class="rate-note" style="margin-bottom:12px">
+        <label class="check" style="align-items:flex-start"><input id="paycheckIncludePendingSlips" type="checkbox" onchange="togglePendingTimeSlipEstimate(this)"> <span><strong>Include pending Time Slips?</strong><br><span class="muted">Off by default. Pending claims are estimates and are not guaranteed pay.</span></span></label>
+        <div id="paycheckPendingSlipsNote" class="muted" style="font-size:11px;margin-top:7px"></div>
+      </div>
       <div class="paycheck-nav"><button class="btn small" onclick="changePaycheckWeek(-1)">‹ Previous</button><strong id="paycheckNavLabel">Paycheck</strong><button class="btn small" onclick="changePaycheckWeek(1)">Next ›</button></div>
       <div class="paycheck-hero"><div class="payday" id="paycheckDateLabel">Paycheck date</div><div class="amount" id="paycheckAmount">$0.00</div><div class="range" id="paycheckRange">Pay period</div></div>
       <div class="feature-grid">
@@ -2844,6 +2850,7 @@ const CREW_BOOK_ASSIST_SEEN_KEY='engineerPayLogCrewBookAssistSeen';
 const CREW_BOOK_ASSIST_PREF_KEY='engineerPayLogCrewBookAssistPreferenceV1';
 const INSTALL_ONBOARDING_DISMISSED_KEY='engineerPayLogInstallOnboardingDismissed_v1';
 const TIME_SLIP_WAGE_DEFAULT_KEY='engineerPayLogTimeSlipWageReminderDays_v1';
+const PENDING_TIME_SLIP_ESTIMATE_KEY='engineerPayLogIncludePendingTimeSlips_v1';
 let savedJobs=JSON.parse(localStorage.getItem(SAVED_JOBS_KEY)||'[]');
 let pendingRestoreData=null;
 let paycheckWeekOffset=0;
@@ -8533,18 +8540,79 @@ function renderTimeSlipCenter(){
 function getNextThursday(base=new Date()){const d=new Date(base.getFullYear(),base.getMonth(),base.getDate()),delta=(4-d.getDay()+7)%7;d.setDate(d.getDate()+delta);return d}
 function addDaysDate(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
 function isoFromDate(d){return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`}
+function pendingTimeSlipEstimateEnabled(){return localStorage.getItem(PENDING_TIME_SLIP_ESTIMATE_KEY)==='1'}
+function setPendingTimeSlipEstimateEnabled(on){
+  localStorage.setItem(PENDING_TIME_SLIP_ESTIMATE_KEY,on?'1':'0');
+  const dash=document.getElementById('dashIncludePendingSlips'),full=document.getElementById('paycheckIncludePendingSlips');
+  if(dash)dash.checked=!!on;if(full)full.checked=!!on;
+  renderDashboard();renderPaycheck();
+}
+function togglePendingTimeSlipEstimate(source){setPendingTimeSlipEstimateEnabled(!!source?.checked)}
+function timeSlipClaimAmount(s,c=calculate(s)){
+  if(!s?.timeSlip||!c||c.rateMissing)return 0;
+  let amount=0;
+  // Only user-entered claim/penalty components belong in this figure. Automatic
+  // scheduled pay (base, scheduled OT, paid Crew Book meals, Daily Cert, etc.) stays in gross.
+  if(s.mpte)amount+=Number(c.mptePay)||0;
+  if(s.freightMeal)amount+=Number(c.freightMealPay)||0;
+  if(s.fuelClaim)amount+=Number(c.fuelClaimPay)||0;
+  if(s.otCompletion)amount+=Number(c.otCompletionPay)||0;
+  if(s.noCo)amount+=Number(c.noCoPay)||0;
+  if(s.cert)amount+=Number(c.certPay)||0;
+  if(s.commingle)amount+=Number(c.comminglePay)||0;
+  if(s.yardMove&&c.twoClassesDecision!=='overtime')amount+=Number(c.classesPay)||0;
+  if(s.sheridanMove)amount+=Number(c.sheridanPay)||0;
+  if(s.terminalNotCrewBook)amount+=Number(c.terminalPay)||0;
+  if(s.runaround)amount+=Number(c.runaroundPay)||0;
+  if(s.a2)amount+=Number(c.a2)||0;
+  if(s.miscPenalty)amount+=Number(c.miscPenaltyPay)||0;
+  // Some claims are represented inside ordinary OT rather than a separate pay component.
+  // Use the larger overlapping OT slice rather than summing both and double-counting it.
+  let embeddedOT=0;
+  if(s.unscheduledOT&&c.twoClassesDecision!=='classes'){
+    const mins=calculateUnscheduledOTMinutes(s.start,s.crewBookReleaseTime,s.end)||0;
+    embeddedOT=Math.max(embeddedOT,otPay(mins,c.ratePct));
+  }
+  if(s.yardMove&&c.twoClassesDecision==='overtime')embeddedOT=Math.max(embeddedOT,Number(c.twoClassesPullRelatedOTPay)||0);
+  amount+=embeddedOT;
+  return Math.max(0,Math.min(Number(c.total)||0,amount));
+}
+function paycheckTreatmentForShift(s,c,includePending){
+  const enteredTotal=Number(c?.total)||0;
+  if(!s?.timeSlip)return {estimatedTotal:enteredTotal,claimAmount:0,status:'',excludedClaim:0};
+  const claimAmount=timeSlipClaimAmount(s,c),status=timeSlipDisplayStatus(s);
+  if(!(claimAmount>0))return {estimatedTotal:enteredTotal,claimAmount:0,status,excludedClaim:0};
+  if(status==='Denied')return {estimatedTotal:Math.max(0,enteredTotal-claimAmount),claimAmount,status,excludedClaim:claimAmount};
+  if(status==='Pending'||status==='Needs Submission'){
+    return {estimatedTotal:includePending?enteredTotal:Math.max(0,enteredTotal-claimAmount),claimAmount,status,excludedClaim:includePending?0:claimAmount};
+  }
+  return {estimatedTotal:enteredTotal,claimAmount,status,excludedClaim:0};
+}
 function paycheckInfo(offset=0){
+  const includePending=pendingTimeSlipEstimateEnabled();
   const payday=getNextThursday(new Date());payday.setDate(payday.getDate()+offset*7);
   const periodEnd=addDaysDate(payday,-9),periodStart=addDaysDate(periodEnd,-6),startISO=isoFromDate(periodStart),endISO=isoFromDate(periodEnd);
-  const items=shifts.map(s=>({s,c:calculate(s)})).filter(x=>x.c&&!x.c.rateMissing&&x.s.date>=startISO&&x.s.date<=endISO);
-  const total=items.reduce((a,x)=>a+x.c.total,0),regular=items.reduce((a,x)=>a+x.c.regular,0),actual=items.reduce((a,x)=>a+x.c.actual,0);
-  return {payday,periodStart,periodEnd,items,total,actual,extras:Math.max(0,total-regular)};
+  const items=shifts.map(s=>({s,c:calculate(s)})).filter(x=>x.c&&!x.c.rateMissing&&x.s.date>=startISO&&x.s.date<=endISO).map(x=>Object.assign(x,paycheckTreatmentForShift(x.s,x.c,includePending)));
+  const total=items.reduce((a,x)=>a+x.estimatedTotal,0),regular=items.reduce((a,x)=>a+(Number(x.c.regular)||0),0),actual=items.reduce((a,x)=>a+(Number(x.c.actual)||0),0);
+  const pendingClaimAmount=items.filter(x=>x.status==='Pending'||x.status==='Needs Submission').reduce((a,x)=>a+x.claimAmount,0);
+  const deniedClaimAmount=items.filter(x=>x.status==='Denied').reduce((a,x)=>a+x.claimAmount,0);
+  return {payday,periodStart,periodEnd,items,total,actual,extras:Math.max(0,total-regular),includePending,pendingClaimAmount,deniedClaimAmount};
+}
+function pendingEstimateNote(info){
+  const pending=Number(info?.pendingClaimAmount)||0,denied=Number(info?.deniedClaimAmount)||0;
+  let text='';
+  if(pending>0)text=info.includePending?`Includes ${money(pending)} in unresolved Time Slip claims. Pending claims are not guaranteed pay.`:`Excludes ${money(pending)} in unresolved Time Slip claims.`;
+  else text='No unresolved Time Slip claim amount is recorded in this pay period.';
+  if(denied>0)text+=` ${money(denied)} in denied claims is excluded.`;
+  return text;
 }
 function renderPaycheck(){
   const info=paycheckInfo(paycheckWeekOffset),label=info.payday.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'}),range=`${info.periodStart.toLocaleDateString('en-US',{month:'short',day:'numeric'})} – ${info.periodEnd.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;
   const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val};
+  const toggle=document.getElementById('paycheckIncludePendingSlips');if(toggle)toggle.checked=info.includePending;
+  set('paycheckPendingSlipsNote',pendingEstimateNote(info));
   set('paycheckNavLabel',label);set('paycheckDateLabel',`Paycheck • ${label}`);set('paycheckAmount',money(info.total));set('paycheckRange',`Pay period: ${range}`);set('paycheckShiftCount',String(info.items.length));set('paycheckHours',fmtMinutes(info.actual));set('paycheckExtras',money(info.extras));
-  const list=document.getElementById('paycheckShiftList');if(list)list.innerHTML=info.items.length?info.items.sort((a,b)=>b.s.date.localeCompare(a.s.date)).map(x=>shiftHTML(x.s)).join(''):'<div class="empty">No shifts saved for this pay period.</div>';
+  const list=document.getElementById('paycheckShiftList');if(list)list.innerHTML=info.items.length?info.items.sort((a,b)=>b.s.date.localeCompare(a.s.date)).map(x=>shiftHTML(x.s,{payOverride:x.estimatedTotal,payNote:(x.status==='Pending'||x.status==='Needs Submission')&&x.claimAmount>0?(info.includePending?`Includes ${money(x.claimAmount)} pending claim`:`Excludes ${money(x.claimAmount)} pending claim`):(x.status==='Denied'&&x.claimAmount>0?`Excludes ${money(x.claimAmount)} denied claim`:'')})).join(''):'<div class="empty">No shifts saved for this pay period.</div>';
 }
 function changePaycheckWeek(delta){paycheckWeekOffset+=delta;renderPaycheck()}
 function openPaychecks(){paycheckWeekOffset=0;showView('paychecks');renderPaycheck()}
@@ -8667,7 +8735,7 @@ function historyDateParts(dateStr){
     day:d.getDate()
   };
 }
-function shiftHTML(s){
+function shiftHTML(s,options={}){
   const c=calculate(s),parts=historyDateParts(s.date);
   let tags=[];
   if(s.shiftType)tags.push(`<span class="badge">${escapeHTML(s.shiftType)}</span>`);
@@ -8697,7 +8765,8 @@ function shiftHTML(s){
       <div class="history-row-sub">${detail}</div>
     </div>
     <div class="history-row-right">
-      <div class="history-row-pay">${c&&!c.rateMissing?money(c.total):'—'}</div>
+      <div class="history-row-pay">${c&&!c.rateMissing?money(Number.isFinite(Number(options.payOverride))?Number(options.payOverride):c.total):'—'}</div>
+      ${options.payNote?`<div class="mini" style="max-width:190px;text-align:right;margin-left:auto">${escapeHTML(options.payNote)}</div>`:''}
       <div class="history-row-actions"><button class="btn small" onclick="duplicateShift('${s.id}')">Duplicate</button><button class="btn small" onclick="editShift('${s.id}')">Edit</button></div>
     </div>
   </div>`;
@@ -8752,6 +8821,7 @@ function renderDashboard(){
   const currentYear=String(new Date().getFullYear()),yr=valid.filter(x=>x.s.date.startsWith(currentYear+'-'));const yearLabel=document.getElementById('yearTotalLabel');if(yearLabel)yearLabel.textContent=currentYear;yearTotal.textContent=money(yr.reduce((a,x)=>a+x.c.total,0));yearHours.textContent=`${fmtMinutes(yr.reduce((a,x)=>a+x.c.actual,0))} actual hours`;
   const mh=document.getElementById('monthHours');if(mh)mh.textContent=fmtMinutes(month.reduce((a,x)=>a+(x.c.actual||0),0));recentShifts.innerHTML=valid.length?valid.slice(0,4).map(x=>shiftHTML(x.s)).join(''):'<div class="empty">No shifts saved yet.</div>';
   const pi=paycheckInfo(0),amount=document.getElementById('dashPaycheckAmount'),dates=document.getElementById('dashPaycheckDates');
+  const pendingToggle=document.getElementById('dashIncludePendingSlips'),pendingNote=document.getElementById('dashPendingSlipEstimateNote');if(pendingToggle)pendingToggle.checked=pi.includePending;if(pendingNote)pendingNote.textContent=pendingEstimateNote(pi);
   if(amount)amount.textContent=money(pi.total);if(dates)dates.textContent=`${pi.periodStart.toLocaleDateString('en-US',{month:'short',day:'numeric'})}–${pi.periodEnd.toLocaleDateString('en-US',{month:'short',day:'numeric'})} • pays ${pi.payday.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;
   const netBlock=document.getElementById('dashNetEstimateBlock'),netAmount=document.getElementById('dashNetEstimate'),netRate=netTakeHomeRate();
   const showNet=netEstimatorEnabled()&&netRate!=null;
