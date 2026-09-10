@@ -1985,6 +1985,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 <div id="myJobRegularFields" style="margin-top:12px">
 <div class="field full"><label>Job Number</label><input id="myJobNumber" placeholder="e.g. 9"/></div>
 <button class="btn small" id="crewBookFillRegularBtn" onclick="fillRegularMyJobFromCrewBook()" style="display:none;margin-bottom:12px" type="button">Fill from Crew Book</button>
+<button class="btn small" id="crewBookViewMyJobRegularBtn" onclick="viewMyJobCrewBookAssignment('regular')" style="display:none;margin-bottom:12px;margin-left:8px" type="button">View Crew Book Assignment</button>
 <div class="field full"><label>Home Terminal</label><select id="myJobRegularLocation" onchange="myJobRegularHomeLocationChanged()"></select></div>
 <div class="field full" id="myJobRegularOtherWrap" style="display:none"><label>Other Home Terminal</label><input id="myJobRegularOther" placeholder="Enter terminal / location"/></div>
 <p class="notice" style="margin-top:10px">Set one home terminal for the job, then enter the scheduled times for each workday. Mark scheduled days off as Relief Day.</p>
@@ -2062,6 +2063,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 <div class="relief-days" id="myJobReliefFields">
 <div class="field full"><label>Relief Crew Number</label><input id="myJobReliefCrewNumber" placeholder="e.g. 406"/></div>
 <button class="btn small" id="crewBookFillReliefBtn" onclick="fillReliefMyJobFromCrewBook()" style="display:none;margin-bottom:12px" type="button">Fill from Crew Book</button>
+<button class="btn small" id="crewBookViewMyJobReliefBtn" onclick="viewMyJobCrewBookAssignment('relief')" style="display:none;margin-bottom:12px;margin-left:8px" type="button">View Crew Book Assignment</button>
 <p class="notice" style="margin-top:10px">Set the assignment, location, and times for each day you work. Mark scheduled days off as Relief Day.</p>
 <div class="relief-day" id="myJobReliefMondayCard">
 <div class="relief-day-head">
@@ -4839,14 +4841,25 @@ function runQuickJobLookup(showValidation=true){initQuickJobLookup();const raw=(
 
 
 function renderCrewBookAssistUI(){
-  const trainee=isTraineeMode(),box=document.getElementById('crewBookAssistToggle'),status=document.getElementById('crewBookAssistStatus'),reg=document.getElementById('crewBookFillRegularBtn'),rel=document.getElementById('crewBookFillReliefBtn'),shift=document.getElementById('crewBookFillShiftBtn');
+  const trainee=isTraineeMode(),box=document.getElementById('crewBookAssistToggle'),status=document.getElementById('crewBookAssistStatus'),reg=document.getElementById('crewBookFillRegularBtn'),rel=document.getElementById('crewBookFillReliefBtn'),shift=document.getElementById('crewBookFillShiftBtn'),viewReg=document.getElementById('crewBookViewMyJobRegularBtn'),viewRel=document.getElementById('crewBookViewMyJobReliefBtn');
   const on=!trainee&&getCrewBookAssistPreference()==='on';
   if(box){box.checked=on;box.disabled=false}
   if(status){
     status.style.display=(on||trainee)?'block':'none';
     status.innerHTML=trainee?'<strong>Engineer Trainee Mode:</strong> Crew Book Assistance is unavailable. Engineer Trainees are strongly encouraged to learn how to read and interpret the Crew Book independently.':(on?'<strong>Active:</strong> Passenger GO 201 Rev. 6 • GO 202 Rev. 7 + Paper Rev. 8 (human-certified; effective Sept. 8) • Yard assignments loaded.':'');
   }
-  if(reg)reg.style.display=on?'inline-flex':'none';if(rel)rel.style.display=on?'inline-flex':'none';if(shift)shift.style.display=on?'inline-flex':'none';
+  if(reg)reg.style.display=on?'inline-flex':'none';if(rel)rel.style.display=on?'inline-flex':'none';if(shift)shift.style.display=on?'inline-flex':'none';if(viewReg)viewReg.style.display=on?'inline-flex':'none';if(viewRel)viewRel.style.display=on?'inline-flex':'none';
+}
+function viewMyJobCrewBookAssignment(type){
+  if(!crewBookAssistEnabled())return;
+  const date=typeof isoLocal==='function'?isoLocal(new Date()):myJobCrewBookReferenceDate();
+  const raw=(type==='relief'?document.getElementById('myJobReliefCrewNumber')?.value:document.getElementById('myJobNumber')?.value)||'';
+  const key=normalizeCrewBookKey(raw.trim());
+  if(!key){alert(type==='relief'?'Enter the Relief Crew number first.':'Enter the Job Number first.');return}
+  const hit=crewBookLookupJobV8(key,date);
+  if(!hit){alert(`Assignment ${key} is not in the verified Crew Book dataset for ${date}.`);return}
+  const proxy={dataset:{crewbookKey:key,crewbookDate:date}};
+  openJobCompareOfficialViewer(proxy);
 }
 function myJobCrewBookReferenceDate(){
   return new Date().toISOString().slice(0,10);
