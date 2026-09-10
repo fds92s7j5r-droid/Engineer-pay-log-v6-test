@@ -171,16 +171,15 @@
     .time-slip-status-hint{font-size:10.5px;color:var(--muted);line-height:1.4;margin-top:5px;min-height:14px}
     .time-slip-claim-code-panel{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
     .time-slip-claim-code-lead{font-size:12px;color:var(--muted);line-height:1.45;margin:4px 0 10px}
-    .time-slip-claim-code-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-    .time-slip-claim-option{display:flex;align-items:flex-start;gap:9px;padding:10px 11px;border:1px solid var(--line);border-radius:12px;background:var(--card);cursor:pointer}
-    .time-slip-claim-option input{margin-top:2px;transform:scale(1.08)}
-    .time-slip-claim-option-main{min-width:0;flex:1;display:block}
-    .time-slip-claim-option-title{display:block;font-size:12px;font-weight:900;color:var(--ink);line-height:1.3;overflow-wrap:anywhere}
-    .time-slip-claim-option-sub{display:block;font-size:10.5px;color:var(--muted);line-height:1.35;margin-top:3px;overflow-wrap:anywhere}
+    .time-slip-claim-rows{display:grid;gap:8px}
+    .time-slip-claim-row{display:flex;align-items:center;gap:8px}
+    .time-slip-claim-row select{flex:1;min-width:0}
+    .time-slip-claim-row .btn{flex:0 0 auto}
+    .time-slip-claim-add{margin-top:8px}
     .time-slip-claim-code-note{font-size:10.5px;color:var(--muted);line-height:1.4;margin-top:8px}
     .time-slip-claim-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
     .time-slip-code-badge{display:inline-flex;align-items:center;padding:4px 7px;border-radius:999px;background:#eaf2fb;border:1px solid #b9d0ea;color:#173b63;font-size:10px;font-weight:900;line-height:1.15}
-    @media(max-width:520px){.time-slip-claim-code-grid{grid-template-columns:1fr}}
+    @media(max-width:520px){.time-slip-claim-row{align-items:stretch}.time-slip-claim-row select{font-size:16px}}
     .time-slip-wage-panel{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
     .time-slip-wage-lead{font-size:12px;color:var(--muted);line-height:1.45;margin:4px 0 10px}
     .time-slip-wage-actions{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 12px}
@@ -2724,18 +2723,10 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
             </div>
             <div class="time-slip-claim-code-panel">
               <div class="subhead">Claim Type / Code</div>
-              <p class="time-slip-claim-code-lead">Choose the exception claim code(s) that apply to this Time Slip. These labels are for personal tracking and do not change pay calculations.</p>
-              <div class="time-slip-claim-code-grid">
-                <label class="time-slip-claim-option"><input type="checkbox" data-timeslip-claim-key="03" onchange="handleTimeSlipClaimTypeChange(this)"><span class="time-slip-claim-option-main"><span class="time-slip-claim-option-title">03 · Meal period claim</span></span></label>
-                <label class="time-slip-claim-option"><input type="checkbox" data-timeslip-claim-key="04" onchange="handleTimeSlipClaimTypeChange(this)"><span class="time-slip-claim-option-main"><span class="time-slip-claim-option-title">04 · Outside normal assignment</span><span class="time-slip-claim-option-sub">Operation of trains outside of normal assignment</span></span></label>
-                <label class="time-slip-claim-option"><input type="checkbox" data-timeslip-claim-key="05" onchange="handleTimeSlipClaimTypeChange(this)"><span class="time-slip-claim-option-main"><span class="time-slip-claim-option-title">05 · Overtime above Crew Book earnings</span></span></label>
-                <label class="time-slip-claim-option"><input type="checkbox" data-timeslip-claim-key="08" onchange="handleTimeSlipClaimTypeChange(this)"><span class="time-slip-claim-option-main"><span class="time-slip-claim-option-title">08 · Runaround claim</span></span></label>
-                <label class="time-slip-claim-option"><input type="checkbox" data-timeslip-claim-key="09" onchange="handleTimeSlipClaimTypeChange(this)"><span class="time-slip-claim-option-main"><span class="time-slip-claim-option-title">09 · Two classes of service</span><span class="time-slip-claim-option-sub">Used in two (2) classes of service</span></span></label>
-                <label class="time-slip-claim-option"><input type="checkbox" data-timeslip-claim-key="11-commingle" onchange="handleTimeSlipClaimTypeChange(this)"><span class="time-slip-claim-option-main"><span class="time-slip-claim-option-title">11 · Commingle</span><span class="time-slip-claim-option-sub">Common miscellaneous claim</span></span></label>
-                <label class="time-slip-claim-option"><input type="checkbox" data-timeslip-claim-key="11-misc" onchange="handleTimeSlipClaimTypeChange(this)"><span class="time-slip-claim-option-main"><span class="time-slip-claim-option-title">11 · Miscellaneous claim</span></span></label>
-                <label class="time-slip-claim-option"><input type="checkbox" data-timeslip-claim-key="13" onchange="handleTimeSlipClaimTypeChange(this)"><span class="time-slip-claim-option-main"><span class="time-slip-claim-option-title">13 · Night differential above Crew Book earnings</span></span></label>
-              </div>
-              <div class="time-slip-claim-code-note">Commingle is tracked as Code 11. “Commingle” and generic “Miscellaneous claim” are separate app entries for convenience, but both represent official Code 11.</div>
+              <p class="time-slip-claim-code-lead">Add the exception claim code(s) that apply to this Time Slip. These labels are for personal tracking and do not change pay calculations.</p>
+              <div id="timeSlipClaimCodeRows" class="time-slip-claim-rows"></div>
+              <button id="timeSlipAddClaimCode" class="btn small time-slip-claim-add" type="button" onclick="addTimeSlipClaimCodeRow()">+ Add claim code</button>
+              <div id="timeSlipClaimCodeNote" class="time-slip-claim-code-note" style="display:none">Commingle is an official Code 11 miscellaneous claim. Engineer Pay Log lists it separately because it is commonly used.</div>
             </div>
             <div class="time-slip-wage-panel">
               <div class="subhead">Wage Examiners Follow-Up</div>
@@ -5460,35 +5451,85 @@ function toggleOTCompletion(){
   if(!on){const t=document.getElementById('otCompletionTime');if(t)t.value=''}
 }
 const TIME_SLIP_CLAIM_TYPES=[
-  {key:'03',code:'03',card:'03 · Meal',label:'Meal period claim'},
-  {key:'04',code:'04',card:'04 · Outside Assignment',label:'Operation of trains outside of normal assignment'},
-  {key:'05',code:'05',card:'05 · OT',label:'Overtime above the crew assignment book earnings'},
-  {key:'08',code:'08',card:'08 · Runaround',label:'Runaround claim'},
-  {key:'09',code:'09',card:'09 · 2 Classes',label:'Used in two (2) classes of service'},
-  {key:'11-commingle',code:'11',card:'11 · Commingle',label:'Commingle'},
-  {key:'11-misc',code:'11',card:'11 · Misc.',label:'Miscellaneous claim'},
-  {key:'13',code:'13',card:'13 · Night Diff',label:'Night differential above the crew assignment book earnings'}
+  {key:'03',code:'03',card:'03 · Meal',label:'03 · Meal period claim',title:'Meal period claim'},
+  {key:'04',code:'04',card:'04 · Outside Assignment',label:'04 · Operation of trains outside of my normal assignment',title:'Operation of trains outside of my normal assignment'},
+  {key:'05',code:'05',card:'05 · OT',label:'05 · Overtime above Crew Book earnings',title:'Overtime above the crew assignment book earnings'},
+  {key:'08',code:'08',card:'08 · Runaround',label:'08 · Runaround claim',title:'Runaround claim'},
+  {key:'09',code:'09',card:'09 · 2 Classes',label:'09 · Two classes of service',title:'Used in two (2) classes of service'},
+  {key:'11-commingle',code:'11',card:'11 · Commingle',label:'11 · Commingle',title:'Commingle'},
+  {key:'11-misc',code:'11',card:'11 · Misc.',label:'11 · Miscellaneous claim',title:'Miscellaneous claim'},
+  {key:'13',code:'13',card:'13 · Night Diff',label:'13 · Night differential above Crew Book earnings',title:'Night differential above the crew assignment book earnings'}
 ];
 const TIME_SLIP_CLAIM_TYPE_KEYS=new Set(TIME_SLIP_CLAIM_TYPES.map(x=>x.key));
+function normalizeTimeSlipClaimTypes(types){
+  const out=[];
+  for(const raw of Array.isArray(types)?types:[]){
+    const key=String(raw||'');
+    if(!TIME_SLIP_CLAIM_TYPE_KEYS.has(key)||out.includes(key))continue;
+    if(key==='11-misc'&&out.includes('11-commingle'))continue;
+    if(key==='11-commingle'){const i=out.indexOf('11-misc');if(i>=0)out.splice(i,1)}
+    out.push(key);
+  }
+  return out;
+}
+function currentTimeSlipClaimRowValues(){
+  return [...document.querySelectorAll('[data-timeslip-claim-select]')].map(el=>String(el.value||''));
+}
+function claimTypeOptionHTML(meta,value,selectedElsewhere){
+  const conflict=(meta.key==='11-commingle'&&selectedElsewhere.has('11-misc'))||(meta.key==='11-misc'&&selectedElsewhere.has('11-commingle'));
+  const duplicate=selectedElsewhere.has(meta.key);
+  return `<option value="${escapeHTML(meta.key)}"${meta.key===value?' selected':''}${(conflict||duplicate)&&meta.key!==value?' disabled':''}>${escapeHTML(meta.label)}</option>`;
+}
+function renderTimeSlipClaimRows(values){
+  const wrap=document.getElementById('timeSlipClaimCodeRows');if(!wrap)return;
+  let rows=Array.isArray(values)?values.map(x=>String(x||'')):[];
+  if(!rows.length)rows=[''];
+  wrap.innerHTML=rows.map((value,index)=>{
+    const selectedElsewhere=new Set(rows.filter((v,i)=>i!==index&&v));
+    const options=TIME_SLIP_CLAIM_TYPES.map(meta=>claimTypeOptionHTML(meta,value,selectedElsewhere)).join('');
+    const remove=rows.length>1?`<button class="btn small" type="button" onclick="removeTimeSlipClaimCodeRow(${index})">Remove</button>`:'';
+    return `<div class="time-slip-claim-row"><select data-timeslip-claim-select onchange="handleTimeSlipClaimSelectChange()"><option value="">Select claim type / code…</option>${options}</select>${remove}</div>`;
+  }).join('');
+  updateTimeSlipClaimCodeControls();
+}
 function collectTimeSlipClaimTypes(){
-  return [...document.querySelectorAll('[data-timeslip-claim-key]:checked')].map(el=>String(el.dataset.timeslipClaimKey||'')).filter(x=>TIME_SLIP_CLAIM_TYPE_KEYS.has(x));
+  return normalizeTimeSlipClaimTypes(currentTimeSlipClaimRowValues().filter(Boolean));
 }
 function setTimeSlipClaimTypes(types){
-  const selected=new Set(Array.isArray(types)?types.map(x=>String(x||'')):[]);
-  if(selected.has('11-commingle')&&selected.has('11-misc'))selected.delete('11-misc');
-  document.querySelectorAll('[data-timeslip-claim-key]').forEach(el=>{el.checked=selected.has(String(el.dataset.timeslipClaimKey||''))});
+  renderTimeSlipClaimRows(normalizeTimeSlipClaimTypes(types));
 }
-function handleTimeSlipClaimTypeChange(el){
-  if(!el?.checked)return;
-  const key=String(el.dataset.timeslipClaimKey||'');
-  if(key==='11-commingle'||key==='11-misc'){
-    const other=key==='11-commingle'?'11-misc':'11-commingle';
-    const otherEl=document.querySelector(`[data-timeslip-claim-key="${other}"]`);if(otherEl)otherEl.checked=false;
+function handleTimeSlipClaimSelectChange(){
+  const values=currentTimeSlipClaimRowValues();
+  const normalized=normalizeTimeSlipClaimTypes(values.filter(Boolean));
+  const hasBlank=values.some(v=>!v);
+  renderTimeSlipClaimRows(hasBlank&&normalized.length<values.length?[...normalized,'']:normalized);
+}
+function addTimeSlipClaimCodeRow(){
+  const values=currentTimeSlipClaimRowValues();
+  if(values.some(v=>!v))return;
+  const selected=normalizeTimeSlipClaimTypes(values);
+  if(selected.length>=TIME_SLIP_CLAIM_TYPES.length-1)return;
+  renderTimeSlipClaimRows([...selected,'']);
+}
+function removeTimeSlipClaimCodeRow(index){
+  const values=currentTimeSlipClaimRowValues();
+  values.splice(Number(index),1);
+  renderTimeSlipClaimRows(values.length?values:['']);
+}
+function updateTimeSlipClaimCodeControls(){
+  const values=currentTimeSlipClaimRowValues();
+  const selected=normalizeTimeSlipClaimTypes(values.filter(Boolean));
+  const add=document.getElementById('timeSlipAddClaimCode');
+  if(add){
+    add.style.display=(values.some(v=>!v)||selected.length>=TIME_SLIP_CLAIM_TYPES.length-1)?'none':'inline-flex';
+    add.textContent=selected.length?'+ Add another claim code':'+ Add claim code';
   }
+  const note=document.getElementById('timeSlipClaimCodeNote');
+  if(note)note.style.display=selected.some(x=>x==='11-commingle'||x==='11-misc')?'block':'none';
 }
 function timeSlipClaimBadgeHTML(s){
   const keys=Array.isArray(s?.timeSlipClaimTypes)?s.timeSlipClaimTypes:[];
-  return keys.map(key=>TIME_SLIP_CLAIM_TYPES.find(x=>x.key===String(key))).filter(Boolean).map(meta=>`<span class="time-slip-code-badge" title="${escapeHTML(meta.label)}">${escapeHTML(meta.card)}</span>`).join('');
+  return keys.map(key=>TIME_SLIP_CLAIM_TYPES.find(x=>x.key===String(key))).filter(Boolean).map(meta=>`<span class="time-slip-code-badge" title="${escapeHTML(meta.title||meta.label)}">${escapeHTML(meta.card)}</span>`).join('');
 }
 function toggleTimeSlip(){
   const $=id=>document.getElementById(id);
