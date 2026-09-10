@@ -1398,8 +1398,45 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <p>Digital time book for LIRR Engineers</p>
     </div>
     <div id="accountGateChecking" class="account-gate-checking">Checking your account…
-      <div id="accountStartupDebug" class="account-startup-debug">AUTH DIAGNOSTIC R6 · loading…</div>
+      <div id="accountStartupDebug" class="account-startup-debug">BOOT DIAGNOSTIC R7 · static HTML loaded</div>
     </div>
+    <script>
+      (function(){
+        var lines=[];
+        var start=(window.performance&&performance.now)?performance.now():Date.now();
+        function stamp(){var n=(window.performance&&performance.now)?performance.now():Date.now();return '+'+Math.max(0,Math.round(n-start))+'ms';}
+        function draw(){
+          var el=document.getElementById('accountStartupDebug');
+          if(el)el.textContent='BOOT DIAGNOSTIC R7\n'+lines.slice(-12).join('\n');
+        }
+        function log(msg){lines.push(stamp()+' '+String(msg));draw();try{console.log('[EPL boot R7]',msg)}catch(e){}}
+        window.__eplBootDiagLog=log;
+        log('early inline script reached');
+        try{
+          localStorage.setItem('__epl_r7_ls','1');
+          var got=localStorage.getItem('__epl_r7_ls');
+          localStorage.removeItem('__epl_r7_ls');
+          log('localStorage '+(got==='1'?'OK':'unexpected'));
+        }catch(e){log('localStorage ERROR '+(e&&e.name?e.name:String(e)));}
+        try{
+          sessionStorage.setItem('__epl_r7_ss','1');
+          var got2=sessionStorage.getItem('__epl_r7_ss');
+          sessionStorage.removeItem('__epl_r7_ss');
+          log('sessionStorage '+(got2==='1'?'OK':'unexpected'));
+        }catch(e){log('sessionStorage ERROR '+(e&&e.name?e.name:String(e)));}
+        window.addEventListener('error',function(ev){
+          var msg=ev&&ev.message?ev.message:'unknown error';
+          var loc=ev&&ev.filename?(' @ '+ev.filename.split('/').pop()+':'+(ev.lineno||'?')+':'+(ev.colno||'?')):'';
+          log('WINDOW ERROR '+msg+loc);
+        },true);
+        window.addEventListener('unhandledrejection',function(ev){
+          var r=ev&&ev.reason;log('UNHANDLED '+(r&&r.message?r.message:String(r||'rejection')));
+        });
+        setTimeout(function(){log('heartbeat 0.5s supabase='+(!!window.supabase));},500);
+        setTimeout(function(){log('heartbeat 2s');},2000);
+        setTimeout(function(){log('heartbeat 8s');},8000);
+      })();
+    </script>
     <div id="accountGateForm" style="display:none">
       <div id="accountOnboardingPanel" class="account-onboarding" style="display:none">
         <div class="account-onboarding-hero">
@@ -7152,6 +7189,7 @@ function cloudConfigFromUI(){return {url:CLOUD_PROJECT_URL,key:CLOUD_PUBLISHABLE
 const ACCOUNT_AUTH_DIAG_STARTED=(typeof performance!=='undefined'&&performance.now)?performance.now():Date.now();
 let accountAuthDiagLines=[];
 function accountAuthDiag(message){
+  try{if(typeof window.__eplBootDiagLog==='function')window.__eplBootDiagLog('MAIN '+String(message||''))}catch{}
   const now=(typeof performance!=='undefined'&&performance.now)?performance.now():Date.now();
   const elapsed=Math.max(0,Math.round(now-ACCOUNT_AUTH_DIAG_STARTED));
   const line=`+${elapsed}ms ${String(message||'')}`;
