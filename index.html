@@ -1073,6 +1073,8 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .account-login-icon{display:block;width:68px;height:68px;margin:0 auto 12px;border-radius:16px}
     .account-login-brand{text-align:center;margin-bottom:22px}.account-login-brand h1{font-size:24px;margin:0;color:var(--text)}.account-login-brand p{margin:5px 0 0;color:var(--muted);font-size:12px}
     .account-gate-checking{text-align:center;color:var(--muted);padding:18px 0}
+    .account-startup-debug{margin:10px auto 0;max-width:460px;text-align:left;font:11px/1.35 ui-monospace,SFMono-Regular,Menlo,monospace;color:#4c6178;background:#f4f7fb;border:1px solid #d7e1ed;border-radius:10px;padding:9px 10px;white-space:pre-wrap;word-break:break-word}
+    html[data-theme="dark"] .account-startup-debug{background:#101d2d;border-color:#315f91;color:#b9d8f7}
     .account-screen-title{text-align:center;margin:0 0 4px;font-size:19px}.account-screen-subtitle{text-align:center;margin:0 0 18px;color:var(--muted);font-size:11px;line-height:1.45}
     .account-login-primary,.account-login-secondary{width:100%;justify-content:center;margin-top:12px}.account-login-secondary{margin-top:8px}
     .account-text-link{display:block;width:100%;border:0;background:transparent;color:var(--accent);font:inherit;font-size:12px;font-weight:800;text-align:center;padding:10px 4px;cursor:pointer}
@@ -1395,7 +1397,9 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <h1>Engineer Pay Log</h1>
       <p>Digital time book for LIRR Engineers</p>
     </div>
-    <div id="accountGateChecking" class="account-gate-checking">Checking your account…</div>
+    <div id="accountGateChecking" class="account-gate-checking">Checking your account…
+      <div id="accountStartupDebug" class="account-startup-debug">AUTH DIAGNOSTIC R6 · loading…</div>
+    </div>
     <div id="accountGateForm" style="display:none">
       <div id="accountOnboardingPanel" class="account-onboarding" style="display:none">
         <div class="account-onboarding-hero">
@@ -7145,6 +7149,30 @@ function setCloudTestStatus(message){
   accountUpdateSyncSummary(message);
 }
 function cloudConfigFromUI(){return {url:CLOUD_PROJECT_URL,key:CLOUD_PUBLISHABLE_KEY}}
+const ACCOUNT_AUTH_DIAG_STARTED=(typeof performance!=='undefined'&&performance.now)?performance.now():Date.now();
+let accountAuthDiagLines=[];
+function accountAuthDiag(message){
+  const now=(typeof performance!=='undefined'&&performance.now)?performance.now():Date.now();
+  const elapsed=Math.max(0,Math.round(now-ACCOUNT_AUTH_DIAG_STARTED));
+  const line=`+${elapsed}ms ${String(message||'')}`;
+  accountAuthDiagLines.push(line);if(accountAuthDiagLines.length>14)accountAuthDiagLines=accountAuthDiagLines.slice(-14);
+  const el=document.getElementById('accountStartupDebug');if(el)el.textContent=`AUTH DIAGNOSTIC R6\n${accountAuthDiagLines.join('\n')}`;
+  try{console.log('[EPL auth diag]',line)}catch{}
+}
+function accountAuthDiagStorage(){
+  let ls='error',ss='error',last='no',owner='no';
+  try{localStorage.setItem('__epl_diag_ls','1');localStorage.removeItem('__epl_diag_ls');ls='ok';last=localStorage.getItem(ACCOUNT_LAST_EMAIL_KEY)?'yes':'no';owner=localStorage.getItem(ACCOUNT_WORKSPACE_OWNER_KEY)?'yes':'no'}catch(e){ls=`ERR ${e?.name||'storage'}`}
+  try{sessionStorage.setItem('__epl_diag_ss','1');sessionStorage.removeItem('__epl_diag_ss');ss='ok'}catch(e){ss=`ERR ${e?.name||'storage'}`}
+  accountAuthDiag(`storage local=${ls} session=${ss} lastEmail=${last} workspace=${owner}`);
+}
+accountAuthDiag('main script reached');
+setTimeout(()=>accountAuthDiag('timer heartbeat 1s'),1000);
+setTimeout(()=>accountAuthDiag('timer heartbeat 3s'),3000);
+setTimeout(()=>accountAuthDiag('timer heartbeat 9s'),9000);
+try{
+  if(navigator?.locks?.query){navigator.locks.query().then(v=>accountAuthDiag(`webLocks held=${v?.held?.length||0} pending=${v?.pending?.length||0}`)).catch(e=>accountAuthDiag(`webLocks query ERR ${e?.name||e}`))}
+  else accountAuthDiag('webLocks API unavailable');
+}catch(e){accountAuthDiag(`webLocks probe ERR ${e?.name||e}`)}
 function accountBindRecoveryListener(client=cloudClient){
   if(!client||accountRecoveryListenerBound)return;
   accountRecoveryListenerBound=true;
@@ -7156,7 +7184,8 @@ function accountBindRecoveryListener(client=cloudClient){
   });
 }
 function getCloudClient(){
-  if(cloudClient)return cloudClient;
+  if(cloudClient){accountAuthDiag('getCloudClient: reuse existing client');return cloudClient;}
+  accountAuthDiag(`getCloudClient: supabase=${!!window.supabase}`);
   if(!(window.supabase&&typeof window.supabase.createClient==='function')){
     setCloudTestStatus('Supabase library did not load. Check your connection and refresh.');
     return null;
@@ -7173,9 +7202,11 @@ function getCloudClient(){
     // TEST BUILD: keep Supabase auth session in per-tab sessionStorage instead of
     // localStorage. This is specifically to isolate iOS Safari Private Browsing
     // startup hangs while preserving normal account data/workspace storage.
+    accountAuthDiag('createClient: before');
     cloudClient=window.supabase.createClient(CLOUD_PROJECT_URL,CLOUD_PUBLISHABLE_KEY,{
       auth:{storage:authStorage,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
     });
+    accountAuthDiag('createClient: returned');
     return cloudClient;
   }
   catch(err){console.warn('Cloud client initialization failed:',err);setCloudTestStatus(`Configuration error: ${err?.message||err}`);return null}
@@ -8489,6 +8520,8 @@ async function accountLoadProfileForStartup(user,client){
   }
 }
 async function initCloudBridgeTest(){
+  accountAuthDiag('initCloudBridgeTest: entered');
+  accountAuthDiagStorage();
   const gate=document.getElementById('accountGate');if(gate)gate.style.display='flex';
   const checking=document.getElementById('accountGateChecking');if(checking)checking.style.display='block';
   const form=document.getElementById('accountGateForm');if(form)form.style.display='none';
@@ -8497,6 +8530,7 @@ async function initCloudBridgeTest(){
   const workspaceOwner=localStorage.getItem(ACCOUNT_WORKSPACE_OWNER_KEY)||'';
   let localStartupOpened=false;
   const openStoredWorkspace=()=>{
+    accountAuthDiag(`openStoredWorkspace: called lastEmail=${!!lastEmail} owner=${!!workspaceOwner}`);
     if(localStartupOpened||!lastEmail||!workspaceOwner)return false;
     activeWorkspaceUserId=workspaceOwner;
     accountUpdateIdentity({email:lastEmail});
@@ -8508,9 +8542,11 @@ async function initCloudBridgeTest(){
   };
   // Offline-first startup: a known local account workspace should become usable
   // quickly even if Safari is slow restoring the Supabase auth session.
-  const localStartupTimer=setTimeout(()=>{openStoredWorkspace()},1500);
+  const localStartupTimer=setTimeout(()=>{accountAuthDiag('local fallback timer fired');openStoredWorkspace()},1500);
 
+  accountAuthDiag('startup: before getCloudClient');
   const client=getCloudClient();
+  accountAuthDiag(`startup: after getCloudClient client=${!!client}`);
   if(!client){
     clearTimeout(localStartupTimer);
     if(openStoredWorkspace())setCloudTestStatus('Offline. Your local Engineer Pay Log data is available; changes will sync when the connection returns.');
@@ -8519,10 +8555,14 @@ async function initCloudBridgeTest(){
   }
   let user=null;
   try{
+    accountAuthDiag('startup: before getSession');
     const result=await accountStartupTimeout(()=>client.auth.getSession(),8000);
+    accountAuthDiag(`startup: getSession resolved session=${!!result?.data?.session}`);
     user=result?.data?.session?.user||null;
     accountBindRecoveryListener(client);
+    accountAuthDiag('startup: recovery listener bound');
   }catch(err){
+    accountAuthDiag(`startup: getSession/timeout catch ${err?.message||err}`);
     clearTimeout(localStartupTimer);
     console.warn('Account startup session check did not finish:',err);
     if(openStoredWorkspace()){
@@ -10388,7 +10428,7 @@ void initCloudBridgeTest().catch(err=>{
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260909-job164-r4-auth-pin').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260910-r6-auth-diagnostic').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
