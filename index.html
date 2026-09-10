@@ -16,7 +16,7 @@
   <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.4/dist/umd/supabase.js"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 
   <style>
@@ -7145,23 +7145,27 @@ function setCloudTestStatus(message){
   accountUpdateSyncSummary(message);
 }
 function cloudConfigFromUI(){return {url:CLOUD_PROJECT_URL,key:CLOUD_PUBLISHABLE_KEY}}
+function accountBindRecoveryListener(client=cloudClient){
+  if(!client||accountRecoveryListenerBound)return;
+  accountRecoveryListenerBound=true;
+  client.auth.onAuthStateChange((event,session)=>{
+    if(event==='PASSWORD_RECOVERY'){
+      accountRecoveryIntent=true;
+      setTimeout(()=>{accountShowPasswordUpdate();setCloudTestStatus('Password reset link verified. Choose a new password to continue.')},0);
+    }
+  });
+}
 function getCloudClient(){
   if(cloudClient)return cloudClient;
   if(!(window.supabase&&typeof window.supabase.createClient==='function')){
-    setCloudTestStatus('Supabase library did not load. Check the internet connection and refresh.');
+    setCloudTestStatus('Supabase library did not load. Check your connection and refresh.');
     return null;
   }
   try{
+    // Do not subscribe to auth-state events while the Supabase client is still
+    // restoring its persisted session. Recent auth-js builds can deadlock the
+    // initialization path when a listener and session refresh race on reload.
     cloudClient=window.supabase.createClient(CLOUD_PROJECT_URL,CLOUD_PUBLISHABLE_KEY);
-    if(!accountRecoveryListenerBound){
-      accountRecoveryListenerBound=true;
-      cloudClient.auth.onAuthStateChange((event,session)=>{
-        if(event==='PASSWORD_RECOVERY'){
-          accountRecoveryIntent=true;
-          setTimeout(()=>{accountShowPasswordUpdate();setCloudTestStatus('Password reset link verified. Choose a new password to continue.')},0);
-        }
-      });
-    }
     return cloudClient;
   }
   catch(err){console.warn('Cloud client initialization failed:',err);setCloudTestStatus(`Configuration error: ${err?.message||err}`);return null}
@@ -8507,6 +8511,7 @@ async function initCloudBridgeTest(){
   try{
     const result=await accountStartupTimeout(()=>client.auth.getSession(),8000);
     user=result?.data?.session?.user||null;
+    accountBindRecoveryListener(client);
   }catch(err){
     clearTimeout(localStartupTimer);
     console.warn('Account startup session check did not finish:',err);
@@ -10373,7 +10378,7 @@ void initCloudBridgeTest().catch(err=>{
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260909-job164-r3-local-first-startup').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260909-job164-r4-auth-pin').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
