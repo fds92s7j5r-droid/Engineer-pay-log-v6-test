@@ -880,6 +880,17 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .settings-disclosure[open]>.settings-chevron,.settings-disclosure[open]>summary .settings-chevron{transform:rotate(90deg)}
     .settings-disclosure-body{padding:2px 0 14px;min-width:0}
     .settings-myjob{margin-top:2px}
+    .developer-tool-disclosure{border-top:1px solid var(--line)}
+    .developer-tool-disclosure:first-of-type{border-top:0}
+    .developer-tool-disclosure>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;list-style:none;padding:13px 0}
+    .developer-tool-disclosure>summary::-webkit-details-marker{display:none}
+    .developer-tool-disclosure>summary>span:first-child{min-width:0;display:block}
+    .developer-tool-disclosure>summary strong{font-size:13px;color:var(--ink)}
+    .developer-tool-disclosure>summary small{display:block;font-size:10.5px;color:var(--muted);font-weight:500;line-height:1.35;margin-top:3px}
+    .developer-tool-disclosure[open]>summary .settings-chevron{transform:rotate(90deg)}
+    .developer-tool-disclosure-body{padding:2px 0 14px;min-width:0}
+    .developer-summary-right{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+    .developer-admin-card .settings-heading{margin-bottom:0}
     .settings-myjob .check{max-width:100%}
     .settings-action-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 4px}
     .backup-status-row{padding:11px 12px;border-radius:12px;background:#f7fafc;border:1px solid var(--line);font-size:12px}
@@ -1872,43 +1883,46 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <span class="roster-admin-badge">Developer</span>
         </div>
 
-        <div class="developer-tool-section">
-          <h3>Community Notes Moderation</h3>
-          <p class="developer-tool-copy">Community Notes publish automatically. Review them here and hide only notes that are inappropriate, misleading, irrelevant, or should not be shown. Hidden notes can be restored later.</p>
-          <div class="community-mod-controls">
-            <div class="field"><label>Search</label><input id="communityModSearch" type="search" placeholder="Job or note text" oninput="communityModerationRender()"></div>
-            <div class="field"><label>Channel</label><select id="communityModChannel" onchange="communityModerationRender()"><option value="">All</option><option value="production">Production</option><option value="test_v1">Test</option></select></div>
-            <div class="field"><label>Visibility</label><select id="communityModVisibility" onchange="communityModerationRender()"><option value="">All</option><option value="visible">Visible</option><option value="hidden">Hidden</option></select></div>
-            <button class="btn small" type="button" onclick="communityModerationLoad(true)">Refresh</button>
-          </div>
-          <div id="communityModSummary" class="community-mod-summary">Loading Community Notes…</div>
-          <div id="communityModList" class="community-mod-list"></div>
-        </div>
-
-        <div class="developer-tool-section">
-          <h3>Local Testing State</h3>
-          <p class="developer-tool-copy">These controls affect only this browser/device. They never change your saved IBM number, real roster rank, published roster, bid sheet, or awards.</p>
-          <div class="trim-dev-override show" id="trimDevOverride" style="margin-top:10px;margin-bottom:0">
-            <div class="trim-dev-override-title">Trim Assistant testing</div>
-            <div class="field" style="margin:0"><label>Test Rank Override</label><input id="trimTestRank" type="number" min="1" step="1" inputmode="numeric" placeholder="Leave blank to use your real rank"></div>
-            <div class="settings-action-row" style="margin-top:8px">
-              <button class="btn small primary" type="button" onclick="trimDevRankChanged()">Apply Test Rank</button>
-              <button class="btn small" type="button" onclick="developerUseActualRank()">Use My Actual Rank</button>
+        <details class="developer-tool-disclosure">
+          <summary><span><strong>Community Notes Moderation</strong><small>Review, hide, and restore user-contributed notes.</small></span><span class="settings-chevron">›</span></summary>
+          <div class="developer-tool-disclosure-body">
+            <p class="developer-tool-copy">Community Notes publish automatically. Review them here and hide only notes that are inappropriate, misleading, irrelevant, or should not be shown. Hidden notes can be restored later.</p>
+            <div class="community-mod-controls">
+              <div class="field"><label>Search</label><input id="communityModSearch" type="search" placeholder="Job or note text" oninput="communityModerationRender()"></div>
+              <div class="field"><label>Channel</label><select id="communityModChannel" onchange="communityModerationRender()"><option value="">All</option><option value="production">Production</option><option value="test_v1">Test</option></select></div>
+              <div class="field"><label>Visibility</label><select id="communityModVisibility" onchange="communityModerationRender()"><option value="">All</option><option value="visible">Visible</option><option value="hidden">Hidden</option></select></div>
+              <button class="btn small" type="button" onclick="communityModerationLoad(true)">Refresh</button>
             </div>
-            <div class="trim-dev-rank-note" id="trimDevRankNote">No local rank override is active.</div>
+            <div id="communityModSummary" class="community-mod-summary">Loading Community Notes…</div>
+            <div id="communityModList" class="community-mod-list"></div>
           </div>
-          <div id="developerTestState" class="developer-test-state"></div>
-          <div class="settings-action-row" style="margin-top:9px">
-            <button class="btn small" type="button" onclick="developerClearAllTestState()">Clear All Local Test State</button>
+        </details>
+
+        <details class="developer-tool-disclosure">
+          <summary><span><strong>Local Testing State</strong><small>Test Trim rank and Bid Sheet lifecycle behavior on this device.</small></span><span class="settings-chevron">›</span></summary>
+          <div class="developer-tool-disclosure-body">
+            <p class="developer-tool-copy">These controls affect only this browser/device. They never change your saved IBM number, real roster rank, published roster, bid sheet, or awards.</p>
+            <div class="trim-dev-override show" id="trimDevOverride" style="margin-top:10px;margin-bottom:0">
+              <div class="trim-dev-override-title">Trim Assistant testing</div>
+              <div class="field" style="margin:0"><label>Test Rank Override</label><input id="trimTestRank" type="number" min="1" step="1" inputmode="numeric" placeholder="Leave blank to use your real rank"></div>
+              <div class="settings-action-row" style="margin-top:8px">
+                <button class="btn small primary" type="button" onclick="trimDevRankChanged()">Apply Test Rank</button>
+                <button class="btn small" type="button" onclick="developerUseActualRank()">Use My Actual Rank</button>
+              </div>
+              <div class="trim-dev-rank-note" id="trimDevRankNote">No local rank override is active.</div>
+            </div>
+            <div id="developerTestState" class="developer-test-state"></div>
+            <div class="settings-action-row" style="margin-top:9px">
+              <button class="btn small" type="button" onclick="developerClearAllTestState()">Clear All Local Test State</button>
+            </div>
           </div>
-        </div>
+        </details>
       </div>
 
-      <div class="card span12 settings-card roster-admin-card" id="rosterAdminCard">
-        <div class="section-title settings-heading">
-          <div><h2>Roster Maintenance</h2><p>Developer-only roster publisher for Trim Assistant. The roster PDF is parsed on this device before publishing.</p></div>
-          <span class="roster-admin-badge">Developer</span>
-        </div>
+      <div class="card span12 settings-card roster-admin-card developer-admin-card" id="rosterAdminCard">
+        <details class="developer-tool-disclosure">
+          <summary><span><strong>Roster Maintenance</strong><small>Trim Assistant roster PDF, publishing, and Retirement Watch.</small></span><span class="developer-summary-right"><span class="roster-admin-badge">Developer</span><span class="settings-chevron">›</span></span></summary>
+          <div class="developer-tool-disclosure-body">
         <div id="rosterAdminLatest" class="account-sync-detail">Checking the latest roster snapshot…</div>
         <div id="rosterRetirementAdmin" class="roster-retirement-admin">
           <strong>🚂 Retirement Watch</strong>
@@ -1935,14 +1949,14 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
             <button class="btn" type="button" onclick="rosterClearPreview()">Clear</button>
           </div>
         </div>
-
+          </div>
+        </details>
       </div>
 
-      <div class="card span12 settings-card bid-sheet-admin-card" id="bidSheetAdminCard">
-        <div class="section-title settings-heading">
-          <div><h2>Bid Sheet Maintenance</h2><p>Developer-only publisher for Bid Sheet Assistant. The PDF is parsed and validated on this device before publishing.</p></div>
-          <span class="roster-admin-badge">Developer</span>
-        </div>
+      <div class="card span12 settings-card bid-sheet-admin-card developer-admin-card" id="bidSheetAdminCard">
+        <details class="developer-tool-disclosure">
+          <summary><span><strong>Bid Sheet Maintenance</strong><small>Bid Sheet PDF upload, lifecycle testing, preview, and publishing.</small></span><span class="developer-summary-right"><span class="roster-admin-badge">Developer</span><span class="settings-chevron">›</span></span></summary>
+          <div class="developer-tool-disclosure-body">
         <div id="bidSheetAdminLatest" class="account-sync-detail">Checking the latest published bid sheet...</div>
         <div class="bid-lifecycle-test-box">
           <div class="account-claim-kicker">Developer testing</div>
@@ -1974,13 +1988,14 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
             <button class="btn" type="button" onclick="bidSheetClearPreview()">Clear</button>
           </div>
         </div>
+          </div>
+        </details>
       </div>
 
-      <div class="card span12 settings-card award-admin-card" id="awardAdminCard">
-        <div class="section-title settings-heading">
-          <div><h2>Bulletin Awards Maintenance</h2><p>Developer-only publisher for private award matching. Employee names are never uploaded.</p></div>
-          <span class="roster-admin-badge">Developer</span>
-        </div>
+      <div class="card span12 settings-card award-admin-card developer-admin-card" id="awardAdminCard">
+        <details class="developer-tool-disclosure">
+          <summary><span><strong>Bulletin Awards Maintenance</strong><small>Awards PDF upload, validation, private matching, and publishing.</small></span><span class="developer-summary-right"><span class="roster-admin-badge">Developer</span><span class="settings-chevron">›</span></span></summary>
+          <div class="developer-tool-disclosure-body">
         <div id="awardAdminLatest" class="account-sync-detail">Checking the latest published awards...</div>
         <div class="roster-admin-drop">
           <div class="field full">
@@ -1999,6 +2014,8 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
             <button class="btn" type="button" onclick="awardClearPreview()">Clear</button>
           </div>
         </div>
+          </div>
+        </details>
       </div>
 
       <div class="card span12 settings-card" id="billingSettingsCard">
@@ -10456,7 +10473,7 @@ void initCloudBridgeTest().catch(err=>{
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260910-devtools-community-moderation-r2-channel-fix').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260910-devtools-collapsible-r3').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
