@@ -2726,7 +2726,6 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
               <p class="time-slip-claim-code-lead">Add the exception claim code(s) that apply to this Time Slip. These labels are for personal tracking and do not change pay calculations.</p>
               <div id="timeSlipClaimCodeRows" class="time-slip-claim-rows"></div>
               <button id="timeSlipAddClaimCode" class="btn small time-slip-claim-add" type="button" onclick="addTimeSlipClaimCodeRow()">+ Add claim code</button>
-              <div id="timeSlipClaimCodeNote" class="time-slip-claim-code-note" style="display:none">Commingle is an official Code 11 miscellaneous claim. Engineer Pay Log lists it separately because it is commonly used.</div>
             </div>
             <div class="time-slip-wage-panel">
               <div class="subhead">Wage Examiners Follow-Up</div>
@@ -3226,7 +3225,6 @@ function upgradeShift(s){
   if(s.timeSlipResolved===undefined)s.timeSlipResolved='';
   if(!Array.isArray(s.timeSlipClaimTypes))s.timeSlipClaimTypes=[];
   s.timeSlipClaimTypes=s.timeSlipClaimTypes.map(x=>String(x||'')).filter(x=>TIME_SLIP_CLAIM_TYPE_KEYS.has(x));
-  if(s.timeSlipClaimTypes.includes('11-commingle')&&s.timeSlipClaimTypes.includes('11-misc'))s.timeSlipClaimTypes=s.timeSlipClaimTypes.filter(x=>x!=='11-misc');
   if(!s.timeSlipPhotos||typeof s.timeSlipPhotos!=='object'||Array.isArray(s.timeSlipPhotos))s.timeSlipPhotos={};
   if(s.timeSlipWageReminderDays===undefined)s.timeSlipWageReminderDays=null;
   if(!Array.isArray(s.timeSlipFollowUps))s.timeSlipFollowUps=[];
@@ -5466,8 +5464,6 @@ function normalizeTimeSlipClaimTypes(types){
   for(const raw of Array.isArray(types)?types:[]){
     const key=String(raw||'');
     if(!TIME_SLIP_CLAIM_TYPE_KEYS.has(key)||out.includes(key))continue;
-    if(key==='11-misc'&&out.includes('11-commingle'))continue;
-    if(key==='11-commingle'){const i=out.indexOf('11-misc');if(i>=0)out.splice(i,1)}
     out.push(key);
   }
   return out;
@@ -5476,9 +5472,8 @@ function currentTimeSlipClaimRowValues(){
   return [...document.querySelectorAll('[data-timeslip-claim-select]')].map(el=>String(el.value||''));
 }
 function claimTypeOptionHTML(meta,value,selectedElsewhere){
-  const conflict=(meta.key==='11-commingle'&&selectedElsewhere.has('11-misc'))||(meta.key==='11-misc'&&selectedElsewhere.has('11-commingle'));
   const duplicate=selectedElsewhere.has(meta.key);
-  return `<option value="${escapeHTML(meta.key)}"${meta.key===value?' selected':''}${(conflict||duplicate)&&meta.key!==value?' disabled':''}>${escapeHTML(meta.label)}</option>`;
+  return `<option value="${escapeHTML(meta.key)}"${meta.key===value?' selected':''}${duplicate&&meta.key!==value?' disabled':''}>${escapeHTML(meta.label)}</option>`;
 }
 function renderTimeSlipClaimRows(values){
   const wrap=document.getElementById('timeSlipClaimCodeRows');if(!wrap)return;
@@ -5508,7 +5503,7 @@ function addTimeSlipClaimCodeRow(){
   const values=currentTimeSlipClaimRowValues();
   if(values.some(v=>!v))return;
   const selected=normalizeTimeSlipClaimTypes(values);
-  if(selected.length>=TIME_SLIP_CLAIM_TYPES.length-1)return;
+  if(selected.length>=TIME_SLIP_CLAIM_TYPES.length)return;
   renderTimeSlipClaimRows([...selected,'']);
 }
 function removeTimeSlipClaimCodeRow(index){
@@ -5521,11 +5516,9 @@ function updateTimeSlipClaimCodeControls(){
   const selected=normalizeTimeSlipClaimTypes(values.filter(Boolean));
   const add=document.getElementById('timeSlipAddClaimCode');
   if(add){
-    add.style.display=(values.some(v=>!v)||selected.length>=TIME_SLIP_CLAIM_TYPES.length-1)?'none':'inline-flex';
+    add.style.display=(values.some(v=>!v)||selected.length>=TIME_SLIP_CLAIM_TYPES.length)?'none':'inline-flex';
     add.textContent=selected.length?'+ Add another claim code':'+ Add claim code';
   }
-  const note=document.getElementById('timeSlipClaimCodeNote');
-  if(note)note.style.display=selected.some(x=>x==='11-commingle'||x==='11-misc')?'block':'none';
 }
 function timeSlipClaimBadgeHTML(s){
   const keys=Array.isArray(s?.timeSlipClaimTypes)?s.timeSlipClaimTypes:[];
