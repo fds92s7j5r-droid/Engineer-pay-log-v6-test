@@ -1879,7 +1879,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
       <div class="card span12 settings-card developer-tools-card" id="developerToolsCard">
         <div class="section-title settings-heading">
-          <div><h2>Developer Tools</h2><p>Maintainer-only moderation and local test controls. Normal Engineer Pay Log users never see this area.</p></div>
+          <div><h2>Developer Tools</h2><p>Maintainer-only controls for Engineer Pay Log administration. Normal Engineer Pay Log users never see this area.</p></div>
           <span class="roster-admin-badge">Developer</span>
         </div>
 
@@ -1898,7 +1898,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           </div>
         </details>
 
-        <details class="developer-tool-disclosure">
+        <details class="developer-tool-disclosure" id="developerLocalTestingDisclosure">
           <summary><span><strong>Local Testing State</strong><small>Test Trim rank and Bid Sheet lifecycle behavior on this device.</small></span><span class="settings-chevron">›</span></summary>
           <div class="developer-tool-disclosure-body">
             <p class="developer-tool-copy">These controls affect only this browser/device. They never change your saved IBM number, real roster rank, published roster, bid sheet, or awards.</p>
@@ -1955,10 +1955,10 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
       <div class="card span12 settings-card bid-sheet-admin-card developer-admin-card" id="bidSheetAdminCard">
         <details class="developer-tool-disclosure">
-          <summary><span><strong>Bid Sheet Maintenance</strong><small>Bid Sheet PDF upload, lifecycle testing, preview, and publishing.</small></span><span class="developer-summary-right"><span class="roster-admin-badge">Developer</span><span class="settings-chevron">›</span></span></summary>
+          <summary><span><strong>Bid Sheet Maintenance</strong><small>Bid Sheet PDF upload, preview, and publishing.</small></span><span class="developer-summary-right"><span class="roster-admin-badge">Developer</span><span class="settings-chevron">›</span></span></summary>
           <div class="developer-tool-disclosure-body">
         <div id="bidSheetAdminLatest" class="account-sync-detail">Checking the latest published bid sheet...</div>
-        <div class="bid-lifecycle-test-box">
+        <div class="bid-lifecycle-test-box" id="bidLifecycleDeveloperTestBox">
           <div class="account-claim-kicker">Developer testing</div>
           <strong>Dashboard Lifecycle Test</strong>
           <div class="bid-lifecycle-test-grid" style="margin-top:9px">
@@ -4796,7 +4796,8 @@ function quickLookupResultHTML(key,date){
   return `<article class="quick-lookup-card"><div class="quick-lookup-head"><div class="quick-lookup-titleline"><div class="quick-lookup-job">${escapeHTML(displayKey)}</div><div class="quick-lookup-source">${escapeHTML(source)}</div></div><div class="quick-lookup-terminal">${escapeHTML(terminal)}</div><div class="quick-lookup-state">${escapeHTML(state)} • ${escapeHTML(date)}</div></div><div class="quick-lookup-grid"><div class="quick-lookup-fact"><div class="label">Report</div><div class="value">${escapeHTML(jobCompareTimeLabel(x.start))}</div></div><div class="quick-lookup-fact"><div class="label">Release</div><div class="value">${escapeHTML(jobCompareTimeLabel(x.end))}</div></div><div class="quick-lookup-fact"><div class="label">Duration</div><div class="value">${escapeHTML(fmtMinutes(duration))}</div></div><div class="quick-lookup-fact"><div class="label">Meal</div><div class="value">${x.paysMeal?'Pays Meal Period':'No paid meal period'}</div></div></div><div class="quick-lookup-relief"><strong>${escapeHTML(reliefLabel)}</strong>${escapeHTML(reliefText)}</div><div class="quick-lookup-exception${exception?'':' none'}"><strong>Date-specific notes</strong>${escapeHTML(exception||'No additional day-specific exception is being applied beyond the published schedule shown above.')}</div><div class="quick-lookup-card-actions"><button class="btn small" type="button" onclick="compareQuickLookupJob('${escapeHTML(String(key))}','${escapeHTML(date)}')">Compare This Job</button></div>${communityJobPanelShellHTML(key,date)}${official}</article>`;
 }
 
-const COMMUNITY_NOTES_CHANNEL=(/\.github\.io$/i.test(window.location.hostname)||window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1')?'test_v1':'production';
+const EPL_TEST_TOOLS_ENABLED=(/\.github\.io$/i.test(window.location.hostname)||window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1');
+const COMMUNITY_NOTES_CHANNEL=EPL_TEST_TOOLS_ENABLED?'test_v1':'production';
 let COMMUNITY_NOTE_ROWS=new Map();
 let COMMUNITY_CONTEXT=null;
 function communityRevisionMeta(key,date){
@@ -9129,7 +9130,7 @@ function retirementWatchRenderAdmin(data){
   if(btn){btn.hidden=active;btn.textContent=`Start ${retirementWatchYearLabel(year)} from latest roster`}
 }
 function retirementWatchLocalRankOverride(){
-  if(!rosterAdminState?.canPublish)return 0;
+  if(!EPL_TEST_TOOLS_ENABLED||!rosterAdminState?.canPublish)return 0;
   const fromInput=Math.round(Number(document.getElementById('trimTestRank')?.value||0));
   if(fromInput>0)return fromInput;
   const saved=Math.round(Number(localStorage.getItem('epl_trim_test_rank_override_v1')||0));
@@ -9223,10 +9224,23 @@ function rosterDateDisplay(value){
   if(!value)return 'Unknown source time';
   try{return new Date(value).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}catch{return String(value)}
 }
+function developerApplyEnvironmentVisibility(){
+  const testOnly=!!EPL_TEST_TOOLS_ENABLED;
+  const localTesting=document.getElementById('developerLocalTestingDisclosure');
+  const lifecycleBox=document.getElementById('bidLifecycleDeveloperTestBox');
+  if(localTesting)localTesting.hidden=!testOnly;
+  if(lifecycleBox)lifecycleBox.hidden=!testOnly;
+  if(!testOnly){
+    // Production must never inherit a stale QA simulation from an older build.
+    try{localStorage.removeItem('epl_trim_test_rank_override_v1')}catch{}
+    try{localStorage.removeItem('epl_bid_lifecycle_test_v1')}catch{}
+  }
+}
 async function rosterCheckAdmin(force=false){
+  developerApplyEnvironmentVisibility();
   const card=document.getElementById('rosterAdminCard'),bidCard=document.getElementById('bidSheetAdminCard'),awardCard=document.getElementById('awardAdminCard'),devCard=document.getElementById('developerToolsCard');if(!card&&!bidCard&&!awardCard&&!devCard)return false;
   const toggleCards=show=>{card?.classList.toggle('show',show);bidCard?.classList.toggle('show',show);awardCard?.classList.toggle('show',show);devCard?.classList.toggle('show',show)};
-  if(rosterAdminState.checked&&!force){toggleCards(!!rosterAdminState.canPublish);trimDevUpdateModeAvailability();bidLifecycleInitControls();bidLifecycleRender();if(rosterAdminState.canPublish){developerRenderTestState();void communityModerationLoad(false)}return rosterAdminState.canPublish}
+  if(rosterAdminState.checked&&!force){toggleCards(!!rosterAdminState.canPublish);trimDevUpdateModeAvailability();bidLifecycleInitControls();bidLifecycleRender();if(rosterAdminState.canPublish){if(EPL_TEST_TOOLS_ENABLED)developerRenderTestState();void communityModerationLoad(false)}return rosterAdminState.canPublish}
   const client=getCloudClient();if(!client){toggleCards(false);return false}
   const user=await cloudCurrentUser(client);if(!user){toggleCards(false);return false}
   rosterAdminState.user=user;
@@ -9235,17 +9249,19 @@ async function rosterCheckAdmin(force=false){
     if(error)throw error;
     rosterAdminState.checked=true;rosterAdminState.canPublish=!!data?.can_publish;
     toggleCards(rosterAdminState.canPublish);
-    if(rosterAdminState.canPublish){await rosterLoadLatestSnapshot();await bidSheetLoadAdminLatest();await awardLoadAdminLatest();await retirementWatchLoad(true);trimDevInitControls();bidLifecycleInitControls();developerRenderTestState();void communityModerationLoad(false);}trimDevUpdateModeAvailability();bidLifecycleRender();
+    if(rosterAdminState.canPublish){await rosterLoadLatestSnapshot();await bidSheetLoadAdminLatest();await awardLoadAdminLatest();await retirementWatchLoad(true);trimDevInitControls();bidLifecycleInitControls();if(EPL_TEST_TOOLS_ENABLED)developerRenderTestState();void communityModerationLoad(false);}trimDevUpdateModeAvailability();bidLifecycleRender();
     return rosterAdminState.canPublish;
   }catch(err){console.warn('Roster admin check failed:',err);rosterAdminState.checked=true;rosterAdminState.canPublish=false;toggleCards(false);return false}
 }
 const communityModerationState={rows:[],loaded:false,loading:false};
 function developerTestStateSnapshot(){
+  if(!EPL_TEST_TOOLS_ENABLED)return {rank:null,bid:{date:'',results:'auto'}};
   let bid={date:'',results:'auto'};try{const raw=JSON.parse(localStorage.getItem('epl_bid_lifecycle_test_v1')||'null');if(raw&&typeof raw==='object')bid={date:String(raw.date||''),results:String(raw.results||'auto')}}catch{}
   const rank=Math.round(Number(localStorage.getItem(TRIM_TEST_RANK_KEY)||0));
   return {rank:rank>0?rank:null,bid};
 }
 function developerRenderTestState(){
+  if(!EPL_TEST_TOOLS_ENABLED)return;
   const host=document.getElementById('developerTestState');if(!host)return;const state=developerTestStateSnapshot(),rankInput=document.getElementById('trimTestRank'),note=document.getElementById('trimDevRankNote');
   if(rankInput&&document.activeElement!==rankInput)rankInput.value=state.rank?String(state.rank):'';
   if(note)note.textContent=state.rank?`Local override ${state.rank} is active. Use “Use My Actual Rank” to turn it off immediately.`:'No local rank override is active. Trim Assistant will use your IBM/profile match from the published roster.';
@@ -9253,10 +9269,11 @@ function developerRenderTestState(){
   host.innerHTML=`<strong>Trim rank override:</strong> ${state.rank?`Rank ${escapeHTML(String(state.rank))} (local only)`:'Off — using actual profile rank'}<br><strong>Bid lifecycle test:</strong> ${bidActive?`${state.bid.date?escapeHTML(state.bid.date):'Today'} • ${escapeHTML(state.bid.results)}`:'Off — Today / Automatic'}`;
 }
 async function developerUseActualRank(){
+  if(!EPL_TEST_TOOLS_ENABLED||!rosterAdminState.canPublish)return;
   localStorage.removeItem(TRIM_TEST_RANK_KEY);const input=document.getElementById('trimTestRank');if(input)input.value='';retirementWatchState.data=null;retirementWatchState.loadedAt=0;developerRenderTestState();if(trimDevState.rows.length||document.getElementById('trimView')?.classList.contains('active'))await trimDevLoad(false);void retirementWatchLoad(true);
 }
 async function developerClearAllTestState(){
-  if(!rosterAdminState.canPublish)return;
+  if(!EPL_TEST_TOOLS_ENABLED||!rosterAdminState.canPublish)return;
   localStorage.removeItem(TRIM_TEST_RANK_KEY);localStorage.removeItem('epl_bid_lifecycle_test_v1');
   const input=document.getElementById('trimTestRank');if(input)input.value='';
   try{bidLifecycleTestState={date:'',results:'auto'};bidLifecycleInitControls();bidLifecycleRender();bidSheetRender();awardRender()}catch{}
@@ -9431,15 +9448,16 @@ const BID_LIFECYCLE_TEST_KEY='epl_bid_lifecycle_test_v1';
 let bidLifecycleTestState=bidLifecycleReadTestState();
 
 function bidLifecycleReadTestState(){
+  if(!EPL_TEST_TOOLS_ENABLED){try{localStorage.removeItem(BID_LIFECYCLE_TEST_KEY)}catch{};return {date:'',results:'auto'}}
   try{const raw=localStorage.getItem(BID_LIFECYCLE_TEST_KEY),x=raw?JSON.parse(raw):{};return {date:/^\d{4}-\d{2}-\d{2}$/.test(String(x?.date||''))?String(x.date):'',results:['pending','posted'].includes(String(x?.results||''))?String(x.results):'auto'}}catch{return {date:'',results:'auto'}}
 }
-function bidLifecycleTestActive(){return !!rosterAdminState.canPublish&&(!!bidLifecycleTestState.date||bidLifecycleTestState.results!=='auto')}
-function bidLifecycleDate(){return rosterAdminState.canPublish&&bidLifecycleTestState.date?bidLifecycleTestState.date:isoLocal(new Date())}
+function bidLifecycleTestActive(){return !!EPL_TEST_TOOLS_ENABLED&&!!rosterAdminState.canPublish&&(!!bidLifecycleTestState.date||bidLifecycleTestState.results!=='auto')}
+function bidLifecycleDate(){return EPL_TEST_TOOLS_ENABLED&&rosterAdminState.canPublish&&bidLifecycleTestState.date?bidLifecycleTestState.date:isoLocal(new Date())}
 function bidLifecycleCurrentAwardPayload(){
   const p=awardState.payload,s=bidSheetState.snapshot;if(!p?.results_available||!p?.snapshot||!s?.id)return null;return String(p.snapshot.bid_sheet_snapshot_id||'')===String(s.id)?p:null;
 }
 function bidLifecycleResultsAvailable(){
-  const current=bidLifecycleCurrentAwardPayload();if(rosterAdminState.canPublish&&bidLifecycleTestState.results==='pending')return false;if(rosterAdminState.canPublish&&bidLifecycleTestState.results==='posted')return !!current;return !!current;
+  const current=bidLifecycleCurrentAwardPayload();if(EPL_TEST_TOOLS_ENABLED&&rosterAdminState.canPublish&&bidLifecycleTestState.results==='pending')return false;if(EPL_TEST_TOOLS_ENABLED&&rosterAdminState.canPublish&&bidLifecycleTestState.results==='posted')return !!current;return !!current;
 }
 function bidLifecycleExpectedAwardsDate(snapshot){
   const effective=String(snapshot?.effective_date||'');
@@ -9466,12 +9484,14 @@ function bidSheetDraftLockedMessage(){
   const phase=bidLifecyclePhase();if(phase.key==='upcoming')return `This bulletin opens ${bidSheetDateLabel(bidSheetState.snapshot?.open_date)}. Your list is read-only until bidding opens.`;return `This bulletin closed ${bidSheetDateLabel(bidSheetState.snapshot?.close_date)}. Your saved list is preserved as a read-only personal reference.`;
 }
 function bidLifecycleApplyTest(){
-  if(!rosterAdminState.canPublish)return;const date=String(document.getElementById('bidLifecycleTestDate')?.value||''),results=String(document.getElementById('bidLifecycleTestResults')?.value||'auto');bidLifecycleTestState={date:/^\d{4}-\d{2}-\d{2}$/.test(date)?date:'',results:['pending','posted'].includes(results)?results:'auto'};localStorage.setItem(BID_LIFECYCLE_TEST_KEY,JSON.stringify(bidLifecycleTestState));bidLifecycleInitControls();bidSheetRender();awardRender();bidLifecycleRender();
+  if(!EPL_TEST_TOOLS_ENABLED||!rosterAdminState.canPublish)return;const date=String(document.getElementById('bidLifecycleTestDate')?.value||''),results=String(document.getElementById('bidLifecycleTestResults')?.value||'auto');bidLifecycleTestState={date:/^\d{4}-\d{2}-\d{2}$/.test(date)?date:'',results:['pending','posted'].includes(results)?results:'auto'};localStorage.setItem(BID_LIFECYCLE_TEST_KEY,JSON.stringify(bidLifecycleTestState));bidLifecycleInitControls();bidSheetRender();awardRender();bidLifecycleRender();
 }
 function bidLifecycleClearTest(){
+  if(!EPL_TEST_TOOLS_ENABLED)return;
   bidLifecycleTestState={date:'',results:'auto'};localStorage.removeItem(BID_LIFECYCLE_TEST_KEY);bidLifecycleInitControls();bidSheetRender();awardRender();bidLifecycleRender();
 }
 function bidLifecycleInitControls(){
+  if(!EPL_TEST_TOOLS_ENABLED)return;
   const date=document.getElementById('bidLifecycleTestDate'),results=document.getElementById('bidLifecycleTestResults'),status=document.getElementById('bidLifecycleTestStatus');if(date)date.value=bidLifecycleTestState.date||'';if(results)results.value=bidLifecycleTestState.results||'auto';if(status){const phase=bidLifecyclePhase();status.innerHTML=bidLifecycleTestActive()?`<strong>Test active:</strong> ${escapeHTML(bidSheetDateLabel(phase.date))} • ${escapeHTML(bidLifecycleTestState.results==='auto'?'automatic results':bidLifecycleTestState.results==='pending'?'results forced pending':'results forced posted')} • phase: ${escapeHTML(phase.key.replace(/_/g,' '))}.<br>This changes only this device's display.`:`Using today's date and actual published results. This control changes only this device's display for testing.`}
 }
 async function bidLifecycleLoad(force=false){
@@ -9989,7 +10009,7 @@ function trimDevUpdateModeAvailability(){
   const trainee=isTraineeMode();
   const dash=document.getElementById('dashboardTrimAssistantBtn');if(dash)dash.hidden=trainee;
   const bid=document.getElementById('dashboardBidSheetBtn');if(bid)bid.hidden=trainee;
-  const override=document.getElementById('trimDevOverride');if(override)override.classList.toggle('show',!!rosterAdminState.canPublish&&!trainee);
+  const override=document.getElementById('trimDevOverride');if(override)override.classList.toggle('show',!!EPL_TEST_TOOLS_ENABLED&&!!rosterAdminState.canPublish&&!trainee);
 }
 function trimRosterFreshnessHTML(value){
   if(!value)return '<div class="trim-roster-freshness stale">Roster freshness unavailable.</div>';
@@ -10010,10 +10030,12 @@ function openTrimAssistant(){
 }
 function trimDevInitControls(){
   const input=document.getElementById('trimTestRank');
+  if(!EPL_TEST_TOOLS_ENABLED){try{localStorage.removeItem(TRIM_TEST_RANK_KEY)}catch{};if(input)input.value='';trimDevUpdateModeAvailability();return}
   if(input&&!input.value){const saved=Number(localStorage.getItem(TRIM_TEST_RANK_KEY)||0);if(saved>0)input.value=String(saved)}
   trimDevUpdateModeAvailability();
 }
 function trimDevRankChanged(){
+  if(!EPL_TEST_TOOLS_ENABLED||!rosterAdminState.canPublish)return;
   const input=document.getElementById('trimTestRank'),n=Math.round(Number(input?.value||0));
   if(n>0)localStorage.setItem(TRIM_TEST_RANK_KEY,String(n));else localStorage.removeItem(TRIM_TEST_RANK_KEY);
   retirementWatchState.data=null;retirementWatchState.loadedAt=0;developerRenderTestState();
@@ -10025,7 +10047,7 @@ function trimDevProfileRank(rows){
   return rows.find(r=>String(r.employee_id||'')===ibm)?.rank||null;
 }
 function trimDevEffectiveRank(rows){
-  const override=Math.round(Number(document.getElementById('trimTestRank')?.value||0));
+  const override=EPL_TEST_TOOLS_ENABLED&&rosterAdminState.canPublish?Math.round(Number(document.getElementById('trimTestRank')?.value||0)):0;
   const profileRank=trimDevProfileRank(rows);trimDevState.profileRank=profileRank;
   if(override>=1&&override<=rows.length)return {rank:override,source:'override',profileRank};
   if(profileRank)return {rank:profileRank,source:'profile',profileRank};
@@ -10238,7 +10260,7 @@ function trimDevClearFilters(){
 
 // ---- End developer roster PDF importer ----
 
-function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();trimDevUpdateModeAvailability();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI()}
+function renderAll(){developerApplyEnvironmentVisibility();renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();trimDevUpdateModeAvailability();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI()}
 function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){trimDevUpdateModeAvailability();void renderDashboardCommunityNotes();void bidLifecycleLoad(false);setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='trim')void trimDevLoad(false);if(v==='bid')void bidSheetLoad(false);if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility();developerRenderTestState();void rosterCheckAdmin()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
@@ -10473,7 +10495,7 @@ void initCloudBridgeTest().catch(err=>{
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260910-devtools-collapsible-r3').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260910-devtools-envsplit-r4').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
