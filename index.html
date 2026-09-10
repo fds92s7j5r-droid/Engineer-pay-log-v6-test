@@ -7165,7 +7165,17 @@ function getCloudClient(){
     // Do not subscribe to auth-state events while the Supabase client is still
     // restoring its persisted session. Recent auth-js builds can deadlock the
     // initialization path when a listener and session refresh race on reload.
-    cloudClient=window.supabase.createClient(CLOUD_PROJECT_URL,CLOUD_PUBLISHABLE_KEY);
+    const authStorage={
+      getItem:(key)=>{try{return window.sessionStorage.getItem(key)}catch{return null}},
+      setItem:(key,value)=>{try{window.sessionStorage.setItem(key,value)}catch{}},
+      removeItem:(key)=>{try{window.sessionStorage.removeItem(key)}catch{}}
+    };
+    // TEST BUILD: keep Supabase auth session in per-tab sessionStorage instead of
+    // localStorage. This is specifically to isolate iOS Safari Private Browsing
+    // startup hangs while preserving normal account data/workspace storage.
+    cloudClient=window.supabase.createClient(CLOUD_PROJECT_URL,CLOUD_PUBLISHABLE_KEY,{
+      auth:{storage:authStorage,persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+    });
     return cloudClient;
   }
   catch(err){console.warn('Cloud client initialization failed:',err);setCloudTestStatus(`Configuration error: ${err?.message||err}`);return null}
