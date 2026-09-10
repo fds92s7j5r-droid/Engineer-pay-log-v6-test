@@ -2788,6 +2788,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
               <div class="field full"><label>Date Written</label><input id="timeSlipWritten" type="date" onchange="renderTimeSlipDeadlinePreview()"></div>
               <div id="timeSlipDeadlineInfo" class="time-slip-deadline-info field full" style="display:none"></div>
               <div class="field full"><label>Date Submitted</label><input id="timeSlipSubmitted" type="date" onchange="handleTimeSlipSubmittedChange()"></div>
+              <div class="field full"><label>Date Confirmed Received</label><input id="timeSlipConfirmedReceived" type="date" onchange="handleTimeSlipConfirmedReceivedChange()"><div class="time-slip-status-hint">Optional. Once Wage Examiners confirms the slip is on file, recording the date silences follow-up reminders while the slip remains Pending.</div></div>
               <div class="field full"><label>Location Submitted</label><input id="timeSlipLocation" placeholder="e.g. Jamaica"></div>
               <div class="field full"><label>Status</label><select id="timeSlipStatus" onchange="handleTimeSlipStatusChange()"><option value="Pending">Pending</option><option value="Paid">Paid</option><option value="Denied">Denied</option></select><div id="timeSlipStatusHint" class="time-slip-status-hint"></div></div>
               <div class="field full"><label>Date Paid / Denied</label><input id="timeSlipResolved" type="date"></div>
@@ -3303,6 +3304,7 @@ function upgradeShift(s){
   if(s.timeSlip===undefined)s.timeSlip=false;
   if(s.timeSlipWritten===undefined)s.timeSlipWritten='';
   if(s.timeSlipSubmitted===undefined)s.timeSlipSubmitted='';
+  if(s.timeSlipConfirmedReceived===undefined)s.timeSlipConfirmedReceived='';
   if(s.timeSlipLocation===undefined)s.timeSlipLocation='';
   if(s.timeSlipStatus===undefined)s.timeSlipStatus='Pending';
   if(s.timeSlipResolved===undefined)s.timeSlipResolved='';
@@ -5221,6 +5223,7 @@ function formData(){
     timeSlip:$('timeSlipFlag').checked,
     timeSlipWritten:$('timeSlipFlag').checked?$('timeSlipWritten').value:'',
     timeSlipSubmitted:$('timeSlipFlag').checked?$('timeSlipSubmitted').value:'',
+    timeSlipConfirmedReceived:$('timeSlipFlag').checked?$('timeSlipConfirmedReceived').value:'',
     timeSlipLocation:$('timeSlipFlag').checked?$('timeSlipLocation').value.trim():'',
     timeSlipStatus:$('timeSlipFlag').checked?($('timeSlipStatus').value||'Pending'):'Pending',
     timeSlipResolved:$('timeSlipFlag').checked?$('timeSlipResolved').value:'',
@@ -5667,7 +5670,7 @@ function newShift(){if(!billingRequireWriteAccess())return;
   $('shiftForm').reset();setLocationUI('');setShiftTypeUI('');$('editId').value='';$('shiftRuleMode').value=isTraineeMode()?'trainee':'engineer';$('legacyExtras').value='';$('legacyClaims').value='';
   $('formTitle').textContent='Add shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';
   $('date').value=new Date().toISOString().slice(0,10);$('holidayFlag').checked=isContractHoliday($('date').value);$('holidayPayEligibleFlag').checked=$('holidayFlag').checked;
-  $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';$('timeSlipWageReminderDays').value='';setTimeSlipClaimTypes([]);
+  $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipConfirmedReceived').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';$('timeSlipWageReminderDays').value='';setTimeSlipClaimTypes([]);
   renderTimeSlipDeadlinePreview();
   applyEntryMode();handleSecretUnpaidSick();$('specialShift').value='';$('specialCategory').value='';$('classFlag').checked=false;$('conductorName').value='';$('brakemanName').value='';$('engineerName').value='';$('engineerIBM').value='';$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('unscheduledOTFlag').checked=false;$('crewBookReleaseTime').value='';$('twoClassesPullTime').value='';
   $('vacationGrossInput').value='';$('vacationGrossInput').dataset.vacationYear='';$('vacationReliefPair').value='';
@@ -5685,7 +5688,7 @@ function editShift(id){if(!billingRequireWriteAccess())return;
   setLocationUI(s.location||'');setShiftTypeUI(s.shiftType||'');$('legacyExtras').value=s.extras||'';$('legacyClaims').value=s.claims||'';
   $('notes').value=s.notes||'';$('engineerName').value=s.engineerName||'';$('engineerIBM').value=s.engineerIBM||'';$('classFlag').checked=!!s.classDay;$('conductorName').value=s.conductorName||'';$('brakemanName').value=s.brakemanName||'';
   $('specialShift').value=s.specialShift||'';$('specialCategory').value=s.specialCategory||'';$('vacationReliefPair').value=s.vacationReliefPair||'';
-  $('timeSlipFlag').checked=!!s.timeSlip;$('timeSlipWritten').value=s.timeSlipWritten||'';$('timeSlipSubmitted').value=s.timeSlipSubmitted||'';$('timeSlipLocation').value=s.timeSlipLocation||'';$('timeSlipStatus').value=s.timeSlipStatus||'Pending';$('timeSlipResolved').value=s.timeSlipResolved||'';$('timeSlipWageReminderDays').value=s.timeSlipWageReminderDays===null||s.timeSlipWageReminderDays===undefined?'':String(s.timeSlipWageReminderDays);setTimeSlipClaimTypes(s.timeSlipClaimTypes||[]);
+  $('timeSlipFlag').checked=!!s.timeSlip;$('timeSlipWritten').value=s.timeSlipWritten||'';$('timeSlipSubmitted').value=s.timeSlipSubmitted||'';$('timeSlipConfirmedReceived').value=s.timeSlipConfirmedReceived||'';$('timeSlipLocation').value=s.timeSlipLocation||'';$('timeSlipStatus').value=s.timeSlipStatus||'Pending';$('timeSlipResolved').value=s.timeSlipResolved||'';$('timeSlipWageReminderDays').value=s.timeSlipWageReminderDays===null||s.timeSlipWageReminderDays===undefined?'':String(s.timeSlipWageReminderDays);setTimeSlipClaimTypes(s.timeSlipClaimTypes||[]);
   renderTimeSlipDeadlinePreview();
   $('holidayFlag').checked=!!s.holiday;$('holidayPayEligibleFlag').checked=s.holidayPayEligible!==false&&!!s.holiday;$('ssotFlag').checked=!!s.ssot;$('rdFlag').checked=!!s.rd;
   $('paysMealFlag').checked=!!s.paysMeal;$('mpteFlag').checked=!!s.mpte;$('freightMealFlag').checked=!!s.freightMeal;$('fuelClaimFlag').checked=!!s.fuelClaim;$('otCompletionFlag').checked=!!s.otCompletion;$('otCompletionTime').value=s.otCompletionTime||'';$('unscheduledOTFlag').checked=!!s.unscheduledOT;$('crewBookReleaseTime').value=s.crewBookReleaseTime||'';$('poneFlag').checked=!!s.pone;$('traineeCount').value=Math.min(2,Math.max(1,Number(s.traineeCount)||1));
@@ -5716,7 +5719,7 @@ function duplicateShift(id){if(!billingRequireWriteAccess())return;
   $('runaroundFlag').checked=false;$('a2Flag').checked=false;$('miscPenaltyFlag').checked=false;
   $('traineeCount').value=1;$('yardCertCount').value=1;$('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;$('miscPenaltyDescription').value='';$('miscPenaltyHours').value=0;$('miscPenaltyMinutes').value=0;$('miscPenaltyStraight').checked=true;
 
-  $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';$('timeSlipWageReminderDays').value='';setTimeSlipClaimTypes([]);
+  $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipConfirmedReceived').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';$('timeSlipWageReminderDays').value='';setTimeSlipClaimTypes([]);
   renderTimeSlipDeadlinePreview();
   $('vacationGrossInput').value='';$('vacationGrossInput').dataset.vacationYear='';$('vacationReliefPair').value=s.specialShift==='Vacation Week'?(s.vacationReliefPair||vacationReliefPairFromMyJob()):'';
 
@@ -5752,13 +5755,15 @@ async function saveTimeSlipWageDefaultDays(){
 }
 function renderTimeSlipWageReminderHint(){
   const input=document.getElementById('timeSlipWageReminderDays'),hint=document.getElementById('timeSlipWageReminderHint');if(!input||!hint)return;
+  const confirmed=document.getElementById('timeSlipConfirmedReceived')?.value||'';
+  if(confirmed){hint.textContent=`Follow-up reminder silenced — Wage Examiners confirmed receipt on ${formatDateShort(confirmed)}.`;return}
   const raw=String(input.value||'').trim(),def=getTimeSlipWageDefaultDays();
   if(raw==='')hint.textContent=`Using app default: remind ${def} day${def===1?'':'s'} before the 30-day window ends.`;
   else if(Number(raw)===0)hint.textContent='Reminder disabled for this Time Slip.';
-  else{const n=Math.max(1,Math.min(29,Math.round(Number(raw)||def)));hint.textContent=`This Time Slip will remind you ${n} day${n===1?'':'s'} before the 30-day window ends if it is still Pending.`}
+  else{const n=Math.max(1,Math.min(29,Math.round(Number(raw)||def)));hint.textContent=`This Time Slip will remind you ${n} day${n===1?'':'s'} before the 30-day window ends if it is still Pending and receipt has not been confirmed.`}
 }
 function timeSlipWageReminderInfoFor(s,todayISO=isoLocal(new Date())){
-  if(!s?.timeSlip||timeSlipDisplayStatus(s)!=='Pending'||!s?.date)return null;
+  if(!s?.timeSlip||timeSlipDisplayStatus(s)!=='Pending'||!s?.date||s?.timeSlipConfirmedReceived)return null;
   const reminderDays=effectiveTimeSlipWageReminderDays(s);if(reminderDays<=0)return null;
   const due=timeSlipSubmissionDeadline(s);if(!due)return null;const days=daysBetweenISO(todayISO,due);if(days==null||days>reminderDays)return null;
   const level=days<0?'overdue':days<=1?'urgent':days<=3?'warning':'notice';
@@ -5820,6 +5825,7 @@ function handleTimeSlipSubmittedChange(){
   if(submitted&&status&&status.value!=='Paid'&&status.value!=='Denied')status.value='Pending';
   renderTimeSlipDeadlinePreview();renderTimeSlipWagePanel();calculatePreview();
 }
+function handleTimeSlipConfirmedReceivedChange(){renderTimeSlipWageReminderHint();renderTimeSlipWagePanel();calculatePreview()}
 function handleTimeSlipStatusChange(){renderTimeSlipDeadlinePreview();renderTimeSlipWagePanel();calculatePreview()}
 function renderTimeSlipDeadlineBanner(){
   const el=document.getElementById('timeSlipDeadlineBanner');if(!el)return;
@@ -8739,8 +8745,9 @@ function renderSavedJobs(){
 function timeSlipCard(s){
   const status=timeSlipDisplayStatus(s),photoCount=timeSlipPhotoCount(s),info=timeSlipDeadlineInfoFor(s);
   const submitted=s.timeSlipSubmitted?`Submitted ${formatDateShort(s.timeSlipSubmitted)}`:'';
+  const confirmed=s.timeSlipConfirmedReceived?`Confirmed received ${formatDateShort(s.timeSlipConfirmedReceived)}`:'';
   const written=s.timeSlipWritten?`Written ${formatDateShort(s.timeSlipWritten)}`:'Date written not recorded';
-  const firstLine=[written,submitted].filter(Boolean).join(' • ');
+  const firstLine=[written,submitted,confirmed].filter(Boolean).join(' • ');
   const followUpCount=Array.isArray(s.timeSlipFollowUps)?s.timeSlipFollowUps.length:0;
   const secondBits=[s.timeSlipLocation?escapeHTML(s.timeSlipLocation):'',photoCount?`📷 ${photoCount} photo${photoCount===1?'':'s'}`:'',followUpCount?`📝 ${followUpCount} follow-up${followUpCount===1?'':'s'}`:'',s.timeSlipResolved?`${status} ${formatDateShort(s.timeSlipResolved)}`:''].filter(Boolean);
   let deadlineLine='';
@@ -10495,7 +10502,7 @@ void initCloudBridgeTest().catch(err=>{
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260910-devtools-envsplit-r4').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.1-20260910-timeslip-confirmed-received-test1').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
