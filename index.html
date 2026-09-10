@@ -1326,6 +1326,31 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .roster-admin-rules{margin-top:10px;font-size:9px;line-height:1.55;color:var(--muted)}
     .roster-admin-diff{margin-top:10px;padding:10px 11px;border:1px solid var(--line);border-radius:11px;background:var(--card);font-size:9.5px;line-height:1.5}
     .roster-admin-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .developer-tools-card{display:none}.developer-tools-card.show{display:block}
+    .developer-tool-section{margin-top:12px;padding:13px;border:1px solid var(--line);border-radius:13px;background:var(--bg)}
+    .developer-tool-section:first-of-type{margin-top:0}
+    .developer-tool-section h3{margin:0;font-size:14px;color:var(--ink)}
+    .developer-tool-copy{margin:4px 0 0;color:var(--muted);font-size:9.5px;line-height:1.45}
+    .community-mod-controls{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,.8fr) minmax(0,.8fr) auto;gap:8px;align-items:end;margin-top:11px}
+    .community-mod-controls .field{margin:0}
+    .community-mod-summary{margin-top:9px;color:var(--muted);font-size:9px;line-height:1.4}
+    .community-mod-list{display:grid;gap:9px;margin-top:10px}
+    .community-mod-card{padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+    .community-mod-card.hidden-note{border-style:dashed;opacity:.78}
+    .community-mod-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+    .community-mod-job{font-size:14px;font-weight:950;color:var(--brand)}
+    .community-mod-meta{margin-top:2px;color:var(--muted);font-size:8.5px;line-height:1.4}
+    .community-mod-badges{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
+    .community-mod-badge{display:inline-flex;align-items:center;padding:4px 7px;border-radius:999px;background:#edf4ff;color:#214e7c;font-size:8px;font-weight:900}
+    .community-mod-badge.visible{background:#e9f7ef;color:#176742}.community-mod-badge.hidden{background:#f1f3f6;color:#657286}.community-mod-badge.test{background:#f4edff;color:#66429a}.community-mod-badge.verified{background:#e9f7ef;color:#176742}
+    .community-mod-body{margin-top:8px;font-size:10.5px;line-height:1.5;color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
+    .community-mod-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:9px}
+    .community-mod-reactions{font-size:8.5px;color:var(--muted)}
+    .community-mod-empty{padding:13px;border:1px dashed var(--line);border-radius:11px;color:var(--muted);font-size:9.5px;line-height:1.45}
+    .developer-test-state{margin-top:9px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:9px;line-height:1.5;color:var(--muted)}
+    .developer-test-state strong{color:var(--ink)}
+    html[data-theme="dark"] .developer-tool-section{background:#101923}
+    @media(max-width:720px){.community-mod-controls{grid-template-columns:1fr 1fr}.community-mod-controls .field:first-child{grid-column:1/-1}.community-mod-controls .btn{width:100%}}
     .bid-sheet-admin-card{display:none}.bid-sheet-admin-card.show{display:block}
     .bid-sheet-summary{display:none;margin-top:12px;padding:13px 14px;border:1px solid #c9b8e5;border-radius:13px;background:#faf7ff;color:#42315e;font-size:10px;line-height:1.5}.bid-sheet-summary.show{display:block}.bid-sheet-summary strong{color:#2f2050}
     .bid-sheet-status-pill{display:inline-flex;margin-top:8px;padding:5px 8px;border-radius:999px;font-size:8.5px;font-weight:900;letter-spacing:.02em}.bid-sheet-status-pill.open{background:#e8f7ef;color:#176742}.bid-sheet-status-pill.upcoming{background:#edf4ff;color:#214e7c}.bid-sheet-status-pill.closed{background:#f1f3f6;color:#657286}.bid-sheet-status-pill.results{background:#efe8fb;color:#5b3a88}.bid-sheet-status-pill.effective{background:#fff1c9;color:#795b00}.bid-sheet-status-pill.past{background:#eef1f5;color:#657286}
@@ -1690,15 +1715,6 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <div class="section-title"><h2>Trim Assistant</h2><button class="btn small" type="button" onclick="showView('dashboard')">Dashboard</button></div>
       <p class="trim-public-intro">Uses the latest published Engineer seniority roster to show currently ownable passenger, Extra List, and yard / other assignments below your roster position. Roster ownership can change daily during bids, trims, and picks, so always check the roster freshness shown below.</p>
 
-      <div class="trim-dev-override" id="trimDevOverride">
-        <div class="trim-dev-override-title">Developer testing</div>
-        <div class="trim-dev-rank-row" style="margin-top:0">
-          <div class="field"><label>Test Rank Override</label><input id="trimTestRank" type="number" min="1" step="1" inputmode="numeric" placeholder="Example: 479" onchange="trimDevRankChanged()"></div>
-          <button class="btn" type="button" onclick="trimDevLoad()">Reload</button>
-        </div>
-        <div class="trim-dev-rank-note" id="trimDevRankNote">Maintainer-only local override. It does not change this account's profile or the published roster.</div>
-      </div>
-
       <div class="trim-dev-summary" id="trimDevSummary"></div>
       <div class="trim-dev-filters" id="trimDevFilters">
         <div class="trim-filter-title">Assignment type</div>
@@ -1849,6 +1865,44 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       </div>
 
 
+
+      <div class="card span12 settings-card developer-tools-card" id="developerToolsCard">
+        <div class="section-title settings-heading">
+          <div><h2>Developer Tools</h2><p>Maintainer-only moderation and local test controls. Normal Engineer Pay Log users never see this area.</p></div>
+          <span class="roster-admin-badge">Developer</span>
+        </div>
+
+        <div class="developer-tool-section">
+          <h3>Community Notes Moderation</h3>
+          <p class="developer-tool-copy">Community Notes publish automatically. Review them here and hide only notes that are inappropriate, misleading, irrelevant, or should not be shown. Hidden notes can be restored later.</p>
+          <div class="community-mod-controls">
+            <div class="field"><label>Search</label><input id="communityModSearch" type="search" placeholder="Job or note text" oninput="communityModerationRender()"></div>
+            <div class="field"><label>Channel</label><select id="communityModChannel" onchange="communityModerationRender()"><option value="">All</option><option value="production">Production</option><option value="test_v1">Test</option></select></div>
+            <div class="field"><label>Visibility</label><select id="communityModVisibility" onchange="communityModerationRender()"><option value="">All</option><option value="visible">Visible</option><option value="hidden">Hidden</option></select></div>
+            <button class="btn small" type="button" onclick="communityModerationLoad(true)">Refresh</button>
+          </div>
+          <div id="communityModSummary" class="community-mod-summary">Loading Community Notes…</div>
+          <div id="communityModList" class="community-mod-list"></div>
+        </div>
+
+        <div class="developer-tool-section">
+          <h3>Local Testing State</h3>
+          <p class="developer-tool-copy">These controls affect only this browser/device. They never change your saved IBM number, real roster rank, published roster, bid sheet, or awards.</p>
+          <div class="trim-dev-override show" id="trimDevOverride" style="margin-top:10px;margin-bottom:0">
+            <div class="trim-dev-override-title">Trim Assistant testing</div>
+            <div class="field" style="margin:0"><label>Test Rank Override</label><input id="trimTestRank" type="number" min="1" step="1" inputmode="numeric" placeholder="Leave blank to use your real rank"></div>
+            <div class="settings-action-row" style="margin-top:8px">
+              <button class="btn small primary" type="button" onclick="trimDevRankChanged()">Apply Test Rank</button>
+              <button class="btn small" type="button" onclick="developerUseActualRank()">Use My Actual Rank</button>
+            </div>
+            <div class="trim-dev-rank-note" id="trimDevRankNote">No local rank override is active.</div>
+          </div>
+          <div id="developerTestState" class="developer-test-state"></div>
+          <div class="settings-action-row" style="margin-top:9px">
+            <button class="btn small" type="button" onclick="developerClearAllTestState()">Clear All Local Test State</button>
+          </div>
+        </div>
+      </div>
 
       <div class="card span12 settings-card roster-admin-card" id="rosterAdminCard">
         <div class="section-title settings-heading">
@@ -9153,9 +9207,9 @@ function rosterDateDisplay(value){
   try{return new Date(value).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}catch{return String(value)}
 }
 async function rosterCheckAdmin(force=false){
-  const card=document.getElementById('rosterAdminCard'),bidCard=document.getElementById('bidSheetAdminCard'),awardCard=document.getElementById('awardAdminCard');if(!card&&!bidCard&&!awardCard)return false;
-  const toggleCards=show=>{card?.classList.toggle('show',show);bidCard?.classList.toggle('show',show);awardCard?.classList.toggle('show',show)};
-  if(rosterAdminState.checked&&!force){toggleCards(!!rosterAdminState.canPublish);trimDevUpdateModeAvailability();bidLifecycleInitControls();bidLifecycleRender();return rosterAdminState.canPublish}
+  const card=document.getElementById('rosterAdminCard'),bidCard=document.getElementById('bidSheetAdminCard'),awardCard=document.getElementById('awardAdminCard'),devCard=document.getElementById('developerToolsCard');if(!card&&!bidCard&&!awardCard&&!devCard)return false;
+  const toggleCards=show=>{card?.classList.toggle('show',show);bidCard?.classList.toggle('show',show);awardCard?.classList.toggle('show',show);devCard?.classList.toggle('show',show)};
+  if(rosterAdminState.checked&&!force){toggleCards(!!rosterAdminState.canPublish);trimDevUpdateModeAvailability();bidLifecycleInitControls();bidLifecycleRender();if(rosterAdminState.canPublish){developerRenderTestState();void communityModerationLoad(false)}return rosterAdminState.canPublish}
   const client=getCloudClient();if(!client){toggleCards(false);return false}
   const user=await cloudCurrentUser(client);if(!user){toggleCards(false);return false}
   rosterAdminState.user=user;
@@ -9164,10 +9218,56 @@ async function rosterCheckAdmin(force=false){
     if(error)throw error;
     rosterAdminState.checked=true;rosterAdminState.canPublish=!!data?.can_publish;
     toggleCards(rosterAdminState.canPublish);
-    if(rosterAdminState.canPublish){await rosterLoadLatestSnapshot();await bidSheetLoadAdminLatest();await awardLoadAdminLatest();await retirementWatchLoad(true);trimDevInitControls();bidLifecycleInitControls();}trimDevUpdateModeAvailability();bidLifecycleRender();
+    if(rosterAdminState.canPublish){await rosterLoadLatestSnapshot();await bidSheetLoadAdminLatest();await awardLoadAdminLatest();await retirementWatchLoad(true);trimDevInitControls();bidLifecycleInitControls();developerRenderTestState();void communityModerationLoad(false);}trimDevUpdateModeAvailability();bidLifecycleRender();
     return rosterAdminState.canPublish;
   }catch(err){console.warn('Roster admin check failed:',err);rosterAdminState.checked=true;rosterAdminState.canPublish=false;toggleCards(false);return false}
 }
+const communityModerationState={rows:[],loaded:false,loading:false};
+function developerTestStateSnapshot(){
+  let bid={date:'',results:'auto'};try{const raw=JSON.parse(localStorage.getItem('epl_bid_lifecycle_test_v1')||'null');if(raw&&typeof raw==='object')bid={date:String(raw.date||''),results:String(raw.results||'auto')}}catch{}
+  const rank=Math.round(Number(localStorage.getItem(TRIM_TEST_RANK_KEY)||0));
+  return {rank:rank>0?rank:null,bid};
+}
+function developerRenderTestState(){
+  const host=document.getElementById('developerTestState');if(!host)return;const state=developerTestStateSnapshot(),rankInput=document.getElementById('trimTestRank'),note=document.getElementById('trimDevRankNote');
+  if(rankInput&&document.activeElement!==rankInput)rankInput.value=state.rank?String(state.rank):'';
+  if(note)note.textContent=state.rank?`Local override ${state.rank} is active. Use “Use My Actual Rank” to turn it off immediately.`:'No local rank override is active. Trim Assistant will use your IBM/profile match from the published roster.';
+  const bidActive=!!state.bid.date||state.bid.results!=='auto';
+  host.innerHTML=`<strong>Trim rank override:</strong> ${state.rank?`Rank ${escapeHTML(String(state.rank))} (local only)`:'Off — using actual profile rank'}<br><strong>Bid lifecycle test:</strong> ${bidActive?`${state.bid.date?escapeHTML(state.bid.date):'Today'} • ${escapeHTML(state.bid.results)}`:'Off — Today / Automatic'}`;
+}
+async function developerUseActualRank(){
+  localStorage.removeItem(TRIM_TEST_RANK_KEY);const input=document.getElementById('trimTestRank');if(input)input.value='';retirementWatchState.data=null;retirementWatchState.loadedAt=0;developerRenderTestState();if(trimDevState.rows.length||document.getElementById('trimView')?.classList.contains('active'))await trimDevLoad(false);void retirementWatchLoad(true);
+}
+async function developerClearAllTestState(){
+  if(!rosterAdminState.canPublish)return;
+  localStorage.removeItem(TRIM_TEST_RANK_KEY);localStorage.removeItem('epl_bid_lifecycle_test_v1');
+  const input=document.getElementById('trimTestRank');if(input)input.value='';
+  try{bidLifecycleTestState={date:'',results:'auto'};bidLifecycleInitControls();bidLifecycleRender();bidSheetRender();awardRender()}catch{}
+  retirementWatchState.data=null;retirementWatchState.loadedAt=0;developerRenderTestState();
+  if(document.getElementById('trimView')?.classList.contains('active'))await trimDevLoad(false);void retirementWatchLoad(true);
+  alert('Local developer test state cleared. Your profile, IBM number, real roster rank, published roster, bid sheet, and awards were not changed.');
+}
+function communityModerationDateLabel(value){if(!value)return 'Unknown date';try{return new Date(value).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}catch{return String(value)}}
+async function communityModerationLoad(force=false){
+  const list=document.getElementById('communityModList'),summary=document.getElementById('communityModSummary');if(!rosterAdminState.canPublish||!list||!summary)return;
+  if(communityModerationState.loaded&&!force){communityModerationRender();return}if(communityModerationState.loading)return;
+  const client=getCloudClient();if(!client){summary.textContent='Cloud services are unavailable.';return}communityModerationState.loading=true;summary.textContent='Loading Community Notes…';
+  try{const {data,error}=await client.rpc('community_job_notes_moderation_list',{p_channel:null});if(error)throw error;communityModerationState.rows=Array.isArray(data)?data:[];communityModerationState.loaded=true;communityModerationRender()}catch(err){console.warn('Community Notes moderation load failed:',err);summary.textContent='Could not load Community Notes moderation right now.';list.innerHTML=''}finally{communityModerationState.loading=false}
+}
+function communityModerationRender(){
+  const list=document.getElementById('communityModList'),summary=document.getElementById('communityModSummary');if(!list||!summary)return;let rows=communityModerationState.rows.slice();
+  const q=String(document.getElementById('communityModSearch')?.value||'').trim().toLowerCase(),channel=String(document.getElementById('communityModChannel')?.value||''),visibility=String(document.getElementById('communityModVisibility')?.value||'');
+  if(channel)rows=rows.filter(r=>r.channel===channel);if(visibility==='visible')rows=rows.filter(r=>!r.hidden_at);if(visibility==='hidden')rows=rows.filter(r=>!!r.hidden_at);if(q)rows=rows.filter(r=>[r.job_key,r.body,r.revision_label,r.revision_key].join(' ').toLowerCase().includes(q));
+  const all=communityModerationState.rows,hidden=all.filter(r=>r.hidden_at).length,production=all.filter(r=>r.channel==='production').length,test=all.filter(r=>r.channel==='test_v1').length;summary.textContent=`${all.length} total note${all.length===1?'':'s'} • ${production} production • ${test} test • ${hidden} hidden • showing ${rows.length}`;
+  if(!rows.length){list.innerHTML='<div class="community-mod-empty">No Community Notes match these filters.</div>';return}
+  list.innerHTML=rows.map(r=>{const isHidden=!!r.hidden_at,verified=!!r.verified_work,helpful=Number(r.helpful_count)||0,outdated=Number(r.outdated_count)||0;return `<div class="community-mod-card${isHidden?' hidden-note':''}"><div class="community-mod-head"><div><div class="community-mod-job">Job ${escapeHTML(String(r.job_key||''))}</div><div class="community-mod-meta">${escapeHTML(String(r.revision_label||r.revision_key||''))}${r.revision_effective?` • effective ${escapeHTML(String(r.revision_effective))}`:''}<br>Posted ${escapeHTML(communityModerationDateLabel(r.created_at))}</div></div><div class="community-mod-badges"><span class="community-mod-badge ${isHidden?'hidden':'visible'}">${isHidden?'Hidden':'Visible'}</span>${r.channel==='test_v1'?'<span class="community-mod-badge test">Test</span>':''}${verified?'<span class="community-mod-badge verified">✓ Verified Work</span>':''}</div></div><div class="community-mod-body">${escapeHTML(String(r.body||''))}</div><div class="community-mod-foot"><div class="community-mod-reactions">👍 ${helpful} helpful${outdated?` • ⚠️ ${outdated} outdated`:''}${isHidden&&r.hidden_at?` • hidden ${escapeHTML(communityModerationDateLabel(r.hidden_at))}`:''}</div><button class="btn small${isHidden?'':' danger'}" type="button" onclick="communityModerationSetHidden('${escapeHTML(String(r.id))}',${isHidden?'false':'true'})">${isHidden?'Restore Note':'Hide Note'}</button></div></div>`}).join('');
+}
+async function communityModerationSetHidden(noteId,hide){
+  if(!rosterAdminState.canPublish)return;const row=communityModerationState.rows.find(r=>String(r.id)===String(noteId));if(!row)return;
+  if(hide&&!confirm(`Hide this Community Note from Engineer Pay Log users?\n\nJob ${row.job_key}: “${String(row.body||'').slice(0,180)}${String(row.body||'').length>180?'…':''}”\n\nThe note will remain in Developer Tools and can be restored later.`))return;
+  const client=getCloudClient();if(!client)return;try{const {data,error}=await client.rpc('community_job_note_set_hidden',{p_note_id:noteId,p_hidden:!!hide});if(error)throw error;if(data!==true)throw new Error('Note was not found.');communityModerationState.loaded=false;await communityModerationLoad(true)}catch(err){console.warn('Community note moderation failed:',err);alert(`Could not ${hide?'hide':'restore'} this Community Note. Please try again.`)}
+}
+
 async function rosterLoadLatestSnapshot(){
   if(!rosterAdminState.canPublish)return null;
   const client=getCloudClient();if(!client)return null;
@@ -9899,7 +9999,7 @@ function trimDevInitControls(){
 function trimDevRankChanged(){
   const input=document.getElementById('trimTestRank'),n=Math.round(Number(input?.value||0));
   if(n>0)localStorage.setItem(TRIM_TEST_RANK_KEY,String(n));else localStorage.removeItem(TRIM_TEST_RANK_KEY);
-  retirementWatchState.data=null;retirementWatchState.loadedAt=0;
+  retirementWatchState.data=null;retirementWatchState.loadedAt=0;developerRenderTestState();
   if(trimDevState.rows.length)trimDevLoad(false);
   void retirementWatchLoad(true);
 }
@@ -10122,7 +10222,7 @@ function trimDevClearFilters(){
 // ---- End developer roster PDF importer ----
 
 function renderAll(){renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();trimDevUpdateModeAvailability();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI()}
-function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){trimDevUpdateModeAvailability();void renderDashboardCommunityNotes();void bidLifecycleLoad(false);setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='trim')void trimDevLoad(false);if(v==='bid')void bidSheetLoad(false);if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility();void rosterCheckAdmin()}renderMyJobUI()}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){trimDevUpdateModeAvailability();void renderDashboardCommunityNotes();void bidLifecycleLoad(false);setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='trim')void trimDevLoad(false);if(v==='bid')void bidSheetLoad(false);if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility();developerRenderTestState();void rosterCheckAdmin()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
   return shifts.filter(s=>[
