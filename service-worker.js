@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-push-test2c-20260912';
+const CACHE_NAME='engineer-pay-log-v10-2-push-test3-20260912';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(
@@ -39,14 +39,14 @@ self.addEventListener('push',event=>{
   try{payload=event.data?event.data.json():{}}catch{
     try{payload={body:event.data?event.data.text():''}}catch{payload={}}
   }
-  const title=payload.type==='bulletin_award'?'Bulletin Award':payload.type==='test'?'Test Notification':(payload.title||'Engineer Pay Log');
+  const title=payload.type==='bulletin_award'?'Bulletin Award':payload.type==='seniority'?'Seniority Intensifies 📈':payload.type==='test'?'Test Notification':(payload.title||'Engineer Pay Log');
   const options={
     body:payload.body||'You have a new Engineer Pay Log notification.',
     icon:'./icons/icon-192.png',
     badge:'./icons/icon-192.png',
     tag:payload.tag||'engineer-pay-log',
     renotify:true,
-    data:{url:payload.url||'./',type:payload.type||'general'}
+    data:{url:payload.url||'./',type:payload.type||'general',retirementsAbove:payload.retirements_above||null,test:!!payload.test}
   };
   event.waitUntil(self.registration.showNotification(title,options));
 });
@@ -65,7 +65,7 @@ self.addEventListener('notificationclick',event=>{
   event.notification.close();
   const notificationType=event.notification?.data?.type||'general';
   const target=new URL(event.notification?.data?.url||'./',self.registration.scope).href;
-  const message={type:'EPL_NOTIFICATION_OPEN',notificationType,url:target};
+  const message={type:'EPL_NOTIFICATION_OPEN',notificationType,url:target,retirementsAbove:event.notification?.data?.retirementsAbove||null,test:!!event.notification?.data?.test};
   event.waitUntil((async()=>{
     // Persist the tap intent BEFORE waking/focusing the PWA. iOS can restore a
     // suspended Home Screen app without honoring navigate() or an immediate
