@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-test12-20260912';
+const CACHE_NAME='engineer-pay-log-v10-2-push-test1-20260912';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(
@@ -32,4 +32,36 @@ self.addEventListener('fetch',e=>{
       const copy=r.clone();caches.open(CACHE_NAME).then(c=>c.put(e.request,copy));return r;
     }))
   );
+});
+
+self.addEventListener('push',event=>{
+  let payload={};
+  try{payload=event.data?event.data.json():{}}catch{
+    try{payload={body:event.data?event.data.text():''}}catch{payload={}}
+  }
+  const title=payload.title||'Engineer Pay Log';
+  const options={
+    body:payload.body||'You have a new Engineer Pay Log notification.',
+    icon:'./icons/icon-192.png',
+    badge:'./icons/icon-192.png',
+    tag:payload.tag||'engineer-pay-log',
+    renotify:true,
+    data:{url:payload.url||'./',type:payload.type||'general'}
+  };
+  event.waitUntil(self.registration.showNotification(title,options));
+});
+
+self.addEventListener('notificationclick',event=>{
+  event.notification.close();
+  const target=new URL(event.notification?.data?.url||'./',self.registration.scope).href;
+  event.waitUntil((async()=>{
+    const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+    for(const client of windows){
+      try{
+        if('navigate' in client)await client.navigate(target);
+        if('focus' in client)return client.focus();
+      }catch{}
+    }
+    if(self.clients.openWindow)return self.clients.openWindow(target);
+  })());
 });
