@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-push-test2-20260912';
+const CACHE_NAME='engineer-pay-log-v10-2-push-test2a-20260912';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(
@@ -39,7 +39,7 @@ self.addEventListener('push',event=>{
   try{payload=event.data?event.data.json():{}}catch{
     try{payload={body:event.data?event.data.text():''}}catch{payload={}}
   }
-  const title=payload.title||'Engineer Pay Log';
+  const title=payload.type==='bulletin_award'?'Bulletin Award':payload.type==='test'?'Test Notification':(payload.title||'Engineer Pay Log');
   const options={
     body:payload.body||'You have a new Engineer Pay Log notification.',
     icon:'./icons/icon-192.png',
