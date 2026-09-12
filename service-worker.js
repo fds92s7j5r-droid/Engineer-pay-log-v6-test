@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-test10-20260912';
+const CACHE_NAME='engineer-pay-log-v10-2-test11-20260912';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(
@@ -9,7 +9,7 @@ self.addEventListener('install',e=>e.waitUntil(
 
 self.addEventListener('activate',e=>e.waitUntil(
   caches.keys()
-    .then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME).map(k=>caches.delete(k))))
+    .then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME&&k!=='epl-crewbook-cloud-assets-v1').map(k=>caches.delete(k))))
     .then(()=>self.clients.claim())
 ));
 
