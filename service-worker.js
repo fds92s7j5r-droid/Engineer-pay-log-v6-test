@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-push-test2a-20260912';
+const CACHE_NAME='engineer-pay-log-v10-2-push-test2b-20260912';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(
@@ -53,13 +53,22 @@ self.addEventListener('push',event=>{
 
 self.addEventListener('notificationclick',event=>{
   event.notification.close();
+  const notificationType=event.notification?.data?.type||'general';
   const target=new URL(event.notification?.data?.url||'./',self.registration.scope).href;
+  const message={type:'EPL_NOTIFICATION_OPEN',notificationType,url:target};
   event.waitUntil((async()=>{
     const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
     for(const client of windows){
       try{
-        if('navigate' in client)await client.navigate(target);
-        if('focus' in client)return client.focus();
+        // Message the existing standalone PWA directly; iOS may focus an existing
+        // Web App window without performing a same-scope navigation reliably.
+        client.postMessage(message);
+        let active=client;
+        if('navigate' in client){
+          try{active=await client.navigate(target)||client}catch{}
+        }
+        try{active.postMessage(message)}catch{}
+        if('focus' in active)return active.focus();
       }catch{}
     }
     if(self.clients.openWindow)return self.clients.openWindow(target);
