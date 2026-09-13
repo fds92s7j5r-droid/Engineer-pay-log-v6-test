@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-rc1-1-20260913';
+const CACHE_NAME='engineer-pay-log-v10-2-rc1-2-20260913';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(
@@ -56,7 +56,29 @@ self.addEventListener('push',event=>{
     renotify:true,
     data:{url:payload.url||'./',type:payload.type||'general',retirementsAbove:payload.retirements_above||null,test:!!payload.test}
   };
-  event.waitUntil(self.registration.showNotification(title,options));
+  event.waitUntil((async()=>{
+    // iOS can occasionally wake a Home Screen PWA from a notification without
+    // delivering notificationclick to the worker. For actionable EPL alerts,
+    // save the destination as soon as the push arrives while the app is not
+    // visible. The page will consume it on its next foreground/resume.
+    if(payload.type==='bulletin_award'||payload.type==='seniority'){
+      try{
+        const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+        const hasVisible=windows.some(client=>client.visibilityState==='visible');
+        if(!hasVisible){
+          await storeNotificationIntent({
+            type:'EPL_NOTIFICATION_OPEN',
+            notificationType:payload.type,
+            url:new URL(payload.url||'./',self.registration.scope).href,
+            retirementsAbove:payload.retirements_above||null,
+            test:!!payload.test,
+            source:'push_received'
+          });
+        }
+      }catch{}
+    }
+    await self.registration.showNotification(title,options);
+  })());
 });
 
 const NOTIFICATION_INTENT_CACHE='epl-notification-intents-v1';
