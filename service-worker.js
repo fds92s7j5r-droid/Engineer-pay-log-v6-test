@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-time-on-time-workshop-preview-1-2-20260914';
+const CACHE_NAME='engineer-pay-log-v10-2-bid-sheet-filters-hotfix-20260915';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(

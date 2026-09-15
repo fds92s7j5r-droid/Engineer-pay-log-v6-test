@@ -1519,15 +1519,6 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     html[data-theme="dark"] .crewops-banner,html[data-theme="dark"] .crewops-summary.warn,html[data-theme="dark"] .crewops-warning{background:#2c2615;border-color:#6b5b27;color:#f2dfaa}html[data-theme="dark"] .crewops-summary.good{background:#123326;border-color:#286b4b}html[data-theme="dark"] .crewops-pill.cert{background:#123326;border-color:#286b4b;color:#a8e4c5}html[data-theme="dark"] .crewops-diff{background:#241d33;border-color:#655080;color:#d9c8ef}
     @media(max-width:620px){.crewops-status-grid{grid-template-columns:1fr}.crewops-meta-grid,.crewops-compare,.crewops-editor-grid{grid-template-columns:1fr}.crewops-add-row{grid-template-columns:1fr 1fr}.crewops-add-row .btn{grid-column:1/-1}.quick-lookup-earnings{grid-template-columns:1fr}.quick-lookup-earning+ .quick-lookup-earning{border-left:0;border-top:1px solid var(--line)}}
 </style>
-
-<style id="totWorkshopStyles">
-  #totWorkshopModal{z-index:70}
-  .tot-summary-card{display:grid;gap:10px}.tot-summary-main{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.tot-summary-main strong{font-size:22px;color:var(--brand)}.tot-summary-copy{font-size:10px;line-height:1.45;color:var(--muted)}.tot-summary-actions{display:flex;gap:8px;flex-wrap:wrap}
-  .tot-workshop-card{width:min(760px,calc(100% - 18px));max-height:92vh}.tot-workshop-intro{padding:11px 12px;border:1px solid #abc8e8;background:#eff6ff;border-radius:13px;font-size:10.5px;line-height:1.45}.tot-context-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.tot-context{padding:10px 11px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}.tot-context span{display:block;font-size:8px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.tot-context strong{display:block;margin-top:3px;font-size:14px}.tot-question{margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--card)}.tot-question h3{margin:0 0 8px;font-size:13px}.tot-choice-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.tot-choice{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:12px;font:inherit;font-weight:850;cursor:pointer}.tot-choice.active{background:var(--brand);border-color:var(--brand);color:#fff}.tot-train-list{display:grid;gap:10px;margin-top:12px}.tot-train-card{border:1px solid var(--line);border-radius:15px;background:var(--card);overflow:hidden}.tot-train-head{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px 11px;background:var(--bg);border-bottom:1px solid var(--line)}.tot-train-head strong{font-size:12px}.tot-train-body{padding:11px}.tot-train-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.tot-train-grid .field{grid-column:auto}.tot-train-grid .full{grid-column:1/-1}.tot-calc{margin-top:14px;padding:12px;border:1px solid #9fc6ad;border-radius:15px;background:#f1faf4}.tot-calc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}.tot-calc-total span{display:block;color:var(--muted);font-size:9px;font-weight:850}.tot-calc-total strong{display:block;margin-top:2px;font-size:26px;color:#176742}.tot-timeline{position:relative;height:22px;margin-top:12px;border-radius:999px;background:#dfe6ef;overflow:hidden}.tot-timeline-block{position:absolute;top:0;bottom:0;background:#2b7bbb;border-right:1px solid rgba(255,255,255,.6)}.tot-timeline-cutoff{position:absolute;right:0;top:0;bottom:0;width:3px;background:#a22922}.tot-timeline-labels{display:flex;justify-content:space-between;margin-top:4px;color:var(--muted);font-size:8px;font-weight:800}.tot-breakdown{display:grid;gap:6px;margin-top:11px}.tot-breakdown-row{padding:8px 9px;border:1px solid var(--line);border-radius:10px;background:var(--card);font-size:9.5px;line-height:1.4}.tot-breakdown-row.excluded{border-style:dashed;color:var(--muted)}.tot-explain{margin-top:11px;padding:10px 11px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-size:10px;line-height:1.5}.tot-warnings{display:grid;gap:6px;margin-top:10px}.tot-warning{padding:8px 9px;border-radius:10px;border:1px solid #e0c26b;background:#fff9e8;color:#6b510d;font-size:9.5px;line-height:1.4}.tot-legacy-note{margin-top:8px;padding:8px 9px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);font-size:9.5px}.tot-subtle{font-size:9px;color:var(--muted);line-height:1.4}.tot-workshop-card .modal-body{overscroll-behavior:contain}
-  html[data-theme="dark"] .tot-workshop-intro{background:#132943;border-color:#345d88;color:#dcecff}html[data-theme="dark"] .tot-calc{background:#14291e;border-color:#386c4d}html[data-theme="dark"] .tot-warning{background:#342c12;border-color:#695a24;color:#ffe6a0}html[data-theme="dark"] .tot-timeline{background:#33445a}html[data-theme="dark"] .tot-timeline-block{background:#4b95d1}
-  @media(max-width:620px){.tot-workshop-card{width:calc(100% - 10px);max-height:94vh}.tot-context-grid,.tot-choice-row,.tot-train-grid{grid-template-columns:1fr}.tot-train-grid .field,.tot-train-grid .full{grid-column:1}.tot-calc-top{flex-direction:column}}
-</style>
-
 </head>
 <body>
 <div id="accountGate" class="account-gate" aria-live="polite">
@@ -1823,11 +1814,29 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <label class="trim-check"><input type="checkbox" id="bidTypeExtra" checked onchange="bidSheetApplyFilters()"> Extra List</label>
           <label class="trim-check"><input type="checkbox" id="bidTypeYard" checked onchange="bidSheetApplyFilters()"> Yard / other</label>
         </div>
+        <div class="trim-filter-title">Relief days <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— selecting multiple requires all selected days</span></div>
+        <div class="trim-check-grid" id="bidReliefChecks">
+          <label class="trim-check"><input type="checkbox" value="1" onchange="bidSheetApplyFilters()"> Mon</label>
+          <label class="trim-check"><input type="checkbox" value="2" onchange="bidSheetApplyFilters()"> Tue</label>
+          <label class="trim-check"><input type="checkbox" value="3" onchange="bidSheetApplyFilters()"> Wed</label>
+          <label class="trim-check"><input type="checkbox" value="4" onchange="bidSheetApplyFilters()"> Thu</label>
+          <label class="trim-check"><input type="checkbox" value="5" onchange="bidSheetApplyFilters()"> Fri</label>
+          <label class="trim-check"><input type="checkbox" value="6" onchange="bidSheetApplyFilters()"> Sat</label>
+          <label class="trim-check"><input type="checkbox" value="7" onchange="bidSheetApplyFilters()"> Sun</label>
+        </div>
+        <div class="trim-filter-title">Extra List IPMA <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— any selected IPMA matches</span></div>
+        <div class="trim-check-grid" id="bidIpmaChecks">
+          <label class="trim-check"><input type="checkbox" value="12:01 AM" onchange="bidSheetApplyFilters()"> 12:01 AM</label>
+          <label class="trim-check"><input type="checkbox" value="5:01 AM" onchange="bidSheetApplyFilters()"> 5:01 AM</label>
+          <label class="trim-check"><input type="checkbox" value="6:01 AM" onchange="bidSheetApplyFilters()"> 6:01 AM</label>
+          <label class="trim-check"><input type="checkbox" value="8:01 AM" onchange="bidSheetApplyFilters()"> 8:01 AM</label>
+          <label class="trim-check"><input type="checkbox" value="12:59 PM" onchange="bidSheetApplyFilters()"> 12:59 PM</label>
+        </div>
         <div class="bid-sheet-search-row">
           <div class="field"><label>Search</label><input id="bidSheetSearch" type="search" placeholder="Job or terminal" oninput="bidSheetApplyFilters()"></div>
           <div class="field"><label>Terminal</label><select id="bidSheetTerminal" onchange="bidSheetApplyFilters()"><option value="">All terminals</option></select></div>
         </div>
-        <div class="bid-sheet-source">Crew Book details are shown for the bid sheet's effective date. Weekly OT excludes paid meal-period allowances; paid meals are shown separately with an estimated value at your pay rate. Temporary programs, special events, track work, and day-to-day instructions may not be reflected.</div>
+        <div class="bid-sheet-source">Relief-day selections require every selected day. IPMA selections filter only Extra List results; Passenger and Yard / other assignments remain visible when their assignment-type filters are selected. Terminal selections apply to Passenger and Yard / other assignments while Extra List results remain available. Crew Book details are shown for the bid sheet's effective date. Weekly OT excludes paid meal-period allowances; paid meals are shown separately with an estimated value at your pay rate. Temporary programs, special events, track work, and day-to-day instructions may not be reflected.</div>
       </div>
       <div class="bid-sheet-results" id="bidSheetResults">
         <div class="trim-result-toolbar"><span id="bidSheetResultCount"></span><button class="btn" type="button" onclick="bidSheetClearFilters()">Clear Filters</button></div>
@@ -2869,32 +2878,6 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
   </div>
 </div>
 
-
-<div id="totWorkshopModal" class="modal" onclick="if(event.target===this)totCloseWorkshop()">
-  <div class="modal-card tot-workshop-card">
-    <div class="modal-head">
-      <div><h2 style="margin:0">Time on Time Workshop</h2><p style="margin:4px 0 0;color:var(--muted);font-size:10px">Experimental preview • Code 04 claim builder</p></div>
-      <button class="btn small" type="button" onclick="totCloseWorkshop()">Close</button>
-    </div>
-    <div class="modal-body">
-      <div class="tot-workshop-intro"><strong>Golden rule:</strong> Time on Time is straight time only and can never extend beyond the eighth hour of duty. Every train receives a 10-minute setup period, but the claim can never begin before your report time.</div>
-      <div class="tot-context-grid"><div class="tot-context"><span>Report time</span><strong id="totReportDisplay">—</strong></div><div class="tot-context"><span>8th-hour cutoff</span><strong id="totCutoffDisplay">—</strong></div></div>
-      <div class="tot-question"><h3>Did you operate more than one train outside of your normal assignment?</h3><div class="tot-choice-row"><button id="totMultipleNo" class="tot-choice" type="button" onclick="totChooseMultiple(false)">No • One train</button><button id="totMultipleYes" class="tot-choice" type="button" onclick="totChooseMultiple(true)">Yes • Multiple trains</button></div></div>
-      <div id="totSameJobQuestion" class="tot-question" style="display:none"><h3>Were the outside-assignment trains from the same job?</h3><div class="tot-choice-row"><button id="totSameJobYes" class="tot-choice" type="button" onclick="totChooseSameJob(true)">Yes • Same job</button><button id="totSameJobNo" class="tot-choice" type="button" onclick="totChooseSameJob(false)">No • Different jobs</button></div></div>
-      <div id="totOutsideJobWrap" class="tot-question" style="display:none"><div class="field full"><label>Outside assignment job number</label><input id="totOutsideJob" placeholder="e.g. 356" onchange="totWorkshopMetaChanged()"></div><div class="tot-subtle" style="margin-top:6px">This ties all of the entered trains to one outside assignment and lets EPL apply east-end versus west-end swing rules correctly.</div></div>
-      <div id="totTrainSection" style="display:none"><div id="totTrainList" class="tot-train-list"></div><button id="totAddTrainBtn" class="btn" style="margin-top:10px" type="button" onclick="totAddTrain()">+ Add another train</button></div>
-      <div id="totCalculation" class="tot-calc" style="display:none">
-        <div class="tot-calc-top"><div class="tot-calc-total"><span>Total Time on Time</span><strong id="totWorkshopTotal">0:00</strong></div><div class="tot-subtle" id="totWorkshopModeLabel"></div></div>
-        <div class="tot-timeline" id="totTimeline"><div class="tot-timeline-cutoff"></div></div><div class="tot-timeline-labels"><span id="totTimelineStart">Report</span><span id="totTimelineEnd">8th hour</span></div>
-        <div id="totBreakdown" class="tot-breakdown"></div>
-        <div id="totExplain" class="tot-explain"></div><div id="totWarnings" class="tot-warnings"></div>
-      </div>
-      <div id="totLegacyNote" class="tot-legacy-note" style="display:none"></div>
-    </div>
-    <div class="modal-foot" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between"><button class="btn danger" type="button" onclick="totClearWorkshop(true)">Clear all Time on Time work</button><button class="btn primary" type="button" onclick="totUseCalculation()">Use this calculation</button></div>
-  </div>
-</div>
-
 <div id="shiftModal" class="modal" onclick="if(event.target===this)closeModal()">
   <div class="sheet">
     <div class="section-title"><h2 id="formTitle">Add shift</h2><button class="btn small" onclick="closeModal()">Close</button></div>
@@ -2909,7 +2892,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         </div>
         <div id="assignmentField" class="field full"><label>Assignment</label><input id="assignment" placeholder="e.g. 194" oninput="handleSecretUnpaidSick();calculatePreview();communityRefreshShiftPanelFromForm()"></div>
         <div id="locationField" class="field full"><label>Location</label><div id="terminalSelectWrap" class="terminal-select-wrap"><span id="terminalFieldDot" class="terminal-field-dot" aria-hidden="true"></span><select id="locationSelect" onchange="terminalSelectionChanged()" class="terminal-select" data-terminal-select="true"></select></div><div id="otherLocationWrap" style="display:none;margin-top:8px"><input id="locationOther" placeholder="Enter terminal / location" oninput="syncLocationValue()"></div><input id="location" type="hidden"></div>
-        <div class="field"><label>Start time</label><input id="start" type="time" required onchange="totRecalculate(false);calculatePreview()"></div>
+        <div class="field"><label>Start time</label><input id="start" type="time" required onchange="calculatePreview()"></div>
         <div class="field"><label>Actual release time</label><input id="end" type="time" required onchange="calculatePreview()"></div>
         <div class="field full"><label>Total Time on Duty</label><div class="readonly-info"><strong id="timeOnDutyDisplay">—</strong><div class="muted" style="margin-top:2px">Calculated automatically from start and actual release time</div></div></div>
         <div id="shiftCommunityPanel" class="field full shift-community-panel"></div>
@@ -3063,7 +3046,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <label class="check"><input id="sheridanFlag" type="checkbox" onchange="calculatePreview()"> Sheridan / Shop / House Move</label>
           <label class="check"><input id="terminalFlag" type="checkbox" onchange="calculatePreview()"> Terminal Not In Crew Book</label>
           <label class="check"><input id="runaroundFlag" type="checkbox" onchange="toggleRunaround();calculatePreview()"> Runaround Claim</label>
-          <label class="check"><input id="a2Flag" type="checkbox" onchange="toggleA2(true);calculatePreview()"> Time on Time</label>
+          <label class="check"><input id="a2Flag" type="checkbox" onchange="toggleA2();calculatePreview()"> Time on Time</label>
           <label class="check"><input id="miscPenaltyFlag" type="checkbox" onchange="toggleMiscPenalty();calculatePreview()"> Miscellaneous Penalty</label>
         </div>
           <div id="traineeWrap" class="conditional-panel">
@@ -3087,10 +3070,10 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
             </div>
           </div>
           <div id="a2DurationWrap" class="conditional-panel">
-            <input id="a2Hours" type="hidden" value="0"><input id="a2Minutes" type="hidden" value="0">
-            <div class="tot-summary-card">
-              <div class="tot-summary-main"><div><div class="subhead">Time on Time Workshop</div><div id="totSummaryDetail" class="tot-summary-copy">Open the Workshop to calculate the claim from the trains you operated.</div></div><strong id="totSummaryValue">0:00</strong></div>
-              <div class="tot-summary-actions"><button class="btn primary small" type="button" onclick="openTimeOnTimeWorkshop()">Open Workshop</button><button class="btn small" type="button" onclick="totClearWorkshop(true)">Clear Workshop</button></div>
+            <div class="subhead">Time on Time duration</div>
+            <div class="duration-grid">
+              <div class="field full"><label>Hours</label><input id="a2Hours" type="number" inputmode="numeric" min="0" max="24" value="0" oninput="calculatePreview()"></div>
+              <div class="field full"><label>Minutes</label><input id="a2Minutes" type="number" inputmode="numeric" min="0" max="59" value="0" oninput="calculatePreview()"></div>
             </div>
           </div>
           <div id="miscPenaltyWrap" class="conditional-panel">
@@ -5553,7 +5536,6 @@ function formData(){
     terminalNotCrewBook:$('terminalFlag').checked,
     runaround:$('runaroundFlag').checked,runaroundDiffMinutes:$('runaroundFlag').checked?(rrh*60+rrm):0,
     a2:$('a2Flag').checked,a2Minutes:$('a2Flag').checked?Math.min(480,a2h*60+a2m):0,
-    timeOnTimeWorkshop:$('a2Flag').checked?totSerializableState():null,
     miscPenalty:$('miscPenaltyFlag').checked,miscPenaltyDescription:$('miscPenaltyFlag').checked?$('miscPenaltyDescription').value.trim():'',
     miscPenaltyMinutes:$('miscPenaltyFlag').checked?(mph*60+mpm):0,miscPenaltyRate:$('miscPenaltyFlag').checked?miscRate:'straight' 
   };
@@ -5919,95 +5901,9 @@ function toggleTimeSlip(){
   renderTimeSlipDeadlinePreview();
   if(checked)void renderTimeSlipPhotoSection();
 }
-
-/* ---------- Time on Time Workshop experimental preview ---------- */
-const TOT_WORKSHOP_VERSION=1;
-const TOT_WEST_END_NAMES=['penn station','penn','grand central','gcm','atlantic terminal','atlantic','brooklyn','jamaica','long island city','lic'];
-const TOT_ENDPOINT_PRESETS={
-  'station5':{label:'Left / secured in station — 5 min total',minutes:5,anchor:'Train arrival',help:'Standard station secure / tie-down allowance.'},
-  'babylon10':{label:'Babylon Yard — signal cleared + 10 min layup',minutes:10,anchor:'Signal cleared',help:'Enter the time you cleared the signal; the 10-minute layup begins there.',needsAnchor:true},
-  'farrock20':{label:'Passenger train to Far Rockaway Yard — 20 min total',minutes:20,anchor:'Train arrival',help:'5 clear + 15 yard = 20 total.'},
-  'farrock15eq':{label:'Equipment train direct to Far Rockaway Yard — 15 min total',minutes:15,anchor:'Equipment arrival',help:'No passenger-clear component.'},
-  'freeport15':{label:'Freeport west-end yard — 15 min total',minutes:15,anchor:'Train arrival',help:'The 5-minute clear is included.'},
-  'freeport20':{label:'Freeport east-end yard — 20 min total',minutes:20,anchor:'Train arrival',help:'The 5-minute clear is included.'},
-  'gcm15':{label:'GCM tail track — 15 min total',minutes:15,anchor:'Train arrival',help:'5-minute station baseline + 10-minute tail-track handling.'},
-  'hempstead15':{label:'Hempstead yard track — 15 min total',minutes:15,anchor:'Train arrival',help:'The 5-minute clear is included.'},
-  'huntington25':{label:'Huntington standard siding / yard — 25 min total',minutes:25,anchor:'Train arrival',help:'The 5-minute clear is included.'},
-  'huntington35':{label:'Huntington east-end south siding extension — 35 min total',minutes:35,anchor:'Train arrival',help:'The 5-minute clear is included.'},
-  'jsy20':{label:'Jamaica Storage Yard normal move — 20 min total',minutes:20,anchor:'Train arrival',help:'5 clear + 15 normal yard move.'},
-  'jsy35':{label:'Jamaica Storage Yard Receiving / Advance — 35 min total',minutes:35,anchor:'Train arrival',help:'5 clear + 30-minute yard allowance.'},
-  'longbeach20':{label:'Long Beach normal yard layup — 20 min total',minutes:20,anchor:'Train arrival',help:'The 20-minute figure already includes the initial 5.'},
-  'longbeach5direct':{label:'Long Beach direct yard layup — 5 min total',minutes:5,anchor:'Direct layup arrival',help:'Direct layup without first entering a station track.'},
-  'mds20':{label:'Midday Storage Yard layup — 20 min total',minutes:20,anchor:'Yard arrival',help:'No station exists here, so there is no separate 5-minute clear.'},
-  'montauk20':{label:'Montauk yard + walk back — 20 min total',minutes:20,anchor:'Train arrival',help:'5 clear + 10 yard + 5 walk back.'},
-  'oyster15':{label:'Oyster Bay yard — 15 min total',minutes:15,anchor:'Train arrival',help:'5 clear + 10 yard.'},
-  'patch20':{label:'Patchogue Schoolhouse / Fence Track — 20 min total',minutes:20,anchor:'Train arrival',help:'5 clear + 15 yard.'},
-  'patch25':{label:'Patchogue Freight / North Sidetrack — 25 min total',minutes:25,anchor:'Train arrival',help:'5 clear + 20 yard.'},
-  'portjeff20':{label:'Port Jefferson yard — 20 min total',minutes:20,anchor:'Train arrival',help:'5 clear + 15 yard.'},
-  'portjeff25':{label:'Port Jefferson station + walk to yard — 25 min total',minutes:25,anchor:'Train arrival',help:'Secure in station plus walk to yard.'},
-  'portwash15':{label:'Port Washington reverse move to yard — 15 min total',minutes:15,anchor:'Train arrival',help:'The 5-minute component is included.'},
-  'portwash20':{label:'Port Washington #1 Yard — 20 min total',minutes:20,anchor:'Train arrival',help:'The 5-minute component is included.'},
-  'ronk20':{label:'Ronkonkoma MU layup — 20 min total',minutes:20,anchor:'Train arrival',help:'MU yard layup.'},
-  'ronk30':{label:'Ronkonkoma diesel layup — 30 min total',minutes:30,anchor:'Train arrival',help:'Diesel yard layup.'},
-  'ronk30wash':{label:'Ronkonkoma MU layup + train-wash move — 30 min total',minutes:30,anchor:'Train arrival',help:'20-minute MU yard layup + 10 additional minutes to pass through the train wash at restricted speed.'},
-  'speonk15':{label:'Speonk yard layup — 15 min total',minutes:15,anchor:'Train arrival',help:'5 clear + 10 yard.'},
-  'westhemp15':{label:'West Hempstead yard track — 15 min total',minutes:15,anchor:'Train arrival',help:'The 5-minute component is included.'},
-  'westhemp20':{label:'West Hempstead west-end long siding — 20 min total',minutes:20,anchor:'Train arrival',help:'Rare alternate; 5-minute component included.'},
-  'custom':{label:'Custom / actual disposal time',minutes:null,anchor:'Train arrival',help:'Enter the actual disposal minutes.'}
-};
-const TOT_TERMINAL_ENDPOINTS={
-  babylon:['station5','babylon10'],gcm:['station5','gcm15'],huntington:['station5','huntington25','huntington35'],ronkonkoma:['station5','ronk20','ronk30','ronk30wash'],
-  portwashington:['station5','portwash15','portwash20'],farrockaway:['station5','farrock20','farrock15eq'],longbeach:['station5','longbeach20','longbeach5direct'],
-  mds:['mds20'],montauk:['station5','montauk20'],jsy:['station5','jsy20','jsy35'],portjefferson:['portjeff20','portjeff25'],speonk:['station5','speonk15'],
-  freeport:['freeport15','freeport20'],hempstead:['station5','hempstead15'],westhempstead:['station5','westhemp15','westhemp20'],oysterbay:['station5','oyster15'],patchogue:['station5','patch20','patch25']
-};
-let timeOnTimeWorkshopState=null;
-function totFreshState(){return {version:TOT_WORKSHOP_VERSION,multiple:null,sameJob:null,outsideJob:'',trains:[],totalMinutes:0,blocks:[],excludedSwings:[],warnings:[],explanation:[],legacyMinutes:0}}
-function totNewTrain(){return {id:createUniqueId(),job:'',number:'',from:'',to:'',depart:'',arrive:'',disposalPreset:'station5',disposalAnchor:'',customDisposalMinutes:5}}
-function totSerializableState(){if(!timeOnTimeWorkshopState)return null;const x=JSON.parse(JSON.stringify(timeOnTimeWorkshopState));delete x.blocks;delete x.excludedSwings;delete x.warnings;delete x.explanation;return x}
-function totLoadState(raw,legacyMinutes=0){timeOnTimeWorkshopState=raw&&typeof raw==='object'?{...totFreshState(),...JSON.parse(JSON.stringify(raw))}:totFreshState();timeOnTimeWorkshopState.trains=Array.isArray(timeOnTimeWorkshopState.trains)?timeOnTimeWorkshopState.trains:[];timeOnTimeWorkshopState.legacyMinutes=Math.max(0,Number(timeOnTimeWorkshopState.legacyMinutes||legacyMinutes)||0);if(!timeOnTimeWorkshopState.multiple&&timeOnTimeWorkshopState.multiple!==false&&legacyMinutes)timeOnTimeWorkshopState.totalMinutes=legacyMinutes;totRecalculate(false)}
-function totResetForNewShift(){timeOnTimeWorkshopState=totFreshState();totSyncHiddenInputs(0,false);totRenderSummary()}
-function totClock12(v){if(!v)return '—';let [h,m]=String(v).split(':').map(Number);const ap=h>=12?'PM':'AM';h=h%12||12;return `${h}:${pad(m)} ${ap}`}
-function totClockAdd(v,mins){const b=parseClock(v);if(b===null)return '';const x=(b+Number(mins)+5760)%1440;return `${pad(Math.floor(x/60))}:${pad(x%60)}`}
-function totClockFromOffset(report,mins){return totClock12(totClockAdd(report,mins))}
-function totAbsFromReport(report,time,minAfter=0){const r=parseClock(report),t=parseClock(time);if(r===null||t===null)return null;let d=t-r;while(d<minAfter)d+=1440;return d}
-function totIsWestEnd(name){const x=String(name||'').trim().toLowerCase().replace(/\./g,'');if(!x)return false;return TOT_WEST_END_NAMES.some(n=>x===n||x.includes(n))}
-function totTerminalKey(loc){const x=String(loc||'').toLowerCase();if(x.includes('babylon'))return'babylon';if(x.includes('grand central')||x==='gcm'||x.includes('gcm'))return'gcm';if(x.includes('huntington'))return'huntington';if(x.includes('ronkonkoma'))return'ronkonkoma';if(x.includes('port wash'))return'portwashington';if(x.includes('far rock'))return'farrockaway';if(x.includes('long beach'))return'longbeach';if(x.includes('midday')||x==='mds')return'mds';if(x.includes('montauk'))return'montauk';if(x.includes('jamaica storage')||x==='jsy')return'jsy';if(x.includes('port jeff'))return'portjefferson';if(x.includes('speonk'))return'speonk';if(x.includes('freeport'))return'freeport';if(x.includes('west hemp'))return'westhempstead';if(x.includes('hempstead'))return'hempstead';if(x.includes('oyster'))return'oysterbay';if(x.includes('patchogue'))return'patchogue';return''}
-function totDisposalOptions(to){const key=totTerminalKey(to),base=key?(TOT_TERMINAL_ENDPOINTS[key]||[]):['station5'];return [...new Set([...base,'custom'])]}
-function totDisposalMinutes(t){const p=TOT_ENDPOINT_PRESETS[t.disposalPreset]||TOT_ENDPOINT_PRESETS.station5;if(t.disposalPreset==='custom')return Math.max(0,Math.round(Number(t.customDisposalMinutes)||0));return Math.max(0,Number(p.minutes)||0)}
-function totSyncHiddenInputs(mins,recalc=true){mins=Math.max(0,Math.min(480,Math.round(Number(mins)||0)));const h=document.getElementById('a2Hours'),m=document.getElementById('a2Minutes');if(h)h.value=Math.floor(mins/60);if(m)m.value=mins%60;if(recalc)calculatePreview()}
-function totNormalizeTrains(report){const src=timeOnTimeWorkshopState?.trains||[],out=[],warnings=[];let minNext=0;src.forEach((t,i)=>{if(!t.depart||!t.arrive){warnings.push(`Train ${t.number||i+1}: enter both departure and arrival times.`);return}const dep=totAbsFromReport(report,t.depart,minNext),arr=dep===null?null:totAbsFromReport(report,t.arrive,dep);if(dep===null||arr===null){warnings.push(`Train ${t.number||i+1}: check the entered times.`);return}let disposalBase=arr;const preset=TOT_ENDPOINT_PRESETS[t.disposalPreset]||TOT_ENDPOINT_PRESETS.station5;if(preset.needsAnchor){if(t.disposalAnchor){disposalBase=totAbsFromReport(report,t.disposalAnchor,arr)}else warnings.push(`Train ${t.number||i+1}: ${preset.anchor} is required for the selected disposal.`)}const disposal=totDisposalMinutes(t),end=disposalBase+disposal;out.push({...t,_index:i,_dep:dep,_arr:arr,_setup:dep-10,_disposalBase:disposalBase,_disposal:disposal,_end:end});minNext=arr;if(dep>900)warnings.push(`Train ${t.number||i+1} appears more than 15 hours after report time. Check the sequence/times.`)});return {trains:out,warnings}}
-function totClipBlock(start,end,label,kind='payable'){const rawStart=start,rawEnd=end;const clippedStart=Math.max(0,rawStart),clippedEnd=Math.min(480,rawEnd);return {start:clippedStart,end:clippedEnd,minutes:Math.max(0,clippedEnd-clippedStart),rawStart,rawEnd,label,kind}}
-function totCalculate(){const state=timeOnTimeWorkshopState||totFreshState(),report=document.getElementById('start')?.value||'',warnings=[],blocks=[],excluded=[];if(!report){warnings.push('Enter the shift report/start time before calculating Time on Time.');return {minutes:0,blocks,excluded,warnings,explanation:['EPL needs the report time to establish the beginning of the claim window and the eighth-hour cutoff.']}}const norm=totNormalizeTrains(report);warnings.push(...norm.warnings);const trains=norm.trains;if(state.multiple===null){return {minutes:state.legacyMinutes||0,blocks,excluded,warnings,explanation:[state.legacyMinutes?'This saved shift uses the prior manual Time on Time duration. Choose a Workshop path to rebuild it from train movements.':'Choose whether you operated one train or multiple trains outside your assignment.']}}if(state.multiple===false&&state.trains.length>1)state.trains=state.trains.slice(0,1);if(state.multiple===true&&state.sameJob===null)warnings.push('Choose whether the outside-assignment trains were from the same job.');
-  if(!trains.length)return {minutes:0,blocks,excluded,warnings,explanation:['Add the outside-assignment train information to begin the calculation.']};
-  if(state.multiple!==true||state.sameJob===false){trains.forEach((t,i)=>{const label=`Train ${t.number||i+1}`;blocks.push(totClipBlock(t._setup,t._end,label))})}
-  else if(state.sameJob===true){if(!state.outsideJob)warnings.push('Enter the outside assignment job number so the same-job relationship is documented.');let groupStart=0;for(let i=1;i<trains.length;i++){const terminal=(trains[i-1].to||trains[i].from||'').trim();if(!terminal){warnings.push(`Swing between Train ${trains[i-1].number||i} and Train ${trains[i].number||i+1}: enter the terminal. EPL excluded the swing until it can classify the location.`);const last=trains[i-1];blocks.push(totClipBlock(trains[groupStart]._setup,last._end,`Same-job block ${blocks.length+1}`));groupStart=i;continue}if(totIsWestEnd(terminal)){const last=trains[i-1];blocks.push(totClipBlock(trains[groupStart]._setup,last._end,`Same-job block ${blocks.length+1}`));const gapStart=last._end,gapEnd=trains[i]._setup;if(gapEnd>gapStart)excluded.push({start:gapStart,end:gapEnd,minutes:gapEnd-gapStart,label:`${terminal} swing — not payable`});groupStart=i}}const last=trains[trains.length-1];blocks.push(totClipBlock(trains[groupStart]._setup,last._end,`Same-job block ${blocks.length+1}`))}
-  let minutes=blocks.reduce((a,b)=>a+b.minutes,0);minutes=Math.min(480,Math.max(0,minutes));const explanation=[];explanation.push(`Report ${totClock12(report)} establishes the earliest possible claim time. The eighth-hour cutoff is ${totClock12(totClockAdd(report,480))}.`);if(state.multiple===true&&state.sameJob===true){explanation.push(`These trains are treated as one outside assignment${state.outsideJob?` (Job ${state.outsideJob})`:''}. East-end swing is included; west-end swing at Penn Station, Grand Central, Atlantic Terminal, Jamaica, or Long Island City is excluded.`)}else if(state.multiple===true){explanation.push('The trains are from different outside assignments, so each train is calculated as its own setup → operation → disposal claim block.')}else explanation.push('This single-train claim runs from the 10-minute setup through the end of the selected disposal allowance.');if(blocks.some(b=>b.rawStart<0))explanation.push('A setup period began before report time, so EPL clipped the claim to the report time.');if(blocks.some(b=>b.rawEnd>480))explanation.push('Part of the outside work extended beyond the eighth hour, so EPL stopped Time on Time at the eighth-hour cutoff.');return {minutes,blocks,excluded,warnings,explanation}}
-function totRecalculate(recalcPay=true,refreshTrainControls=true){if(!timeOnTimeWorkshopState)timeOnTimeWorkshopState=totFreshState();const c=totCalculate();timeOnTimeWorkshopState.totalMinutes=c.minutes;timeOnTimeWorkshopState.blocks=c.blocks;timeOnTimeWorkshopState.excludedSwings=c.excluded;timeOnTimeWorkshopState.warnings=c.warnings;timeOnTimeWorkshopState.explanation=c.explanation;totSyncHiddenInputs(c.minutes,false);totRenderWorkshop(refreshTrainControls);totRenderSummary();if(recalcPay)calculatePreview()}
-function totRenderSummary(){const on=document.getElementById('a2Flag')?.checked,wrap=document.getElementById('a2DurationWrap'),value=document.getElementById('totSummaryValue'),detail=document.getElementById('totSummaryDetail');if(wrap)wrap.classList.toggle('show',!!on);if(!value||!detail)return;const mins=Math.max(0,Number(document.getElementById('a2Hours')?.value||0)*60+Number(document.getElementById('a2Minutes')?.value||0));value.textContent=fmtMinutes(mins);const st=timeOnTimeWorkshopState;if(st?.multiple===null&&mins>0)detail.textContent='Legacy manual duration. Open the Workshop to rebuild this claim from train movements.';else if(st?.trains?.length)detail.textContent=`${st.trains.length} train${st.trains.length===1?'':'s'} • ${st.multiple===true?(st.sameJob===true?'same outside job':'separate claim blocks'):'single-train claim'} • calculated automatically`;else detail.textContent='Open the Workshop to calculate the claim from the trains you operated.'}
-function openTimeOnTimeWorkshop(){if(!timeOnTimeWorkshopState)totLoadState(null,Number(document.getElementById('a2Hours')?.value||0)*60+Number(document.getElementById('a2Minutes')?.value||0));document.getElementById('totWorkshopModal')?.classList.add('open');totRenderWorkshop()}
-function totCloseWorkshop(){document.getElementById('totWorkshopModal')?.classList.remove('open');totRenderSummary()}
-function totUseCalculation(){totRecalculate();totCloseWorkshop()}
-function totChooseMultiple(v){if(!timeOnTimeWorkshopState)timeOnTimeWorkshopState=totFreshState();timeOnTimeWorkshopState.multiple=!!v;timeOnTimeWorkshopState.legacyMinutes=0;if(!v){timeOnTimeWorkshopState.sameJob=null;if(!timeOnTimeWorkshopState.trains.length)timeOnTimeWorkshopState.trains=[totNewTrain()];if(timeOnTimeWorkshopState.trains.length>1)timeOnTimeWorkshopState.trains=timeOnTimeWorkshopState.trains.slice(0,1)}else if(!timeOnTimeWorkshopState.trains.length)timeOnTimeWorkshopState.trains=[totNewTrain(),totNewTrain()];totRecalculate()}
-function totChooseSameJob(v){if(!timeOnTimeWorkshopState)return;timeOnTimeWorkshopState.sameJob=!!v;timeOnTimeWorkshopState.legacyMinutes=0;if(timeOnTimeWorkshopState.trains.length<2)timeOnTimeWorkshopState.trains.push(totNewTrain());totRecalculate()}
-function totAddTrain(){if(!timeOnTimeWorkshopState)timeOnTimeWorkshopState=totFreshState();timeOnTimeWorkshopState.multiple=true;if(timeOnTimeWorkshopState.trains.length<1)timeOnTimeWorkshopState.trains.push(totNewTrain());timeOnTimeWorkshopState.trains.push(totNewTrain());totRecalculate();setTimeout(()=>document.getElementById('totTrainList')?.lastElementChild?.scrollIntoView({behavior:'smooth',block:'nearest'}),30)}
-function totRemoveTrain(i){if(!timeOnTimeWorkshopState)return;timeOnTimeWorkshopState.trains.splice(i,1);if(!timeOnTimeWorkshopState.trains.length)timeOnTimeWorkshopState.trains.push(totNewTrain());if(timeOnTimeWorkshopState.trains.length===1)timeOnTimeWorkshopState.multiple=false;totRecalculate()}
-function totTrainChanged(i,field,value,refreshTrainControls=true){const t=timeOnTimeWorkshopState?.trains?.[i];if(!t)return;t[field]=value;if(field==='to'){const opts=totDisposalOptions(value);if(!opts.includes(t.disposalPreset))t.disposalPreset=opts.includes('station5')?'station5':opts[0]}totRecalculate(true,refreshTrainControls)}
-function totWorkshopMetaChanged(){if(!timeOnTimeWorkshopState)return;timeOnTimeWorkshopState.outsideJob=document.getElementById('totOutsideJob')?.value.trim()||'';totRecalculate(true,false)}
-function totLocationOptionsHTML(value){const terminal=terminalForValue(value),selected=terminal?terminal.name:(value?'__other__':'');return '<option value=""'+(selected===''?' selected':'')+'>Select location</option>'+TERMINALS.map(t=>`<option value="${escapeHTML(t.name)}"${selected===t.name?' selected':''}>${escapeHTML(t.name)}</option>`).join('')+`<option value="__other__"${selected==='__other__'?' selected':''}>Other</option>`}
-function totLocationSelectChanged(i,field,value){const t=timeOnTimeWorkshopState?.trains?.[i];if(!t)return;if(value==='__other__'){t[field]='__other__'}else t[field]=value;if(field==='to'){const opts=totDisposalOptions(t[field]);if(!opts.includes(t.disposalPreset))t.disposalPreset=opts.includes('station5')?'station5':opts[0]}totRecalculate(true,true);if(value==='__other__')setTimeout(()=>document.getElementById(`tot-${field}-other-${i}`)?.focus(),30)}
-function totLocationOtherChanged(i,field,value){const t=timeOnTimeWorkshopState?.trains?.[i];if(!t)return;t[field]=String(value||'').trim();if(field==='to'){const opts=totDisposalOptions(t[field]);if(!opts.includes(t.disposalPreset))t.disposalPreset=opts.includes('station5')?'station5':opts[0]}totRecalculate(true,field==='to')}
-function totLocationFieldHTML(t,i,field,label){const value=t[field]||'',terminal=terminalForValue(value),isOther=!terminal&&!!value,custom=value==='__other__'?'':value;return `<div class="field"><label>${label}</label><select onchange="totLocationSelectChanged(${i},'${field}',this.value)">${totLocationOptionsHTML(value)}</select>${isOther?`<div style="margin-top:8px"><input id="tot-${field}-other-${i}" value="${escapeHTML(custom)}" placeholder="Enter other location" onchange="totLocationOtherChanged(${i},'${field}',this.value)"></div>`:''}</div>`}
-function totClearWorkshop(confirmFirst=false){if(confirmFirst&&!confirm('Clear all Time on Time Workshop work for this shift? This does not delete the rest of the shift.'))return;timeOnTimeWorkshopState=totFreshState();totSyncHiddenInputs(0,false);totRenderWorkshop();totRenderSummary();calculatePreview()}
-function totTrainCardHTML(t,i){const options=totDisposalOptions(t.to),selected=options.includes(t.disposalPreset)?t.disposalPreset:(options.includes('station5')?'station5':options[0]);t.disposalPreset=selected;const p=TOT_ENDPOINT_PRESETS[selected]||TOT_ENDPOINT_PRESETS.station5;const same=timeOnTimeWorkshopState?.multiple===true&&timeOnTimeWorkshopState?.sameJob===true;const different=timeOnTimeWorkshopState?.multiple===true&&timeOnTimeWorkshopState?.sameJob===false;return `<div class="tot-train-card"><div class="tot-train-head"><strong>Train ${i+1}${t.number?` • ${escapeHTML(t.number)}`:''}</strong>${(timeOnTimeWorkshopState?.trains?.length||0)>1?`<button class="btn small danger" type="button" onclick="totRemoveTrain(${i})">Remove</button>`:''}</div><div class="tot-train-body"><div class="tot-train-grid">${different?`<div class="field full"><label>Outside job number</label><input value="${escapeHTML(t.job||'')}" placeholder="Job this train came from" onchange="totTrainChanged(${i},'job',this.value,false)"></div>`:''}<div class="field"><label>Train number</label><input value="${escapeHTML(t.number||'')}" inputmode="numeric" placeholder="e.g. 362" onchange="totTrainChanged(${i},'number',this.value,false)"></div><div class="field"><label>Fixed setup</label><div class="readonly-info"><strong>10 minutes</strong></div></div>${totLocationFieldHTML(t,i,'from','From')}${totLocationFieldHTML(t,i,'to','To')}<div class="field"><label>Departure</label><input type="time" value="${escapeHTML(t.depart||'')}" onchange="totTrainChanged(${i},'depart',this.value,false)"></div><div class="field"><label>Arrival</label><input type="time" value="${escapeHTML(t.arrive||'')}" onchange="totTrainChanged(${i},'arrive',this.value,false)"></div><div class="field full"><label>Disposal / secure handling</label><select onchange="totTrainChanged(${i},'disposalPreset',this.value,true)">${options.map(k=>`<option value="${k}"${k===selected?' selected':''}>${escapeHTML(TOT_ENDPOINT_PRESETS[k].label)}</option>`).join('')}</select><div class="tot-subtle" style="margin-top:5px">${escapeHTML(p.help||'')}</div></div>${p.needsAnchor?`<div class="field"><label>${escapeHTML(p.anchor)}</label><input type="time" value="${escapeHTML(t.disposalAnchor||'')}" onchange="totTrainChanged(${i},'disposalAnchor',this.value,false)"></div>`:''}${selected==='custom'?`<div class="field"><label>Actual disposal minutes</label><input type="number" inputmode="numeric" min="0" max="180" value="${Number(t.customDisposalMinutes)||0}" onchange="totTrainChanged(${i},'customDisposalMinutes',this.value,false)"></div>`:''}</div>${same&&i<timeOnTimeWorkshopState.trains.length-1?`<div class="tot-subtle" style="margin-top:8px">The terminal after this train determines whether the swing before the next train is payable. West-end swing is never payable.</div>`:''}</div></div>`}
-function totRenderWorkshop(refreshTrainControls=true){const st=timeOnTimeWorkshopState||totFreshState(),report=document.getElementById('start')?.value||'',cutoff=report?totClockAdd(report,480):'';const set=(id,text)=>{const el=document.getElementById(id);if(el)el.textContent=text};set('totReportDisplay',totClock12(report));set('totCutoffDisplay',totClock12(cutoff));document.getElementById('totMultipleNo')?.classList.toggle('active',st.multiple===false);document.getElementById('totMultipleYes')?.classList.toggle('active',st.multiple===true);const sameQ=document.getElementById('totSameJobQuestion');if(sameQ)sameQ.style.display=st.multiple===true?'block':'none';document.getElementById('totSameJobYes')?.classList.toggle('active',st.sameJob===true);document.getElementById('totSameJobNo')?.classList.toggle('active',st.sameJob===false);const outside=document.getElementById('totOutsideJobWrap');if(outside)outside.style.display=st.multiple===true&&st.sameJob===true?'block':'none';const job=document.getElementById('totOutsideJob');if(job&&document.activeElement!==job)job.value=st.outsideJob||'';const ready=st.multiple===false||(st.multiple===true&&st.sameJob!==null);const section=document.getElementById('totTrainSection');if(section)section.style.display=ready?'block':'none';const add=document.getElementById('totAddTrainBtn');if(add)add.style.display=st.multiple===true?'inline-flex':'none';const list=document.getElementById('totTrainList');if(list&&ready&&refreshTrainControls){if(!st.trains.length)st.trains=[totNewTrain()];list.innerHTML=st.trains.map(totTrainCardHTML).join('')}const calc=document.getElementById('totCalculation');if(calc)calc.style.display=ready?'block':'none';const legacy=document.getElementById('totLegacyNote');if(legacy){legacy.style.display=st.multiple===null&&st.legacyMinutes>0?'block':'none';legacy.textContent=st.multiple===null&&st.legacyMinutes>0?`This shift currently has a legacy manual Time on Time duration of ${fmtMinutes(st.legacyMinutes)}. Choose a Workshop path above to replace it.`:''}if(!ready)return;set('totWorkshopTotal',fmtMinutes(st.totalMinutes||0));set('totWorkshopModeLabel',st.multiple===true?(st.sameJob===true?'Same outside job • qualifying east-end swing included':'Different outside jobs • separate claim blocks'):'Single train');set('totTimelineStart',report?totClock12(report):'Report');set('totTimelineEnd',cutoff?totClock12(cutoff):'8th hour');const timeline=document.getElementById('totTimeline');if(timeline){timeline.innerHTML='<div class="tot-timeline-cutoff"></div>'+(st.blocks||[]).filter(b=>b.minutes>0).map(b=>`<div class="tot-timeline-block" title="${escapeHTML(b.label)} • ${fmtMinutes(b.minutes)}" style="left:${Math.max(0,Math.min(100,b.start/480*100))}%;width:${Math.max(0,Math.min(100,(b.end-b.start)/480*100))}%"></div>`).join('')}const breakdown=document.getElementById('totBreakdown');if(breakdown){const rows=[];(st.blocks||[]).forEach(b=>{if(b.minutes>0)rows.push(`<div class="tot-breakdown-row"><strong>${escapeHTML(b.label)}</strong><br>${report?`${totClockFromOffset(report,b.start)} → ${totClockFromOffset(report,b.end)} • `:''}${fmtMinutes(b.minutes)} payable</div>`)});(st.excludedSwings||[]).forEach(x=>rows.push(`<div class="tot-breakdown-row excluded"><strong>${escapeHTML(x.label)}</strong><br>${report?`${totClockFromOffset(report,x.start)} → ${totClockFromOffset(report,x.end)} • `:''}${fmtMinutes(x.minutes)} excluded</div>`));breakdown.innerHTML=rows.join('')||'<div class="tot-breakdown-row">Enter train times to build the claim timeline.</div>'}const explain=document.getElementById('totExplain');if(explain)explain.innerHTML='<strong>How EPL calculated this</strong><br>'+((st.explanation||[]).map(escapeHTML).join('<br>')||'Enter the train information to calculate the claim.');const warnings=document.getElementById('totWarnings');if(warnings)warnings.innerHTML=(st.warnings||[]).map(w=>`<div class="tot-warning">${escapeHTML(w)}</div>`).join('')}
-
-function toggleA2(interactive=false){
-  const $=id=>document.getElementById(id),on=$('a2Flag').checked;
-  $('a2DurationWrap').classList.toggle('show',on);
-  if(on&&!timeOnTimeWorkshopState)totLoadState(null,Number($('a2Hours').value||0)*60+Number($('a2Minutes').value||0));
-  totRenderSummary();
-  if(on&&interactive)openTimeOnTimeWorkshop();
+function toggleA2(){
+  const $=id=>document.getElementById(id);
+  $('a2DurationWrap').classList.toggle('show',$('a2Flag').checked);
 }
 function toggleTrainee(){
   const $=id=>document.getElementById(id);
@@ -6071,7 +5967,7 @@ function newShift(){if(!billingRequireWriteAccess())return;
   applyEntryMode();handleSecretUnpaidSick();$('specialShift').value='';$('specialCategory').value='';$('classFlag').checked=false;$('conductorName').value='';$('brakemanName').value='';$('engineerName').value='';$('engineerIBM').value='';$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('unscheduledOTFlag').checked=false;$('crewBookReleaseTime').value='';$('twoClassesPullTime').value='';
   $('vacationGrossInput').value='';$('vacationGrossInput').dataset.vacationYear='';$('vacationReliefPair').value='';
   $('traineeCount').value=1;$('yardCertCount').value=1;
-  $('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;totResetForNewShift();
+  $('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;
   $('miscPenaltyFlag').checked=false;$('miscPenaltyDescription').value='';$('miscPenaltyHours').value=0;$('miscPenaltyMinutes').value=0;$('miscPenaltyStraight').checked=true;
   applyEntryMode();toggleSpecialShift();updateHolidayPayEligibilityUI();toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleTwoClasses();toggleRunaround();toggleA2();toggleMiscPenalty();
   const communityPanel=$('shiftCommunityPanel');if(communityPanel){communityPanel.classList.remove('show');communityPanel.innerHTML=''}
@@ -6092,7 +5988,7 @@ function editShift(id){if(!billingRequireWriteAccess())return;
   $('commingleFlag').checked=!!s.commingle;$('yardMoveFlag').checked=!!s.yardMove;$('twoClassesPullTime').value=s.twoClassesPullTime||'';$('sheridanFlag').checked=!!s.sheridanMove;
   $('terminalFlag').checked=!!s.terminalNotCrewBook;$('runaroundFlag').checked=!!s.runaround;
   const rr=Math.max(0,Number(s.runaroundDiffMinutes)||0);$('runaroundHours').value=Math.floor(rr/60);$('runaroundMinutes').value=rr%60;
-  $('a2Flag').checked=!!s.a2;const mins=Math.max(0,Number(s.a2Minutes)||0);$('a2Hours').value=Math.floor(mins/60);$('a2Minutes').value=mins%60;totLoadState(s.timeOnTimeWorkshop||null,mins);
+  $('a2Flag').checked=!!s.a2;const mins=Math.max(0,Number(s.a2Minutes)||0);$('a2Hours').value=Math.floor(mins/60);$('a2Minutes').value=mins%60;
   $('miscPenaltyFlag').checked=!!s.miscPenalty;$('miscPenaltyDescription').value=s.miscPenaltyDescription||'';const miscMins=Math.max(0,Number(s.miscPenaltyMinutes)||0);$('miscPenaltyHours').value=Math.floor(miscMins/60);$('miscPenaltyMinutes').value=miscMins%60;$('miscPenaltyOvertime').checked=s.miscPenaltyRate==='overtime';$('miscPenaltyStraight').checked=s.miscPenaltyRate!=='overtime';
   applyEntryMode();toggleSpecialShift();updateHolidayPayEligibilityUI();handleSecretUnpaidSick();if(isVacationSpecial(s.specialShift))updateVacationUI(s.vacationGross||getVacationGrossForYear(Number(s.date.slice(0,4))));toggleOTCompletion();toggleUnscheduledOT();toggleTimeSlip();toggleTrainee();toggleYardCert();toggleTwoClasses();toggleRunaround();toggleA2();toggleMiscPenalty();
   $('formTitle').textContent='Edit shift';$('deleteBtn').style.display='block';$('duplicateBtn').style.display='inline-flex';$('favoriteBtn').style.display='inline-flex';$('shiftModal').classList.add('open');calculatePreview();void renderShiftCommunityPanel(s);
@@ -6113,7 +6009,7 @@ function duplicateShift(id){if(!billingRequireWriteAccess())return;
   $('paysMealFlag').checked=false;$('mpteFlag').checked=false;$('freightMealFlag').checked=false;$('fuelClaimFlag').checked=false;$('otCompletionFlag').checked=false;$('otCompletionTime').value='';$('unscheduledOTFlag').checked=false;$('crewBookReleaseTime').value='';$('poneFlag').checked=false;$('noCoFlag').checked=false;$('certFlag').checked=false;
   $('commingleFlag').checked=false;$('yardMoveFlag').checked=false;$('twoClassesPullTime').value='';$('sheridanFlag').checked=false;$('terminalFlag').checked=false;
   $('runaroundFlag').checked=false;$('a2Flag').checked=false;$('miscPenaltyFlag').checked=false;
-  $('traineeCount').value=1;$('yardCertCount').value=1;$('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;totResetForNewShift();$('miscPenaltyDescription').value='';$('miscPenaltyHours').value=0;$('miscPenaltyMinutes').value=0;$('miscPenaltyStraight').checked=true;
+  $('traineeCount').value=1;$('yardCertCount').value=1;$('runaroundHours').value=0;$('runaroundMinutes').value=0;$('a2Hours').value=0;$('a2Minutes').value=0;$('miscPenaltyDescription').value='';$('miscPenaltyHours').value=0;$('miscPenaltyMinutes').value=0;$('miscPenaltyStraight').checked=true;
 
   $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipConfirmedReceived').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';$('timeSlipWageReminderDays').value='';setTimeSlipClaimTypes([]);
   renderTimeSlipDeadlinePreview();
@@ -10528,6 +10424,19 @@ const TRIM_EX1_IPMA=(()=>{
   set(1179,1179,'6:01 AM');set(1180,1181,'8:01 AM');set(1182,1185,'12:59 PM');
   return map;
 })();
+const TRIM_EX1_RELIEF=(()=>{
+  const map={};
+  const set=(from,to,days)=>{for(let n=from;n<=to;n++)map[String(n)]=days};
+  // Guaranteed Extra List assignment-number groups follow the published relief-day blocks.
+  set(1101,1110,[7,1]); // Sun–Mon
+  set(1111,1122,[1,2]); // Mon–Tue
+  set(1123,1134,[2,3]); // Tue–Wed
+  set(1135,1145,[3,4]); // Wed–Thu
+  set(1146,1152,[4,5]); // Thu–Fri
+  set(1153,1162,[5,6]); // Fri–Sat
+  set(1163,1185,[6,7]); // Sat–Sun
+  return map;
+})();
 let rosterAdminState={checked:false,canPublish:false,user:null,latest:null,latestRows:null};
 let rosterPreviewState=null;
 let trimDevState={rows:[],rank:null,profileRank:null,source:null,sourceGeneratedAt:null,uploadedAt:null,rowCount:0};
@@ -11049,12 +10958,14 @@ function bidSheetExportPDF(){
   const pdf=new Uint8Array(total);let pos=0;for(const chunk of chunks){pdf.set(chunk,pos);pos+=chunk.length}const link=document.createElement('a'),url=URL.createObjectURL(new Blob([pdf],{type:'application/pdf'}));link.href=url;link.download=`Engineer_Pay_Log_Bid_Sheet_${bulletin.replace(/[^A-Za-z0-9_-]+/g,'_')}.pdf`;link.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
 }
 function bidSheetCaptureViewState(){
-  return {snapshotId:String(bidSheetState.snapshot?.id||''),numbered:!!document.getElementById('bidTypeNumbered')?.checked,extra:!!document.getElementById('bidTypeExtra')?.checked,yard:!!document.getElementById('bidTypeYard')?.checked,search:String(document.getElementById('bidSheetSearch')?.value||''),terminal:String(document.getElementById('bidSheetTerminal')?.value||''),scrollY:Math.max(0,Number(window.scrollY)||0)};
+  return {snapshotId:String(bidSheetState.snapshot?.id||''),numbered:!!document.getElementById('bidTypeNumbered')?.checked,extra:!!document.getElementById('bidTypeExtra')?.checked,yard:!!document.getElementById('bidTypeYard')?.checked,relief:trimDevCheckedValues('bidReliefChecks'),ipmas:trimDevCheckedValues('bidIpmaChecks'),search:String(document.getElementById('bidSheetSearch')?.value||''),terminal:String(document.getElementById('bidSheetTerminal')?.value||''),scrollY:Math.max(0,Number(window.scrollY)||0)};
 }
 function bidSheetRestoreViewState(state){
   if(!state||state.snapshotId!==String(bidSheetState.snapshot?.id||''))return;
   const numbered=document.getElementById('bidTypeNumbered'),extra=document.getElementById('bidTypeExtra'),yard=document.getElementById('bidTypeYard'),search=document.getElementById('bidSheetSearch'),terminal=document.getElementById('bidSheetTerminal');
-  if(numbered)numbered.checked=!!state.numbered;if(extra)extra.checked=!!state.extra;if(yard)yard.checked=!!state.yard;if(search)search.value=state.search||'';if(terminal&&[...terminal.options].some(option=>option.value===state.terminal))terminal.value=state.terminal||'';
+  if(numbered)numbered.checked=!!state.numbered;if(extra)extra.checked=!!state.extra;if(yard)yard.checked=!!state.yard;
+  const relief=new Set((state.relief||[]).map(String)),ipmas=new Set((state.ipmas||[]).map(String));document.querySelectorAll('#bidReliefChecks input[type="checkbox"]').forEach(x=>x.checked=relief.has(String(x.value)));document.querySelectorAll('#bidIpmaChecks input[type="checkbox"]').forEach(x=>x.checked=ipmas.has(String(x.value)));
+  if(search)search.value=state.search||'';if(terminal&&[...terminal.options].some(option=>option.value===state.terminal))terminal.value=state.terminal||'';
   bidSheetApplyFilters();requestAnimationFrame(()=>requestAnimationFrame(()=>window.scrollTo({top:Math.max(0,Number(state.scrollY)||0),behavior:'auto'})));
 }
 function bidSheetUpdateQuickLookupTopButton(){
@@ -11216,11 +11127,12 @@ function bidSheetRender(){
   bidSheetDraftRender();bidSheetTerminalOptions(rows);filters.classList.add('show');results.classList.add('show');bidSheetApplyFilters();
 }
 function bidSheetTerminalOptions(rows){
-  const select=document.getElementById('bidSheetTerminal');if(!select)return;const prev=select.value,values=[...new Set((rows||[]).map(r=>String(r.terminal||'').trim()).filter(Boolean))].sort();
+  const select=document.getElementById('bidSheetTerminal');if(!select)return;const prev=select.value,values=[...new Set((rows||[]).filter(r=>bidSheetKind(r.assignment)!=='extra_list').map(r=>String(r.terminal||'').trim()).filter(Boolean))].sort();
   select.innerHTML='<option value="">All terminals</option>'+values.map(v=>`<option value="${escapeHTML(v)}">${escapeHTML(v)}</option>`).join('');if(values.includes(prev))select.value=prev;
 }
 function bidSheetRestDays(row,key,date){
   const fromRoster=[Number(row?.rest_day_1||0),Number(row?.rest_day_2||0)].filter(n=>n>=1&&n<=7);if(fromRoster.length)return fromRoster;
+  if(bidSheetKind(row?.assignment)==='extra_list'){const job=String(row?.assignment||'').replace(/^EX/i,'').replace(/\D/g,'');return [...(TRIM_EX1_RELIEF[job]||[])]}
   const relief=jobCompareReliefCrewDefinition(key,date);if(relief?.map)return CREW_BOOK_DAYS.map((day,i)=>relief.map?.[day]?null:i+1).filter(Boolean);
   const hit=crewBookLookupJobV8(key,date),days=Array.isArray(hit?.job?.relief)?hit.job.relief:[];return days.map(day=>CREW_BOOK_DAYS.indexOf(day)+1).filter(n=>n>0);
 }
@@ -11250,9 +11162,13 @@ function bidSheetOpenDetails(assignment){
 }
 function bidSheetApplyFilters(){
   const rows=bidSheetState.rows||[],numbered=!!document.getElementById('bidTypeNumbered')?.checked,extra=!!document.getElementById('bidTypeExtra')?.checked,yard=!!document.getElementById('bidTypeYard')?.checked,terminal=String(document.getElementById('bidSheetTerminal')?.value||''),search=String(document.getElementById('bidSheetSearch')?.value||'').trim().toUpperCase();
-  let shown=rows.filter(r=>{const kind=bidSheetKind(r.assignment);return kind==='numbered'?numbered:kind==='extra_list'?extra:yard});if(terminal)shown=shown.filter(r=>String(r.terminal||'')===terminal);if(search)shown=shown.filter(r=>`${r.assignment||''} ${r.terminal||''}`.toUpperCase().includes(search));
+  const relief=trimDevCheckedValues('bidReliefChecks').map(Number),ipmas=trimDevCheckedValues('bidIpmaChecks'),effective=bidSheetState.snapshot?.effective_date||isoLocal(new Date());
+  let shown=rows.filter(r=>{const kind=bidSheetKind(r.assignment);return kind==='numbered'?numbered:kind==='extra_list'?extra:yard});
+  if(relief.length)shown=shown.filter(r=>{const key=normalizeCrewBookKey(r.assignment),days=bidSheetRestDays(r,key,effective);return relief.every(day=>days.includes(day))});
+  if(ipmas.length)shown=shown.filter(r=>bidSheetKind(r.assignment)!=='extra_list'||ipmas.includes(trimDevIpma({assignment:r.assignment,assignment_type:'extra_list'})));
+  if(terminal)shown=shown.filter(r=>bidSheetKind(r.assignment)==='extra_list'||String(r.terminal||'')===terminal);
+  if(search)shown=shown.filter(r=>`${r.assignment||''} ${r.terminal||''}`.toUpperCase().includes(search));
   const count=document.getElementById('bidSheetResultCount'),list=document.getElementById('bidSheetResultList');if(count)count.textContent=`${shown.length} assignment${shown.length===1?'':'s'} • bulletin order`;if(!list)return;if(!shown.length){list.innerHTML='<div class="trim-dev-empty">No advertised assignments match these filters.</div>';return}
-  const effective=bidSheetState.snapshot?.effective_date||isoLocal(new Date());
   list.innerHTML=shown.map(r=>{
     const key=normalizeCrewBookKey(r.assignment),kind=bidSheetKind(r.assignment),extraJob=kind==='extra_list',relief=extraJob?null:jobCompareReliefCrewDefinition(key,effective),hit=extraJob?null:crewBookLookupJobV8(key,effective),known=!!relief||!!hit||extraJob,stats=extraJob?null:bidSheetWeekStats(r,key,effective);
     const chips=[`Terminal: ${r.terminal||'—'}`];if(extraJob){chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);const ipma=trimDevIpma({assignment:r.assignment,assignment_type:'extra_list'});if(ipma)chips.push(`IPMA: ${ipma}`)}else{chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);if(stats)chips.push(`Weekly OT: ${fmtMinutes(stats.overtime)}`);if(stats){const pct=payScaleForDate(effective),mealValue=pct?otPay(stats.meals*20,pct):null;chips.push(`Paid meals: ${stats.meals}${mealValue!=null?` • est. ${money(mealValue)}`:''}`)}}
@@ -11266,7 +11182,7 @@ function bidSheetApplyFilters(){
   }).join('');
 }
 function bidSheetClearFilters(){
-  for(const id of ['bidTypeNumbered','bidTypeExtra','bidTypeYard']){const el=document.getElementById(id);if(el)el.checked=true}const search=document.getElementById('bidSheetSearch');if(search)search.value='';const terminal=document.getElementById('bidSheetTerminal');if(terminal)terminal.value='';bidSheetApplyFilters();
+  for(const id of ['bidTypeNumbered','bidTypeExtra','bidTypeYard']){const el=document.getElementById(id);if(el)el.checked=true}for(const id of ['bidReliefChecks','bidIpmaChecks'])document.querySelectorAll(`#${id} input[type="checkbox"]`).forEach(x=>x.checked=false);const search=document.getElementById('bidSheetSearch');if(search)search.value='';const terminal=document.getElementById('bidSheetTerminal');if(terminal)terminal.value='';bidSheetApplyFilters();
 }
 // ---- End Bid Sheet Assistant ----
 
