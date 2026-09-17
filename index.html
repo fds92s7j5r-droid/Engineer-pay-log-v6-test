@@ -1410,9 +1410,11 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .trim-dev-empty{padding:13px;text-align:center;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:9.5px}
     .trim-public-intro{margin:0 0 12px;color:var(--muted);font-size:11px;line-height:1.5}
     .trim-roster-freshness{margin-top:8px;font-size:9.5px;font-weight:750}.trim-roster-freshness.current{color:#1f7a50}.trim-roster-freshness.caution{color:#9a6a00}.trim-roster-freshness.stale{color:#a33a32}
+    .trim-cache-fallback{margin-top:9px;padding:9px 10px;border:1px solid #d9b65a;border-radius:11px;background:#fff8df;color:#6d5200;font-size:9.5px;line-height:1.45}.trim-cache-fallback strong{color:#5d4500}
     .trim-dev-override{display:none;margin:0 0 12px;padding:11px 12px;border:1px dashed #91b9df;border-radius:12px;background:#f7fbff}.trim-dev-override.show{display:block}.trim-dev-override-title{font-size:9px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;color:#356b9e;margin-bottom:7px}
     html[data-theme="dark"] .trim-dev-override{background:#14283a;border-color:#315f91}
     html[data-theme="dark"] .trim-dev-summary{background:#14283a;border-color:#315f91;color:#b9d8f7}
+    html[data-theme="dark"] .trim-cache-fallback{background:#2f2815;border-color:#7a6326;color:#ead58e}html[data-theme="dark"] .trim-cache-fallback strong{color:#f2dfa0}
     html[data-theme="dark"] .trim-ipma,html[data-theme="dark"] .trim-ot{color:#b9d8f7}
     @media(max-width:620px){.trim-dev-rank-row{grid-template-columns:1fr}.trim-dev-filter-row{grid-template-columns:1fr}.trim-result-schedules{grid-template-columns:1fr}}
     html[data-theme="dark"] .roster-admin-badge{background:#14283a;border-color:#315f91;color:#b9d8f7}
@@ -10440,6 +10442,9 @@ const TRIM_EX1_RELIEF=(()=>{
 let rosterAdminState={checked:false,canPublish:false,user:null,latest:null,latestRows:null};
 let rosterPreviewState=null;
 let trimDevState={rows:[],rank:null,profileRank:null,source:null,sourceGeneratedAt:null,uploadedAt:null,rowCount:0};
+const TRIM_ASSISTANT_CACHE_VERSION=1;
+const TRIM_ASSISTANT_CACHE_PREFIX='epl_trim_assistant_cache_v1:';
+let trimPublicDataLastResult={source:'none',cachedAt:null,error:''};
 
 function rosterSetStatus(message='',type=''){
   const el=document.getElementById('rosterAdminStatus');if(!el)return;
@@ -11280,11 +11285,53 @@ function trimRosterFreshnessHTML(value,uploadedValue=value){
   if(hours<48)return `<div class="trim-roster-freshness caution">Roster status: Caution — more than 24 hours old${exact}</div>`;
   return `<div class="trim-roster-freshness stale">Roster status: Stale — more than 48 hours old. Assignments may have changed.${exact}</div>`;
 }
+function trimAssistantCacheKey(userId=activeWorkspaceUserId){
+  const id=String(userId||'').trim();return id?`${TRIM_ASSISTANT_CACHE_PREFIX}${id}`:'';
+}
+function trimAssistantCachePayloadValid(payload){
+  return !!(payload&&typeof payload==='object'&&!Array.isArray(payload)&&payload.match_found===true&&Number(payload.own_rank)>0&&Array.isArray(payload.jobs));
+}
+function trimAssistantCacheRead(userId=activeWorkspaceUserId){
+  const id=String(userId||'').trim(),key=trimAssistantCacheKey(id);if(!id||!key)return null;
+  try{
+    const raw=localStorage.getItem(key),cached=raw?JSON.parse(raw):null;
+    if(!cached||cached.version!==TRIM_ASSISTANT_CACHE_VERSION||String(cached.userId||'')!==id||!cached.cachedAt||!trimAssistantCachePayloadValid(cached.payload))return null;
+    return cached;
+  }catch(err){console.warn('Trim Assistant cache read failed:',err);return null}
+}
+function trimAssistantCacheWrite(payload,userId=activeWorkspaceUserId){
+  const id=String(userId||'').trim(),key=trimAssistantCacheKey(id);if(!id||!key||!trimAssistantCachePayloadValid(payload))return null;
+  const cachedAt=new Date().toISOString();
+  try{localStorage.setItem(key,JSON.stringify({version:TRIM_ASSISTANT_CACHE_VERSION,userId:id,cachedAt,payload}));return cachedAt}catch(err){console.warn('Trim Assistant cache save failed:',err);return null}
+}
+function trimAssistantCacheFallback(error=''){
+  const cached=trimAssistantCacheRead();
+  if(!cached){trimPublicDataLastResult={source:'none',cachedAt:null,error:String(error||'')};return null}
+  trimPublicDataLastResult={source:'cache',cachedAt:cached.cachedAt,error:String(error||'')};
+  return cached.payload;
+}
+function trimAssistantCacheFallbackHTML(){
+  if(trimPublicDataLastResult.source!=='cache')return '';
+  const when=trimPublicDataLastResult.cachedAt?rosterDateDisplay(trimPublicDataLastResult.cachedAt):'an earlier successful connection';
+  return `<div class="trim-cache-fallback"><strong>Cloud unavailable — using saved Trim Assistant data.</strong><br>Last successfully refreshed on this device: ${escapeHTML(when)}. Results may not include roster changes made after that time.</div>`;
+}
 async function trimPublicData(){
-  const client=getCloudClient();if(!client)return null;
-  const {data,error}=await client.rpc('trim_assistant_current_data');
-  if(error){console.warn('Trim Assistant data load failed:',error);return null}
-  return data||null;
+  // The Trim Assistant is read-only operational data. Keep a per-account last-known-good
+  // payload so a Supabase/Auth/API interruption does not take the entire tool offline.
+  // Never replace a good cache with an error, null response, or unmatched-profile response.
+  if(navigator.onLine===false)return trimAssistantCacheFallback('Device offline');
+  const client=getCloudClient();if(!client)return trimAssistantCacheFallback('Cloud client unavailable');
+  try{
+    const {data,error}=await client.rpc('trim_assistant_current_data');
+    if(error)throw error;
+    if(!data||typeof data!=='object'||Array.isArray(data))return trimAssistantCacheFallback('Cloud returned no Trim Assistant data');
+    const cachedAt=trimAssistantCacheWrite(data);
+    trimPublicDataLastResult={source:'cloud',cachedAt:cachedAt||null,error:''};
+    return data;
+  }catch(err){
+    console.warn('Trim Assistant data load failed; checking last-known-good cache:',err);
+    return trimAssistantCacheFallback(err?.message||String(err));
+  }
 }
 function openTrimAssistant(){
   if(crewToolsTraineeRestricted()){alert(isRosterTraineeSafeguard()?'Trim Assistant is not available while your current roster assignment is an Engineer Trainee (ET) assignment.':'Trim Assistant is not available while Engineer Trainee Mode is active.');return}
@@ -11346,9 +11393,9 @@ async function trimDevLoad(showStatus=true){
   if(!payload){if(summary){summary.classList.add('show');summary.innerHTML='<strong>Could not load the latest roster.</strong><br>Please try again while online.'}filters?.classList.remove('show');results?.classList.remove('show');return}
   trimDevState.sourceGeneratedAt=payload.source_generated_at||null;trimDevState.uploadedAt=payload.uploaded_at||null;trimDevState.rowCount=Number(payload.row_count||0);
   if(!payload.match_found){trimDevState.rows=[];trimDevState.rank=null;trimDevState.source='profile';if(summary){summary.classList.add('show');const why=payload.reason==='missing_employee_number'?'Your profile does not have an IBM / employee number saved.':'Your saved IBM / employee number was not found in the latest roster.';summary.innerHTML=`<strong>We could not match you to the current roster.</strong><br>${escapeHTML(why)} Check <strong>Settings → Account → Edit Profile</strong>, then try again.<br><span style="font-size:9px">Latest roster: ${escapeHTML(rosterDateDisplay(payload.source_generated_at||payload.uploaded_at))}</span>${trimRosterFreshnessHTML(payload.source_generated_at||payload.uploaded_at,payload.uploaded_at)}`}filters?.classList.remove('show');results?.classList.remove('show');return}
-  trimDevState.rows=Array.isArray(payload.jobs)?payload.jobs:[];trimDevState.rank=Number(payload.own_rank||0);trimDevState.source='profile';
+  trimDevState.rows=Array.isArray(payload.jobs)?payload.jobs:[];trimDevState.rank=Number(payload.own_rank||0);trimDevState.source=trimPublicDataLastResult.source==='cache'?'cache':'profile';
   const regular=Number(payload.regular_count||0),extra=Number(payload.extra_list_count||0),other=Number(payload.other_count||0),below=regular+extra+other;
-  if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Roster rank ${trimDevState.rank}</strong><br>${below} currently ownable assignments below you • ${regular} passenger • ${extra} Extra List • ${other} Yard / other<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(payload.source_generated_at||payload.uploaded_at))} • Crew Book: GO 202 Rev. 7 + Paper Rev. 8</span>${trimRosterFreshnessHTML(payload.source_generated_at||payload.uploaded_at,payload.uploaded_at)}`}
+  if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Roster rank ${trimDevState.rank}</strong><br>${below} currently ownable assignments below you • ${regular} passenger • ${extra} Extra List • ${other} Yard / other<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(payload.source_generated_at||payload.uploaded_at))} • Crew Book: GO 202 Rev. 7 + Paper Rev. 8</span>${trimRosterFreshnessHTML(payload.source_generated_at||payload.uploaded_at,payload.uploaded_at)}${trimAssistantCacheFallbackHTML()}`}
   trimDevTerminalOptions(trimDevState.rows);filters?.classList.add('show');results?.classList.add('show');trimDevApplyFilters();
 }
 function trimDevCheckedValues(containerId){return [...document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)].map(x=>x.value)}
