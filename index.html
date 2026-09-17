@@ -11802,10 +11802,20 @@ void initCloudBridgeTest().catch(err=>{
 </script>
 
 <script>
-window.addEventListener('online',()=>{void crewBookProductionLoad(true).then(()=>renderAll());if(rosterAdminState?.canPublish){if(crewOpsLoadDraft())crewOpsCloudQueueSave();void crewOpsCloudLoadLatest(true);void crewOpsTestChannelLoad(true);void crewOpsProductionLoad(true)}});
+function trimAssistantRefreshLiveIfVisible(){
+  const view=document.getElementById('trimView');
+  if(!view?.classList.contains('active')||navigator.onLine===false||trimPublicDataLastResult.source!=='cache')return;
+  // When connectivity returns, immediately re-check the live Trim Assistant RPC so
+  // a successful cloud response replaces the cached-state banner without requiring
+  // the engineer to close and reopen the PWA.
+  void trimDevLoad(false);
+}
+window.addEventListener('online',()=>{void crewBookProductionLoad(true).then(()=>renderAll());if(rosterAdminState?.canPublish){if(crewOpsLoadDraft())crewOpsCloudQueueSave();void crewOpsCloudLoadLatest(true);void crewOpsTestChannelLoad(true);void crewOpsProductionLoad(true)}trimAssistantRefreshLiveIfVisible()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')trimAssistantRefreshLiveIfVisible()});
+window.addEventListener('pageshow',()=>trimAssistantRefreshLiveIfVisible());
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.2-production-mascot-hotfix-20260913').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.2-trim-offline-cache-recovery-hotfix-20260917').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
