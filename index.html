@@ -11193,7 +11193,7 @@ function bidSheetClearFilters(){
 // ---- End Bid Sheet Assistant ----
 
 // ---- Piece 4: private Bulletin Awards importer + signed-in award match ----
-const AWARD_PARSER_VERSION='bulletin_awards_pdf_v1';
+const AWARD_PARSER_VERSION='bulletin_awards_pdf_v2';
 let awardPreviewState=null;
 let awardAdminState={latest:null};
 let awardState={loaded:false,loading:false,userId:'',payload:null,error:null};
@@ -11206,7 +11206,7 @@ function awardParseLine(items,pageNumber,rowOrder){
   const assignment=rosterColumnText(items,45,125,true).toUpperCase();
   const employeeId=rosterColumnText(items,125,210,true);
   if(!/^(?:\d{1,4}|[A-Z]{1,6}-?\d{1,4})$/.test(assignment)||!/^\d{4,6}$/.test(employeeId))return null;
-  const position=rosterColumnText(items,210,275,true).toUpperCase(),rankText=rosterColumnText(items,275,335,true),roster=rosterColumnText(items,335,385,true).toUpperCase(),firstRankText=rosterColumnText(items,465,525,true),firstRoster=rosterColumnText(items,525,595,true).toUpperCase();
+  const position=rosterColumnText(items,210,275,true).toUpperCase(),rankText=rosterColumnText(items,275,335,true),roster=rosterColumnText(items,335,375,true).toUpperCase(),firstRankText=rosterColumnText(items,465,525,true),firstRoster=rosterColumnText(items,525,595,true).toUpperCase();
   return {assignment,employee_id:employeeId,position_code:position,rank:/^\d{1,4}$/.test(rankText)?Number(rankText):null,roster,first_rank:/^\d{1,4}$/.test(firstRankText)?Number(firstRankText):null,first_roster:firstRoster,source_page:pageNumber,row_order:rowOrder};
 }
 async function awardParsePdf(file){
