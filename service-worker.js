@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-bulletin-awards-parser-hotfix-20260922';
+const CACHE_NAME='engineer-pay-log-v10-2-retirement-watch-z4-hotfix-20260927';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(

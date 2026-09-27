@@ -9884,6 +9884,7 @@ function showMascotMessage(button){
 let retirementWatchState={data:null,loadedAt:0,loading:false};
 function retirementWatchYearLabel(year){return `2K${String(year||new Date().getFullYear()).slice(-2).padStart(2,'0')}`}
 function retirementWatchDate(value){if(!value)return 'No roster timestamp available';try{return new Date(value).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}catch{return String(value)}}
+function retirementWatchIsSeniorityExit(value){return ['99/Z2','99/Z4'].includes(String(value||'').trim().toUpperCase())}
 function retirementWatchRender(data){
   const strip=document.getElementById('retirementWatchStrip');if(!strip)return;
   if(!data){strip.hidden=true;return}strip.hidden=false;
@@ -9896,7 +9897,7 @@ function retirementWatchRender(data){
 function retirementWatchRenderAdmin(data){
   const text=document.getElementById('rosterRetirementAdminText'),btn=document.getElementById('rosterRetirementStartBtn');if(!text||!data)return;
   const year=Number(data.year||new Date().getFullYear()),count=Number(data.count||0),active=!!data.tracking_active;
-  text.innerHTML=active?`<strong>${count}</strong> retirement${count===1?'':'s'} counted for ${escapeHTML(retirementWatchYearLabel(year))}. Latest roster: ${escapeHTML(retirementWatchDate(data.latest_roster_generated_at||data.latest_roster_uploaded_at))}.`:`${escapeHTML(retirementWatchYearLabel(year))} is reset to <strong>0</strong> and paused until the railroad's annual roster cleanup is complete. Start the baseline only when you're ready to resume tracking.`;
+  text.innerHTML=active?`<strong>${count}</strong> seniority exit${count===1?'':'s'} counted for ${escapeHTML(retirementWatchYearLabel(year))}. Latest roster: ${escapeHTML(retirementWatchDate(data.latest_roster_generated_at||data.latest_roster_uploaded_at))}.`:`${escapeHTML(retirementWatchYearLabel(year))} is reset to <strong>0</strong> and paused until the railroad's annual roster cleanup is complete. Start the baseline only when you're ready to resume tracking.`;
   if(btn){btn.hidden=active;btn.textContent=`Start ${retirementWatchYearLabel(year)} from latest roster`}
 }
 function retirementWatchLocalRankOverride(){
@@ -9922,14 +9923,13 @@ async function openRetirementWatch(){
   const data=await retirementWatchLoad(true);if(!data)return;
   const year=Number(data.year||new Date().getFullYear()),count=Number(data.count||0),active=!!data.tracking_active,newest=Number(data.new_since_latest_roster||0),above=Number(data.new_above_you_since_latest_roster||0),matched=!!data.seniority_match_found;
   const title=document.getElementById('retirementWatchModalTitle'),num=document.getElementById('retirementWatchModalCount'),label=document.getElementById('retirementWatchModalCountLabel'),latest=document.getElementById('retirementWatchModalLatest'),update=document.getElementById('retirementWatchModalUpdate'),hist=document.getElementById('retirementWatchModalHistory');
-  if(title)title.textContent=`🚂 Retirement Watch ${retirementWatchYearLabel(year)}`;if(num)num.textContent=String(count);if(label)label.textContent=`engineer${count===1?'':'s'} retired this year`;
+  if(title)title.textContent=`🚂 Retirement Watch ${retirementWatchYearLabel(year)}`;if(num)num.textContent=String(count);if(label)label.textContent=`engineer${count===1?'':'s'} retired/resigned this year`;
   if(latest)latest.innerHTML=active?`Roster: <strong>${escapeHTML(retirementWatchDate(data.latest_roster_generated_at||data.latest_roster_uploaded_at))}</strong>`:`${escapeHTML(retirementWatchYearLabel(year))} is waiting for the annual baseline.`;
   if(update){
     if(active&&newest>0){
-      const peopleWord=newest===1?'person has':'people have';
-      const retireWord=newest===1?'retired':'retired';
+      const exitPhrase=newest===1?'engineer retired or resigned':'engineers retired or resigned';
       const relative=matched?`<br><strong>${above} out of ${newest}</strong> ${above===1?'was':'were'} above you in seniority.`:'';
-      update.innerHTML=`<strong>${newest} ${peopleWord} ${retireWord} since the last roster update.</strong>${relative}${matched?'<br><span style="font-weight:900;color:var(--brand)">Seniority intensifies 📈</span>':''}`;
+      update.innerHTML=`<strong>${newest} ${exitPhrase} since the last roster update.</strong>${relative}${matched?'<br><span style="font-weight:900;color:var(--brand)">Seniority intensifies 📈</span>':''}`;
       update.hidden=false;
     }else{update.hidden=true;update.innerHTML=''}
   }
@@ -9942,7 +9942,7 @@ async function openRetirementWatch(){
 function closeRetirementWatch(){document.getElementById('retirementWatchModal')?.classList.remove('open')}
 async function retirementWatchStartCurrentYear(){
   if(!rosterAdminState.canPublish)return;const year=new Date().getFullYear();
-  if(!confirm(`Start Retirement Watch ${retirementWatchYearLabel(year)} from the latest published roster?\n\nOnly do this after the railroad's annual roster cleanup. Existing 99/Z2 entries in that roster will become the baseline and will NOT count toward the new year's total.`))return;
+  if(!confirm(`Start Retirement Watch ${retirementWatchYearLabel(year)} from the latest published roster?\n\nOnly do this after the railroad's annual roster cleanup. Existing 99/Z2 retirement and 99/Z4 resignation entries in that roster will become the baseline and will NOT count toward the new year's total.`))return;
   const client=getCloudClient();if(!client)return;const btn=document.getElementById('rosterRetirementStartBtn');if(btn)btn.disabled=true;
   try{const {error}=await client.rpc('retirement_watch_start_year',{p_year:year,p_snapshot_id:null});if(error)throw error;retirementWatchState.data=null;await retirementWatchLoad(true)}catch(err){console.error('Retirement Watch baseline failed:',err);alert(`Could not start Retirement Watch ${retirementWatchYearLabel(year)}: ${err?.message||err}`)}finally{if(btn)btn.disabled=false}
 }
@@ -10647,20 +10647,20 @@ async function rosterGetLatestRows(){
 }
 function rosterDiffRows(previous,current){
   if(!previous?.length)return null;const prevByEmp=new Map(previous.map(r=>[String(r.employee_id),r])),curByEmp=new Map(current.map(r=>[String(r.employee_id),r]));let assignmentChanges=0,rankChanges=0,newRows=0,removedRows=0,newRetirements=0;
-  for(const r of current){const p=prevByEmp.get(String(r.employee_id));if(!p){newRows++;if(String(r.st_rs||'').toUpperCase()==='99/Z2')newRetirements++;continue}if(String(p.assignment||'')!==String(r.assignment||''))assignmentChanges++;if(Number(p.rank)!==Number(r.rank))rankChanges++;if(String(r.st_rs||'').toUpperCase()==='99/Z2'&&String(p.st_rs||'').toUpperCase()!=='99/Z2')newRetirements++}
+  for(const r of current){const p=prevByEmp.get(String(r.employee_id));if(!p){newRows++;if(retirementWatchIsSeniorityExit(r.st_rs))newRetirements++;continue}if(String(p.assignment||'')!==String(r.assignment||''))assignmentChanges++;if(Number(p.rank)!==Number(r.rank))rankChanges++;if(retirementWatchIsSeniorityExit(r.st_rs)&&!retirementWatchIsSeniorityExit(p.st_rs))newRetirements++}
   for(const p of previous)if(!curByEmp.has(String(p.employee_id)))removedRows++;
   return {assignmentChanges,rankChanges,newRows,removedRows,newRetirements};
 }
 async function rosterRenderPreview(parsed){
   const host=document.getElementById('rosterAdminPreview'),stats=document.getElementById('rosterAdminStats'),validation=document.getElementById('rosterAdminValidation'),diffEl=document.getElementById('rosterAdminDiff'),publish=document.getElementById('rosterPublishBtn');if(!host||!stats||!validation||!publish)return;
-  const c=parsed.counts,ownable=c.regular+c.extra_list,retiredCount=parsed.rows.filter(r=>String(r.st_rs||'').toUpperCase()==='99/Z2').length;
-  stats.innerHTML=[['Rows',parsed.rows.length],['Ownable',ownable],['Passenger jobs',c.regular],['EX1 Extra List',c.extra_list],['EX2 excluded',c.subject_to_bid],['ET excluded',c.trainee],['99/Z2 retired',retiredCount]].map(([label,value])=>`<div class="roster-admin-stat"><strong>${Number(value)}</strong><span>${escapeHTML(label)}</span></div>`).join('');
+  const c=parsed.counts,ownable=c.regular+c.extra_list,retiredCount=parsed.rows.filter(r=>String(r.st_rs||'').trim().toUpperCase()==='99/Z2').length,resignedCount=parsed.rows.filter(r=>String(r.st_rs||'').trim().toUpperCase()==='99/Z4').length;
+  stats.innerHTML=[['Rows',parsed.rows.length],['Ownable',ownable],['Passenger jobs',c.regular],['EX1 Extra List',c.extra_list],['EX2 excluded',c.subject_to_bid],['ET excluded',c.trainee],['99/Z2 retired',retiredCount],['99/Z4 resigned',resignedCount],['Retirement Watch',retiredCount+resignedCount]].map(([label,value])=>`<div class="roster-admin-stat"><strong>${Number(value)}</strong><span>${escapeHTML(label)}</span></div>`).join('');
   const details=[`<strong>${parsed.valid?'Validation passed':'Validation failed'}</strong>`,`${parsed.pages} pages • ${parsed.rows.length} parsed rows${parsed.declaredTotal?` • PDF total ${parsed.declaredTotal}`:''}`,`Roster generated: ${escapeHTML(parsed.timestamp.label)}`,`Other/unclassified: ${c.other} • Blank assignments: ${c.blank}`];
   if(parsed.mine)details.push(`Your profile matched roster rank ${parsed.mine.rank}.${parsed.belowOwnable!==null?` ${parsed.belowOwnable} currently ownable passenger/EX1 assignments are below you in this snapshot.`:''}`);else details.push('Your profile employee number was not matched in this PDF. The roster can still be published, but check your profile before testing Trim Assistant results.');
   if(parsed.errors.length)details.push(...parsed.errors.map(x=>`Error: ${escapeHTML(x)}`));if(parsed.warnings.length)details.push(...parsed.warnings.map(x=>`Warning: ${escapeHTML(x)}`));
   validation.className=`roster-admin-validation${parsed.errors.length?' error':parsed.warnings.length?' warn':''}`;validation.innerHTML=details.join('<br>');
   if(!rosterAdminState.latest)await rosterLoadLatestSnapshot();const previous=await rosterGetLatestRows(),diff=rosterDiffRows(previous,parsed.rows);
-  if(diff&&diffEl){diffEl.style.display='block';diffEl.innerHTML=`<strong>Changes from the latest published roster</strong><br>${diff.assignmentChanges} assignment change${diff.assignmentChanges===1?'':'s'} • ${diff.rankChanges} rank change${diff.rankChanges===1?'':'s'} • ${diff.newRows} new roster entr${diff.newRows===1?'y':'ies'} • ${diff.removedRows} removed • <strong>${diff.newRetirements} new 99/Z2 retirement${diff.newRetirements===1?'':'s'}</strong>`;}else if(diffEl){diffEl.style.display='none';diffEl.innerHTML=''}
+  if(diff&&diffEl){diffEl.style.display='block';diffEl.innerHTML=`<strong>Changes from the latest published roster</strong><br>${diff.assignmentChanges} assignment change${diff.assignmentChanges===1?'':'s'} • ${diff.rankChanges} rank change${diff.rankChanges===1?'':'s'} • ${diff.newRows} new roster entr${diff.newRows===1?'y':'ies'} • ${diff.removedRows} removed • <strong>${diff.newRetirements} new Retirement Watch seniority exit${diff.newRetirements===1?'':'s'}</strong>`;}else if(diffEl){diffEl.style.display='none';diffEl.innerHTML=''}
   publish.disabled=!parsed.valid;host.classList.add('show');rosterSetStatus(parsed.valid?'Roster parsed successfully. Review the validation summary, then publish when ready.':'Roster parsed, but validation failed. Nothing has been published. ',parsed.valid?'success':'error');
 }
 function rosterClearPreview(clearInput=true){rosterPreviewState=null;document.getElementById('rosterAdminPreview')?.classList.remove('show');const b=document.getElementById('rosterPublishBtn');if(b)b.disabled=true;if(clearInput){const input=document.getElementById('rosterPdfInput');if(input)input.value=''}rosterSetStatus('Choose the full ENGINEERS - BLE EN roster exported with Show All entries.')}
@@ -10678,7 +10678,7 @@ async function rosterPublishPreview(){
     const {error:publishError}=await client.from('roster_snapshots').update({status:'published'}).eq('id',snapshotId);if(publishError)throw publishError;
     let retirementAdded=0;try{const {data:rw,error:rwError}=await client.rpc('retirement_watch_process_snapshot',{p_snapshot_id:snapshotId});if(rwError)throw rwError;retirementAdded=Number(rw?.added||0)}catch(rwErr){console.warn('Retirement Watch processing failed:',rwErr)}
     let pushQueueWarning='';if(!EPL_TEST_TOOLS_ENABLED&&retirementAdded>0){try{await pushInvoke({action:'notify_roster_snapshot',snapshot_id:snapshotId})}catch(pushErr){console.warn('Seniority push queue failed:',pushErr);pushQueueWarning=' Seniority alerts could not be queued; the roster is still published.'}}
-    rosterSetStatus(`Published ${parsed.rows.length} roster rows successfully.${retirementAdded?` Retirement Watch detected ${retirementAdded} new retirement${retirementAdded===1?'':'s'}.`:''}${pushQueueWarning}`,'success');rosterPreviewState=null;document.getElementById('rosterAdminPreview')?.classList.remove('show');const input=document.getElementById('rosterPdfInput');if(input)input.value='';rosterAdminState.latestRows=null;await rosterLoadLatestSnapshot();await retirementWatchLoad(true);if(document.getElementById('trimTestRank')?.value)await trimDevLoad(false);
+    rosterSetStatus(`Published ${parsed.rows.length} roster rows successfully.${retirementAdded?` Retirement Watch detected ${retirementAdded} new seniority exit${retirementAdded===1?'':'s'}.`:''}${pushQueueWarning}`,'success');rosterPreviewState=null;document.getElementById('rosterAdminPreview')?.classList.remove('show');const input=document.getElementById('rosterPdfInput');if(input)input.value='';rosterAdminState.latestRows=null;await rosterLoadLatestSnapshot();await retirementWatchLoad(true);if(document.getElementById('trimTestRank')?.value)await trimDevLoad(false);
   }catch(err){console.error('Roster publish failed:',err);if(snapshotId){try{await client.from('roster_snapshots').delete().eq('id',snapshotId)}catch{}}rosterSetStatus(`Roster was not published: ${err?.message||err}`,'error')}
   finally{if(btn){btn.disabled=!rosterPreviewState?.valid;btn.textContent='Publish Roster Snapshot'}}
 }
