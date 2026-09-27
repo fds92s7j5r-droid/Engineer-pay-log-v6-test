@@ -983,6 +983,24 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     html[data-theme="dark"] .switch-label input:checked+.switch-ui{background:#4b86c4;border-color:#5c94cf}
 
     .my-job-save-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+    .deadhead-watch-card{margin-top:16px;border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--card)}
+    .deadhead-watch-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .deadhead-watch-head h3{margin:0 0 4px;font-size:16px}
+    .deadhead-watch-days{display:grid;gap:10px;margin-top:12px}
+    .deadhead-watch-day{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fbfcfe}
+    .deadhead-watch-day.is-off{opacity:.72}
+    .deadhead-watch-day-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+    .deadhead-watch-day-head strong{color:var(--brand);font-size:13px}
+    .deadhead-watch-off-note{font-size:12px;color:var(--muted);font-weight:700}
+    .deadhead-watch-direction{display:grid;grid-template-columns:minmax(105px,.65fr) minmax(145px,1fr) minmax(150px,1.4fr);gap:10px;align-items:end;padding:10px 0;border-top:1px solid var(--line)}
+    .deadhead-watch-direction:first-of-type{border-top:0;padding-top:0}
+    .deadhead-watch-direction-title{font-size:12px;font-weight:900;color:var(--text);padding-bottom:10px}
+    .deadhead-watch-service{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.35}
+    .deadhead-watch-train-wrap,.deadhead-watch-detail-wrap{display:none}
+    .deadhead-watch-train-wrap.show,.deadhead-watch-detail-wrap.show{display:block}
+    .deadhead-watch-status{margin-top:10px;padding:9px 10px;border-radius:12px;background:var(--soft);font-size:12px;color:var(--muted);line-height:1.45}
+    html[data-theme="dark"] .deadhead-watch-card,html[data-theme="dark"] .deadhead-watch-day{background:#101d2d!important;border-color:#314158!important}
+    @media(max-width:700px){.deadhead-watch-direction{grid-template-columns:1fr}.deadhead-watch-direction-title{padding-bottom:0}}
 
     /* Pay & Claims values need more contrast in dark mode. */
     html[data-theme="dark"] .pay-claims-card .feature-card .big,
@@ -2466,6 +2484,17 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 </div>
 </div>
 <div class="myjob-week-preview" id="myJobWeekPreview" style="display:none"></div>
+<div class="deadhead-watch-card" id="deadheadWatchCard">
+  <div class="deadhead-watch-head">
+    <div><h3>Deadhead Watch</h3><div class="mini">Save the LIRR trains or other transportation you normally use for each assignment day.</div></div>
+    <label class="check"><input id="deadheadWatchEnabled" type="checkbox" onchange="toggleDeadheadWatch()"> Enable</label>
+  </div>
+  <div id="deadheadWatchBody" style="display:none">
+    <p class="notice" style="margin-top:12px">Trips belong to the day your assignment starts. If your job releases after midnight, EPL automatically treats the trip home as the following calendar day. Non-LIRR transportation can be saved too, but only LIRR trains will be checked against GTFS.</p>
+    <div id="deadheadWatchDays" class="deadhead-watch-days"></div>
+    <div class="deadhead-watch-status"><strong>Setup test:</strong> this build saves your normal commute and the assignment-day crossover. GTFS change alerts are not active yet.</div>
+  </div>
+</div>
 <p class="notice" style="margin-top:12px">Using My Job fills only the assignment, location, scheduled times, and Shift Type = Own. You can freely edit the daily shift afterward without changing this saved template.</p>
 <div class="my-job-save-actions"><button class="btn primary" onclick="saveMyJob()" type="button">Save My Job</button><button id="clearMyJobBtn" class="btn danger small" onclick="clearMyJob()" type="button" style="display:none">Remove My Job</button></div>
 </div>
@@ -3865,6 +3894,122 @@ function getMyJob(){
   try{return JSON.parse(localStorage.getItem(MY_JOB_KEY)||'null')}catch(e){return null}
 }
 const MY_JOB_RELIEF_DAYS=['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+const DEADHEAD_WATCH_VERSION=1;
+const DEADHEAD_WATCH_MODES=[
+  ['', 'Select transportation'],
+  ['lirr','LIRR train(s)'],
+  ['drive','Drive'],
+  ['subway_bus','Subway / other']
+];
+function deadheadWatchCleanMode(value){
+  const v=String(value||'').trim();
+  if(v==='walk_bike'||v==='other')return 'subway_bus';
+  if(v==='none')return '';
+  return DEADHEAD_WATCH_MODES.some(([key])=>key===v)?v:'';
+}
+
+function deadheadWatchNormalizeTrip(trip){
+  const t=trip&&typeof trip==='object'&&!Array.isArray(trip)?trip:{};
+  const trains=Array.isArray(t.trains)?t.trains.map(x=>String(x||'').trim()).filter(Boolean):String(t.trains||t.trainNumber||'').match(/\d+/g)||[];
+  const rawOffset=t.serviceDayOffset;
+  const offset=rawOffset===-1||rawOffset===0||rawOffset===1?rawOffset:'auto';
+  return {mode:deadheadWatchCleanMode(t.mode),trains,detail:String(t.detail||'').trim(),serviceDayOffset:offset};
+}
+function normalizeDeadheadWatch(value){
+  const w=value&&typeof value==='object'&&!Array.isArray(value)?value:{};
+  const days={};
+  for(const day of MY_JOB_RELIEF_DAYS){
+    const d=w.days?.[day]||{};
+    days[day]={toWork:deadheadWatchNormalizeTrip(d.toWork),home:deadheadWatchNormalizeTrip(d.home)};
+  }
+  return {version:DEADHEAD_WATCH_VERSION,enabled:!!w.enabled,days};
+}
+function deadheadWatchModeOptions(selected){
+  return DEADHEAD_WATCH_MODES.map(([value,label])=>`<option value="${value}"${value===selected?' selected':''}>${label}</option>`).join('');
+}
+function deadheadWatchCap(day){return day.charAt(0).toUpperCase()+day.slice(1)}
+function deadheadWatchDirectionCap(direction){return direction==='toWork'?'ToWork':'Home'}
+function deadheadWatchParseTrains(value){return (String(value||'').match(/\d+/g)||[]).map(String)}
+function deadheadWatchTripFromSaved(watch,day,direction){return deadheadWatchNormalizeTrip(watch?.days?.[day]?.[direction])}
+function deadheadWatchScheduleFromUI(day){
+  const cap=deadheadWatchCap(day),relief=!!document.getElementById('myJobTypeRelief')?.checked;
+  const prefix=relief?'myJobRelief':'myJobRegular';
+  return {
+    reliefDay:!!document.getElementById(`${prefix}${cap}Off`)?.checked,
+    start:document.getElementById(`${prefix}${cap}Start`)?.value||'',
+    end:document.getElementById(`${prefix}${cap}End`)?.value||''
+  };
+}
+function deadheadWatchMinutes(value){if(!/^\d{2}:\d{2}$/.test(String(value||'')))return null;const [h,m]=value.split(':').map(Number);return h*60+m}
+function deadheadWatchInferredOffset(day,direction){
+  if(direction==='toWork')return 0;
+  const s=deadheadWatchScheduleFromUI(day),start=deadheadWatchMinutes(s.start),end=deadheadWatchMinutes(s.end);
+  return start!==null&&end!==null&&end<=start?1:0;
+}
+function deadheadWatchDayName(day,offset=0){
+  const i=MY_JOB_RELIEF_DAYS.indexOf(day);if(i<0)return deadheadWatchCap(day);
+  return deadheadWatchCap(MY_JOB_RELIEF_DAYS[(i+offset+7)%7]);
+}
+function deadheadWatchServiceText(day,direction){
+  const cap=deadheadWatchCap(day),dcap=deadheadWatchDirectionCap(direction),sel=document.getElementById(`deadheadWatch${cap}${dcap}Mode`);
+  if(sel?.value!=='lirr')return '';
+  const offset=deadheadWatchInferredOffset(day,direction),serviceDay=deadheadWatchDayName(day,offset);
+  if(direction==='home'&&offset===1)return `${serviceDay} service · after-midnight trip home`;
+  return `${serviceDay} service · assignment day`;
+}
+function deadheadWatchDirectionHTML(day,direction,trip){
+  const cap=deadheadWatchCap(day),dcap=deadheadWatchDirectionCap(direction),id=`deadheadWatch${cap}${dcap}`,title=direction==='toWork'?'Going to work':'Going home';
+  const trains=trip.trains.join(' → '),detail=trip.detail||'';
+  return `<div class="deadhead-watch-direction" data-direction="${direction}">
+    <div><div class="deadhead-watch-direction-title">${title}</div><div id="${id}Service" class="deadhead-watch-service"></div></div>
+    <div class="field"><label>Transportation</label><select id="${id}Mode" onchange="deadheadWatchModeChanged('${day}','${direction}')">${deadheadWatchModeOptions(trip.mode)}</select></div>
+    <div>
+      <div id="${id}TrainWrap" class="deadhead-watch-train-wrap"><div class="field"><label>LIRR train(s)</label><input id="${id}Trains" value="${escapeHTML(trains)}" placeholder="e.g. 163 → 1299"></div></div>
+      <div id="${id}DetailWrap" class="deadhead-watch-detail-wrap"><div class="field"><label>Details <span class="mini">(optional)</span></label><input id="${id}Detail" value="${escapeHTML(detail)}" placeholder="e.g. A train, Uber, bike"></div></div>
+    </div>
+  </div>`;
+}
+function renderDeadheadWatchSettings(){
+  const host=document.getElementById('deadheadWatchDays'),enabled=document.getElementById('deadheadWatchEnabled');if(!host||!enabled)return;
+  const saved=normalizeDeadheadWatch(normalizeMyJob(getMyJob())?.deadheadWatch);
+  enabled.checked=saved.enabled;
+  host.innerHTML=MY_JOB_RELIEF_DAYS.map(day=>{
+    const cap=deadheadWatchCap(day),to=deadheadWatchTripFromSaved(saved,day,'toWork'),home=deadheadWatchTripFromSaved(saved,day,'home');
+    return `<div class="deadhead-watch-day" id="deadheadWatch${cap}Card"><div class="deadhead-watch-day-head"><strong>${cap} assignment</strong><span id="deadheadWatch${cap}OffNote" class="deadhead-watch-off-note"></span></div>${deadheadWatchDirectionHTML(day,'toWork',to)}${deadheadWatchDirectionHTML(day,'home',home)}</div>`;
+  }).join('');
+  toggleDeadheadWatch(false);updateDeadheadWatchWorkdayVisibility();
+  for(const day of MY_JOB_RELIEF_DAYS){deadheadWatchModeChanged(day,'toWork');deadheadWatchModeChanged(day,'home')}
+}
+function toggleDeadheadWatch(updateVisibility=true){
+  const enabled=!!document.getElementById('deadheadWatchEnabled')?.checked,body=document.getElementById('deadheadWatchBody');if(body)body.style.display=enabled?'block':'none';if(updateVisibility)updateDeadheadWatchWorkdayVisibility();
+}
+function deadheadWatchModeChanged(day,direction){
+  const cap=deadheadWatchCap(day),dcap=deadheadWatchDirectionCap(direction),id=`deadheadWatch${cap}${dcap}`,mode=document.getElementById(`${id}Mode`)?.value||'';
+  document.getElementById(`${id}TrainWrap`)?.classList.toggle('show',mode==='lirr');
+  document.getElementById(`${id}DetailWrap`)?.classList.toggle('show',!!mode&&mode!=='lirr');
+  const service=document.getElementById(`${id}Service`);if(service)service.textContent=deadheadWatchServiceText(day,direction);
+}
+function updateDeadheadWatchWorkdayVisibility(){
+  if(!document.getElementById('deadheadWatchDays'))return;
+  for(const day of MY_JOB_RELIEF_DAYS){
+    const cap=deadheadWatchCap(day),s=deadheadWatchScheduleFromUI(day),card=document.getElementById(`deadheadWatch${cap}Card`),off=document.getElementById(`deadheadWatch${cap}OffNote`);
+    if(card){card.classList.toggle('is-off',!!s.reliefDay);card.querySelectorAll('.deadhead-watch-direction').forEach(el=>el.style.display=s.reliefDay?'none':'grid')}
+    if(off)off.textContent=s.reliefDay?'Relief Day · not watched':'';
+    deadheadWatchModeChanged(day,'toWork');deadheadWatchModeChanged(day,'home');
+  }
+}
+function readDeadheadWatchFromUI(){
+  const enabled=!!document.getElementById('deadheadWatchEnabled')?.checked,days={};
+  for(const day of MY_JOB_RELIEF_DAYS){
+    const cap=deadheadWatchCap(day),schedule=deadheadWatchScheduleFromUI(day);days[day]={};
+    for(const direction of ['toWork','home']){
+      const dcap=deadheadWatchDirectionCap(direction),id=`deadheadWatch${cap}${dcap}`,mode=deadheadWatchCleanMode(document.getElementById(`${id}Mode`)?.value||''),trains=mode==='lirr'?deadheadWatchParseTrains(document.getElementById(`${id}Trains`)?.value||''):[],detail=!!mode&&mode!=='lirr'?(document.getElementById(`${id}Detail`)?.value||'').trim():'';
+      if(enabled&&!schedule.reliefDay&&mode==='lirr'&&!trains.length){alert(`Please enter at least one LIRR train for ${cap} — ${direction==='toWork'?'Going to work':'Going home'}, or choose another transportation option.`);return {valid:false,value:null}}
+      days[day][direction]={mode: schedule.reliefDay?'':mode,trains: schedule.reliefDay?[]:trains,detail:schedule.reliefDay?'':detail,serviceDayOffset:'auto'};
+    }
+  }
+  return {valid:true,value:{version:DEADHEAD_WATCH_VERSION,enabled,days}};
+}
 function normalizeMyJob(j){
   if(!j)return null;
   if(!j.type)j.type='regular';
@@ -3948,6 +4093,7 @@ function toggleMyJobRegularDay(day){
   const cap=day.charAt(0).toUpperCase()+day.slice(1);
   const off=document.getElementById(`myJobRegular${cap}Off`)?.checked;
   document.getElementById(`myJobRegular${cap}Card`)?.classList.toggle('relief-off',!!off);
+  updateDeadheadWatchWorkdayVisibility();
 }
 function regularLocationValue(){
   const sel=document.getElementById('myJobRegularLocation');
@@ -3977,7 +4123,7 @@ function setReliefLocationUI(day,value){
 function chooseMyJobType(type,box){
   const reg=document.getElementById('myJobTypeRegular'),rel=document.getElementById('myJobTypeRelief');
   if(type==='regular'){reg.checked=true;rel.checked=false}else{rel.checked=true;reg.checked=false}
-  updateMyJobTypeUI(type);
+  updateMyJobTypeUI(type);updateDeadheadWatchWorkdayVisibility();
 }
 function updateMyJobTypeUI(type){
   const reg=document.getElementById('myJobRegularFields'),rel=document.getElementById('myJobReliefFields');
@@ -3988,6 +4134,7 @@ function toggleMyJobReliefDay(day){
   const cap=day.charAt(0).toUpperCase()+day.slice(1);
   const off=document.getElementById(`myJobRelief${cap}Off`)?.checked;
   document.getElementById(`myJobRelief${cap}Card`)?.classList.toggle('relief-off',!!off);
+  updateDeadheadWatchWorkdayVisibility();
 }
 function requestMyJobToggle(enable){
   const box=document.getElementById('myJobEnabled');
@@ -4012,6 +4159,7 @@ function reliefLocationValue(day){
   return sel?.value==='__other__'?(document.getElementById(`myJobRelief${cap}Other`)?.value||'').trim():(sel?.value||'');
 }
 function saveMyJob(){
+  const watchResult=readDeadheadWatchFromUI();if(!watchResult.valid)return;const deadheadWatch=watchResult.value;
   const type=document.getElementById('myJobTypeRelief')?.checked?'relief':'regular';
   if(type==='relief'){
     const reliefCrewNumber=(document.getElementById('myJobReliefCrewNumber')?.value||'').trim();
@@ -4025,7 +4173,7 @@ function saveMyJob(){
       if(!reliefDay&&(!assignment||!location||!start||!end)){alert(`Please complete ${cap}'s assignment, location, start, and release time, or mark it as a Relief Day.`);return}
       reliefDays[day]={reliefDay,assignment:reliefDay?'':assignment,location:reliefDay?'':location,start:reliefDay?'':start,end:reliefDay?'':end,paysMeal:reliefDay?false:paysMeal};
     }
-    localStorage.setItem(MY_JOB_KEY,JSON.stringify({enabled:true,type:'relief',reliefCrewNumber,reliefDays}));
+    localStorage.setItem(MY_JOB_KEY,JSON.stringify({enabled:true,type:'relief',reliefCrewNumber,reliefDays,deadheadWatch}));
   }else{
     const assignment=(document.getElementById('myJobNumber')?.value||'').trim();
     if(!assignment){alert('Please enter the Job Number.');return}
@@ -4038,7 +4186,7 @@ function saveMyJob(){
       if(!reliefDay&&(!start||!end)){alert(`Please complete ${cap}'s start and release time, or mark it as a Relief Day.`);return}
       regularDays[day]={reliefDay,location:reliefDay?'':location,start:reliefDay?'':start,end:reliefDay?'':end,paysMeal:reliefDay?false:paysMeal};
     }
-    localStorage.setItem(MY_JOB_KEY,JSON.stringify({enabled:true,type:'regular',assignment,location,regularDays}));
+    localStorage.setItem(MY_JOB_KEY,JSON.stringify({enabled:true,type:'regular',assignment,location,regularDays,deadheadWatch}));
   }
   const box=document.getElementById('myJobEnabled');if(box)box.checked=true;
   renderMyJobUI();renderMyJobWeekPreview();void cloudMirrorMyJob();alert('My Job saved.');
@@ -4068,6 +4216,7 @@ function loadMyJobSettings(){
     const off=document.getElementById(`myJobRelief${cap}Off`);if(off)off.checked=!!d.reliefDay;
     set(`myJobRelief${cap}Assignment`,d.assignment);setReliefLocationUI(day,d.location||'');set(`myJobRelief${cap}Start`,d.start);set(`myJobRelief${cap}End`,d.end);const meal=document.getElementById(`myJobRelief${cap}PaysMeal`);if(meal)meal.checked=!!d.paysMeal;toggleMyJobReliefDay(day);
   });
+  renderDeadheadWatchSettings();
 renderMyJobWeekPreview();}
 function renderMyJobUI(){
   const j=normalizeMyJob(getMyJob()),configured=myJobConfigured(),trainee=isTraineeMode();
@@ -11815,7 +11964,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 window.addEventListener('pageshow',()=>trimAssistantRefreshLiveIfVisible());
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.2-trim-offline-cache-recovery-hotfix-20260917').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.2-deadhead-watch-mvp1-1-20260927').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
