@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-deadhead-watch-mvp1-6-3-scheduled-push-20260928';
+const CACHE_NAME='engineer-pay-log-v10-2-crew-book-label-fix-20260928';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(
@@ -47,21 +47,21 @@ self.addEventListener('push',event=>{
   try{payload=event.data?event.data.json():{}}catch{
     try{payload={body:event.data?event.data.text():''}}catch{payload={}}
   }
-  const title=payload.type==='bulletin_award'?'Bulletin Award':payload.type==='seniority'?'Seniority Intensifies 📈':payload.type==='deadhead_watch'?'Deadhead Watch':payload.type==='test'?'Test Notification':(payload.title||'Engineer Pay Log');
+  const title=payload.type==='bulletin_award'?'Bulletin Award':payload.type==='seniority'?'Seniority Intensifies 📈':payload.type==='test'?'Test Notification':(payload.title||'Engineer Pay Log');
   const options={
     body:payload.body||'You have a new Engineer Pay Log notification.',
     icon:'./icons/icon-192.png',
     badge:'./icons/icon-192.png',
     tag:payload.tag||'engineer-pay-log',
     renotify:true,
-    data:{url:payload.url||'./',type:payload.type||'general',retirementsAbove:payload.retirements_above||null,changeCount:payload.change_count||null,test:!!payload.test}
+    data:{url:payload.url||'./',type:payload.type||'general',retirementsAbove:payload.retirements_above||null,test:!!payload.test}
   };
   event.waitUntil((async()=>{
     // iOS can occasionally wake a Home Screen PWA from a notification without
     // delivering notificationclick to the worker. For actionable EPL alerts,
     // save the destination as soon as the push arrives while the app is not
     // visible. The page will consume it on its next foreground/resume.
-    if(payload.type==='bulletin_award'||payload.type==='seniority'||payload.type==='deadhead_watch'){
+    if(payload.type==='bulletin_award'||payload.type==='seniority'){
       try{
         const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
         const hasVisible=windows.some(client=>client.visibilityState==='visible');
@@ -71,7 +71,6 @@ self.addEventListener('push',event=>{
             notificationType:payload.type,
             url:new URL(payload.url||'./',self.registration.scope).href,
             retirementsAbove:payload.retirements_above||null,
-            changeCount:payload.change_count||null,
             test:!!payload.test,
             source:'push_received'
           });
@@ -96,7 +95,7 @@ self.addEventListener('notificationclick',event=>{
   event.notification.close();
   const notificationType=event.notification?.data?.type||'general';
   const target=new URL(event.notification?.data?.url||'./',self.registration.scope).href;
-  const message={type:'EPL_NOTIFICATION_OPEN',notificationType,url:target,retirementsAbove:event.notification?.data?.retirementsAbove||null,changeCount:event.notification?.data?.changeCount||null,test:!!event.notification?.data?.test};
+  const message={type:'EPL_NOTIFICATION_OPEN',notificationType,url:target,retirementsAbove:event.notification?.data?.retirementsAbove||null,test:!!event.notification?.data?.test};
   event.waitUntil((async()=>{
     // Persist the tap intent BEFORE waking/focusing the PWA. iOS can restore a
     // suspended Home Screen app without honoring navigate() or an immediate
@@ -106,12 +105,8 @@ self.addEventListener('notificationclick',event=>{
     const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
     if(windows.length){
       const client=windows[0];
-      // Prefer a real navigation when WebKit will allow it. This gives the page
-      // a durable ?deadheadWatch=1 launch marker even if postMessage/focus is
-      // swallowed while iOS resumes an already-open Home Screen PWA.
-      try{if(typeof client.navigate==='function')await client.navigate(target)}catch{}
-      try{await client.focus()}catch{}
       try{client.postMessage(message)}catch{}
+      try{await client.focus()}catch{}
       // WebKit can make a resumed WindowClient responsive a little late. Keep the
       // service worker alive briefly and retry the message after the app wakes.
       for(const delay of [350,1000,2200,3500]){
@@ -134,10 +129,3 @@ self.addEventListener('notificationclick',event=>{
     }
   })());
 });
-// Deadhead Watch MVP 1.4.1 comparison simulator cache bump
-
-// Deadhead Watch MVP 1.5 automatic server monitor cache bump
-
-// Deadhead Watch MVP 1.6 deduplicated push alerts cache bump
-
-// Deadhead Watch MVP 1.6.1: iOS tap routing + at-most-once push fix cache bump
