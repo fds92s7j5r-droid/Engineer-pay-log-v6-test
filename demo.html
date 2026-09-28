@@ -17,6 +17,7 @@
   <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
   <link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
   <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 
   <style>
@@ -983,6 +984,79 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     html[data-theme="dark"] .switch-label input:checked+.switch-ui{background:#4b86c4;border-color:#5c94cf}
 
     .my-job-save-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+    .deadhead-watch-card{margin-top:16px;border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--card)}
+    .deadhead-watch-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .deadhead-watch-head h3{margin:0 0 4px;font-size:16px}
+    .deadhead-watch-days{display:grid;gap:10px;margin-top:12px}
+    .deadhead-watch-day{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fbfcfe}
+    .deadhead-watch-day.is-off{opacity:.72}
+    .deadhead-watch-day-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+    .deadhead-watch-day-head strong{color:var(--brand);font-size:13px}
+    .deadhead-watch-off-note{font-size:12px;color:var(--muted);font-weight:700}
+    .deadhead-watch-direction{display:grid;grid-template-columns:minmax(105px,.65fr) minmax(145px,1fr) minmax(180px,1.5fr);gap:10px;align-items:end;padding:10px 0;border-top:1px solid var(--line)}
+    .deadhead-watch-direction:first-of-type{border-top:0;padding-top:0}
+    .deadhead-watch-direction-title{font-size:12px;font-weight:900;color:var(--text);padding-bottom:10px}
+    .deadhead-watch-service{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.35}
+    .deadhead-watch-train-wrap,.deadhead-watch-detail-wrap{display:none}
+    .deadhead-watch-train-wrap.show,.deadhead-watch-detail-wrap.show{display:block}
+    .deadhead-watch-train-list{display:grid;gap:7px}
+    .deadhead-watch-train-row{display:grid;grid-template-columns:58px minmax(0,1fr) 34px;gap:7px;align-items:center}
+    .deadhead-watch-train-label{font-size:11px;font-weight:800;color:var(--muted)}
+    .deadhead-watch-train-row input{min-width:0}
+    .deadhead-watch-train-remove{width:34px;height:34px;padding:0;border-radius:10px;font-size:18px;line-height:1}
+    .deadhead-watch-train-arrow{display:none}
+    .deadhead-watch-add-train{margin-top:7px}
+    .deadhead-watch-status{margin-top:10px;padding:9px 10px;border-radius:12px;background:var(--soft);font-size:12px;color:var(--muted);line-height:1.45}
+    .deadhead-watch-summary{margin-top:12px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card)}
+    .deadhead-watch-summary-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;background:var(--soft);border-bottom:1px solid var(--line)}
+    .deadhead-watch-summary-head strong{font-size:14px}
+    .deadhead-watch-summary-row{display:grid;grid-template-columns:72px minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:center;padding:11px 14px;border-top:1px solid var(--line)}
+    .deadhead-watch-summary-row:first-of-type{border-top:0}
+    .deadhead-watch-summary-day{font-size:12px;font-weight:900;color:var(--muted)}
+    .deadhead-watch-summary-trip strong{display:block;font-size:13px;color:var(--text)}
+    .deadhead-watch-summary-trip span{display:block;margin-top:2px;font-size:10px;line-height:1.3;color:var(--muted)}
+    .deadhead-watch-summary-route{color:var(--text)!important;font-weight:750}
+    .deadhead-watch-summary-actions{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+    .deadhead-watch-summary-actions .btn{padding:5px 7px;font-size:10px;border-radius:8px}
+    .deadhead-watch-summary-off{grid-column:2/4;font-size:13px;font-weight:800;color:var(--muted)}
+    .deadhead-watch-trip-editor{margin-top:10px;border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}
+    .deadhead-watch-trip-editor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:12px 14px;background:var(--soft);border-bottom:1px solid var(--line)}
+    .deadhead-watch-trip-editor-head strong{display:block;font-size:13px}.deadhead-watch-trip-editor-head span{display:block;margin-top:2px;font-size:10px;color:var(--muted)}
+    .deadhead-watch-trip-editor-body{padding:12px 14px}.deadhead-watch-trip-editor-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    html[data-theme="dark"] .deadhead-watch-trip-editor{background:#101d2d!important;border-color:#314158!important}html[data-theme="dark"] .deadhead-watch-trip-editor-head{background:#15263a!important;border-color:#314158!important}
+
+    .deadhead-watch-gtfs{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--line);border-top:0;border-radius:0 0 16px 16px;background:#f8fbff}
+    .deadhead-watch-gtfs>div:first-child{min-width:0}.deadhead-watch-gtfs strong{display:block;font-size:12px}.deadhead-watch-gtfs span,.deadhead-watch-gtfs small{display:block;margin-top:2px;font-size:10px;color:var(--muted);line-height:1.35}.deadhead-watch-gtfs small.is-error{color:var(--bad);font-weight:750}.deadhead-watch-gtfs small.is-success{color:#1f7a42;font-weight:800}.deadhead-watch-gtfs-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+    .deadhead-watch-resolver{margin-top:10px;border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}.deadhead-watch-resolver-head,.deadhead-watch-resolver-route-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.deadhead-watch-resolver-head{padding:12px 14px;background:var(--soft);border-bottom:1px solid var(--line)}.deadhead-watch-resolver-head strong,.deadhead-watch-resolver-route-head strong{display:block;font-size:13px}.deadhead-watch-resolver-head span,.deadhead-watch-resolver-route-head span{display:block;margin-top:2px;font-size:10px;color:var(--muted)}.deadhead-watch-resolver-route{padding:12px 14px;border-top:1px solid var(--line)}.deadhead-watch-resolver-route:first-of-type{border-top:0}.deadhead-watch-resolver-route-head{margin-bottom:9px}.deadhead-watch-resolver-leg{display:grid;grid-template-columns:110px minmax(0,1fr) minmax(0,1fr);gap:9px;align-items:end;padding:9px 0;border-top:1px solid var(--line)}.deadhead-watch-resolver-leg:first-of-type{border-top:0}.deadhead-watch-resolver-train{font-size:13px;font-weight:900}.deadhead-watch-resolver-train span{display:block;margin-top:2px;font-size:9px;color:var(--muted);font-weight:650}.deadhead-watch-resolver-error{margin:10px 14px;padding:10px;border-radius:11px;background:#fff3f2;border:1px solid #f2c1bd}.deadhead-watch-resolver-error strong,.deadhead-watch-resolver-error span{display:block;font-size:11px}.deadhead-watch-resolver-error span{margin-top:3px;color:var(--bad)}.deadhead-watch-resolver-actions{display:flex;gap:8px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line)}
+    html[data-theme="dark"] .deadhead-watch-gtfs,html[data-theme="dark"] .deadhead-watch-resolver{background:#101d2d!important;border-color:#314158!important}html[data-theme="dark"] .deadhead-watch-resolver-head{background:#15263a!important;border-color:#314158!important}html[data-theme="dark"] .deadhead-watch-resolver-error{background:#31191b;border-color:#683135}
+    .deadhead-watch-compare{margin-top:10px;border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}
+    .deadhead-watch-compare-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--soft);border-bottom:1px solid var(--line)}
+    .deadhead-watch-compare-head strong{display:block;font-size:14px}.deadhead-watch-compare-head span{display:block;margin-top:3px;font-size:10px;line-height:1.35;color:var(--muted)}
+    .deadhead-watch-compare-summary{padding:11px 14px;border-bottom:1px solid var(--line);font-size:11px;font-weight:800}.deadhead-watch-compare-summary.is-clear{color:#1f7a42}.deadhead-watch-compare-summary.is-attention{color:var(--bad)}
+    .deadhead-watch-compare-route{padding:12px 14px;border-top:1px solid var(--line)}.deadhead-watch-compare-route:first-of-type{border-top:0}
+    .deadhead-watch-compare-route-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.deadhead-watch-compare-route-head strong{font-size:13px}.deadhead-watch-compare-route-head span{display:block;margin-top:2px;font-size:10px;color:var(--muted)}
+    .deadhead-watch-compare-status{flex:0 0 auto;padding:5px 8px;border-radius:999px;font-size:9px;font-weight:900;border:1px solid var(--line);background:var(--soft)}
+    .deadhead-watch-compare-status.status-unchanged{color:#1f7a42}.deadhead-watch-compare-status.status-time_changed{color:#8a5a00}.deadhead-watch-compare-status.status-route_changed,.deadhead-watch-compare-status.status-train_missing,.deadhead-watch-compare-status.status-needs_review{color:var(--bad)}
+    .deadhead-watch-compare-leg{margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}.deadhead-watch-compare-leg strong{display:block;font-size:11px}.deadhead-watch-compare-leg span{display:block;margin-top:3px;font-size:10px;line-height:1.4;color:var(--muted)}
+    .deadhead-watch-compare-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.deadhead-watch-compare-footer{display:flex;gap:8px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line)}
+    html[data-theme="dark"] .deadhead-watch-compare{background:#101d2d!important;border-color:#314158!important}html[data-theme="dark"] .deadhead-watch-compare-head{background:#15263a!important;border-color:#314158!important}
+    .deadhead-watch-monitor{margin-top:10px;border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:#f8fbff}.deadhead-watch-monitor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.deadhead-watch-monitor strong{display:block;font-size:12px}.deadhead-watch-monitor span,.deadhead-watch-monitor small{display:block;margin-top:3px;font-size:10px;line-height:1.4;color:var(--muted)}.deadhead-watch-monitor-state{font-size:9px;font-weight:900;padding:5px 8px;border:1px solid var(--line);border-radius:999px;background:var(--card);white-space:nowrap}.deadhead-watch-monitor-state.is-clear{color:#1f7a42}.deadhead-watch-monitor-state.is-attention,.deadhead-watch-monitor-state.is-error{color:var(--bad)}.deadhead-watch-monitor-state.is-pending{color:#8a5a00}.deadhead-watch-monitor-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.deadhead-watch-monitor .test-only{margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)}
+    html[data-theme="dark"] .deadhead-watch-monitor{background:#101d2d!important;border-color:#314158!important}
+    .deadhead-watch-change-modal{position:fixed;inset:0;z-index:10050;background:rgba(4,10,18,.62);display:flex;align-items:flex-end;justify-content:center;padding:14px;backdrop-filter:blur(4px)}
+    .deadhead-watch-change-sheet{width:min(680px,100%);max-height:min(82vh,760px);overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:20px 20px 14px 14px;box-shadow:0 20px 60px rgba(0,0,0,.32)}
+    .deadhead-watch-change-head{position:sticky;top:0;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:15px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+    .deadhead-watch-change-head strong{display:block;font-size:17px}.deadhead-watch-change-head span{display:block;margin-top:3px;font-size:11px;line-height:1.4;color:var(--muted)}
+    .deadhead-watch-change-body{padding:12px 14px 16px}.deadhead-watch-change-route{border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:10px;background:var(--soft)}
+    .deadhead-watch-change-route:first-child{margin-top:0}.deadhead-watch-change-route-title{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.deadhead-watch-change-route-title strong{font-size:13px}.deadhead-watch-change-route-title span{display:block;margin-top:2px;font-size:10px;color:var(--muted)}
+    .deadhead-watch-change-grid{display:grid;grid-template-columns:minmax(90px,1.2fr) minmax(74px,.8fr) minmax(74px,.8fr);gap:6px;margin-top:10px}.deadhead-watch-change-grid>div{padding:7px 8px;border-radius:9px;background:var(--card);font-size:10px;line-height:1.35}.deadhead-watch-change-grid .hdr{font-weight:900;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.04em}.deadhead-watch-change-grid .changed{font-weight:900;color:var(--bad)}
+    .deadhead-watch-change-note{margin-top:9px;padding:9px 10px;border-radius:10px;background:var(--card);font-size:10px;line-height:1.45}.deadhead-watch-change-note strong{display:block;margin-bottom:3px;font-size:10px}.deadhead-watch-change-actions{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 14px}
+    body.deadhead-watch-modal-open{overflow:hidden}html[data-theme="dark"] .deadhead-watch-change-sheet{background:#101d2d!important;border-color:#314158!important}html[data-theme="dark"] .deadhead-watch-change-head{background:#101d2d!important;border-color:#314158!important}html[data-theme="dark"] .deadhead-watch-change-route{background:#15263a!important;border-color:#314158!important}html[data-theme="dark"] .deadhead-watch-change-grid>div,html[data-theme="dark"] .deadhead-watch-change-note{background:#101d2d!important}
+    .deadhead-watch-monitor{margin-top:10px;border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:#f8fbff}.deadhead-watch-monitor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.deadhead-watch-monitor strong{display:block;font-size:12px}.deadhead-watch-monitor span,.deadhead-watch-monitor small{display:block;margin-top:3px;font-size:10px;line-height:1.4;color:var(--muted)}.deadhead-watch-monitor-state{font-size:9px;font-weight:900;padding:5px 8px;border:1px solid var(--line);border-radius:999px;background:var(--card);white-space:nowrap}.deadhead-watch-monitor-state.is-clear{color:#1f7a42}.deadhead-watch-monitor-state.is-attention,.deadhead-watch-monitor-state.is-error{color:var(--bad)}.deadhead-watch-monitor-state.is-pending{color:#8a5a00}.deadhead-watch-monitor-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.deadhead-watch-monitor .test-only{margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)}
+    html[data-theme="dark"] .deadhead-watch-monitor{background:#101d2d!important;border-color:#314158!important}
+    @media(max-width:700px){.deadhead-watch-gtfs{align-items:flex-start;flex-direction:column}.deadhead-watch-gtfs-actions{justify-content:flex-start}.deadhead-watch-resolver-leg{grid-template-columns:1fr}.deadhead-watch-resolver-route-head,.deadhead-watch-compare-head,.deadhead-watch-compare-route-head{flex-direction:column;gap:5px}.deadhead-watch-compare-status{align-self:flex-start}}
+    html[data-theme="dark"] .deadhead-watch-card,html[data-theme="dark"] .deadhead-watch-day,html[data-theme="dark"] .deadhead-watch-summary{background:#101d2d!important;border-color:#314158!important}
+    html[data-theme="dark"] .deadhead-watch-summary-head{background:#15263a!important;border-color:#314158!important}
+    @media(max-width:700px){.deadhead-watch-direction{grid-template-columns:1fr}.deadhead-watch-direction-title{padding-bottom:0}.deadhead-watch-summary-row{grid-template-columns:54px minmax(0,1fr) minmax(0,1fr);gap:8px;padding:10px 12px}.deadhead-watch-train-row{grid-template-columns:50px minmax(0,1fr) 34px}}
 
     /* Pay & Claims values need more contrast in dark mode. */
     html[data-theme="dark"] .pay-claims-card .feature-card .big,
@@ -2464,6 +2538,26 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 </div>
 </div>
 <div class="myjob-week-preview" id="myJobWeekPreview" style="display:none"></div>
+<div class="deadhead-watch-card" id="deadheadWatchCard">
+  <div class="deadhead-watch-head">
+    <div><h3>Deadhead Watch</h3><div class="mini">Save the LIRR trains or other transportation you normally use for each assignment day.</div></div>
+    <label class="check"><input id="deadheadWatchEnabled" type="checkbox" onchange="toggleDeadheadWatch()"> Enable</label>
+  </div>
+  <div id="deadheadWatchBody" style="display:none">
+    <div id="deadheadWatchSummary" style="display:none"></div>
+    <div id="deadheadWatchTripEditPanel"></div>
+    <div id="deadheadWatchGtfsPanel"></div>
+    <div id="deadheadWatchMonitorPanel"></div>
+    <div id="deadheadWatchComparisonPanel"></div>
+    <div id="deadheadWatchResolverPanel"></div>
+    <input id="deadheadWatchGtfsFile" type="file" accept=".zip,application/zip" hidden onchange="deadheadWatchGtfsFileChanged(this)">
+    <div id="deadheadWatchEditor">
+      <p class="notice" style="margin-top:12px">Trips belong to the day your assignment starts. If your job releases after midnight, EPL automatically treats the trip home as the following calendar day. Non-LIRR transportation can be saved too, but only LIRR trains will be checked against GTFS.</p>
+      <div id="deadheadWatchDays" class="deadhead-watch-days"></div>
+      <div class="deadhead-watch-status"><strong>Automatic monitoring:</strong> Once your LIRR commute has a saved schedule baseline, EPL periodically checks it for published schedule changes even when the PWA is closed. If notifications are enabled, Deadhead Watch can alert you when a saved commute needs review.</div>
+    </div>
+  </div>
+</div>
 <p class="notice" style="margin-top:12px">Using My Job fills only the assignment, location, scheduled times, and Shift Type = Own. You can freely edit the daily shift afterward without changing this saved template.</p>
 <div class="my-job-save-actions"><button class="btn primary" onclick="saveMyJob()" type="button">Save My Job</button><button id="clearMyJobBtn" class="btn danger small" onclick="clearMyJob()" type="button" style="display:none">Remove My Job</button></div>
 </div>
@@ -2699,29 +2793,25 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
 <div id="whatsNewModal" class="modal">
   <div class="modal-card" style="max-width:620px">
-    <div class="modal-head"><div><h2 style="margin:0">What's New in Engineer Pay Log 10.2</h2></div></div>
+    <div class="modal-head"><div><h2 style="margin:0">What's New in Engineer Pay Log 10.2 — Deadhead Watch</h2></div></div>
     <div class="modal-body">
-      <p style="margin-top:0">This update adds several new tools designed to make Engineer Pay Log more useful throughout the bid and roster process.</p>
+      <p style="margin-top:0">This update introduces <strong>Deadhead Watch</strong>, a new way to keep an eye on the LIRR trains you normally use to get to and from work.</p>
 
-      <h3>Push Notifications</h3>
-      <p>Enable notifications to receive important EPL alerts even when the app is closed.</p>
+      <h3>Save Your Commute</h3>
+      <p>In <strong>Settings → My Job</strong>, save the LIRR train or trains you normally use for each workday. EPL matches those trips to the current schedule and saves a baseline for comparison.</p>
 
-      <h3>Bulletin Award Alerts</h3>
-      <p>If EPL detects that you were awarded an assignment, you can be notified and view the award directly in the app. <strong>Always call the Crew Dispatcher to officially confirm your award.</strong></p>
+      <h3>Automatic Schedule Monitoring</h3>
+      <p>Once your commute is matched, EPL can periodically compare your saved trips against current LIRR schedule data — even while the app is closed.</p>
 
-      <h3>Seniority Intensifies 📈</h3>
-      <p>When a new monthly roster shows that engineers above you have retired, EPL can let you know that your seniority improved.</p>
+      <h3>Deadhead Watch Alerts</h3>
+      <p>If EPL detects that a saved train time, route, or availability has changed, Deadhead Watch can alert you and take you directly to the affected commute for review.</p>
 
-      <h3>Bid Sheet Assistant Improvements</h3>
-      <p>Build and review your bid choices using Crew Book information directly inside EPL.</p>
+      <h3>Your Baseline Stays Under Your Control</h3>
+      <p>EPL will never silently replace your saved commute when it detects a change. If a trip needs attention, you can review it and rematch it yourself.</p>
 
-      <h3>Crew Book Improvements</h3>
-      <p>Better relief-job information, report/release times, overtime and meal details, and improved job lookup tools.</p>
+      <p><strong>Deadhead Watch monitors published schedule changes.</strong> It is not a live train-status or delay-alert system and should not be used as a substitute for official LIRR service information.</p>
 
-      <h3>Smarter Shift Entry</h3>
-      <p>Crew-member autofill and several quality-of-life improvements make adding shifts faster.</p>
-
-      <p>This update also includes a major behind-the-scenes upgrade to how Crew Book information is maintained. This should allow future Crew Book changes and revisions to reach EPL faster and more reliably.</p>
+      <p>This update also includes the latest Crew Book revision-label improvements and other reliability fixes.</p>
 
       <p>Thank you for using Engineer Pay Log and for all of the feedback that continues to make the app better.</p>
       <p><strong>— Justin</strong></p>
@@ -2752,6 +2842,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         <strong>What EPL can alert you about</strong>
         <div style="margin-top:7px">• Bulletin Awards that match your employee number</div>
         <div style="margin-top:5px">• Monthly seniority gains when engineers above you retire</div>
+        <div style="margin-top:5px">• Saved commute schedule changes from Deadhead Watch</div>
         <div style="margin-top:5px">• No assignment details are shown on your Lock Screen</div>
       </div>
     </div>
@@ -3126,7 +3217,7 @@ const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
 const APP_VERSION='10.2';
-const WHATS_NEW_VERSION='10.2-production-20260913';
+const WHATS_NEW_VERSION='10.2-deadhead-watch-production-20260928';
 const CONTACT_EMAIL='admin@engineerpaylog.com';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
 const BACKUP_REMIND_LATER_KEY='engineerPayLogBackupRemindLaterUntil';
@@ -3859,15 +3950,465 @@ function initTerminalSelect(){const el=document.getElementById('locationSelect')
 function setLocationUI(value){initTerminalSelect();const sel=document.getElementById('locationSelect'),other=document.getElementById('locationOther'),hidden=document.getElementById('location');const t=terminalForValue(value);if(t){sel.value=t.name;other.value='';hidden.value=t.name}else if(value){sel.value='__other__';other.value=value;hidden.value=value}else{sel.value='';other.value='';hidden.value=''}terminalSelectionChanged(false)}
 function terminalSelectionChanged(clearOther=true){const sel=document.getElementById('locationSelect'),otherWrap=document.getElementById('otherLocationWrap'),other=document.getElementById('locationOther'),hidden=document.getElementById('location'),wrap=document.getElementById('terminalSelectWrap'),dot=document.getElementById('terminalFieldDot');if(!sel)return;const isOther=sel.value==='__other__';otherWrap.style.display=isOther?'block':'none';if(isOther){if(clearOther)other.value='';hidden.value=other.value.trim();if(wrap){wrap.style.removeProperty('--terminal-color');wrap.classList.remove('has-terminal-color')}if(dot)dot.style.display='none'}else{hidden.value=sel.value;const t=terminalForValue(sel.value);if(wrap){if(t){wrap.style.setProperty('--terminal-color',t.color);wrap.classList.add('has-terminal-color')}else{wrap.style.removeProperty('--terminal-color');wrap.classList.remove('has-terminal-color')}}if(dot){dot.style.background=t?t.color:'transparent';dot.style.display=t?'block':'none'}}calculatePreview()}
 function syncLocationValue(){document.getElementById('location').value=document.getElementById('locationOther').value.trim()}
+function repairKnownMyJobHomeTerminal(j){
+  if(!j||typeof j!=='object'||Array.isArray(j))return false;
+  if(String(j.type||'regular')!=='regular'||String(j.assignment||'').trim()!=='113')return false;
+  let changed=false;
+  if(String(j.location||'').trim().toLowerCase()==='penn station'){j.location='West Side Yard';changed=true}
+  for(const d of Object.values(j.regularDays||{})){
+    if(d&&!d.reliefDay&&String(d.location||'').trim().toLowerCase()==='penn station'){d.location='West Side Yard';changed=true}
+  }
+  return changed;
+}
 function getMyJob(){
-  try{return JSON.parse(localStorage.getItem(MY_JOB_KEY)||'null')}catch(e){return null}
+  try{
+    const j=JSON.parse(localStorage.getItem(MY_JOB_KEY)||'null');
+    if(repairKnownMyJobHomeTerminal(j))localStorage.setItem(MY_JOB_KEY,JSON.stringify(j));
+    return j;
+  }catch(e){return null}
 }
 const MY_JOB_RELIEF_DAYS=['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+const DEADHEAD_WATCH_VERSION=4;
+let deadheadWatchEditing=false;
+let deadheadWatchTripEditDraft=null;
+const DEADHEAD_WATCH_MODES=[
+  ['', 'Select transportation'],
+  ['lirr','LIRR train(s)'],
+  ['drive','Drive'],
+  ['subway_bus','Subway / other']
+];
+function deadheadWatchCleanMode(value){
+  const v=String(value||'').trim();
+  if(v==='walk_bike'||v==='other')return 'subway_bus';
+  if(v==='none')return '';
+  return DEADHEAD_WATCH_MODES.some(([key])=>key===v)?v:'';
+}
+
+function deadheadWatchNormalizeTrip(trip){
+  const t=trip&&typeof trip==='object'&&!Array.isArray(trip)?trip:{};
+  const trains=Array.isArray(t.trains)?t.trains.map(x=>String(x||'').trim()).filter(Boolean):String(t.trains||t.trainNumber||'').match(/\d+/g)||[];
+  const rawOffset=t.serviceDayOffset;
+  const offset=rawOffset===-1||rawOffset===0||rawOffset===1?rawOffset:'auto';
+  return {mode:deadheadWatchCleanMode(t.mode),trains,detail:String(t.detail||'').trim(),serviceDayOffset:offset,baseline:deadheadWatchNormalizeBaseline(t.baseline)};
+}
+function normalizeDeadheadWatch(value){
+  const w=value&&typeof value==='object'&&!Array.isArray(value)?value:{};
+  const days={};
+  for(const day of MY_JOB_RELIEF_DAYS){
+    const d=w.days?.[day]||{};
+    days[day]={toWork:deadheadWatchNormalizeTrip(d.toWork),home:deadheadWatchNormalizeTrip(d.home)};
+  }
+  return {version:DEADHEAD_WATCH_VERSION,enabled:!!w.enabled,days};
+}
+function deadheadWatchModeOptions(selected){
+  return DEADHEAD_WATCH_MODES.map(([value,label])=>`<option value="${value}"${value===selected?' selected':''}>${label}</option>`).join('');
+}
+function deadheadWatchCap(day){return day.charAt(0).toUpperCase()+day.slice(1)}
+function deadheadWatchDirectionCap(direction){return direction==='toWork'?'ToWork':'Home'}
+function deadheadWatchParseTrains(value){return (String(value||'').match(/\d+/g)||[]).map(String)}
+function deadheadWatchTripFromSaved(watch,day,direction){return deadheadWatchNormalizeTrip(watch?.days?.[day]?.[direction])}
+function deadheadWatchScheduleFromUI(day){
+  const cap=deadheadWatchCap(day),relief=!!document.getElementById('myJobTypeRelief')?.checked;
+  const prefix=relief?'myJobRelief':'myJobRegular';
+  return {
+    reliefDay:!!document.getElementById(`${prefix}${cap}Off`)?.checked,
+    start:document.getElementById(`${prefix}${cap}Start`)?.value||'',
+    end:document.getElementById(`${prefix}${cap}End`)?.value||''
+  };
+}
+function deadheadWatchMinutes(value){if(!/^\d{2}:\d{2}$/.test(String(value||'')))return null;const [h,m]=value.split(':').map(Number);return h*60+m}
+function deadheadWatchInferredOffset(day,direction){
+  if(direction==='toWork')return 0;
+  const s=deadheadWatchScheduleFromUI(day),start=deadheadWatchMinutes(s.start),end=deadheadWatchMinutes(s.end);
+  return start!==null&&end!==null&&end<=start?1:0;
+}
+function deadheadWatchDayName(day,offset=0){
+  const i=MY_JOB_RELIEF_DAYS.indexOf(day);if(i<0)return deadheadWatchCap(day);
+  return deadheadWatchCap(MY_JOB_RELIEF_DAYS[(i+offset+7)%7]);
+}
+function deadheadWatchServiceText(day,direction){
+  const cap=deadheadWatchCap(day),dcap=deadheadWatchDirectionCap(direction),sel=document.getElementById(`deadheadWatch${cap}${dcap}Mode`);
+  if(sel?.value!=='lirr')return '';
+  const offset=deadheadWatchInferredOffset(day,direction),serviceDay=deadheadWatchDayName(day,offset);
+  if(direction==='home'&&offset===1)return `${serviceDay} service · after-midnight trip home`;
+  return `${serviceDay} service · assignment day`;
+}
+function deadheadWatchTrainRowsHTML(day,direction,trains){
+  const cap=deadheadWatchCap(day),dcap=deadheadWatchDirectionCap(direction),id=`deadheadWatch${cap}${dcap}`,values=(trains&&trains.length?trains:['']);
+  return values.map((value,index)=>`<div class="deadhead-watch-train-row"><span class="deadhead-watch-train-label">Train ${index+1}</span><input class="deadhead-watch-train-input" inputmode="numeric" value="${escapeHTML(value)}" placeholder="Train #"><button class="btn small deadhead-watch-train-remove" type="button" onclick="deadheadWatchRemoveTrain('${day}','${direction}',this)" aria-label="Remove train">×</button></div>`).join('');
+}
+function deadheadWatchReindexTrains(day,direction){
+  const cap=deadheadWatchCap(day),dcap=deadheadWatchDirectionCap(direction),list=document.getElementById(`deadheadWatch${cap}${dcap}TrainList`);if(!list)return;
+  const rows=[...list.querySelectorAll('.deadhead-watch-train-row')];
+  rows.forEach((row,index)=>{const label=row.querySelector('.deadhead-watch-train-label');if(label)label.textContent=`Train ${index+1}`;const remove=row.querySelector('.deadhead-watch-train-remove');if(remove)remove.style.visibility=rows.length>1?'visible':'hidden'});
+}
+function deadheadWatchAddTrain(day,direction){
+  const cap=deadheadWatchCap(day),dcap=deadheadWatchDirectionCap(direction),list=document.getElementById(`deadheadWatch${cap}${dcap}TrainList`);if(!list)return;
+  const row=document.createElement('div');row.className='deadhead-watch-train-row';row.innerHTML='<span class="deadhead-watch-train-label"></span><input class="deadhead-watch-train-input" inputmode="numeric" placeholder="Train #"><button class="btn small deadhead-watch-train-remove" type="button" aria-label="Remove train">×</button>';
+  row.querySelector('button').onclick=()=>deadheadWatchRemoveTrain(day,direction,row.querySelector('button'));list.appendChild(row);deadheadWatchReindexTrains(day,direction);row.querySelector('input')?.focus();
+}
+function deadheadWatchRemoveTrain(day,direction,button){
+  const row=button?.closest('.deadhead-watch-train-row'),list=row?.parentElement;if(!row||!list)return;
+  const rows=list.querySelectorAll('.deadhead-watch-train-row');if(rows.length<=1){const input=row.querySelector('input');if(input)input.value='';return}row.remove();deadheadWatchReindexTrains(day,direction);
+}
+function deadheadWatchDirectionHTML(day,direction,trip){
+  const cap=deadheadWatchCap(day),dcap=deadheadWatchDirectionCap(direction),id=`deadheadWatch${cap}${dcap}`,title=direction==='toWork'?'Going to work':'Going home';
+  const detail=trip.detail||'';
+  return `<div class="deadhead-watch-direction" data-direction="${direction}">
+    <div><div class="deadhead-watch-direction-title">${title}</div><div id="${id}Service" class="deadhead-watch-service"></div></div>
+    <div class="field"><label>Transportation</label><select id="${id}Mode" onchange="deadheadWatchModeChanged('${day}','${direction}')">${deadheadWatchModeOptions(trip.mode)}</select></div>
+    <div>
+      <div id="${id}TrainWrap" class="deadhead-watch-train-wrap"><div class="field"><label>LIRR train(s)</label><div id="${id}TrainList" class="deadhead-watch-train-list">${deadheadWatchTrainRowsHTML(day,direction,trip.trains)}</div><button class="btn small deadhead-watch-add-train" type="button" onclick="deadheadWatchAddTrain('${day}','${direction}')">+ Add connecting train</button></div></div>
+      <div id="${id}DetailWrap" class="deadhead-watch-detail-wrap"><div class="field"><label>Details <span class="mini">(optional)</span></label><input id="${id}Detail" value="${escapeHTML(detail)}" placeholder="e.g. A train, Uber, bike"></div></div>
+    </div>
+  </div>`;
+}
+function deadheadWatchSavedHasData(watch){
+  if(!watch?.enabled)return false;
+  return MY_JOB_RELIEF_DAYS.some(day=>['toWork','home'].some(direction=>{const t=deadheadWatchTripFromSaved(watch,day,direction);return !!t.mode&&(t.mode!=='lirr'||t.trains.length>0)}));
+}
+function deadheadWatchBaselineRouteText(baseline){
+  const b=deadheadWatchNormalizeBaseline(baseline);if(!b?.legs?.length)return '';
+  const names=[];const push=name=>{const n=String(name||'').trim();if(n&&names[names.length-1]!==n)names.push(n)};
+  for(const leg of b.legs){push(leg.boardStopName);push(leg.exitStopName)}
+  return names.join(' → ');
+}
+function deadheadWatchSummaryTrip(day,direction,trip){
+  const t=deadheadWatchNormalizeTrip(trip),offset=direction==='home'?deadheadWatchInferredOffset(day,direction):0;
+  if(!t.mode)return '<strong>Not set</strong>';
+  let main='',sub='',route='',actions='';
+  if(t.mode==='lirr'){
+    main=t.trains.length?t.trains.join(' → '):'LIRR train(s)';
+    const matched=deadheadWatchBaselineMatchesTrains(t.baseline,t.trains),when=direction==='home'&&offset===1?`${deadheadWatchDayName(day,1)} AM`:'';
+    route=matched?deadheadWatchBaselineRouteText(t.baseline):'';
+    sub=[when,matched?'schedule matched':'not yet matched'].filter(Boolean).join(' · ');
+    actions=`<div class="deadhead-watch-summary-actions"><button class="btn" type="button" onclick="deadheadWatchOpenTripEditor('${day}','${direction}')">Edit trip</button>${matched?`<button class="btn" type="button" onclick="deadheadWatchStartResolver('${day}','${direction}')">Rematch</button>`:''}</div>`;
+  }else if(t.mode==='drive'){
+    main='Drive';sub=t.detail||'';actions=`<div class="deadhead-watch-summary-actions"><button class="btn" type="button" onclick="deadheadWatchOpenTripEditor('${day}','${direction}')">Edit trip</button></div>`;
+  }else{
+    main='Subway / other';sub=t.detail||'';actions=`<div class="deadhead-watch-summary-actions"><button class="btn" type="button" onclick="deadheadWatchOpenTripEditor('${day}','${direction}')">Edit trip</button></div>`;
+  }
+  return `<strong>${escapeHTML(main)}</strong>${route?`<span class="deadhead-watch-summary-route">${escapeHTML(route)}</span>`:''}${sub?`<span>${escapeHTML(sub)}</span>`:''}${actions}`;
+}
+function deadheadWatchTripEditorTrainRows(trains){const vals=trains?.length?trains:[''];return vals.map((v,i)=>`<div class="deadhead-watch-train-row"><span class="deadhead-watch-train-label">Train ${i+1}</span><input class="deadhead-watch-trip-edit-train" inputmode="numeric" value="${escapeHTML(v)}" placeholder="Train #"><button class="btn small deadhead-watch-train-remove" type="button" onclick="deadheadWatchTripEditorRemoveTrain(this)" aria-label="Remove train">×</button></div>`).join('')}
+function deadheadWatchOpenTripEditor(day,direction){
+  const watch=normalizeDeadheadWatch(normalizeMyJob(getMyJob())?.deadheadWatch),trip=deadheadWatchTripFromSaved(watch,day,direction);
+  deadheadWatchTripEditDraft={day,direction,trip};deadheadWatchRenderTripEditor();
+  document.getElementById('deadheadWatchTripEditPanel')?.scrollIntoView({behavior:'smooth',block:'center'});
+}
+function deadheadWatchCloseTripEditor(){deadheadWatchTripEditDraft=null;deadheadWatchRenderTripEditor()}
+function deadheadWatchTripEditorModeChanged(){const mode=document.getElementById('deadheadWatchTripEditMode')?.value||'';const tw=document.getElementById('deadheadWatchTripEditTrainWrap'),dw=document.getElementById('deadheadWatchTripEditDetailWrap');if(tw)tw.style.display=mode==='lirr'?'block':'none';if(dw)dw.style.display=mode&&mode!=='lirr'?'block':'none'}
+function deadheadWatchTripEditorReindex(){const list=document.getElementById('deadheadWatchTripEditTrainList');if(!list)return;const rows=[...list.querySelectorAll('.deadhead-watch-train-row')];rows.forEach((r,i)=>{const l=r.querySelector('.deadhead-watch-train-label');if(l)l.textContent=`Train ${i+1}`;const b=r.querySelector('.deadhead-watch-train-remove');if(b)b.style.visibility=rows.length>1?'visible':'hidden'})}
+function deadheadWatchTripEditorAddTrain(){const list=document.getElementById('deadheadWatchTripEditTrainList');if(!list)return;const row=document.createElement('div');row.className='deadhead-watch-train-row';row.innerHTML='<span class="deadhead-watch-train-label"></span><input class="deadhead-watch-trip-edit-train" inputmode="numeric" placeholder="Train #"><button class="btn small deadhead-watch-train-remove" type="button" aria-label="Remove train">×</button>';row.querySelector('button').onclick=()=>deadheadWatchTripEditorRemoveTrain(row.querySelector('button'));list.appendChild(row);deadheadWatchTripEditorReindex();row.querySelector('input')?.focus()}
+function deadheadWatchTripEditorRemoveTrain(button){const row=button?.closest('.deadhead-watch-train-row'),list=row?.parentElement;if(!row||!list)return;const rows=list.querySelectorAll('.deadhead-watch-train-row');if(rows.length<=1){const input=row.querySelector('input');if(input)input.value='';return}row.remove();deadheadWatchTripEditorReindex()}
+function deadheadWatchRenderTripEditor(){
+  const host=document.getElementById('deadheadWatchTripEditPanel');if(!host)return;const d=deadheadWatchTripEditDraft;if(!d){host.innerHTML='';return}
+  const t=deadheadWatchNormalizeTrip(d.trip),title=`${deadheadWatchCap(d.day)} · ${d.direction==='toWork'?'To Work':'Home'}`;
+  host.innerHTML=`<div class="deadhead-watch-trip-editor"><div class="deadhead-watch-trip-editor-head"><div><strong>Edit ${escapeHTML(title)}</strong><span>Change only this saved commute. Other days will not be touched.</span></div><button class="btn small" type="button" onclick="deadheadWatchCloseTripEditor()">Cancel</button></div><div class="deadhead-watch-trip-editor-body"><div class="field"><label>Transportation</label><select id="deadheadWatchTripEditMode" onchange="deadheadWatchTripEditorModeChanged()">${deadheadWatchModeOptions(t.mode)}</select></div><div id="deadheadWatchTripEditTrainWrap" style="margin-top:10px"><div class="field"><label>LIRR train(s)</label><div id="deadheadWatchTripEditTrainList" class="deadhead-watch-train-list">${deadheadWatchTripEditorTrainRows(t.trains)}</div><button class="btn small deadhead-watch-add-train" type="button" onclick="deadheadWatchTripEditorAddTrain()">+ Add connecting train</button></div></div><div id="deadheadWatchTripEditDetailWrap" style="margin-top:10px"><div class="field"><label>Details <span class="mini">(optional)</span></label><input id="deadheadWatchTripEditDetail" value="${escapeHTML(t.detail||'')}" placeholder="e.g. A train, Uber, bike"></div></div><div class="deadhead-watch-trip-editor-actions"><button class="btn primary" type="button" onclick="deadheadWatchSaveTripEdit()">Save this commute</button>${t.mode==='lirr'&&deadheadWatchBaselineMatchesTrains(t.baseline,t.trains)?`<button class="btn" type="button" onclick="deadheadWatchCloseTripEditor();deadheadWatchStartResolver('${d.day}','${d.direction}')">Rematch stations / schedule</button>`:''}</div></div></div>`;
+  deadheadWatchTripEditorModeChanged();deadheadWatchTripEditorReindex();
+}
+async function deadheadWatchSaveTripEdit(){
+  const d=deadheadWatchTripEditDraft;if(!d)return;const mode=deadheadWatchCleanMode(document.getElementById('deadheadWatchTripEditMode')?.value||''),trains=mode==='lirr'?[...document.querySelectorAll('#deadheadWatchTripEditTrainList .deadhead-watch-trip-edit-train')].flatMap(el=>deadheadWatchParseTrains(el.value)).filter(Boolean):[],detail=mode&&mode!=='lirr'?(document.getElementById('deadheadWatchTripEditDetail')?.value||'').trim():'';
+  if(!mode){alert('Please choose transportation for this commute.');return}if(mode==='lirr'&&!trains.length){alert('Please enter at least one LIRR train.');return}
+  const j=normalizeMyJob(getMyJob());if(!j)return;const watch=normalizeDeadheadWatch(j.deadheadWatch),prior=deadheadWatchTripFromSaved(watch,d.day,d.direction),sameTrains=mode==='lirr'&&prior.mode==='lirr'&&JSON.stringify(prior.trains)===JSON.stringify(trains),baseline=sameTrains?prior.baseline:null;
+  watch.days[d.day][d.direction]={mode,trains,detail,serviceDayOffset:'auto',baseline};j.deadheadWatch=watch;localStorage.setItem(MY_JOB_KEY,JSON.stringify(j));const target={day:d.day,direction:d.direction};deadheadWatchTripEditDraft=null;deadheadWatchComparisonDraft=null;deadheadWatchRenderComparison();renderDeadheadWatchSettings();void cloudMirrorMyJob();
+  if(mode==='lirr'&&!sameTrains){deadheadWatchRenderGtfsControl(`${deadheadWatchCap(target.day)} ${target.direction==='toWork'?'To Work':'Home'} changed · rematching only this commute…`);setTimeout(()=>deadheadWatchStartResolver(target.day,target.direction),25)}else{deadheadWatchRenderGtfsControl('✓ Commute saved.','success')}
+}
+function renderDeadheadWatchSummary(watch){
+  const host=document.getElementById('deadheadWatchSummary');if(!host)return;
+  const j=normalizeMyJob(getMyJob());
+  host.innerHTML=`<div class="deadhead-watch-summary"><div class="deadhead-watch-summary-head"><strong>Saved commute</strong><button class="btn small" type="button" onclick="editDeadheadWatch()">Edit</button></div>${MY_JOB_RELIEF_DAYS.map(day=>{const cap=deadheadWatchCap(day),portion=j?.type==='relief'?j?.reliefDays?.[day]:j?.regularDays?.[day];if(portion?.reliefDay)return `<div class="deadhead-watch-summary-row"><div class="deadhead-watch-summary-day">${cap.slice(0,3).toUpperCase()}</div><div class="deadhead-watch-summary-off">Relief Day</div></div>`;const to=deadheadWatchTripFromSaved(watch,day,'toWork'),home=deadheadWatchTripFromSaved(watch,day,'home');return `<div class="deadhead-watch-summary-row"><div class="deadhead-watch-summary-day">${cap.slice(0,3).toUpperCase()}</div><div class="deadhead-watch-summary-trip"><span>TO WORK</span>${deadheadWatchSummaryTrip(day,'toWork',to)}</div><div class="deadhead-watch-summary-trip"><span>HOME</span>${deadheadWatchSummaryTrip(day,'home',home)}</div></div>`}).join('')}</div>`;
+  setTimeout(()=>deadheadWatchRenderGtfsControl(),0);
+}
+function editDeadheadWatch(){deadheadWatchEditing=true;const saved=normalizeDeadheadWatch(normalizeMyJob(getMyJob())?.deadheadWatch);renderDeadheadWatchSummary(saved);deadheadWatchApplyDisplay(saved);}
+function deadheadWatchApplyDisplay(saved){
+  const summary=document.getElementById('deadheadWatchSummary'),editor=document.getElementById('deadheadWatchEditor'),tripEditor=document.getElementById('deadheadWatchTripEditPanel'),gtfs=document.getElementById('deadheadWatchGtfsPanel'),comparison=document.getElementById('deadheadWatchComparisonPanel'),resolver=document.getElementById('deadheadWatchResolverPanel'),has=deadheadWatchSavedHasData(saved),showSaved=has&&!deadheadWatchEditing;
+  if(summary)summary.style.display=showSaved?'block':'none';if(editor)editor.style.display=!has||deadheadWatchEditing?'block':'none';if(tripEditor)tripEditor.style.display=showSaved?'block':'none';if(gtfs)gtfs.style.display=showSaved?'block':'none';if(comparison)comparison.style.display=showSaved?'block':'none';if(resolver)resolver.style.display=showSaved?'block':'none';
+}
+function renderDeadheadWatchSettings(){
+  const host=document.getElementById('deadheadWatchDays'),enabled=document.getElementById('deadheadWatchEnabled');if(!host||!enabled)return;
+  const saved=normalizeDeadheadWatch(normalizeMyJob(getMyJob())?.deadheadWatch);
+  enabled.checked=saved.enabled;
+  host.innerHTML=MY_JOB_RELIEF_DAYS.map(day=>{
+    const cap=deadheadWatchCap(day),to=deadheadWatchTripFromSaved(saved,day,'toWork'),home=deadheadWatchTripFromSaved(saved,day,'home');
+    return `<div class="deadhead-watch-day" id="deadheadWatch${cap}Card"><div class="deadhead-watch-day-head"><strong>${cap} assignment</strong><span id="deadheadWatch${cap}OffNote" class="deadhead-watch-off-note"></span></div>${deadheadWatchDirectionHTML(day,'toWork',to)}${deadheadWatchDirectionHTML(day,'home',home)}</div>`;
+  }).join('');
+  toggleDeadheadWatch(false);updateDeadheadWatchWorkdayVisibility();
+  for(const day of MY_JOB_RELIEF_DAYS){deadheadWatchModeChanged(day,'toWork');deadheadWatchModeChanged(day,'home');deadheadWatchReindexTrains(day,'toWork');deadheadWatchReindexTrains(day,'home')}
+  renderDeadheadWatchSummary(saved);deadheadWatchApplyDisplay(saved);void deadheadWatchLoadMonitorStatus();
+}
+function toggleDeadheadWatch(updateVisibility=true){
+  const enabled=!!document.getElementById('deadheadWatchEnabled')?.checked,body=document.getElementById('deadheadWatchBody');if(body)body.style.display=enabled?'block':'none';
+  if(enabled){const saved=normalizeDeadheadWatch(normalizeMyJob(getMyJob())?.deadheadWatch);if(!deadheadWatchSavedHasData(saved))deadheadWatchEditing=true;deadheadWatchApplyDisplay(saved)}
+  if(updateVisibility)updateDeadheadWatchWorkdayVisibility();
+}
+function deadheadWatchModeChanged(day,direction){
+  const cap=deadheadWatchCap(day),dcap=deadheadWatchDirectionCap(direction),id=`deadheadWatch${cap}${dcap}`,mode=document.getElementById(`${id}Mode`)?.value||'';
+  document.getElementById(`${id}TrainWrap`)?.classList.toggle('show',mode==='lirr');
+  document.getElementById(`${id}DetailWrap`)?.classList.toggle('show',!!mode&&mode!=='lirr');
+  const service=document.getElementById(`${id}Service`);if(service)service.textContent=deadheadWatchServiceText(day,direction);
+}
+function updateDeadheadWatchWorkdayVisibility(){
+  if(!document.getElementById('deadheadWatchDays'))return;
+  for(const day of MY_JOB_RELIEF_DAYS){
+    const cap=deadheadWatchCap(day),s=deadheadWatchScheduleFromUI(day),card=document.getElementById(`deadheadWatch${cap}Card`),off=document.getElementById(`deadheadWatch${cap}OffNote`);
+    if(card){card.classList.toggle('is-off',!!s.reliefDay);card.querySelectorAll('.deadhead-watch-direction').forEach(el=>el.style.display=s.reliefDay?'none':'grid')}
+    if(off)off.textContent=s.reliefDay?'Relief Day · not watched':'';
+    deadheadWatchModeChanged(day,'toWork');deadheadWatchModeChanged(day,'home');
+  }
+}
+function readDeadheadWatchFromUI(){
+  const enabled=!!document.getElementById('deadheadWatchEnabled')?.checked,days={};
+  for(const day of MY_JOB_RELIEF_DAYS){
+    const cap=deadheadWatchCap(day),schedule=deadheadWatchScheduleFromUI(day);days[day]={};
+    for(const direction of ['toWork','home']){
+      const dcap=deadheadWatchDirectionCap(direction),id=`deadheadWatch${cap}${dcap}`,mode=deadheadWatchCleanMode(document.getElementById(`${id}Mode`)?.value||''),trains=mode==='lirr'?[...document.querySelectorAll(`#${id}TrainList .deadhead-watch-train-input`)].flatMap(el=>deadheadWatchParseTrains(el.value)).filter(Boolean):[],detail=!!mode&&mode!=='lirr'?(document.getElementById(`${id}Detail`)?.value||'').trim():'',prior=deadheadWatchTripFromSaved(normalizeDeadheadWatch(normalizeMyJob(getMyJob())?.deadheadWatch),day,direction),sameTrains=mode==='lirr'&&prior.mode==='lirr'&&JSON.stringify(prior.trains)===JSON.stringify(trains),baseline=sameTrains?prior.baseline:null;
+      if(enabled&&!schedule.reliefDay&&mode==='lirr'&&!trains.length){alert(`Please enter at least one LIRR train for ${cap} — ${direction==='toWork'?'Going to work':'Going home'}, or choose another transportation option.`);return {valid:false,value:null}}
+      days[day][direction]={mode: schedule.reliefDay?'':mode,trains: schedule.reliefDay?[]:trains,detail:schedule.reliefDay?'':detail,serviceDayOffset:'auto',baseline:schedule.reliefDay?null:baseline};
+    }
+  }
+  return {valid:true,value:{version:DEADHEAD_WATCH_VERSION,enabled,days}};
+}
+
+
+// ---- Deadhead Watch MVP 1.5: automatic server monitor status ----
+let deadheadWatchMonitorStatus=null;
+let deadheadWatchMonitorLoading=false;
+let deadheadWatchMonitorMessage='';
+let deadheadWatchPushDeviceState='unknown';
+function deadheadWatchMonitorStateLabel(status){return ({clear:'Clear',attention:'Needs review',error:'Check failed',not_configured:'Setup incomplete',pending:'Waiting'})[status]||'Waiting'}
+function deadheadWatchChangedRoutes(){return (deadheadWatchMonitorStatus?.results||[]).filter(r=>r&&r.status!=='unchanged')}
+function deadheadWatchStoredTime(v){return Number.isFinite(Number(v))?deadheadWatchFmtGtfsTime(Number(v)):'—'}
+function deadheadWatchSavedLegSummary(leg){const b=leg?.before||{};return `Train ${leg?.train||b.train||''} · ${b.boardStopName||'Boarding stop'} ${deadheadWatchStoredTime(b.boardTime)} → ${b.exitStopName||'Exit stop'} ${deadheadWatchStoredTime(b.exitTime)}`}
+function deadheadWatchRenderChangeLeg(leg,route){
+  const b=leg?.before||{},a=leg?.after||{},status=leg?.status||route?.status||'needs_review';
+  if(status==='time_changed'&&Number.isFinite(Number(b.boardTime))&&Number.isFinite(Number(a.boardTime))){
+    const rows=[
+      [b.boardStopName||'Boarding stop',deadheadWatchStoredTime(b.boardTime),deadheadWatchStoredTime(a.boardTime),deadheadWatchDeltaText(a.boardDelta)],
+      [b.exitStopName||'Exit stop',deadheadWatchStoredTime(b.exitTime),deadheadWatchStoredTime(a.exitTime),deadheadWatchDeltaText(a.exitDelta)]
+    ];
+    return `<div class="deadhead-watch-change-note"><strong>Train ${escapeHTML(leg.train)} · Time changed</strong><div class="deadhead-watch-change-grid"><div class="hdr">Stop</div><div class="hdr">Saved</div><div class="hdr">Current</div>${rows.map(x=>`<div>${escapeHTML(x[0])}</div><div>${escapeHTML(x[1])}</div><div class="changed">${escapeHTML(x[2])}<br><span>${escapeHTML(x[3])}</span></div>`).join('')}</div></div>`;
+  }
+  if(status==='train_missing')return `<div class="deadhead-watch-change-note"><strong>Train ${escapeHTML(leg.train)} · No longer found</strong><div><b>Saved:</b> ${escapeHTML(deadheadWatchSavedLegSummary(leg))}</div><div style="margin-top:5px"><b>Current:</b> Train ${escapeHTML(leg.train)} is not present on ${escapeHTML(a.serviceDay||route?.targetDate||'the checked')} service.</div></div>`;
+  if(status==='route_changed'){
+    const beforeStops=(b.routeStops||[]).filter(Boolean),afterStops=(a.routeStops||[]).filter(Boolean);
+    if(a.kind==='segment_unavailable')return `<div class="deadhead-watch-change-note"><strong>Train ${escapeHTML(leg.train)} · Saved segment unavailable</strong><div><b>Saved:</b> ${escapeHTML(deadheadWatchSavedLegSummary(leg))}</div><div style="margin-top:5px"><b>Current:</b> Train ${escapeHTML(leg.train)} no longer carries the saved ${escapeHTML(b.boardStopName||'boarding stop')} → ${escapeHTML(b.exitStopName||'exit stop')} segment.</div></div>`;
+    return `<div class="deadhead-watch-change-note"><strong>Train ${escapeHTML(leg.train)} · Route changed</strong><div><b>Saved watched segment:</b> ${escapeHTML((beforeStops.length?beforeStops:[b.boardStopName,b.exitStopName]).filter(Boolean).join(' → '))}</div><div style="margin-top:5px"><b>Current stop pattern:</b> ${escapeHTML(afterStops.join(' → ')||leg.detail||'Changed')}</div></div>`;
+  }
+  if(status==='needs_review'){
+    const opts=Array.isArray(a.options)?a.options:[];
+    return `<div class="deadhead-watch-change-note"><strong>Train ${escapeHTML(leg.train)} · EPL will not guess</strong><div><b>Saved:</b> ${escapeHTML(deadheadWatchSavedLegSummary(leg))}</div>${opts.length?`<div style="margin-top:6px"><b>Current possible matches:</b>${opts.map((o,i)=>`<div style="margin-top:4px">Option ${i+1}: ${escapeHTML(b.boardStopName||'Board')} ${escapeHTML(deadheadWatchStoredTime(o.boardTime))} → ${escapeHTML(b.exitStopName||'Exit')} ${escapeHTML(deadheadWatchStoredTime(o.exitTime))}</div>`).join('')}</div>`:`<div style="margin-top:5px">${escapeHTML(leg.detail||'More than one current match is possible.')}</div>`}</div>`;
+  }
+  return `<div class="deadhead-watch-change-note"><strong>Train ${escapeHTML(leg?.train||'')} · ${escapeHTML(deadheadWatchComparisonStatusLabel(status))}</strong><div>${escapeHTML(leg?.detail||route?.detail||'This commute needs review.')}</div></div>`;
+}
+function deadheadWatchCloseChangeDetails(){document.getElementById('deadheadWatchChangeModal')?.remove();document.body.classList.remove('deadhead-watch-modal-open')}
+function deadheadWatchShowChangeDetails(){
+  const routes=deadheadWatchChangedRoutes();if(!routes.length)return false;deadheadWatchCloseChangeDetails();
+  const modal=document.createElement('div');modal.id='deadheadWatchChangeModal';modal.className='deadhead-watch-change-modal';
+  const checked=deadheadWatchMonitorStatus?.last_checked_at?new Date(deadheadWatchMonitorStatus.last_checked_at).toLocaleString():'latest automatic check';
+  modal.innerHTML=`<div class="deadhead-watch-change-sheet" role="dialog" aria-modal="true" aria-labelledby="deadheadWatchChangeTitle"><div class="deadhead-watch-change-head"><div><strong id="deadheadWatchChangeTitle">Schedule Change Details</strong><span>${routes.length} saved commute${routes.length===1?'':'s'} changed · checked ${escapeHTML(checked)}${deadheadWatchMonitorStatus?.feed_version?` · ${escapeHTML(deadheadWatchMonitorStatus.feed_version)}`:''}</span></div><button class="btn small" type="button" onclick="deadheadWatchCloseChangeDetails()">Close</button></div><div class="deadhead-watch-change-body">${routes.map(r=>{const title=`${deadheadWatchCap(r.day)} · ${r.direction==='toWork'?'To Work':'Home'}`,trains=(r.trip?.trains||[]).join(' → ');return `<div class="deadhead-watch-change-route"><div class="deadhead-watch-change-route-title"><div><strong>${escapeHTML(title)}</strong><span>${escapeHTML(trains?`Train ${trains}`:'Saved commute')}</span></div><div class="deadhead-watch-compare-status status-${escapeHTML(r.status)}">${escapeHTML(deadheadWatchComparisonStatusLabel(r.status))}</div></div>${r.connection?`<div class="deadhead-watch-change-note"><strong>Connection changed</strong><div><b>Saved connection:</b> ${Number.isFinite(Number(r.connection.beforeWaitMinutes))?escapeHTML(String(r.connection.beforeWaitMinutes))+' min':'—'}</div><div style="margin-top:5px"><b>Current connection:</b> ${Number(r.connection.currentWaitMinutes)<0?`Train ${escapeHTML(r.connection.toTrain)} leaves ${escapeHTML(String(Math.abs(r.connection.currentWaitMinutes)))} min before Train ${escapeHTML(r.connection.fromTrain)} arrives.`:`${escapeHTML(String(r.connection.currentWaitMinutes))} min wait`}</div></div>`:''}${(r.legs||[]).filter(l=>l.status!=='unchanged').map(l=>deadheadWatchRenderChangeLeg(l,r)).join('')||`<div class="deadhead-watch-change-note">${escapeHTML(r.detail||'This commute needs review.')}</div>`}</div>`}).join('')}</div><div class="deadhead-watch-change-actions"><button class="btn primary" type="button" onclick="deadheadWatchCloseChangeDetails()">Got it</button><button class="btn" type="button" onclick="deadheadWatchCloseChangeDetails();document.getElementById('deadheadWatchComparisonPanel')?.scrollIntoView({behavior:'smooth',block:'start'})">View full automatic check</button></div></div>`;
+  modal.addEventListener('click',e=>{if(e.target===modal)deadheadWatchCloseChangeDetails()});document.body.appendChild(modal);document.body.classList.add('deadhead-watch-modal-open');return true;
+}
+function deadheadWatchRenderMonitorStatus(){
+  const host=document.getElementById('deadheadWatchMonitorPanel');if(!host)return;
+  const watch=normalizeDeadheadWatch(normalizeMyJob(getMyJob())?.deadheadWatch);if(!watch.enabled){host.innerHTML='';return}
+  const s=deadheadWatchMonitorStatus,status=s?.status||'pending',last=s?.last_checked_at?new Date(s.last_checked_at).toLocaleString():'Not checked yet';
+  let line='Waiting for the first automatic server check.';
+  if(status==='clear')line=`No schedule changes detected · ${Number(s.commute_count||0)} LIRR commute${Number(s.commute_count||0)===1?'':'s'} checked.`;
+  else if(status==='attention')line=`${Number(s.change_count||0)} saved commute${Number(s.change_count||0)===1?'':'s'} need review.`;
+  else if(status==='error')line=`The last server check could not complete${s.last_error?`: ${s.last_error}`:'.'}`;
+  else if(status==='not_configured')line='Automatic monitoring is waiting for every saved LIRR commute to have a schedule baseline.';
+  const exact=status==='attention'&&s?.results?.length?`<button class="btn small primary" type="button" onclick="deadheadWatchShowChangeDetails()">What changed?</button>`:'';
+  const review=s?.results?.length?`<button class="btn small" type="button" onclick="deadheadWatchOpenAutomaticResults()">${status==='attention'?'Review automatic check':'View last automatic check'}</button>`:'';
+  const pushLine=deadheadWatchPushDeviceState==='ready'?'Push alerts are active on this device.':deadheadWatchPushDeviceState==='unavailable'?'Push alerts are unavailable on this device.':deadheadWatchPushDeviceState==='off'?'Automatic checks are active. Enable Notifications in EPL Settings to receive Deadhead Watch push alerts on this device.':'Push alerts use EPL’s registered notification devices.';
+  host.innerHTML=`<div class="deadhead-watch-monitor"><div class="deadhead-watch-monitor-head"><div><strong>Automatic monitoring</strong><span>${escapeHTML(line)}</span><small>Server schedule: every 6 hours · Last checked: ${escapeHTML(last)}${s?.feed_version?` · ${escapeHTML(s.feed_version)}`:''}</small><small>${escapeHTML(pushLine)}</small>${deadheadWatchMonitorMessage?`<small class="${deadheadWatchMonitorMessage.startsWith('Error:')?'is-error':'is-success'}">${escapeHTML(deadheadWatchMonitorMessage)}</small>`:''}</div><div class="deadhead-watch-monitor-state is-${status==='clear'?'clear':status==='attention'?'attention':status==='error'?'error':'pending'}">${deadheadWatchMonitorLoading?'Loading…':escapeHTML(deadheadWatchMonitorStateLabel(status))}</div></div><div class="deadhead-watch-monitor-actions">${exact}${review}<button class="btn small" type="button" onclick="deadheadWatchLoadMonitorStatus(true)">Refresh status</button></div></div>`;
+}
+async function deadheadWatchLoadMonitorStatus(showMessage=false){
+  const host=document.getElementById('deadheadWatchMonitorPanel');if(!host)return;
+  const watch=normalizeDeadheadWatch(normalizeMyJob(getMyJob())?.deadheadWatch);if(!watch.enabled){deadheadWatchMonitorStatus=null;deadheadWatchRenderMonitorStatus();return}
+  const client=getCloudClient?.();if(!client){deadheadWatchMonitorStatus=null;deadheadWatchMonitorMessage='Automatic monitoring requires cloud sign-in.';deadheadWatchRenderMonitorStatus();return}
+  deadheadWatchMonitorLoading=true;if(showMessage)deadheadWatchMonitorMessage='Refreshing automatic-monitor status…';deadheadWatchRenderMonitorStatus();
+  try{
+    const {data,error}=await client.from('deadhead_watch_monitor_status').select('last_checked_at,last_success_at,feed_version,feed_label,status,commute_count,change_count,summary,results,last_error').maybeSingle();if(error)throw error;deadheadWatchMonitorStatus=data||null;deadheadWatchMonitorMessage=showMessage?(data?'Automatic-monitor status refreshed.':'Waiting for the first server check.'):'';
+    try{if(typeof pushSupported==='function'&&pushSupported()){const sub=await pushCurrentSubscription();deadheadWatchPushDeviceState=(typeof Notification!=='undefined'&&Notification.permission==='granted'&&sub)?'ready':'off'}else deadheadWatchPushDeviceState='unavailable'}catch{deadheadWatchPushDeviceState='off'}
+  }
+  catch(err){deadheadWatchMonitorMessage=`Error: ${err?.message||err}`}
+  finally{
+    deadheadWatchMonitorLoading=false;
+    deadheadWatchRenderMonitorStatus();
+    if(deadheadWatchComparisonDraft?.automatic&&deadheadWatchMonitorStatus?.results?.length){
+      const s=deadheadWatchMonitorStatus;
+      deadheadWatchComparisonDraft={automatic:true,checkedAt:s.last_checked_at||new Date().toISOString(),feedVersion:s.feed_version||'',feedLabel:s.feed_label||'LIRR GTFS',routes:s.results};
+      deadheadWatchRenderComparison();
+    }
+  }
+}
+function deadheadWatchOpenAutomaticResults(){
+  const s=deadheadWatchMonitorStatus;if(!s?.results?.length)return;
+  deadheadWatchComparisonDraft={automatic:true,checkedAt:s.last_checked_at||new Date().toISOString(),feedVersion:s.feed_version||'',feedLabel:s.feed_label||'LIRR GTFS',routes:s.results};deadheadWatchRenderComparison();document.getElementById('deadheadWatchComparisonPanel')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+// ---- Deadhead Watch MVP 1.3: GTFS schedule baseline resolver ----
+const DEADHEAD_WATCH_GTFS_URL='https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip';
+const DEADHEAD_WATCH_GTFS_DB='epl_deadhead_watch_gtfs_v1';
+const DEADHEAD_WATCH_GTFS_STORE='files';
+const DEADHEAD_WATCH_GTFS_KEY='lirr_gtfs_zip';
+let deadheadWatchGtfs=null;
+let deadheadWatchResolverDraft=null;
+let deadheadWatchPendingTarget=null;
+let deadheadWatchComparisonDraft=null;
+let deadheadWatchGtfsFileMode='auto';
+
+function deadheadWatchNormalizeBaseline(value){
+  const b=value&&typeof value==='object'&&!Array.isArray(value)?value:null;if(!b)return null;
+  const legs=Array.isArray(b.legs)?b.legs.map(x=>({
+    train:String(x?.train||''),tripId:String(x?.tripId||''),serviceId:String(x?.serviceId||''),
+    boardStopId:String(x?.boardStopId||''),boardStopName:String(x?.boardStopName||''),boardTime:Number(x?.boardTime),
+    exitStopId:String(x?.exitStopId||''),exitStopName:String(x?.exitStopName||''),exitTime:Number(x?.exitTime),
+    serviceDate:String(x?.serviceDate||''),routeStopIds:Array.isArray(x?.routeStopIds)?x.routeStopIds.map(v=>String(v||'')).filter(Boolean):[]
+  })).filter(x=>x.train&&x.tripId):[];
+  return legs.length?{feedVersion:String(b.feedVersion||''),feedLabel:String(b.feedLabel||''),matchedAt:String(b.matchedAt||''),assignmentDay:String(b.assignmentDay||''),calendarDay:String(b.calendarDay||''),legs}:null;
+}
+function deadheadWatchBaselineMatchesTrains(baseline,trains){
+  const b=deadheadWatchNormalizeBaseline(baseline),t=(trains||[]).map(String);return !!b&&b.legs.length===t.length&&b.legs.every((x,i)=>String(x.train)===t[i]);
+}
+function deadheadWatchOpenGtfsCache(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window))return reject(new Error('IndexedDB unavailable'));const req=indexedDB.open(DEADHEAD_WATCH_GTFS_DB,1);req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains(DEADHEAD_WATCH_GTFS_STORE))db.createObjectStore(DEADHEAD_WATCH_GTFS_STORE)};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||new Error('Could not open GTFS cache'))})}
+async function deadheadWatchSaveGtfsCache(buf,label){try{const db=await deadheadWatchOpenGtfsCache();await new Promise((resolve,reject)=>{const tx=db.transaction(DEADHEAD_WATCH_GTFS_STORE,'readwrite');tx.objectStore(DEADHEAD_WATCH_GTFS_STORE).put({buffer:buf,label:label||'LIRR GTFS',savedAt:new Date().toISOString()},DEADHEAD_WATCH_GTFS_KEY);tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||new Error('Could not save GTFS cache'))});db.close()}catch(err){console.warn('Deadhead Watch GTFS cache save skipped',err)}}
+async function deadheadWatchReadGtfsCache(){try{const db=await deadheadWatchOpenGtfsCache();const value=await new Promise((resolve,reject)=>{const tx=db.transaction(DEADHEAD_WATCH_GTFS_STORE,'readonly'),req=tx.objectStore(DEADHEAD_WATCH_GTFS_STORE).get(DEADHEAD_WATCH_GTFS_KEY);req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error||new Error('Could not read GTFS cache'))});db.close();return value}catch(err){console.warn('Deadhead Watch GTFS cache read skipped',err);return null}}
+function deadheadWatchParseCSV(text){const rows=[];let row=[],field='',q=false;for(let i=0;i<text.length;i++){const c=text[i];if(q){if(c==='"'&&text[i+1]==='"'){field+='"';i++}else if(c==='"')q=false;else field+=c}else if(c==='"')q=true;else if(c===','){row.push(field);field=''}else if(c==='\n'){row.push(field.replace(/\r$/,''));rows.push(row);row=[];field=''}else field+=c}if(field.length||row.length){row.push(field.replace(/\r$/,''));rows.push(row)}const head=rows.shift()||[];return rows.filter(r=>r.some(v=>v!=='')).map(r=>Object.fromEntries(head.map((h,i)=>[h,r[i]??''])))}
+function deadheadWatchParseGtfsTime(s){if(!s)return null;const p=String(s).trim().split(':').map(Number);return p[0]*60+p[1]+(p[2]||0)/60}
+function deadheadWatchYmd(d){return `${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`}
+function deadheadWatchIsoDate(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function deadheadWatchDatePlus(d,n){const x=new Date(d);x.setDate(x.getDate()+n);return x}
+function deadheadWatchSameDate(a,b){return !!a&&!!b&&a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate()}
+function deadheadWatchFmtGtfsTime(mins){if(!Number.isFinite(mins))return '—';let m=Math.round(mins),h=Math.floor(((m%1440)+1440)%1440/60),mi=((m%60)+60)%60,ap=h>=12?'PM':'AM';let hh=h%12;if(!hh)hh=12;return `${hh}:${String(mi).padStart(2,'0')} ${ap}`}
+function deadheadWatchBuildGtfs(raw,feed){const stops=new Map(raw.stops.map(s=>[s.stop_id,{...s}])),tripMeta=new Map(raw.trips.map(t=>[t.trip_id,t])),byTrip=new Map(),tripsByNumber=new Map();for(const t of raw.trips){const n=String(t.trip_short_name||'').trim();if(n){if(!tripsByNumber.has(n))tripsByNumber.set(n,[]);tripsByNumber.get(n).push(t.trip_id)}}for(const st of raw.stopTimes){if(!tripMeta.has(st.trip_id)||!stops.has(st.stop_id))continue;const e={stopId:st.stop_id,arr:deadheadWatchParseGtfsTime(st.arrival_time),dep:deadheadWatchParseGtfsTime(st.departure_time),seq:Number(st.stop_sequence)};if(!byTrip.has(st.trip_id))byTrip.set(st.trip_id,[]);byTrip.get(st.trip_id).push(e)}for(const a of byTrip.values())a.sort((x,y)=>x.seq-y.seq);return {stops,tripMeta,byTrip,tripsByNumber,calendar:raw.calendar||[],calendarDates:raw.calendarDates||[],feedVersion:String(feed?.feed_version||''),feedLabel:String(feed?.feed_version||feed?.feed_publisher_name||'LIRR GTFS')}}
+function deadheadWatchActiveServices(date){const d=deadheadWatchGtfs;if(!d)return new Set();const ds=deadheadWatchYmd(date),dow=['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][date.getDay()],set=new Set();for(const c of d.calendar){if(ds>=c.start_date&&ds<=c.end_date&&c[dow]==='1')set.add(c.service_id)}for(const x of d.calendarDates){if(x.date===ds){if(x.exception_type==='1')set.add(x.service_id);else if(x.exception_type==='2')set.delete(x.service_id)}}return set}
+async function deadheadWatchLoadGtfsBuffer(buf,label,opts={}){if(typeof JSZip==='undefined')throw new Error('GTFS ZIP reader did not load. Please reconnect and try again.');const zip=await JSZip.loadAsync(buf);async function txt(name,required=true){const f=zip.file(name);if(!f){if(required)throw new Error(`${name} is missing from the GTFS ZIP.`);return''}return f.async('text')}const [stopsT,tripsT,stopTimesT,calT,calDatesT,feedT]=await Promise.all([txt('stops.txt'),txt('trips.txt'),txt('stop_times.txt'),txt('calendar.txt',false),txt('calendar_dates.txt',false),txt('feed_info.txt',false)]);const feed=feedT?deadheadWatchParseCSV(feedT)[0]:null;deadheadWatchGtfs=deadheadWatchBuildGtfs({stops:deadheadWatchParseCSV(stopsT),trips:deadheadWatchParseCSV(tripsT),stopTimes:deadheadWatchParseCSV(stopTimesT),calendar:calT?deadheadWatchParseCSV(calT):[],calendarDates:calDatesT?deadheadWatchParseCSV(calDatesT):[]},feed);if(opts.cache!==false)await deadheadWatchSaveGtfsCache(buf,label||deadheadWatchGtfs.feedLabel);return deadheadWatchGtfs}
+function deadheadWatchAssignmentDate(day){const idx=MY_JOB_RELIEF_DAYS.indexOf(day),target=(idx+1)%7,now=new Date(),base=new Date(now.getFullYear(),now.getMonth(),now.getDate(),12,0,0);let delta=(target-base.getDay()+7)%7;return deadheadWatchDatePlus(base,delta)}
+function deadheadWatchSavedSchedule(day){const j=normalizeMyJob(getMyJob()),p=j?.type==='relief'?j?.reliefDays?.[day]:j?.regularDays?.[day];return p||{}}
+function deadheadWatchSavedOffset(day,direction){if(direction==='toWork')return 0;const s=deadheadWatchSavedSchedule(day),start=deadheadWatchMinutes(s.start),end=deadheadWatchMinutes(s.end);return start!==null&&end!==null&&end<=start?1:0}
+function deadheadWatchPublicAnchor(location){const s=String(location||'').trim().toLowerCase();const map=[['west side yard','Penn Station'],['penn station','Penn Station'],['j.d. caemmerer','Penn Station'],['jamaica storage yard','Jamaica'],['jamaica','Jamaica'],['grand central madison','Grand Central'],['grand central','Grand Central'],['atlantic terminal','Atlantic Terminal'],['brooklyn','Atlantic Terminal'],['long island city','Long Island City'],['babylon yard','Babylon'],['babylon','Babylon'],['ronkonkoma yard','Ronkonkoma'],['ronkonkoma','Ronkonkoma'],['port jefferson yard','Port Jefferson'],['port jefferson','Port Jefferson'],['patchogue yard','Patchogue'],['patchogue','Patchogue'],['speonk yard','Speonk'],['speonk','Speonk'],['oyster bay yard','Oyster Bay'],['oyster bay','Oyster Bay'],['long beach yard','Long Beach'],['long beach','Long Beach'],['hempstead yard','Hempstead'],['hempstead','Hempstead'],['west hempstead','West Hempstead'],['port washington','Port Washington']];for(const [needle,name] of map)if(s.includes(needle))return name;return ''}
+function deadheadWatchStopName(id){return deadheadWatchGtfs?.stops?.get(id)?.stop_name||id}
+function deadheadWatchFindStopByName(events,name){const target=String(name||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();if(!target)return null;let exact=null,loose=null;for(const e of events){const n=String(deadheadWatchStopName(e.stopId)||'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();if(n===target){exact=e;break}if(!loose&&(n.includes(target)||target.includes(n)))loose=e}return exact||loose}
+function deadheadWatchTrainCandidates(train,targetDate){const d=deadheadWatchGtfs;if(!d)return[];const ids=d.tripsByNumber.get(String(train))||[],out=[];for(const serviceShift of [0,-1]){const serviceDate=deadheadWatchDatePlus(targetDate,serviceShift),active=deadheadWatchActiveServices(serviceDate);for(const tripId of ids){const meta=d.tripMeta.get(tripId);if(!meta||!active.has(meta.service_id))continue;const raw=d.byTrip.get(tripId)||[],serviceDayDelta=Math.round((new Date(serviceDate.getFullYear(),serviceDate.getMonth(),serviceDate.getDate())-new Date(targetDate.getFullYear(),targetDate.getMonth(),targetDate.getDate()))/86400000),events=raw.map(e=>{const t=(e.dep??e.arr)??0;return {...e,actualDate:deadheadWatchDatePlus(serviceDate,Math.floor(t/1440)),abs:serviceDayDelta*1440+t}});if(!events.some(e=>deadheadWatchSameDate(e.actualDate,targetDate)))continue;out.push({train:String(train),tripId,serviceId:meta.service_id,headsign:meta.trip_headsign||'',serviceDate:deadheadWatchIsoDate(serviceDate),events})}}return out}
+function deadheadWatchCandidateScore(candidate,day,direction){const sched=deadheadWatchSavedSchedule(day),anchor=deadheadWatchPublicAnchor(sched.location),anchorEvent=deadheadWatchFindStopByName(candidate.events,anchor);let score=0;if(anchorEvent)score-=100;const ref=direction==='toWork'?deadheadWatchMinutes(sched.start):deadheadWatchMinutes(sched.end);if(ref!==null&&anchorEvent){const t=(direction==='toWork'?(anchorEvent.arr??anchorEvent.dep):(anchorEvent.dep??anchorEvent.arr))%1440;let diff=direction==='toWork'?ref-t:t-ref;if(diff<0)diff+=1440;score+=Math.min(500,Math.abs(diff))}score+=candidate.serviceDate.endsWith(deadheadWatchIsoDate(deadheadWatchAssignmentDate(day)).slice(5))?0:1;return score}
+function deadheadWatchPickCandidate(train,targetDate,day,direction){const c=deadheadWatchTrainCandidates(train,targetDate);if(!c.length)return null;c.sort((a,b)=>deadheadWatchCandidateScore(a,day,direction)-deadheadWatchCandidateScore(b,day,direction));return {...c[0],candidateCount:c.length}}
+function deadheadWatchFindTransfer(prev,next){let best=null;for(const a of prev.events){for(const b of next.events){if(a.stopId!==b.stopId)continue;const at=Number.isFinite(a.abs)?a.abs:(a.arr??a.dep),bt=Number.isFinite(b.abs)?b.abs:(b.dep??b.arr);if(!Number.isFinite(at)||!Number.isFinite(bt))continue;let wait=bt-at;if(wait<0||wait>180)continue;if(!best||wait<best.wait)best={stopId:a.stopId,wait,prevEvent:a,nextEvent:b}}}return best}
+function deadheadWatchResolverRoute(day,direction,trip){const offset=deadheadWatchSavedOffset(day,direction),assignmentDate=deadheadWatchAssignmentDate(day),targetDate=deadheadWatchDatePlus(assignmentDate,offset),legs=[];for(const train of trip.trains){const c=deadheadWatchPickCandidate(train,targetDate,day,direction);if(!c)return {ok:false,day,direction,trip,targetDate,error:`Train ${train} was not found on ${deadheadWatchDayName(day,offset)} service in this GTFS feed.`};legs.push({...c,events:c.events,boardStopId:'',exitStopId:''})}
+  for(let i=0;i<legs.length-1;i++){const x=deadheadWatchFindTransfer(legs[i],legs[i+1]);if(x){legs[i].exitStopId=x.stopId;legs[i+1].boardStopId=x.stopId}}
+  const sched=deadheadWatchSavedSchedule(day),anchor=deadheadWatchPublicAnchor(sched.location);
+  if(direction==='toWork'&&legs.length){const e=deadheadWatchFindStopByName(legs[legs.length-1].events,anchor);if(e)legs[legs.length-1].exitStopId=e.stopId}
+  if(direction==='home'&&legs.length){const e=deadheadWatchFindStopByName(legs[0].events,anchor);if(e)legs[0].boardStopId=e.stopId}
+  const prior=deadheadWatchNormalizeBaseline(trip.baseline);
+  if(prior?.legs?.length===legs.length){for(let i=0;i<legs.length;i++){const old=prior.legs[i],leg=legs[i];if(String(old.train)!==String(leg.train))continue;const ids=new Set(leg.events.map(e=>e.stopId));if(old.boardStopId&&ids.has(old.boardStopId))leg.boardStopId=old.boardStopId;if(old.exitStopId&&ids.has(old.exitStopId))leg.exitStopId=old.exitStopId}}
+  return {ok:true,day,direction,trip,targetDate,legs,anchor};
+}
+function deadheadWatchResolverSelectOptions(leg,selected){return leg.events.map(e=>`<option value="${escapeHTML(e.stopId)}"${e.stopId===selected?' selected':''}>${escapeHTML(deadheadWatchStopName(e.stopId))} · ${deadheadWatchFmtGtfsTime(e.dep??e.arr)}</option>`).join('')}
+function deadheadWatchRenderResolver(){const host=document.getElementById('deadheadWatchResolverPanel');if(!host)return;const draft=deadheadWatchResolverDraft;if(!draft){host.innerHTML='';return}const errors=draft.routes.filter(r=>!r.ok),ok=draft.routes.filter(r=>r.ok);host.innerHTML=`<div class="deadhead-watch-resolver"><div class="deadhead-watch-resolver-head"><div><strong>Confirm your LIRR route</strong><span>${escapeHTML(deadheadWatchGtfs?.feedLabel||'LIRR GTFS')} · choose where you board and get off.</span></div><button class="btn small" type="button" onclick="deadheadWatchCancelResolver()">Cancel</button></div>${errors.map(r=>`<div class="deadhead-watch-resolver-error"><strong>${escapeHTML(deadheadWatchCap(r.day))} · ${r.direction==='toWork'?'To Work':'Home'}</strong><span>${escapeHTML(r.error)}</span></div>`).join('')}${ok.map((r,ri)=>`<div class="deadhead-watch-resolver-route"><div class="deadhead-watch-resolver-route-head"><strong>${escapeHTML(deadheadWatchCap(r.day))} · ${r.direction==='toWork'?'To Work':'Home'}</strong><span>${escapeHTML(deadheadWatchDayName(r.day,deadheadWatchSavedOffset(r.day,r.direction)))} service · ${escapeHTML(deadheadWatchIsoDate(r.targetDate))}</span></div>${r.legs.map((leg,li)=>`<div class="deadhead-watch-resolver-leg"><div class="deadhead-watch-resolver-train">Train ${escapeHTML(leg.train)}${leg.candidateCount>1?`<span>${leg.candidateCount} schedule matches · best match shown</span>`:''}</div><div class="field"><label>Board at</label><select data-r="${ri}" data-l="${li}" data-side="board"><option value="">Select station</option>${deadheadWatchResolverSelectOptions(leg,leg.boardStopId)}</select></div><div class="field"><label>Get off at</label><select data-r="${ri}" data-l="${li}" data-side="exit"><option value="">Select station</option>${deadheadWatchResolverSelectOptions(leg,leg.exitStopId)}</select></div></div>`).join('')}</div>`).join('')}<div class="deadhead-watch-resolver-actions"><button class="btn primary" type="button" onclick="deadheadWatchSaveBaseline()"${errors.length?' disabled':''}>Save schedule baseline</button><button class="btn" type="button" onclick="deadheadWatchChooseGtfsFile('resolver')">Use another GTFS ZIP</button></div></div>`}
+function deadheadWatchCancelResolver(){deadheadWatchResolverDraft=null;deadheadWatchPendingTarget=null;deadheadWatchRenderResolver();deadheadWatchRenderGtfsControl()}
+function deadheadWatchRouteItems(){const watch=normalizeDeadheadWatch(normalizeMyJob(getMyJob())?.deadheadWatch),routes=[];for(const day of MY_JOB_RELIEF_DAYS)for(const direction of ['toWork','home']){const trip=deadheadWatchTripFromSaved(watch,day,direction);if(trip.mode==='lirr'&&trip.trains.length)routes.push({day,direction,trip})}return routes}
+function deadheadWatchComparisonStatusLabel(status){return ({unchanged:'Unchanged',time_changed:'Time changed',route_changed:'Route changed',train_missing:'Train missing',needs_review:'Needs review'})[status]||'Needs review'}
+function deadheadWatchComparisonSeverity(status){return ({unchanged:0,time_changed:1,route_changed:2,train_missing:3,needs_review:4})[status]??4}
+function deadheadWatchSameStopPattern(a,b){const x=Array.isArray(a)?a:[],y=Array.isArray(b)?b:[];return x.length===y.length&&x.every((v,i)=>String(v)===String(y[i]))}
+function deadheadWatchSegmentStopIds(candidate,boardStopId,exitStopId){const a=candidate.events.find(e=>e.stopId===boardStopId),b=candidate.events.find(e=>e.stopId===exitStopId);if(!a||!b||b.seq<=a.seq)return[];return candidate.events.filter(e=>e.seq>=a.seq&&e.seq<=b.seq).map(e=>e.stopId)}
+function deadheadWatchDeltaText(delta){const n=Math.round(Number(delta)||0);if(!n)return 'same time';return `${n>0?'+':''}${n} min`}
+function deadheadWatchCompareLeg(day,direction,baselineLeg,targetDate){
+  const old=baselineLeg,candidates=deadheadWatchTrainCandidates(old.train,targetDate);
+  if(!candidates.length)return {status:'train_missing',train:old.train,old,detail:`Train ${old.train} was not found on ${deadheadWatchDayName(day,deadheadWatchSavedOffset(day,direction))} service.`,candidate:null};
+  const scored=[];
+  for(const c of candidates){
+    const a=c.events.find(e=>e.stopId===old.boardStopId),b=c.events.find(e=>e.stopId===old.exitStopId),valid=!!a&&!!b&&b.seq>a.seq;
+    if(!valid){scored.push({candidate:c,valid:false,score:1e9});continue}
+    const boardTime=a.dep??a.arr,exitTime=b.arr??b.dep,boardDelta=Number.isFinite(old.boardTime)?Math.round(boardTime-old.boardTime):0,exitDelta=Number.isFinite(old.exitTime)?Math.round(exitTime-old.exitTime):0,pattern=deadheadWatchSegmentStopIds(c,old.boardStopId,old.exitStopId),patternChanged=old.routeStopIds?.length? !deadheadWatchSameStopPattern(old.routeStopIds,pattern):false;
+    const timeScore=Math.abs(boardDelta)+Math.abs(exitDelta),patternPenalty=patternChanged?10000:0;
+    scored.push({candidate:c,valid:true,score:patternPenalty+timeScore,boardEvent:a,exitEvent:b,boardTime,exitTime,boardDelta,exitDelta,pattern,patternChanged});
+  }
+  const valid=scored.filter(x=>x.valid).sort((a,b)=>a.score-b.score||deadheadWatchCandidateScore(a.candidate,day,direction)-deadheadWatchCandidateScore(b.candidate,day,direction));
+  if(!valid.length)return {status:'route_changed',train:old.train,old,detail:`The saved ${old.boardStopName||'boarding stop'} → ${old.exitStopName||'exit stop'} segment is no longer available on Train ${old.train}.`,candidate:candidates[0]||null};
+  const best=valid[0],second=valid[1];
+  if(second&&second.score===best.score&&second.candidate.tripId!==best.candidate.tripId){const materiallyDifferent=second.boardTime!==best.boardTime||second.exitTime!==best.exitTime||!deadheadWatchSameStopPattern(second.pattern,best.pattern);if(materiallyDifferent)return {status:'needs_review',train:old.train,old,detail:`More than one current Train ${old.train} trip matches the saved stations equally. EPL will not choose between them automatically.`,candidate:best.candidate,best}}
+  const timeChanged=best.boardDelta!==0||best.exitDelta!==0,status=best.patternChanged?'route_changed':timeChanged?'time_changed':'unchanged';
+  let detail='';
+  if(status==='unchanged')detail=`${old.boardStopName} ${deadheadWatchFmtGtfsTime(best.boardTime)} → ${old.exitStopName} ${deadheadWatchFmtGtfsTime(best.exitTime)} · no change.`;
+  else if(status==='time_changed')detail=`${old.boardStopName}: ${deadheadWatchFmtGtfsTime(old.boardTime)} → ${deadheadWatchFmtGtfsTime(best.boardTime)} (${deadheadWatchDeltaText(best.boardDelta)}) · ${old.exitStopName}: ${deadheadWatchFmtGtfsTime(old.exitTime)} → ${deadheadWatchFmtGtfsTime(best.exitTime)} (${deadheadWatchDeltaText(best.exitDelta)}).`;
+  else detail=`The stop pattern between ${old.boardStopName} and ${old.exitStopName} changed on Train ${old.train}.`;
+  return {status,train:old.train,old,detail,candidate:best.candidate,best,currentBoardAbs:best.boardEvent?.abs,currentExitAbs:best.exitEvent?.abs};
+}
+function deadheadWatchCompareRoute(day,direction,trip){
+  const baseline=deadheadWatchNormalizeBaseline(trip.baseline),offset=deadheadWatchSavedOffset(day,direction),assignmentDate=deadheadWatchAssignmentDate(day),targetDate=deadheadWatchDatePlus(assignmentDate,offset);
+  if(!baseline||!deadheadWatchBaselineMatchesTrains(baseline,trip.trains))return {day,direction,status:'needs_review',targetDate,baseline,trip,legs:[],detail:'This commute does not have a complete saved GTFS baseline.'};
+  const legs=baseline.legs.map(leg=>deadheadWatchCompareLeg(day,direction,leg,targetDate));
+  let status=legs.reduce((worst,leg)=>deadheadWatchComparisonSeverity(leg.status)>deadheadWatchComparisonSeverity(worst)?leg.status:worst,'unchanged'),connectionDetail='';
+  if(!['train_missing','needs_review'].includes(status)&&legs.length>1){
+    for(let i=0;i<legs.length-1;i++){
+      const a=legs[i],b=legs[i+1];if(!Number.isFinite(a.currentExitAbs)||!Number.isFinite(b.currentBoardAbs))continue;
+      const wait=b.currentBoardAbs-a.currentExitAbs;
+      if(wait<0||wait>180){status='route_changed';connectionDetail=`The saved connection between Train ${a.train} and Train ${b.train} no longer lines up (${wait<0?'second train leaves before the first arrives':`${Math.round(wait)} minute wait`}).`;break}
+    }
+  }
+  return {day,direction,status,targetDate,baseline,trip,legs,detail:connectionDetail};
+}
+function deadheadWatchComparisonCounts(routes){const counts={unchanged:0,time_changed:0,route_changed:0,train_missing:0,needs_review:0};for(const r of routes)counts[r.status]=(counts[r.status]||0)+1;return counts}
+function deadheadWatchRenderComparison(){
+  const host=document.getElementById('deadheadWatchComparisonPanel');if(!host)return;const d=deadheadWatchComparisonDraft;if(!d){host.innerHTML='';return}
+  const counts=deadheadWatchComparisonCounts(d.routes),attention=d.routes.length-counts.unchanged,baselineVersions=[...new Set(d.routes.map(r=>r.baseline?.feedVersion||r.baseline?.feedLabel||'').filter(Boolean))],baselineLabel=baselineVersions.length===1?baselineVersions[0]:baselineVersions.length?`${baselineVersions.length} saved feed versions`:'saved baseline',summary=attention===0?`✓ No schedule changes found. All ${counts.unchanged} LIRR commutes match the saved baseline.`:`${attention} of ${d.routes.length} LIRR commutes need review · ${counts.time_changed} time change${counts.time_changed===1?'':'s'}, ${counts.route_changed} route change${counts.route_changed===1?'':'s'}, ${counts.train_missing} missing train${counts.train_missing===1?'':'s'}, ${counts.needs_review} ambiguous.`;
+  host.innerHTML=`<div class="deadhead-watch-compare"><div class="deadhead-watch-compare-head"><div><strong>${d.automatic?'Automatic schedule check':'Current schedule check'}</strong><span>Saved: ${escapeHTML(baselineLabel)} · Current: ${escapeHTML(d.feedVersion||d.feedLabel||'LIRR GTFS')} · checked ${escapeHTML(new Date(d.checkedAt).toLocaleString())}</span></div><button class="btn small" type="button" onclick="deadheadWatchCloseComparison()">Close</button></div><div class="deadhead-watch-compare-summary ${attention===0?'is-clear':'is-attention'}">${escapeHTML(summary)}</div>${d.routes.map(r=>{const routeText=deadheadWatchBaselineRouteText(r.baseline),title=`${deadheadWatchCap(r.day)} · ${r.direction==='toWork'?'To Work':'Home'}`,needsAction=r.status!=='unchanged';return `<div class="deadhead-watch-compare-route"><div class="deadhead-watch-compare-route-head"><div><strong>${escapeHTML(title)}</strong><span>${escapeHTML((r.trip?.trains||[]).join(' → '))}${routeText?` · ${escapeHTML(routeText)}`:''}</span></div><div class="deadhead-watch-compare-status status-${escapeHTML(r.status)}">${escapeHTML(deadheadWatchComparisonStatusLabel(r.status))}</div></div>${r.detail?`<div class="deadhead-watch-compare-leg"><span>${escapeHTML(r.detail)}</span></div>`:''}${(r.legs||[]).map(l=>`<div class="deadhead-watch-compare-leg"><strong>Train ${escapeHTML(l.train)} · ${escapeHTML(deadheadWatchComparisonStatusLabel(l.status))}</strong><span>${escapeHTML(l.detail)}</span></div>`).join('')}${needsAction?`<div class="deadhead-watch-compare-actions"><button class="btn small" type="button" onclick="deadheadWatchRematchFromComparison('${r.day}','${r.direction}')">Review / rematch this commute</button></div>`:''}</div>`}).join('')}<div class="deadhead-watch-compare-footer"><button class="btn primary" type="button" onclick="deadheadWatchStartComparison()">Check current schedule now</button><button class="btn" type="button" onclick="deadheadWatchChooseGtfsFile('compare')">Compare another GTFS ZIP</button><button class="btn" type="button" onclick="deadheadWatchCloseComparison();deadheadWatchStartResolver()">Rebuild all baselines</button></div></div>`;
+}
+function deadheadWatchCloseComparison(){deadheadWatchComparisonDraft=null;deadheadWatchRenderComparison();deadheadWatchRenderGtfsControl()}
+function deadheadWatchRematchFromComparison(day,direction){deadheadWatchComparisonDraft=null;deadheadWatchRenderComparison();deadheadWatchStartResolver(day,direction)}
+function deadheadWatchBeginComparison(){const routes=deadheadWatchRouteItems();deadheadWatchComparisonDraft={checkedAt:new Date().toISOString(),feedVersion:deadheadWatchGtfs?.feedVersion||'',feedLabel:deadheadWatchGtfs?.feedLabel||'LIRR GTFS',routes:routes.map(r=>deadheadWatchCompareRoute(r.day,r.direction,r.trip))};deadheadWatchResolverDraft=null;deadheadWatchRenderResolver();deadheadWatchRenderComparison();const counts=deadheadWatchComparisonCounts(deadheadWatchComparisonDraft.routes),attention=deadheadWatchComparisonDraft.routes.length-counts.unchanged;deadheadWatchRenderGtfsControl(attention?`${attention} commute${attention===1?'':'s'} need review after current GTFS check.`:`✓ Current GTFS matches all saved commute baselines.`,attention?'error':'success');document.getElementById('deadheadWatchComparisonPanel')?.scrollIntoView({behavior:'smooth',block:'start'})}
+async function deadheadWatchStartComparison(){
+  const routes=deadheadWatchRouteItems(),matched=routes.filter(r=>deadheadWatchBaselineMatchesTrains(r.trip.baseline,r.trip.trains)).length;if(!routes.length)return;if(matched!==routes.length){deadheadWatchRenderGtfsControl('Finish matching every LIRR commute before running a schedule comparison.','error');return}
+  deadheadWatchGtfsFileMode='compare';deadheadWatchPendingTarget=null;deadheadWatchCloseTripEditor();deadheadWatchResolverDraft=null;deadheadWatchRenderResolver();deadheadWatchComparisonDraft=null;deadheadWatchRenderComparison();deadheadWatchRenderGtfsControl('Downloading the current LIRR schedule for comparison…');
+  try{const dl=await deadheadWatchDownloadOfficialGtfs();await deadheadWatchLoadGtfsBuffer(dl.buffer,dl.label,{cache:true});deadheadWatchBeginComparison()}catch(err){console.error('Deadhead Watch comparison download failed',err);const detail=String(err?.message||'').trim();deadheadWatchRenderGtfsControl(`Current schedule download could not complete.${detail?` Details: ${detail}.`:''} Use the manual GTFS file option below to run the same comparison.`,'error')}
+}
+function deadheadWatchRenderGtfsControl(message='',kind=''){const host=document.getElementById('deadheadWatchGtfsPanel');if(!host)return;const routes=deadheadWatchRouteItems(),matched=routes.filter(r=>deadheadWatchBaselineMatchesTrains(r.trip.baseline,r.trip.trains)).length,versions=[...new Set(routes.map(r=>r.trip.baseline?.feedVersion||r.trip.baseline?.feedLabel||'').filter(Boolean))];if(!routes.length){host.innerHTML='';return}const allMatched=matched===routes.length,status=allMatched?`All ${matched} LIRR commute${matched===1?'':'s'} matched${versions.length===1?` · ${escapeHTML(versions[0])}`:''}`:`${matched} of ${routes.length} LIRR commute${routes.length===1?'':'s'} matched`,messageClass=kind==='error'?'is-error':kind==='success'?'is-success':'',manualFallback=kind==='error'?`<button class="btn small" type="button" onclick="deadheadWatchChooseGtfsFile('auto')">Use manual GTFS file</button>`:'';host.innerHTML=`<div class="deadhead-watch-gtfs"><div><strong>Schedule baseline</strong><span>${status}</span>${message?`<small class="${messageClass}">${escapeHTML(message)}</small>`:''}</div><div class="deadhead-watch-gtfs-actions"><button class="btn small" type="button" onclick="${allMatched?'deadheadWatchStartComparison()':'deadheadWatchStartResolver()'}">${allMatched?'Check current schedule':'Match with LIRR schedule'}</button>${manualFallback}</div></div>`}
+function deadheadWatchChooseGtfsFile(mode='auto'){if(mode==='auto'){const routes=deadheadWatchRouteItems(),matched=routes.filter(r=>deadheadWatchBaselineMatchesTrains(r.trip.baseline,r.trip.trains)).length;deadheadWatchGtfsFileMode=routes.length&&matched===routes.length?'compare':'resolver'}else deadheadWatchGtfsFileMode=mode;document.getElementById('deadheadWatchGtfsFile')?.click()}
+async function deadheadWatchGtfsFileChanged(input){const f=input?.files?.[0];if(!f)return;deadheadWatchRenderGtfsControl(`Loading ${f.name}…`);try{await deadheadWatchLoadGtfsBuffer(await f.arrayBuffer(),f.name,{cache:true});if(deadheadWatchGtfsFileMode==='compare')deadheadWatchBeginComparison();else deadheadWatchBeginResolver(deadheadWatchPendingTarget?.day,deadheadWatchPendingTarget?.direction)}catch(err){console.error(err);deadheadWatchRenderGtfsControl(`Could not read that GTFS ZIP: ${err?.message||err}`,'error')}finally{input.value='';deadheadWatchGtfsFileMode='auto'}}
+async function deadheadWatchDownloadOfficialGtfs(){
+  const errors=[];
+  const client=getCloudClient?.();
+  if(client){
+    try{
+      const {data,error}=await client.auth.getSession();if(error)throw error;
+      const token=data?.session?.access_token;
+      if(token){
+        const r=await fetch(`${CLOUD_PROJECT_URL}/functions/v1/lirr-gtfs-proxy`,{method:'GET',headers:{Authorization:`Bearer ${token}`,apikey:CLOUD_PUBLISHABLE_KEY,Accept:'application/zip'},cache:'no-store'});
+        if(!r.ok)throw new Error(`EPL GTFS relay returned HTTP ${r.status}`);
+        const buffer=await r.arrayBuffer();if(buffer.byteLength<1000)throw new Error('EPL GTFS relay returned an incomplete file');
+        return {buffer,label:'MTA LIRR GTFS · EPL relay'};
+      }
+      errors.push('EPL relay unavailable while signed out');
+    }catch(err){errors.push(err?.message||String(err))}
+  }
+  try{
+    const r=await fetch(DEADHEAD_WATCH_GTFS_URL,{cache:'no-store'});if(!r.ok)throw new Error(`Official GTFS download returned HTTP ${r.status}`);
+    const buffer=await r.arrayBuffer();if(buffer.byteLength<1000)throw new Error('Official GTFS download returned an incomplete file');
+    return {buffer,label:'MTA LIRR GTFS'};
+  }catch(err){errors.push(err?.message||String(err))}
+  throw new Error(errors.filter(Boolean).join(' · ')||'LIRR GTFS download failed');
+}
+async function deadheadWatchStartResolver(day='',direction=''){deadheadWatchGtfsFileMode='resolver';deadheadWatchPendingTarget=day&&direction?{day,direction}:null;deadheadWatchComparisonDraft=null;deadheadWatchRenderComparison();deadheadWatchCloseTripEditor();const label=deadheadWatchPendingTarget?`Loading ${deadheadWatchCap(day)} ${direction==='toWork'?'To Work':'Home'} schedule…`:'Loading the LIRR schedule…';deadheadWatchRenderGtfsControl(label);try{if(!deadheadWatchGtfs){const cached=await deadheadWatchReadGtfsCache();if(cached?.buffer)await deadheadWatchLoadGtfsBuffer(cached.buffer,cached.label||'Saved LIRR GTFS',{cache:false})}if(!deadheadWatchGtfs){const dl=await deadheadWatchDownloadOfficialGtfs();await deadheadWatchLoadGtfsBuffer(dl.buffer,dl.label,{cache:true})}deadheadWatchBeginResolver(day,direction)}catch(err){console.error('Deadhead Watch GTFS load failed',err);const detail=String(err?.message||'').trim();deadheadWatchRenderGtfsControl(`Automatic LIRR schedule download could not complete.${detail?` Details: ${detail}.`:''} Use the manual GTFS file option below if needed.`,'error')}}
+function deadheadWatchBeginResolver(day='',direction=''){let routes=deadheadWatchRouteItems();if(day&&direction)routes=routes.filter(r=>r.day===day&&r.direction===direction);deadheadWatchResolverDraft={target:day&&direction?{day,direction}:null,routes:routes.map(r=>deadheadWatchResolverRoute(r.day,r.direction,r.trip))};deadheadWatchRenderGtfsControl(`GTFS loaded · ${deadheadWatchGtfs?.tripMeta?.size?.toLocaleString?.()||0} trips${day&&direction?' · rematching 1 commute':''}`);deadheadWatchRenderResolver();document.getElementById('deadheadWatchResolverPanel')?.scrollIntoView({behavior:'smooth',block:'start'})}
+function deadheadWatchEventForStop(leg,stopId){return leg.events.find(e=>e.stopId===stopId)||null}
+async function deadheadWatchSaveBaseline(){const draft=deadheadWatchResolverDraft;if(!draft)return;const selects=[...document.querySelectorAll('#deadheadWatchResolverPanel select[data-r]')];for(const el of selects){const ri=Number(el.dataset.r),li=Number(el.dataset.l),side=el.dataset.side,route=draft.routes.filter(r=>r.ok)[ri],leg=route?.legs?.[li];if(leg)leg[side==='board'?'boardStopId':'exitStopId']=el.value}
+  for(const r of draft.routes){if(!r.ok)return;for(const leg of r.legs){if(!leg.boardStopId||!leg.exitStopId){alert(`Choose both Board at and Get off at for Train ${leg.train}.`);return}const a=deadheadWatchEventForStop(leg,leg.boardStopId),b=deadheadWatchEventForStop(leg,leg.exitStopId);if(!a||!b||b.seq<=a.seq){alert(`Train ${leg.train}: Get off at must come after Board at.`);return}}}
+  const saveBtn=document.querySelector('#deadheadWatchResolverPanel .deadhead-watch-resolver-actions .btn.primary');if(saveBtn){saveBtn.disabled=true;saveBtn.textContent='Saving…'}
+  const j=normalizeMyJob(getMyJob());if(!j){if(saveBtn){saveBtn.disabled=false;saveBtn.textContent='Save schedule baseline'}return}const watch=normalizeDeadheadWatch(j.deadheadWatch);for(const r of draft.routes){const trip=watch.days[r.day][r.direction];trip.baseline={feedVersion:deadheadWatchGtfs?.feedVersion||'',feedLabel:deadheadWatchGtfs?.feedLabel||'LIRR GTFS',matchedAt:new Date().toISOString(),assignmentDay:r.day,calendarDay:deadheadWatchDayName(r.day,deadheadWatchSavedOffset(r.day,r.direction)),legs:r.legs.map(leg=>{const a=deadheadWatchEventForStop(leg,leg.boardStopId),b=deadheadWatchEventForStop(leg,leg.exitStopId);const routeStopIds=leg.events.filter(e=>a&&b&&e.seq>=a.seq&&e.seq<=b.seq).map(e=>e.stopId);return {train:leg.train,tripId:leg.tripId,serviceId:leg.serviceId,serviceDate:leg.serviceDate,boardStopId:leg.boardStopId,boardStopName:deadheadWatchStopName(leg.boardStopId),boardTime:a?.dep??a?.arr,exitStopId:leg.exitStopId,exitStopName:deadheadWatchStopName(leg.exitStopId),exitTime:b?.arr??b?.dep,routeStopIds}})}}j.deadheadWatch=watch;localStorage.setItem(MY_JOB_KEY,JSON.stringify(j));
+  const savedTarget=draft.target;deadheadWatchResolverDraft=null;deadheadWatchPendingTarget=null;deadheadWatchComparisonDraft=null;deadheadWatchRenderComparison();renderDeadheadWatchSettings();deadheadWatchRenderResolver();
+  const savedMsg=savedTarget?`✓ ${deadheadWatchCap(savedTarget.day)} ${savedTarget.direction==='toWork'?'To Work':'Home'} baseline saved.`:'✓ Schedule baseline saved.';
+  setTimeout(()=>{deadheadWatchRenderGtfsControl(savedMsg,'success');document.getElementById('deadheadWatchGtfsPanel')?.scrollIntoView({behavior:'smooth',block:'center'})},20);
+  void cloudMirrorMyJob();
+}
+// ---- End Deadhead Watch MVP 1.4 comparison engine ----
+
 function normalizeMyJob(j){
   if(!j)return null;
   if(!j.type)j.type='regular';
   if(!j.reliefDays)j.reliefDays={};
   if(!j.regularDays)j.regularDays={};
+  // Job 113 reports at Penn on weekdays, but its My Job home terminal is West Side Yard.
+  repairKnownMyJobHomeTerminal(j);
   if(j.type==='regular'&&!j.location){
     const firstRegularDay=MY_JOB_RELIEF_DAYS.map(day=>j.regularDays?.[day]).find(d=>d&&!d.reliefDay&&d.location);
     if(firstRegularDay)j.location=firstRegularDay.location;
@@ -3946,6 +4487,7 @@ function toggleMyJobRegularDay(day){
   const cap=day.charAt(0).toUpperCase()+day.slice(1);
   const off=document.getElementById(`myJobRegular${cap}Off`)?.checked;
   document.getElementById(`myJobRegular${cap}Card`)?.classList.toggle('relief-off',!!off);
+  updateDeadheadWatchWorkdayVisibility();
 }
 function regularLocationValue(){
   const sel=document.getElementById('myJobRegularLocation');
@@ -3975,7 +4517,7 @@ function setReliefLocationUI(day,value){
 function chooseMyJobType(type,box){
   const reg=document.getElementById('myJobTypeRegular'),rel=document.getElementById('myJobTypeRelief');
   if(type==='regular'){reg.checked=true;rel.checked=false}else{rel.checked=true;reg.checked=false}
-  updateMyJobTypeUI(type);
+  updateMyJobTypeUI(type);updateDeadheadWatchWorkdayVisibility();
 }
 function updateMyJobTypeUI(type){
   const reg=document.getElementById('myJobRegularFields'),rel=document.getElementById('myJobReliefFields');
@@ -3986,6 +4528,7 @@ function toggleMyJobReliefDay(day){
   const cap=day.charAt(0).toUpperCase()+day.slice(1);
   const off=document.getElementById(`myJobRelief${cap}Off`)?.checked;
   document.getElementById(`myJobRelief${cap}Card`)?.classList.toggle('relief-off',!!off);
+  updateDeadheadWatchWorkdayVisibility();
 }
 function requestMyJobToggle(enable){
   const box=document.getElementById('myJobEnabled');
@@ -4010,6 +4553,7 @@ function reliefLocationValue(day){
   return sel?.value==='__other__'?(document.getElementById(`myJobRelief${cap}Other`)?.value||'').trim():(sel?.value||'');
 }
 function saveMyJob(){
+  const watchResult=readDeadheadWatchFromUI();if(!watchResult.valid)return;const deadheadWatch=watchResult.value;
   const type=document.getElementById('myJobTypeRelief')?.checked?'relief':'regular';
   if(type==='relief'){
     const reliefCrewNumber=(document.getElementById('myJobReliefCrewNumber')?.value||'').trim();
@@ -4023,7 +4567,7 @@ function saveMyJob(){
       if(!reliefDay&&(!assignment||!location||!start||!end)){alert(`Please complete ${cap}'s assignment, location, start, and release time, or mark it as a Relief Day.`);return}
       reliefDays[day]={reliefDay,assignment:reliefDay?'':assignment,location:reliefDay?'':location,start:reliefDay?'':start,end:reliefDay?'':end,paysMeal:reliefDay?false:paysMeal};
     }
-    localStorage.setItem(MY_JOB_KEY,JSON.stringify({enabled:true,type:'relief',reliefCrewNumber,reliefDays}));
+    localStorage.setItem(MY_JOB_KEY,JSON.stringify({enabled:true,type:'relief',reliefCrewNumber,reliefDays,deadheadWatch}));
   }else{
     const assignment=(document.getElementById('myJobNumber')?.value||'').trim();
     if(!assignment){alert('Please enter the Job Number.');return}
@@ -4036,13 +4580,13 @@ function saveMyJob(){
       if(!reliefDay&&(!start||!end)){alert(`Please complete ${cap}'s start and release time, or mark it as a Relief Day.`);return}
       regularDays[day]={reliefDay,location:reliefDay?'':location,start:reliefDay?'':start,end:reliefDay?'':end,paysMeal:reliefDay?false:paysMeal};
     }
-    localStorage.setItem(MY_JOB_KEY,JSON.stringify({enabled:true,type:'regular',assignment,location,regularDays}));
+    localStorage.setItem(MY_JOB_KEY,JSON.stringify({enabled:true,type:'regular',assignment,location,regularDays,deadheadWatch}));
   }
   const box=document.getElementById('myJobEnabled');if(box)box.checked=true;
-  renderMyJobUI();renderMyJobWeekPreview();void cloudMirrorMyJob();alert('My Job saved.');
+  deadheadWatchEditing=false;renderMyJobUI();renderMyJobWeekPreview();renderDeadheadWatchSettings();void cloudMirrorMyJob();alert('My Job saved.');
 }
 function loadMyJobSettings(){
-  initRegularLocationSelects();initReliefLocationSelects();
+  deadheadWatchEditing=false;initRegularLocationSelects();initReliefLocationSelects();
   const j=normalizeMyJob(getMyJob())||{type:'regular',regularDays:{},reliefDays:{}};
   const box=document.getElementById('myJobEnabled'),fields=document.getElementById('myJobSettingsFields');
   if(box)box.checked=true;if(fields)fields.classList.add('show');
@@ -4066,6 +4610,7 @@ function loadMyJobSettings(){
     const off=document.getElementById(`myJobRelief${cap}Off`);if(off)off.checked=!!d.reliefDay;
     set(`myJobRelief${cap}Assignment`,d.assignment);setReliefLocationUI(day,d.location||'');set(`myJobRelief${cap}Start`,d.start);set(`myJobRelief${cap}End`,d.end);const meal=document.getElementById(`myJobRelief${cap}PaysMeal`);if(meal)meal.checked=!!d.paysMeal;toggleMyJobReliefDay(day);
   });
+  renderDeadheadWatchSettings();
 renderMyJobWeekPreview();}
 function renderMyJobUI(){
   const j=normalizeMyJob(getMyJob()),configured=myJobConfigured(),trainee=isTraineeMode();
@@ -4414,7 +4959,7 @@ function fillRegularMyJobFromCrewBook(){
 function fillReliefMyJobFromCrewBook(){
   if(!crewBookAssistEnabled())return;const n=(document.getElementById('myJobReliefCrewNumber')?.value||'').trim(),map=CREW_BOOK_RELIEF[n];
   if(!map){alert(`Relief Crew ${n||'(blank)'} is not in the verified Revision 6 passenger dataset. Enter it manually for now.`);return}
-  for(const day of CREW_BOOK_DAYS){const cap=day[0].toUpperCase()+day.slice(1),jn=map[day],off=!jn,box=document.getElementById(`myJobRelief${cap}Off`);if(box)box.checked=off;const job=jn?CREW_BOOK_REV6_AUDITED_JOBS[jn]:null,x=job?resolveCrewBookJob(jn,representativeDateForDay(day),day):null;const a=document.getElementById(`myJobRelief${cap}Assignment`),st=document.getElementById(`myJobRelief${cap}Start`),en=document.getElementById(`myJobRelief${cap}End`),meal=document.getElementById(`myJobRelief${cap}PaysMeal`);if(a)a.value=jn||'';if(st)st.value=off?'':(x?.start||'');if(en)en.value=off?'':(x?.end||'');if(meal)meal.checked=!off&&!!x?.paysMeal;if(!off&&job)setReliefLocationUI(day,x?.location||job.terminal);else setReliefLocationUI(day,'');toggleMyJobReliefDay(day)}
+  for(const day of CREW_BOOK_DAYS){const cap=day[0].toUpperCase()+day.slice(1),jn=map[day],off=!jn,box=document.getElementById(`myJobRelief${cap}Off`);if(box)box.checked=off;const job=jn?CREW_BOOK_REV6_AUDITED_JOBS[jn]:null,x=job?resolveCrewBookJob(jn,representativeDateForDay(day),day):null;const a=document.getElementById(`myJobRelief${cap}Assignment`),st=document.getElementById(`myJobRelief${cap}Start`),en=document.getElementById(`myJobRelief${cap}End`),meal=document.getElementById(`myJobRelief${cap}PaysMeal`);if(a)a.value=jn||'';if(st)st.value=off?'':(x?.start||'');if(en)en.value=off?'':(x?.end||'');if(meal)meal.checked=!off&&!!x?.paysMeal;if(!off&&job)setReliefLocationUI(day,job.terminal||x?.location);else setReliefLocationUI(day,'');toggleMyJobReliefDay(day)}
   alert(`Relief Crew ${n} filled from the verified Revision 6 passenger dataset. Please review every day against the official Crew Book before saving.`);
 }
 function fillShiftFromCrewBook(){
@@ -5266,7 +5811,7 @@ function fillRegularMyJobFromCrewBook(){
   const raw=(document.getElementById('myJobNumber')?.value||'').trim(),key=normalizeCrewBookKey(raw),refDate=myJobCrewBookReferenceDate();
   if(isYardCrewKey(key)){
     const job=CREW_BOOK_YARD_JOBS[key];if(!job){alert(`Yard job ${key} is not in the verified dataset.`);return}
-    document.getElementById('myJobNumber').value=key;setRegularLocationUI(job.weekday?.location||job.terminal);
+    document.getElementById('myJobNumber').value=key;setRegularLocationUI(job.terminal||job.weekday?.location);
     for(const day of CREW_BOOK_DAYS){
       const cap=day[0].toUpperCase()+day.slice(1),ownerOff=job.relief?.includes(day)||!yardJobOperatesOnDayV8(key,day),x=resolveYardJobV8(key,day),box=document.getElementById(`myJobRegular${cap}Off`);
       if(box)box.checked=!!ownerOff;
@@ -5279,7 +5824,7 @@ function fillRegularMyJobFromCrewBook(){
   const rev=crewBookPassengerRevision(refDate),job=rev.jobs[key];
   if(!job||job.status==='abolished'){alert(`Job ${key} is not active in Passenger GO ${rev.go} Rev. ${rev.revision} for ${refDate}.`);return}
   if(job.type==='extraCrewOnly'||job.type==='workableNotOwnable'){alert(`Job ${key} can be worked but cannot be saved as an owned Regular My Job assignment in Passenger GO ${rev.go} Rev. ${rev.revision}.`);return}
-  document.getElementById('myJobNumber').value=key;setRegularLocationUI(job.weekday?.location||job.terminal);
+  document.getElementById('myJobNumber').value=key;setRegularLocationUI(job.terminal||job.weekday?.location);
   for(const day of CREW_BOOK_DAYS){
     const cap=day[0].toUpperCase()+day.slice(1),off=job.relief?.includes(day),box=document.getElementById(`myJobRegular${cap}Off`);if(box)box.checked=!!off;
     const dayDate=crewBookDateForDayNear(day,refDate),x=resolvePassengerJobV8(key,dayDate,day)||{};
@@ -7777,6 +8322,7 @@ async function pushSendSeniorityTestNotification(){
 
 const PUSH_PENDING_AWARD_KEY='eplPendingAwardNotificationLaunch_v1';
 const PUSH_PENDING_SENIORITY_KEY='eplPendingSeniorityNotificationLaunch_v1';
+const PUSH_PENDING_DEADHEAD_KEY='eplPendingDeadheadWatchNotificationLaunch_v1';
 const PUSH_PROMPT_DISMISSED_KEY='eplPushPromptDismissed_v1';
 const PUSH_ONBOARDING_SEEN_KEY='eplPushOnboardingSeen_v1';
 
@@ -7834,9 +8380,56 @@ async function pushOpenSeniorityFromNotification(){
   try{sessionStorage.removeItem(PUSH_PENDING_SENIORITY_KEY)}catch{}
   try{const url=new URL(window.location.href);url.searchParams.delete('seniority');history.replaceState({},'',url.pathname+(url.search||''))}catch{}
 }
+function pushHasPendingDeadheadLaunch(){
+  try{return sessionStorage.getItem(PUSH_PENDING_DEADHEAD_KEY)==='1'||new URLSearchParams(window.location.search).get('deadheadWatch')==='1'}catch{return false}
+}
+function pushMarkPendingDeadheadLaunch(){try{sessionStorage.setItem(PUSH_PENDING_DEADHEAD_KEY,'1')}catch{}}
+function pushDeadheadLaunchVerified(){
+  const settingsActive=!!document.getElementById('settingsView')?.classList.contains('active');
+  const disclosure=document.getElementById('myJobSettingsCard');
+  const card=document.getElementById('deadheadWatchCard');
+  const needsResults=!!deadheadWatchMonitorStatus?.results?.length;
+  const resultsVisible=!needsResults||!!document.querySelector('#deadheadWatchComparisonPanel .deadhead-watch-compare');
+  return !!(settingsActive&&disclosure?.open&&card&&resultsVisible);
+}
+async function pushOpenDeadheadWatchFromNotification(){
+  pushMarkPendingDeadheadLaunch();
+  for(let i=0;i<32;i++){
+    if(typeof accountStartupResolved!=='undefined'&&accountStartupResolved&&String(activeWorkspaceUserId||''))break;
+    await new Promise(r=>setTimeout(r,250));
+  }
+  try{
+    // Load the latest server result first, then repeatedly assert the target UI.
+    // iOS can resume the PWA into its previously visible view after our first
+    // navigation attempt, so success means the target DOM is actually visible.
+    await deadheadWatchLoadMonitorStatus(false);
+    for(let attempt=0;attempt<12;attempt++){
+      showView('settings');
+      await new Promise(r=>setTimeout(r,60));
+      const disclosure=document.getElementById('myJobSettingsCard');
+      if(disclosure)disclosure.open=true;
+      if(deadheadWatchMonitorStatus?.results?.length)deadheadWatchOpenAutomaticResults();
+      else document.getElementById('deadheadWatchCard')?.scrollIntoView({behavior:'auto',block:'start'});
+      await new Promise(r=>setTimeout(r,140));
+      if(pushDeadheadLaunchVerified()){
+        const target=deadheadWatchMonitorStatus?.results?.length?document.getElementById('deadheadWatchComparisonPanel'):document.getElementById('deadheadWatchCard');
+        target?.scrollIntoView({behavior:'smooth',block:'start'});
+        if(deadheadWatchMonitorStatus?.status==='attention')deadheadWatchShowChangeDetails();
+        try{sessionStorage.removeItem(PUSH_PENDING_DEADHEAD_KEY)}catch{}
+        try{const url=new URL(window.location.href);url.searchParams.delete('deadheadWatch');history.replaceState({},'',url.pathname+(url.search||''))}catch{}
+        return true;
+      }
+      await new Promise(r=>setTimeout(r,180));
+    }
+  }catch(err){console.warn('Deadhead Watch notification launch refresh failed:',err)}
+  // Do NOT clear the launch marker on failure. The local cache/server intent
+  // remains available so EPL can retry instead of silently losing the tap.
+  return false;
+}
 function pushHandleNotificationLaunch(){
   if(pushHasPendingAwardLaunch())void pushOpenAwardFromNotification();
   else if(pushHasPendingSeniorityLaunch())void pushOpenSeniorityFromNotification();
+  else if(pushHasPendingDeadheadLaunch())void pushOpenDeadheadWatchFromNotification();
 }
 window.addEventListener('load',()=>setTimeout(pushHandleNotificationLaunch,150));
 const PUSH_INTENT_CACHE='epl-notification-intents-v1';
@@ -7854,6 +8447,7 @@ async function pushConsumeNotificationIntent(){
     await cache.delete(PUSH_INTENT_URL);
     if(intent?.type==='EPL_NOTIFICATION_OPEN'&&intent?.notificationType==='bulletin_award')await pushOpenAwardFromNotification();
     else if(intent?.type==='EPL_NOTIFICATION_OPEN'&&intent?.notificationType==='seniority')await pushOpenSeniorityFromNotification();
+    else if(intent?.type==='EPL_NOTIFICATION_OPEN'&&intent?.notificationType==='deadhead_watch')await pushOpenDeadheadWatchFromNotification();
   }catch(err){console.warn('Notification intent handoff failed:',err)}finally{pushIntentConsumeBusy=false}
 }
 function pushRepairResumeLayout(){
@@ -7884,6 +8478,7 @@ if('serviceWorker' in navigator){
     const data=event?.data||{};
     if(data.type==='EPL_NOTIFICATION_OPEN'&&data.notificationType==='bulletin_award')void pushOpenAwardFromNotification();
     else if(data.type==='EPL_NOTIFICATION_OPEN'&&data.notificationType==='seniority')void pushOpenSeniorityFromNotification();
+    else if(data.type==='EPL_NOTIFICATION_OPEN'&&data.notificationType==='deadhead_watch')void pushOpenDeadheadWatchFromNotification();
   });
 }
 
@@ -7903,6 +8498,9 @@ async function pushCheckServerIntent(){
       handled=true;
     }else if(intent.intent_type==='seniority'){
       await pushOpenSeniorityFromNotification();
+      handled=true;
+    }else if(intent.intent_type==='deadhead_watch'){
+      await pushOpenDeadheadWatchFromNotification();
       handled=true;
     }
     if(handled){
@@ -9883,6 +10481,8 @@ let retirementWatchState={data:null,loadedAt:0,loading:false};
 function retirementWatchYearLabel(year){return `2K${String(year||new Date().getFullYear()).slice(-2).padStart(2,'0')}`}
 function retirementWatchDate(value){if(!value)return 'No roster timestamp available';try{return new Date(value).toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'})}catch{return String(value)}}
 function retirementWatchIsSeniorityExit(value){return ['99/Z2','99/Z4'].includes(String(value||'').trim().toUpperCase())}
+function retirementWatchIsTraineeRow(row){const r=row||{},assignment=String(r.assignment||'').trim().toUpperCase(),craft=String(r.craft||'').trim().toUpperCase(),type=String(r.assignment_type||'').trim().toLowerCase();return assignment.startsWith('ET')||craft==='ET'||type==='trainee'}
+function retirementWatchEligibleRow(row){return retirementWatchIsSeniorityExit(row?.st_rs)&&!retirementWatchIsTraineeRow(row)}
 function retirementWatchRender(data){
   const strip=document.getElementById('retirementWatchStrip');if(!strip)return;
   if(!data){strip.hidden=true;return}strip.hidden=false;
@@ -9940,7 +10540,7 @@ async function openRetirementWatch(){
 function closeRetirementWatch(){document.getElementById('retirementWatchModal')?.classList.remove('open')}
 async function retirementWatchStartCurrentYear(){
   if(!rosterAdminState.canPublish)return;const year=new Date().getFullYear();
-  if(!confirm(`Start Retirement Watch ${retirementWatchYearLabel(year)} from the latest published roster?\n\nOnly do this after the railroad's annual roster cleanup. Existing 99/Z2 retirement and 99/Z4 resignation entries in that roster will become the baseline and will NOT count toward the new year's total.`))return;
+  if(!confirm(`Start Retirement Watch ${retirementWatchYearLabel(year)} from the latest published roster?\n\nOnly do this after the railroad's annual roster cleanup. Existing eligible 99/Z2 retirement and 99/Z4 resignation entries in that roster will become the baseline and will NOT count toward the new year's total. ET trainees are excluded from Retirement Watch.`))return;
   const client=getCloudClient();if(!client)return;const btn=document.getElementById('rosterRetirementStartBtn');if(btn)btn.disabled=true;
   try{const {error}=await client.rpc('retirement_watch_start_year',{p_year:year,p_snapshot_id:null});if(error)throw error;retirementWatchState.data=null;await retirementWatchLoad(true)}catch(err){console.error('Retirement Watch baseline failed:',err);alert(`Could not start Retirement Watch ${retirementWatchYearLabel(year)}: ${err?.message||err}`)}finally{if(btn)btn.disabled=false}
 }
@@ -10491,6 +11091,7 @@ async function rosterCheckAdmin(force=false){
     const {data,error}=await client.from('roster_admins').select('can_publish,label').eq('user_id',user.id).maybeSingle();
     if(error)throw error;
     rosterAdminState.checked=true;rosterAdminState.canPublish=!!data?.can_publish;
+    try{deadheadWatchRenderMonitorStatus?.()}catch{}
     toggleCards(rosterAdminState.canPublish);
     if(rosterAdminState.canPublish){await rosterLoadLatestSnapshot();await bidSheetLoadAdminLatest();await awardLoadAdminLatest();await retirementWatchLoad(true);trimDevInitControls();bidLifecycleInitControls();void crewOpsProductionLoad(true);void crewOpsCloudLoadLatest(true);void crewOpsTestChannelLoad(true);if(EPL_TEST_TOOLS_ENABLED)developerRenderTestState();void communityModerationLoad(false);}trimDevUpdateModeAvailability();bidLifecycleRender();void pushRenderSettings();
     return rosterAdminState.canPublish;
@@ -10642,13 +11243,13 @@ async function rosterGetLatestRows(){
 }
 function rosterDiffRows(previous,current){
   if(!previous?.length)return null;const prevByEmp=new Map(previous.map(r=>[String(r.employee_id),r])),curByEmp=new Map(current.map(r=>[String(r.employee_id),r]));let assignmentChanges=0,rankChanges=0,newRows=0,removedRows=0,newRetirements=0;
-  for(const r of current){const p=prevByEmp.get(String(r.employee_id));if(!p){newRows++;if(retirementWatchIsSeniorityExit(r.st_rs))newRetirements++;continue}if(String(p.assignment||'')!==String(r.assignment||''))assignmentChanges++;if(Number(p.rank)!==Number(r.rank))rankChanges++;if(retirementWatchIsSeniorityExit(r.st_rs)&&!retirementWatchIsSeniorityExit(p.st_rs))newRetirements++}
+  for(const r of current){const p=prevByEmp.get(String(r.employee_id));if(!p){newRows++;if(retirementWatchEligibleRow(r))newRetirements++;continue}if(String(p.assignment||'')!==String(r.assignment||''))assignmentChanges++;if(Number(p.rank)!==Number(r.rank))rankChanges++;if(retirementWatchEligibleRow(r)&&!retirementWatchEligibleRow(p))newRetirements++}
   for(const p of previous)if(!curByEmp.has(String(p.employee_id)))removedRows++;
   return {assignmentChanges,rankChanges,newRows,removedRows,newRetirements};
 }
 async function rosterRenderPreview(parsed){
   const host=document.getElementById('rosterAdminPreview'),stats=document.getElementById('rosterAdminStats'),validation=document.getElementById('rosterAdminValidation'),diffEl=document.getElementById('rosterAdminDiff'),publish=document.getElementById('rosterPublishBtn');if(!host||!stats||!validation||!publish)return;
-  const c=parsed.counts,ownable=c.regular+c.extra_list,retiredCount=parsed.rows.filter(r=>String(r.st_rs||'').trim().toUpperCase()==='99/Z2').length,resignedCount=parsed.rows.filter(r=>String(r.st_rs||'').trim().toUpperCase()==='99/Z4').length;
+  const c=parsed.counts,ownable=c.regular+c.extra_list,retiredCount=parsed.rows.filter(r=>String(r.st_rs||'').trim().toUpperCase()==='99/Z2'&&!retirementWatchIsTraineeRow(r)).length,resignedCount=parsed.rows.filter(r=>String(r.st_rs||'').trim().toUpperCase()==='99/Z4'&&!retirementWatchIsTraineeRow(r)).length;
   stats.innerHTML=[['Rows',parsed.rows.length],['Ownable',ownable],['Passenger jobs',c.regular],['EX1 Extra List',c.extra_list],['EX2 excluded',c.subject_to_bid],['ET excluded',c.trainee],['99/Z2 retired',retiredCount],['99/Z4 resigned',resignedCount],['Retirement Watch',retiredCount+resignedCount]].map(([label,value])=>`<div class="roster-admin-stat"><strong>${Number(value)}</strong><span>${escapeHTML(label)}</span></div>`).join('');
   const details=[`<strong>${parsed.valid?'Validation passed':'Validation failed'}</strong>`,`${parsed.pages} pages • ${parsed.rows.length} parsed rows${parsed.declaredTotal?` • PDF total ${parsed.declaredTotal}`:''}`,`Roster generated: ${escapeHTML(parsed.timestamp.label)}`,`Other/unclassified: ${c.other} • Blank assignments: ${c.blank}`];
   if(parsed.mine)details.push(`Your profile matched roster rank ${parsed.mine.rank}.${parsed.belowOwnable!==null?` ${parsed.belowOwnable} currently ownable passenger/EX1 assignments are below you in this snapshot.`:''}`);else details.push('Your profile employee number was not matched in this PDF. The roster can still be published, but check your profile before testing Trim Assistant results.');
@@ -11246,8 +11847,8 @@ async function awardConfirmCurrent(){
 async function awardViewAssignment(){const p=awardState.payload,assignment=String(p?.award?.assignment||'');if(!assignment)return;await bidSheetLoad(false);bidSheetOpenDetails(assignment)}
 function awardCrewBookWeekDates(effectiveDate){const monday=new Date(`${bidSheetWeekStart(effectiveDate)}T12:00:00`);return MY_JOB_RELIEF_DAYS.map((day,i)=>{const d=new Date(monday);d.setDate(monday.getDate()+i);return {day,date:isoLocal(d)}})}
 function awardBuildMyJob(assignment,effectiveDate){
-  const key=normalizeCrewBookKey(assignment),kind=bidSheetKind(key);if(kind==='extra_list')throw new Error('Extra List assignments do not use My Job.');const relief=jobCompareReliefCrewDefinition(key,effectiveDate),week=awardCrewBookWeekDates(effectiveDate);if(relief){const reliefDays={};for(const {day,date} of week){const resolved=jobCompareResolveForDay(key,date),x=resolved?.schedule;if(!x){if(resolved?.hit?.reliefCrew){reliefDays[day]={reliefDay:true,assignment:'',location:'',start:'',end:'',paysMeal:false};continue}throw new Error(`Crew Book details for ${day} could not be resolved.`)}const covered=String(resolved?.hit?.coveredKey||'').trim(),location=String(x.location||resolved?.hit?.job?.terminal||'').trim();if(!covered||!location||!x.start||!x.end)throw new Error(`Crew Book details for ${day} are incomplete.`);reliefDays[day]={reliefDay:false,assignment:covered,location,start:x.start,end:x.end,paysMeal:!!x.paysMeal}}return {enabled:true,type:'relief',reliefCrewNumber:key,reliefDays}}
-  const regularDays={};let location='';for(const {day,date} of week){const resolved=jobCompareResolveForDay(key,date),x=resolved?.schedule;if(!x){if(resolved?.hit){regularDays[day]={reliefDay:true,location:'',start:'',end:'',paysMeal:false};continue}throw new Error(`Crew Book details for ${day} could not be resolved.`)}const loc=String(x.location||resolved?.hit?.job?.terminal||'').trim();if(!loc||!x.start||!x.end)throw new Error(`Crew Book details for ${day} are incomplete.`);if(!location)location=loc;regularDays[day]={reliefDay:false,location:loc,start:x.start,end:x.end,paysMeal:!!x.paysMeal}}if(!location)throw new Error('No active Crew Book days were found for this assignment.');return {enabled:true,type:'regular',assignment:key,location,regularDays};
+  const key=normalizeCrewBookKey(assignment),kind=bidSheetKind(key);if(kind==='extra_list')throw new Error('Extra List assignments do not use My Job.');const relief=jobCompareReliefCrewDefinition(key,effectiveDate),week=awardCrewBookWeekDates(effectiveDate);if(relief){const reliefDays={};for(const {day,date} of week){const resolved=jobCompareResolveForDay(key,date),x=resolved?.schedule;if(!x){if(resolved?.hit?.reliefCrew){reliefDays[day]={reliefDay:true,assignment:'',location:'',start:'',end:'',paysMeal:false};continue}throw new Error(`Crew Book details for ${day} could not be resolved.`)}const covered=String(resolved?.hit?.coveredKey||'').trim(),location=String(resolved?.hit?.job?.terminal||x.location||'').trim();if(!covered||!location||!x.start||!x.end)throw new Error(`Crew Book details for ${day} are incomplete.`);reliefDays[day]={reliefDay:false,assignment:covered,location,start:x.start,end:x.end,paysMeal:!!x.paysMeal}}return {enabled:true,type:'relief',reliefCrewNumber:key,reliefDays}}
+  const regularDays={};let location='';for(const {day,date} of week){const resolved=jobCompareResolveForDay(key,date),x=resolved?.schedule;if(!x){if(resolved?.hit){regularDays[day]={reliefDay:true,location:'',start:'',end:'',paysMeal:false};continue}throw new Error(`Crew Book details for ${day} could not be resolved.`)}const loc=String(resolved?.hit?.job?.terminal||x.location||'').trim();if(!loc||!x.start||!x.end)throw new Error(`Crew Book details for ${day} are incomplete.`);if(!location)location=loc;regularDays[day]={reliefDay:false,location:loc,start:x.start,end:x.end,paysMeal:!!x.paysMeal}}if(!location)throw new Error('No active Crew Book days were found for this assignment.');return {enabled:true,type:'regular',assignment:key,location,regularDays};
 }
 async function awardSetAsMyJob(){
   const p=awardState.payload;if(!p?.match_found||!p.confirmed_at){alert('Record that you called and confirmed the award first.');return}const assignment=String(p.award?.assignment||''),effective=String(p.snapshot?.effective_date||'');let value;try{value=awardBuildMyJob(assignment,effective)}catch(err){alert(`My Job could not be filled automatically: ${err?.message||err}`);return}if(!confirm(`Set Job ${assignment} as My Job using the Crew Book schedule effective ${bidSheetDateLabel(effective)}?\n\nThis replaces your current My Job quick-entry setup.`))return;localStorage.setItem(MY_JOB_KEY,JSON.stringify(value));const box=document.getElementById('myJobEnabled');if(box)box.checked=true;loadMyJobSettings();renderMyJobUI();renderMyJobWeekPreview();await cloudMirrorMyJob();alert(`Job ${assignment} is now saved as My Job.`);
@@ -11758,7 +12359,7 @@ void initCloudBridgeTest().catch(err=>{
 window.addEventListener('online',()=>{void crewBookProductionLoad(true).then(()=>renderAll());if(rosterAdminState?.canPublish){if(crewOpsLoadDraft())crewOpsCloudQueueSave();void crewOpsCloudLoadLatest(true);void crewOpsTestChannelLoad(true);void crewOpsProductionLoad(true)}});
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.2-trim-offline-cache-recovery-hotfix-20260917').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.2-deadhead-watch-prod-integration-20260928').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
