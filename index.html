@@ -3920,8 +3920,22 @@ function initTerminalSelect(){const el=document.getElementById('locationSelect')
 function setLocationUI(value){initTerminalSelect();const sel=document.getElementById('locationSelect'),other=document.getElementById('locationOther'),hidden=document.getElementById('location');const t=terminalForValue(value);if(t){sel.value=t.name;other.value='';hidden.value=t.name}else if(value){sel.value='__other__';other.value=value;hidden.value=value}else{sel.value='';other.value='';hidden.value=''}terminalSelectionChanged(false)}
 function terminalSelectionChanged(clearOther=true){const sel=document.getElementById('locationSelect'),otherWrap=document.getElementById('otherLocationWrap'),other=document.getElementById('locationOther'),hidden=document.getElementById('location'),wrap=document.getElementById('terminalSelectWrap'),dot=document.getElementById('terminalFieldDot');if(!sel)return;const isOther=sel.value==='__other__';otherWrap.style.display=isOther?'block':'none';if(isOther){if(clearOther)other.value='';hidden.value=other.value.trim();if(wrap){wrap.style.removeProperty('--terminal-color');wrap.classList.remove('has-terminal-color')}if(dot)dot.style.display='none'}else{hidden.value=sel.value;const t=terminalForValue(sel.value);if(wrap){if(t){wrap.style.setProperty('--terminal-color',t.color);wrap.classList.add('has-terminal-color')}else{wrap.style.removeProperty('--terminal-color');wrap.classList.remove('has-terminal-color')}}if(dot){dot.style.background=t?t.color:'transparent';dot.style.display=t?'block':'none'}}calculatePreview()}
 function syncLocationValue(){document.getElementById('location').value=document.getElementById('locationOther').value.trim()}
+function repairKnownMyJobHomeTerminal(j){
+  if(!j||typeof j!=='object'||Array.isArray(j))return false;
+  if(String(j.type||'regular')!=='regular'||String(j.assignment||'').trim()!=='113')return false;
+  let changed=false;
+  if(String(j.location||'').trim().toLowerCase()==='penn station'){j.location='West Side Yard';changed=true}
+  for(const d of Object.values(j.regularDays||{})){
+    if(d&&!d.reliefDay&&String(d.location||'').trim().toLowerCase()==='penn station'){d.location='West Side Yard';changed=true}
+  }
+  return changed;
+}
 function getMyJob(){
-  try{return JSON.parse(localStorage.getItem(MY_JOB_KEY)||'null')}catch(e){return null}
+  try{
+    const j=JSON.parse(localStorage.getItem(MY_JOB_KEY)||'null');
+    if(repairKnownMyJobHomeTerminal(j))localStorage.setItem(MY_JOB_KEY,JSON.stringify(j));
+    return j;
+  }catch(e){return null}
 }
 const MY_JOB_RELIEF_DAYS=['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
 const DEADHEAD_WATCH_VERSION=3;
@@ -4146,7 +4160,30 @@ function deadheadWatchRouteItems(){const watch=normalizeDeadheadWatch(normalizeM
 function deadheadWatchRenderGtfsControl(message='',kind=''){const host=document.getElementById('deadheadWatchGtfsPanel');if(!host)return;const routes=deadheadWatchRouteItems(),matched=routes.filter(r=>deadheadWatchBaselineMatchesTrains(r.trip.baseline,r.trip.trains)).length,versions=[...new Set(routes.map(r=>r.trip.baseline?.feedVersion||r.trip.baseline?.feedLabel||'').filter(Boolean))];if(!routes.length){host.innerHTML='';return}const status=matched===routes.length?`All ${matched} LIRR commute${matched===1?'':'s'} matched${versions.length===1?` · ${escapeHTML(versions[0])}`:''}`:`${matched} of ${routes.length} LIRR commute${routes.length===1?'':'s'} matched`;host.innerHTML=`<div class="deadhead-watch-gtfs"><div><strong>Schedule baseline</strong><span>${status}</span>${message?`<small class="${kind==='error'?'is-error':''}">${escapeHTML(message)}</small>`:''}</div><div class="deadhead-watch-gtfs-actions"><button class="btn small" type="button" onclick="deadheadWatchStartResolver()">${matched?'Refresh / rematch':'Match with LIRR schedule'}</button><button class="btn small" type="button" onclick="deadheadWatchChooseGtfsFile()">Upload GTFS ZIP</button></div></div>`}
 function deadheadWatchChooseGtfsFile(){document.getElementById('deadheadWatchGtfsFile')?.click()}
 async function deadheadWatchGtfsFileChanged(input){const f=input?.files?.[0];if(!f)return;deadheadWatchRenderGtfsControl(`Loading ${f.name}…`);try{await deadheadWatchLoadGtfsBuffer(await f.arrayBuffer(),f.name,{cache:true});deadheadWatchBeginResolver()}catch(err){console.error(err);deadheadWatchRenderGtfsControl(`Could not read that GTFS ZIP: ${err?.message||err}`,'error')}finally{input.value=''}}
-async function deadheadWatchStartResolver(){deadheadWatchRenderGtfsControl('Loading the LIRR schedule…');try{if(!deadheadWatchGtfs){const cached=await deadheadWatchReadGtfsCache();if(cached?.buffer)await deadheadWatchLoadGtfsBuffer(cached.buffer,cached.label||'Saved LIRR GTFS',{cache:false})}if(!deadheadWatchGtfs){const r=await fetch(DEADHEAD_WATCH_GTFS_URL,{cache:'no-store'});if(!r.ok)throw new Error(`GTFS download returned HTTP ${r.status}`);await deadheadWatchLoadGtfsBuffer(await r.arrayBuffer(),'MTA LIRR GTFS',{cache:true})}deadheadWatchBeginResolver()}catch(err){console.error('Deadhead Watch GTFS load failed',err);deadheadWatchRenderGtfsControl('Automatic GTFS download failed on this device. Tap Upload GTFS ZIP to use the official LIRR ZIP from Files.','error')}}
+async function deadheadWatchDownloadOfficialGtfs(){
+  const errors=[];
+  const client=getCloudClient?.();
+  if(client){
+    try{
+      const {data,error}=await client.auth.getSession();if(error)throw error;
+      const token=data?.session?.access_token;
+      if(token){
+        const r=await fetch(`${CLOUD_PROJECT_URL}/functions/v1/lirr-gtfs-proxy`,{method:'GET',headers:{Authorization:`Bearer ${token}`,apikey:CLOUD_PUBLISHABLE_KEY,Accept:'application/zip'},cache:'no-store'});
+        if(!r.ok)throw new Error(`EPL GTFS relay returned HTTP ${r.status}`);
+        const buffer=await r.arrayBuffer();if(buffer.byteLength<1000)throw new Error('EPL GTFS relay returned an incomplete file');
+        return {buffer,label:'MTA LIRR GTFS · EPL relay'};
+      }
+      errors.push('EPL relay unavailable while signed out');
+    }catch(err){errors.push(err?.message||String(err))}
+  }
+  try{
+    const r=await fetch(DEADHEAD_WATCH_GTFS_URL,{cache:'no-store'});if(!r.ok)throw new Error(`Official GTFS download returned HTTP ${r.status}`);
+    const buffer=await r.arrayBuffer();if(buffer.byteLength<1000)throw new Error('Official GTFS download returned an incomplete file');
+    return {buffer,label:'MTA LIRR GTFS'};
+  }catch(err){errors.push(err?.message||String(err))}
+  throw new Error(errors.filter(Boolean).join(' · ')||'LIRR GTFS download failed');
+}
+async function deadheadWatchStartResolver(){deadheadWatchRenderGtfsControl('Loading the LIRR schedule…');try{if(!deadheadWatchGtfs){const cached=await deadheadWatchReadGtfsCache();if(cached?.buffer)await deadheadWatchLoadGtfsBuffer(cached.buffer,cached.label||'Saved LIRR GTFS',{cache:false})}if(!deadheadWatchGtfs){const dl=await deadheadWatchDownloadOfficialGtfs();await deadheadWatchLoadGtfsBuffer(dl.buffer,dl.label,{cache:true})}deadheadWatchBeginResolver()}catch(err){console.error('Deadhead Watch GTFS load failed',err);const detail=String(err?.message||'').trim();deadheadWatchRenderGtfsControl(`Automatic LIRR schedule download could not complete.${detail?` Test detail: ${detail}.`:''} Upload GTFS ZIP remains available as a fallback.`,'error')}}
 function deadheadWatchBeginResolver(){const routes=deadheadWatchRouteItems();deadheadWatchResolverDraft={routes:routes.map(r=>deadheadWatchResolverRoute(r.day,r.direction,r.trip))};deadheadWatchRenderGtfsControl(`GTFS loaded · ${deadheadWatchGtfs?.tripMeta?.size?.toLocaleString?.()||0} trips`);deadheadWatchRenderResolver();document.getElementById('deadheadWatchResolverPanel')?.scrollIntoView({behavior:'smooth',block:'start'})}
 function deadheadWatchEventForStop(leg,stopId){return leg.events.find(e=>e.stopId===stopId)||null}
 async function deadheadWatchSaveBaseline(){const draft=deadheadWatchResolverDraft;if(!draft)return;const selects=[...document.querySelectorAll('#deadheadWatchResolverPanel select[data-r]')];for(const el of selects){const ri=Number(el.dataset.r),li=Number(el.dataset.l),side=el.dataset.side,route=draft.routes.filter(r=>r.ok)[ri],leg=route?.legs?.[li];if(leg)leg[side==='board'?'boardStopId':'exitStopId']=el.value}
@@ -4159,6 +4196,8 @@ function normalizeMyJob(j){
   if(!j.type)j.type='regular';
   if(!j.reliefDays)j.reliefDays={};
   if(!j.regularDays)j.regularDays={};
+  // Job 113 reports at Penn on weekdays, but its My Job home terminal is West Side Yard.
+  repairKnownMyJobHomeTerminal(j);
   if(j.type==='regular'&&!j.location){
     const firstRegularDay=MY_JOB_RELIEF_DAYS.map(day=>j.regularDays?.[day]).find(d=>d&&!d.reliefDay&&d.location);
     if(firstRegularDay)j.location=firstRegularDay.location;
@@ -4709,7 +4748,7 @@ function fillRegularMyJobFromCrewBook(){
 function fillReliefMyJobFromCrewBook(){
   if(!crewBookAssistEnabled())return;const n=(document.getElementById('myJobReliefCrewNumber')?.value||'').trim(),map=CREW_BOOK_RELIEF[n];
   if(!map){alert(`Relief Crew ${n||'(blank)'} is not in the verified Revision 6 passenger dataset. Enter it manually for now.`);return}
-  for(const day of CREW_BOOK_DAYS){const cap=day[0].toUpperCase()+day.slice(1),jn=map[day],off=!jn,box=document.getElementById(`myJobRelief${cap}Off`);if(box)box.checked=off;const job=jn?CREW_BOOK_REV6_AUDITED_JOBS[jn]:null,x=job?resolveCrewBookJob(jn,representativeDateForDay(day),day):null;const a=document.getElementById(`myJobRelief${cap}Assignment`),st=document.getElementById(`myJobRelief${cap}Start`),en=document.getElementById(`myJobRelief${cap}End`),meal=document.getElementById(`myJobRelief${cap}PaysMeal`);if(a)a.value=jn||'';if(st)st.value=off?'':(x?.start||'');if(en)en.value=off?'':(x?.end||'');if(meal)meal.checked=!off&&!!x?.paysMeal;if(!off&&job)setReliefLocationUI(day,x?.location||job.terminal);else setReliefLocationUI(day,'');toggleMyJobReliefDay(day)}
+  for(const day of CREW_BOOK_DAYS){const cap=day[0].toUpperCase()+day.slice(1),jn=map[day],off=!jn,box=document.getElementById(`myJobRelief${cap}Off`);if(box)box.checked=off;const job=jn?CREW_BOOK_REV6_AUDITED_JOBS[jn]:null,x=job?resolveCrewBookJob(jn,representativeDateForDay(day),day):null;const a=document.getElementById(`myJobRelief${cap}Assignment`),st=document.getElementById(`myJobRelief${cap}Start`),en=document.getElementById(`myJobRelief${cap}End`),meal=document.getElementById(`myJobRelief${cap}PaysMeal`);if(a)a.value=jn||'';if(st)st.value=off?'':(x?.start||'');if(en)en.value=off?'':(x?.end||'');if(meal)meal.checked=!off&&!!x?.paysMeal;if(!off&&job)setReliefLocationUI(day,job.terminal||x?.location);else setReliefLocationUI(day,'');toggleMyJobReliefDay(day)}
   alert(`Relief Crew ${n} filled from the verified Revision 6 passenger dataset. Please review every day against the official Crew Book before saving.`);
 }
 function fillShiftFromCrewBook(){
@@ -5561,7 +5600,7 @@ function fillRegularMyJobFromCrewBook(){
   const raw=(document.getElementById('myJobNumber')?.value||'').trim(),key=normalizeCrewBookKey(raw),refDate=myJobCrewBookReferenceDate();
   if(isYardCrewKey(key)){
     const job=CREW_BOOK_YARD_JOBS[key];if(!job){alert(`Yard job ${key} is not in the verified dataset.`);return}
-    document.getElementById('myJobNumber').value=key;setRegularLocationUI(job.weekday?.location||job.terminal);
+    document.getElementById('myJobNumber').value=key;setRegularLocationUI(job.terminal||job.weekday?.location);
     for(const day of CREW_BOOK_DAYS){
       const cap=day[0].toUpperCase()+day.slice(1),ownerOff=job.relief?.includes(day)||!yardJobOperatesOnDayV8(key,day),x=resolveYardJobV8(key,day),box=document.getElementById(`myJobRegular${cap}Off`);
       if(box)box.checked=!!ownerOff;
@@ -5574,7 +5613,7 @@ function fillRegularMyJobFromCrewBook(){
   const rev=crewBookPassengerRevision(refDate),job=rev.jobs[key];
   if(!job||job.status==='abolished'){alert(`Job ${key} is not active in Passenger GO ${rev.go} Rev. ${rev.revision} for ${refDate}.`);return}
   if(job.type==='extraCrewOnly'||job.type==='workableNotOwnable'){alert(`Job ${key} can be worked but cannot be saved as an owned Regular My Job assignment in Passenger GO ${rev.go} Rev. ${rev.revision}.`);return}
-  document.getElementById('myJobNumber').value=key;setRegularLocationUI(job.weekday?.location||job.terminal);
+  document.getElementById('myJobNumber').value=key;setRegularLocationUI(job.terminal||job.weekday?.location);
   for(const day of CREW_BOOK_DAYS){
     const cap=day[0].toUpperCase()+day.slice(1),off=job.relief?.includes(day),box=document.getElementById(`myJobRegular${cap}Off`);if(box)box.checked=!!off;
     const dayDate=crewBookDateForDayNear(day,refDate),x=resolvePassengerJobV8(key,dayDate,day)||{};
@@ -11546,8 +11585,8 @@ async function awardConfirmCurrent(){
 async function awardViewAssignment(){const p=awardState.payload,assignment=String(p?.award?.assignment||'');if(!assignment)return;await bidSheetLoad(false);bidSheetOpenDetails(assignment)}
 function awardCrewBookWeekDates(effectiveDate){const monday=new Date(`${bidSheetWeekStart(effectiveDate)}T12:00:00`);return MY_JOB_RELIEF_DAYS.map((day,i)=>{const d=new Date(monday);d.setDate(monday.getDate()+i);return {day,date:isoLocal(d)}})}
 function awardBuildMyJob(assignment,effectiveDate){
-  const key=normalizeCrewBookKey(assignment),kind=bidSheetKind(key);if(kind==='extra_list')throw new Error('Extra List assignments do not use My Job.');const relief=jobCompareReliefCrewDefinition(key,effectiveDate),week=awardCrewBookWeekDates(effectiveDate);if(relief){const reliefDays={};for(const {day,date} of week){const resolved=jobCompareResolveForDay(key,date),x=resolved?.schedule;if(!x){if(resolved?.hit?.reliefCrew){reliefDays[day]={reliefDay:true,assignment:'',location:'',start:'',end:'',paysMeal:false};continue}throw new Error(`Crew Book details for ${day} could not be resolved.`)}const covered=String(resolved?.hit?.coveredKey||'').trim(),location=String(x.location||resolved?.hit?.job?.terminal||'').trim();if(!covered||!location||!x.start||!x.end)throw new Error(`Crew Book details for ${day} are incomplete.`);reliefDays[day]={reliefDay:false,assignment:covered,location,start:x.start,end:x.end,paysMeal:!!x.paysMeal}}return {enabled:true,type:'relief',reliefCrewNumber:key,reliefDays}}
-  const regularDays={};let location='';for(const {day,date} of week){const resolved=jobCompareResolveForDay(key,date),x=resolved?.schedule;if(!x){if(resolved?.hit){regularDays[day]={reliefDay:true,location:'',start:'',end:'',paysMeal:false};continue}throw new Error(`Crew Book details for ${day} could not be resolved.`)}const loc=String(x.location||resolved?.hit?.job?.terminal||'').trim();if(!loc||!x.start||!x.end)throw new Error(`Crew Book details for ${day} are incomplete.`);if(!location)location=loc;regularDays[day]={reliefDay:false,location:loc,start:x.start,end:x.end,paysMeal:!!x.paysMeal}}if(!location)throw new Error('No active Crew Book days were found for this assignment.');return {enabled:true,type:'regular',assignment:key,location,regularDays};
+  const key=normalizeCrewBookKey(assignment),kind=bidSheetKind(key);if(kind==='extra_list')throw new Error('Extra List assignments do not use My Job.');const relief=jobCompareReliefCrewDefinition(key,effectiveDate),week=awardCrewBookWeekDates(effectiveDate);if(relief){const reliefDays={};for(const {day,date} of week){const resolved=jobCompareResolveForDay(key,date),x=resolved?.schedule;if(!x){if(resolved?.hit?.reliefCrew){reliefDays[day]={reliefDay:true,assignment:'',location:'',start:'',end:'',paysMeal:false};continue}throw new Error(`Crew Book details for ${day} could not be resolved.`)}const covered=String(resolved?.hit?.coveredKey||'').trim(),location=String(resolved?.hit?.job?.terminal||x.location||'').trim();if(!covered||!location||!x.start||!x.end)throw new Error(`Crew Book details for ${day} are incomplete.`);reliefDays[day]={reliefDay:false,assignment:covered,location,start:x.start,end:x.end,paysMeal:!!x.paysMeal}}return {enabled:true,type:'relief',reliefCrewNumber:key,reliefDays}}
+  const regularDays={};let location='';for(const {day,date} of week){const resolved=jobCompareResolveForDay(key,date),x=resolved?.schedule;if(!x){if(resolved?.hit){regularDays[day]={reliefDay:true,location:'',start:'',end:'',paysMeal:false};continue}throw new Error(`Crew Book details for ${day} could not be resolved.`)}const loc=String(resolved?.hit?.job?.terminal||x.location||'').trim();if(!loc||!x.start||!x.end)throw new Error(`Crew Book details for ${day} are incomplete.`);if(!location)location=loc;regularDays[day]={reliefDay:false,location:loc,start:x.start,end:x.end,paysMeal:!!x.paysMeal}}if(!location)throw new Error('No active Crew Book days were found for this assignment.');return {enabled:true,type:'regular',assignment:key,location,regularDays};
 }
 async function awardSetAsMyJob(){
   const p=awardState.payload;if(!p?.match_found||!p.confirmed_at){alert('Record that you called and confirmed the award first.');return}const assignment=String(p.award?.assignment||''),effective=String(p.snapshot?.effective_date||'');let value;try{value=awardBuildMyJob(assignment,effective)}catch(err){alert(`My Job could not be filled automatically: ${err?.message||err}`);return}if(!confirm(`Set Job ${assignment} as My Job using the Crew Book schedule effective ${bidSheetDateLabel(effective)}?\n\nThis replaces your current My Job quick-entry setup.`))return;localStorage.setItem(MY_JOB_KEY,JSON.stringify(value));const box=document.getElementById('myJobEnabled');if(box)box.checked=true;loadMyJobSettings();renderMyJobUI();renderMyJobWeekPreview();await cloudMirrorMyJob();alert(`Job ${assignment} is now saved as My Job.`);
