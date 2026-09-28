@@ -1040,6 +1040,8 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .deadhead-watch-compare-leg{margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}.deadhead-watch-compare-leg strong{display:block;font-size:11px}.deadhead-watch-compare-leg span{display:block;margin-top:3px;font-size:10px;line-height:1.4;color:var(--muted)}
     .deadhead-watch-compare-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.deadhead-watch-compare-footer{display:flex;gap:8px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line)}
     html[data-theme="dark"] .deadhead-watch-compare{background:#101d2d!important;border-color:#314158!important}html[data-theme="dark"] .deadhead-watch-compare-head{background:#15263a!important;border-color:#314158!important}
+    .deadhead-watch-monitor{margin-top:10px;border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:#f8fbff}.deadhead-watch-monitor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.deadhead-watch-monitor strong{display:block;font-size:12px}.deadhead-watch-monitor span,.deadhead-watch-monitor small{display:block;margin-top:3px;font-size:10px;line-height:1.4;color:var(--muted)}.deadhead-watch-monitor-state{font-size:9px;font-weight:900;padding:5px 8px;border:1px solid var(--line);border-radius:999px;background:var(--card);white-space:nowrap}.deadhead-watch-monitor-state.is-clear{color:#1f7a42}.deadhead-watch-monitor-state.is-attention,.deadhead-watch-monitor-state.is-error{color:var(--bad)}.deadhead-watch-monitor-state.is-pending{color:#8a5a00}.deadhead-watch-monitor-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.deadhead-watch-monitor .test-only{margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)}
+    html[data-theme="dark"] .deadhead-watch-monitor{background:#101d2d!important;border-color:#314158!important}
     @media(max-width:700px){.deadhead-watch-gtfs{align-items:flex-start;flex-direction:column}.deadhead-watch-gtfs-actions{justify-content:flex-start}.deadhead-watch-resolver-leg{grid-template-columns:1fr}.deadhead-watch-resolver-route-head,.deadhead-watch-compare-head,.deadhead-watch-compare-route-head{flex-direction:column;gap:5px}.deadhead-watch-compare-status{align-self:flex-start}}
     html[data-theme="dark"] .deadhead-watch-card,html[data-theme="dark"] .deadhead-watch-day,html[data-theme="dark"] .deadhead-watch-summary{background:#101d2d!important;border-color:#314158!important}
     html[data-theme="dark"] .deadhead-watch-summary-head{background:#15263a!important;border-color:#314158!important}
@@ -2536,13 +2538,14 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     <div id="deadheadWatchSummary" style="display:none"></div>
     <div id="deadheadWatchTripEditPanel"></div>
     <div id="deadheadWatchGtfsPanel"></div>
+    <div id="deadheadWatchMonitorPanel"></div>
     <div id="deadheadWatchComparisonPanel"></div>
     <div id="deadheadWatchResolverPanel"></div>
     <input id="deadheadWatchGtfsFile" type="file" accept=".zip,application/zip" hidden onchange="deadheadWatchGtfsFileChanged(this)">
     <div id="deadheadWatchEditor">
       <p class="notice" style="margin-top:12px">Trips belong to the day your assignment starts. If your job releases after midnight, EPL automatically treats the trip home as the following calendar day. Non-LIRR transportation can be saved too, but only LIRR trains will be checked against GTFS.</p>
       <div id="deadheadWatchDays" class="deadhead-watch-days"></div>
-      <div class="deadhead-watch-status"><strong>Deadhead Watch schedule test:</strong> saved LIRR commutes can now be compared with the current GTFS. This build reports changes only; alerts are not active yet.</div>
+      <div class="deadhead-watch-status"><strong>Deadhead Watch automatic-monitoring test:</strong> EPL can now check saved GTFS baselines on the server even when the PWA is closed. This build records and displays changes in-app; push alerts are not active yet.</div>
     </div>
   </div>
 </div>
@@ -4126,7 +4129,7 @@ function renderDeadheadWatchSettings(){
   }).join('');
   toggleDeadheadWatch(false);updateDeadheadWatchWorkdayVisibility();
   for(const day of MY_JOB_RELIEF_DAYS){deadheadWatchModeChanged(day,'toWork');deadheadWatchModeChanged(day,'home');deadheadWatchReindexTrains(day,'toWork');deadheadWatchReindexTrains(day,'home')}
-  renderDeadheadWatchSummary(saved);deadheadWatchApplyDisplay(saved);
+  renderDeadheadWatchSummary(saved);deadheadWatchApplyDisplay(saved);void deadheadWatchLoadMonitorStatus();
 }
 function toggleDeadheadWatch(updateVisibility=true){
   const enabled=!!document.getElementById('deadheadWatchEnabled')?.checked,body=document.getElementById('deadheadWatchBody');if(body)body.style.display=enabled?'block':'none';
@@ -4161,6 +4164,43 @@ function readDeadheadWatchFromUI(){
   return {valid:true,value:{version:DEADHEAD_WATCH_VERSION,enabled,days}};
 }
 
+
+// ---- Deadhead Watch MVP 1.5: automatic server monitor status ----
+let deadheadWatchMonitorStatus=null;
+let deadheadWatchMonitorLoading=false;
+let deadheadWatchMonitorMessage='';
+function deadheadWatchMonitorStateLabel(status){return ({clear:'Clear',attention:'Needs review',error:'Check failed',not_configured:'Setup incomplete',pending:'Waiting'})[status]||'Waiting'}
+function deadheadWatchRenderMonitorStatus(){
+  const host=document.getElementById('deadheadWatchMonitorPanel');if(!host)return;
+  const watch=normalizeDeadheadWatch(normalizeMyJob(getMyJob())?.deadheadWatch);if(!watch.enabled){host.innerHTML='';return}
+  const s=deadheadWatchMonitorStatus,test=!!s?.summary?.simulated,status=s?.status||'pending',last=s?.last_checked_at?new Date(s.last_checked_at).toLocaleString():'Not checked yet';
+  let line='Waiting for the first automatic server check.';
+  if(status==='clear')line=`No schedule changes detected · ${Number(s.commute_count||0)} LIRR commute${Number(s.commute_count||0)===1?'':'s'} checked.`;
+  else if(status==='attention')line=`${Number(s.change_count||0)} saved commute${Number(s.change_count||0)===1?'':'s'} need review.`;
+  else if(status==='error')line=`The last server check could not complete${s.last_error?`: ${s.last_error}`:'.'}`;
+  else if(status==='not_configured')line='Automatic monitoring is waiting for every saved LIRR commute to have a schedule baseline.';
+  const review=s?.results?.length?`<button class="btn small" type="button" onclick="deadheadWatchOpenAutomaticResults()">${status==='attention'?'Review automatic check':'View last automatic check'}</button>`:'';
+  const testBtn=(typeof rosterAdminState!=='undefined'&&rosterAdminState.canPublish&&typeof EPL_TEST_TOOLS_ENABLED!=='undefined'&&EPL_TEST_TOOLS_ENABLED)?`<div class="test-only"><small><strong>TEST ONLY</strong> · writes one simulated server detection so we can verify the recording/display path. The next real server check clears it.</small><div class="deadhead-watch-monitor-actions"><button class="btn small" type="button" onclick="deadheadWatchTestBackendDetection()">Simulate backend detection</button></div></div>`:'';
+  host.innerHTML=`<div class="deadhead-watch-monitor"><div class="deadhead-watch-monitor-head"><div><strong>Automatic monitoring${test?' · TEST ONLY':''}</strong><span>${escapeHTML(line)}</span><small>Server schedule: every 6 hours · Last checked: ${escapeHTML(last)}${s?.feed_version?` · ${escapeHTML(s.feed_version)}`:''}</small><small>Push notifications are not active yet.</small>${deadheadWatchMonitorMessage?`<small class="${deadheadWatchMonitorMessage.startsWith('Error:')?'is-error':'is-success'}">${escapeHTML(deadheadWatchMonitorMessage)}</small>`:''}</div><div class="deadhead-watch-monitor-state is-${status==='clear'?'clear':status==='attention'?'attention':status==='error'?'error':'pending'}">${deadheadWatchMonitorLoading?'Loading…':escapeHTML(deadheadWatchMonitorStateLabel(status))}</div></div><div class="deadhead-watch-monitor-actions">${review}<button class="btn small" type="button" onclick="deadheadWatchLoadMonitorStatus(true)">Refresh status</button></div>${testBtn}</div>`;
+}
+async function deadheadWatchLoadMonitorStatus(showMessage=false){
+  const host=document.getElementById('deadheadWatchMonitorPanel');if(!host)return;
+  const watch=normalizeDeadheadWatch(normalizeMyJob(getMyJob())?.deadheadWatch);if(!watch.enabled){deadheadWatchMonitorStatus=null;deadheadWatchRenderMonitorStatus();return}
+  const client=getCloudClient?.();if(!client){deadheadWatchMonitorStatus=null;deadheadWatchMonitorMessage='Automatic monitoring requires cloud sign-in.';deadheadWatchRenderMonitorStatus();return}
+  deadheadWatchMonitorLoading=true;if(showMessage)deadheadWatchMonitorMessage='Refreshing automatic-monitor status…';deadheadWatchRenderMonitorStatus();
+  try{const {data,error}=await client.from('deadhead_watch_monitor_status').select('last_checked_at,last_success_at,feed_version,feed_label,status,commute_count,change_count,summary,results,last_error').maybeSingle();if(error)throw error;deadheadWatchMonitorStatus=data||null;deadheadWatchMonitorMessage=showMessage?(data?'Automatic-monitor status refreshed.':'Waiting for the first server check.'):''}
+  catch(err){deadheadWatchMonitorMessage=`Error: ${err?.message||err}`}
+  finally{deadheadWatchMonitorLoading=false;deadheadWatchRenderMonitorStatus()}
+}
+function deadheadWatchOpenAutomaticResults(){
+  const s=deadheadWatchMonitorStatus;if(!s?.results?.length)return;
+  deadheadWatchComparisonDraft={automatic:true,checkedAt:s.last_checked_at||new Date().toISOString(),feedVersion:s.feed_version||'',feedLabel:s.feed_label||'LIRR GTFS',routes:s.results};deadheadWatchRenderComparison();document.getElementById('deadheadWatchComparisonPanel')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function deadheadWatchTestBackendDetection(){
+  const client=getCloudClient?.();if(!client)return alert('Cloud sign-in is required for this test.');deadheadWatchMonitorMessage='Asking the server to write a test detection…';deadheadWatchRenderMonitorStatus();
+  try{const {data,error}=await client.functions.invoke('deadhead-watch-test-detection',{body:{action:'simulate'}});if(error)throw error;if(data?.error)throw new Error(data.error);deadheadWatchMonitorMessage='TEST ONLY · backend detection written.';await deadheadWatchLoadMonitorStatus(false);deadheadWatchMonitorMessage='TEST ONLY · backend detection written.';deadheadWatchRenderMonitorStatus();document.getElementById('deadheadWatchMonitorPanel')?.scrollIntoView({behavior:'smooth',block:'center'})}
+  catch(err){deadheadWatchMonitorMessage=`Error: ${err?.message||err}`;deadheadWatchRenderMonitorStatus()}
+}
 
 // ---- Deadhead Watch MVP 1.3: GTFS schedule baseline resolver ----
 const DEADHEAD_WATCH_GTFS_URL='https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip';
@@ -4324,6 +4364,11 @@ function deadheadWatchTestSimulateAmbiguous(){
   }finally{
     c.raw.forEach((e,i)=>{e.arr=savedTimes[i].arr;e.dep=savedTimes[i].dep});d.tripMeta.delete(testId);d.byTrip.delete(testId);d.tripsByNumber.set(key,savedIds);
   }
+}
+function deadheadWatchRenderComparison(){
+  const host=document.getElementById('deadheadWatchComparisonPanel');if(!host)return;const d=deadheadWatchComparisonDraft;if(!d){host.innerHTML='';return}
+  const counts=deadheadWatchComparisonCounts(d.routes),attention=d.routes.length-counts.unchanged,baselineVersions=[...new Set(d.routes.map(r=>r.baseline?.feedVersion||r.baseline?.feedLabel||'').filter(Boolean))],baselineLabel=baselineVersions.length===1?baselineVersions[0]:baselineVersions.length?`${baselineVersions.length} saved feed versions`:'saved baseline',summary=attention===0?`✓ No schedule changes found. All ${counts.unchanged} LIRR commutes match the saved baseline.`:`${attention} of ${d.routes.length} LIRR commutes need review · ${counts.time_changed} time change${counts.time_changed===1?'':'s'}, ${counts.route_changed} route change${counts.route_changed===1?'':'s'}, ${counts.train_missing} missing train${counts.train_missing===1?'':'s'}, ${counts.needs_review} ambiguous.`;
+  host.innerHTML=`<div class="deadhead-watch-compare"><div class="deadhead-watch-compare-head"><div><strong>${d.automatic?'Automatic schedule check':'Current schedule check'}</strong><span>Saved: ${escapeHTML(baselineLabel)} · Current: ${escapeHTML(d.feedVersion||d.feedLabel||'LIRR GTFS')} · checked ${escapeHTML(new Date(d.checkedAt).toLocaleString())}</span></div><button class="btn small" type="button" onclick="deadheadWatchCloseComparison()">Close</button></div><div class="deadhead-watch-compare-summary ${attention===0?'is-clear':'is-attention'}">${escapeHTML(summary)}</div>${d.routes.map(r=>{const routeText=deadheadWatchBaselineRouteText(r.baseline),title=`${deadheadWatchCap(r.day)} · ${r.direction==='toWork'?'To Work':'Home'}`,needsAction=r.status!=='unchanged';return `<div class="deadhead-watch-compare-route"><div class="deadhead-watch-compare-route-head"><div><strong>${escapeHTML(title)}</strong><span>${escapeHTML((r.trip?.trains||[]).join(' → '))}${routeText?` · ${escapeHTML(routeText)}`:''}</span></div><div class="deadhead-watch-compare-status status-${escapeHTML(r.status)}">${escapeHTML(deadheadWatchComparisonStatusLabel(r.status))}</div></div>${r.detail?`<div class="deadhead-watch-compare-leg"><span>${escapeHTML(r.detail)}</span></div>`:''}${(r.legs||[]).map(l=>`<div class="deadhead-watch-compare-leg"><strong>Train ${escapeHTML(l.train)} · ${escapeHTML(deadheadWatchComparisonStatusLabel(l.status))}</strong><span>${escapeHTML(l.detail)}</span></div>`).join('')}${needsAction?`<div class="deadhead-watch-compare-actions"><button class="btn small" type="button" onclick="deadheadWatchRematchFromComparison('${r.day}','${r.direction}')">Review / rematch this commute</button></div>`:''}</div>`}).join('')}<div class="deadhead-watch-compare-footer"><button class="btn primary" type="button" onclick="deadheadWatchStartComparison()">Check current schedule now</button><button class="btn" type="button" onclick="deadheadWatchChooseGtfsFile('compare')">Compare another GTFS ZIP</button><button class="btn" type="button" onclick="deadheadWatchCloseComparison();deadheadWatchStartResolver()">Rebuild all baselines</button></div></div>`;
 }
 function deadheadWatchCloseComparison(){deadheadWatchComparisonDraft=null;deadheadWatchRenderComparison();deadheadWatchRenderGtfsControl()}
 function deadheadWatchRematchFromComparison(day,direction){deadheadWatchComparisonDraft=null;deadheadWatchRenderComparison();deadheadWatchStartResolver(day,direction)}
@@ -11012,6 +11057,7 @@ async function rosterCheckAdmin(force=false){
     const {data,error}=await client.from('roster_admins').select('can_publish,label').eq('user_id',user.id).maybeSingle();
     if(error)throw error;
     rosterAdminState.checked=true;rosterAdminState.canPublish=!!data?.can_publish;
+    try{deadheadWatchRenderMonitorStatus?.()}catch{}
     toggleCards(rosterAdminState.canPublish);
     if(rosterAdminState.canPublish){await rosterLoadLatestSnapshot();await bidSheetLoadAdminLatest();await awardLoadAdminLatest();await retirementWatchLoad(true);trimDevInitControls();bidLifecycleInitControls();void crewOpsProductionLoad(true);void crewOpsCloudLoadLatest(true);void crewOpsTestChannelLoad(true);if(EPL_TEST_TOOLS_ENABLED)developerRenderTestState();void communityModerationLoad(false);}trimDevUpdateModeAvailability();bidLifecycleRender();void pushRenderSettings();
     return rosterAdminState.canPublish;
