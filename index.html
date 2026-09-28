@@ -1045,7 +1045,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .deadhead-watch-change-head{position:sticky;top:0;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:15px 16px;background:var(--card);border-bottom:1px solid var(--line)}
     .deadhead-watch-change-head strong{display:block;font-size:17px}.deadhead-watch-change-head span{display:block;margin-top:3px;font-size:11px;line-height:1.4;color:var(--muted)}
     .deadhead-watch-change-body{padding:12px 14px 16px}.deadhead-watch-change-route{border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:10px;background:var(--soft)}
-    .deadhead-watch-change-route:first-child{margin-top:0}.deadhead-watch-change-route-title{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.deadhead-watch-change-route-title strong{font-size:13px}.deadhead-watch-change-route-title span{font-size:10px;color:var(--muted)}
+    .deadhead-watch-change-route:first-child{margin-top:0}.deadhead-watch-change-route-title{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.deadhead-watch-change-route-title strong{font-size:13px}.deadhead-watch-change-route-title span{display:block;margin-top:2px;font-size:10px;color:var(--muted)}
     .deadhead-watch-change-grid{display:grid;grid-template-columns:minmax(90px,1.2fr) minmax(74px,.8fr) minmax(74px,.8fr);gap:6px;margin-top:10px}.deadhead-watch-change-grid>div{padding:7px 8px;border-radius:9px;background:var(--card);font-size:10px;line-height:1.35}.deadhead-watch-change-grid .hdr{font-weight:900;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.04em}.deadhead-watch-change-grid .changed{font-weight:900;color:var(--bad)}
     .deadhead-watch-change-note{margin-top:9px;padding:9px 10px;border-radius:10px;background:var(--card);font-size:10px;line-height:1.45}.deadhead-watch-change-note strong{display:block;margin-bottom:3px;font-size:10px}.deadhead-watch-change-actions{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 14px}
     body.deadhead-watch-modal-open{overflow:hidden}html[data-theme="dark"] .deadhead-watch-change-sheet{background:#101d2d!important;border-color:#314158!important}html[data-theme="dark"] .deadhead-watch-change-head{background:#101d2d!important;border-color:#314158!important}html[data-theme="dark"] .deadhead-watch-change-route{background:#15263a!important;border-color:#314158!important}html[data-theme="dark"] .deadhead-watch-change-grid>div,html[data-theme="dark"] .deadhead-watch-change-note{background:#101d2d!important}
@@ -4202,16 +4202,6 @@ function deadheadWatchRenderChangeLeg(leg,route){
   return `<div class="deadhead-watch-change-note"><strong>Train ${escapeHTML(leg?.train||'')} · ${escapeHTML(deadheadWatchComparisonStatusLabel(status))}</strong><div>${escapeHTML(leg?.detail||route?.detail||'This commute needs review.')}</div></div>`;
 }
 function deadheadWatchCloseChangeDetails(){document.getElementById('deadheadWatchChangeModal')?.remove();document.body.classList.remove('deadhead-watch-modal-open')}
-async function deadheadWatchTestExactChangePush(){
-  const client=getCloudClient?.();if(!client){deadheadWatchMonitorMessage='Error: Cloud sign-in is required for the push test.';deadheadWatchRenderMonitorStatus();return}
-  const btn=document.getElementById('deadheadWatchExactTestBtn');if(btn){btn.disabled=true;btn.textContent='Creating test change…'}
-  try{
-    const {data,error}=await client.functions.invoke('deadhead-watch-test-detection',{body:{}});if(error)throw error;if(data?.error)throw new Error(data.error);
-    deadheadWatchMonitorMessage='TEST ONLY · +5 minute change created. The scheduled sender should deliver one push within about a minute.';
-    await new Promise(r=>setTimeout(r,500));await deadheadWatchLoadMonitorStatus(false);
-  }catch(err){deadheadWatchMonitorMessage=`Error: ${err?.message||err}`;deadheadWatchRenderMonitorStatus()}
-  finally{if(btn){btn.disabled=false;btn.textContent='TEST ONLY · Simulate +5 min push'}}
-}
 function deadheadWatchShowChangeDetails(){
   const routes=deadheadWatchChangedRoutes();if(!routes.length)return false;deadheadWatchCloseChangeDetails();
   const modal=document.createElement('div');modal.id='deadheadWatchChangeModal';modal.className='deadhead-watch-change-modal';
@@ -4222,7 +4212,7 @@ function deadheadWatchShowChangeDetails(){
 function deadheadWatchRenderMonitorStatus(){
   const host=document.getElementById('deadheadWatchMonitorPanel');if(!host)return;
   const watch=normalizeDeadheadWatch(normalizeMyJob(getMyJob())?.deadheadWatch);if(!watch.enabled){host.innerHTML='';return}
-  const s=deadheadWatchMonitorStatus,test=!!s?.summary?.simulated,status=s?.status||'pending',last=s?.last_checked_at?new Date(s.last_checked_at).toLocaleString():'Not checked yet';
+  const s=deadheadWatchMonitorStatus,status=s?.status||'pending',last=s?.last_checked_at?new Date(s.last_checked_at).toLocaleString():'Not checked yet';
   let line='Waiting for the first automatic server check.';
   if(status==='clear')line=`No schedule changes detected · ${Number(s.commute_count||0)} LIRR commute${Number(s.commute_count||0)===1?'':'s'} checked.`;
   else if(status==='attention')line=`${Number(s.change_count||0)} saved commute${Number(s.change_count||0)===1?'':'s'} need review.`;
@@ -4231,7 +4221,7 @@ function deadheadWatchRenderMonitorStatus(){
   const exact=status==='attention'&&s?.results?.length?`<button class="btn small primary" type="button" onclick="deadheadWatchShowChangeDetails()">What changed?</button>`:'';
   const review=s?.results?.length?`<button class="btn small" type="button" onclick="deadheadWatchOpenAutomaticResults()">${status==='attention'?'Review automatic check':'View last automatic check'}</button>`:'';
   const pushLine=deadheadWatchPushDeviceState==='ready'?'Push alerts are active on this device.':deadheadWatchPushDeviceState==='unavailable'?'Push alerts are unavailable on this device.':deadheadWatchPushDeviceState==='off'?'Automatic checks are active. Enable Notifications in EPL Settings to receive Deadhead Watch push alerts on this device.':'Push alerts use EPL’s registered notification devices.';
-  host.innerHTML=`<div class="deadhead-watch-monitor"><div class="deadhead-watch-monitor-head"><div><strong>Automatic monitoring${test?' · TEST ONLY':''}</strong><span>${escapeHTML(line)}</span><small>Server schedule: every 6 hours · Last checked: ${escapeHTML(last)}${s?.feed_version?` · ${escapeHTML(s.feed_version)}`:''}</small><small>${escapeHTML(pushLine)}</small>${deadheadWatchMonitorMessage?`<small class="${deadheadWatchMonitorMessage.startsWith('Error:')?'is-error':'is-success'}">${escapeHTML(deadheadWatchMonitorMessage)}</small>`:''}</div><div class="deadhead-watch-monitor-state is-${status==='clear'?'clear':status==='attention'?'attention':status==='error'?'error':'pending'}">${deadheadWatchMonitorLoading?'Loading…':escapeHTML(deadheadWatchMonitorStateLabel(status))}</div></div><div class="deadhead-watch-monitor-actions"><button id="deadheadWatchExactTestBtn" class="btn small" type="button" onclick="deadheadWatchTestExactChangePush()">TEST ONLY · Simulate +5 min push</button>${exact}${review}<button class="btn small" type="button" onclick="deadheadWatchLoadMonitorStatus(true)">Refresh status</button></div></div>`;
+  host.innerHTML=`<div class="deadhead-watch-monitor"><div class="deadhead-watch-monitor-head"><div><strong>Automatic monitoring</strong><span>${escapeHTML(line)}</span><small>Server schedule: every 6 hours · Last checked: ${escapeHTML(last)}${s?.feed_version?` · ${escapeHTML(s.feed_version)}`:''}</small><small>${escapeHTML(pushLine)}</small>${deadheadWatchMonitorMessage?`<small class="${deadheadWatchMonitorMessage.startsWith('Error:')?'is-error':'is-success'}">${escapeHTML(deadheadWatchMonitorMessage)}</small>`:''}</div><div class="deadhead-watch-monitor-state is-${status==='clear'?'clear':status==='attention'?'attention':status==='error'?'error':'pending'}">${deadheadWatchMonitorLoading?'Loading…':escapeHTML(deadheadWatchMonitorStateLabel(status))}</div></div><div class="deadhead-watch-monitor-actions">${exact}${review}<button class="btn small" type="button" onclick="deadheadWatchLoadMonitorStatus(true)">Refresh status</button></div></div>`;
 }
 async function deadheadWatchLoadMonitorStatus(showMessage=false){
   const host=document.getElementById('deadheadWatchMonitorPanel');if(!host)return;
