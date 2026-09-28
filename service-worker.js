@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-deadhead-watch-mvp1-6-3-scheduled-push-20260928';
+const CACHE_NAME='engineer-pay-log-v10-2-deadhead-watch-prod-integration-20260928';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(
@@ -134,10 +134,5 @@ self.addEventListener('notificationclick',event=>{
     }
   })());
 });
-// Deadhead Watch MVP 1.4.1 comparison simulator cache bump
 
-// Deadhead Watch MVP 1.5 automatic server monitor cache bump
-
-// Deadhead Watch MVP 1.6 deduplicated push alerts cache bump
-
-// Deadhead Watch MVP 1.6.1: iOS tap routing + at-most-once push fix cache bump
+// Deadhead Watch production integration candidate · 2026-09-28

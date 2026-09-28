@@ -4182,8 +4182,7 @@ function deadheadWatchRenderMonitorStatus(){
   else if(status==='not_configured')line='Automatic monitoring is waiting for every saved LIRR commute to have a schedule baseline.';
   const review=s?.results?.length?`<button class="btn small" type="button" onclick="deadheadWatchOpenAutomaticResults()">${status==='attention'?'Review automatic check':'View last automatic check'}</button>`:'';
   const pushLine=deadheadWatchPushDeviceState==='ready'?'Push alerts are active on this device.':deadheadWatchPushDeviceState==='unavailable'?'Push alerts are unavailable on this device.':deadheadWatchPushDeviceState==='off'?'Automatic checks are active. Enable Notifications in EPL Settings to receive Deadhead Watch push alerts on this device.':'Push alerts use EPL’s registered notification devices.';
-  const testBtn=(typeof rosterAdminState!=='undefined'&&rosterAdminState.canPublish&&typeof EPL_TEST_TOOLS_ENABLED!=='undefined'&&EPL_TEST_TOOLS_ENABLED)?`<div class="test-only"><small><strong>TEST ONLY</strong> · writes one simulated server detection only. The normal scheduled push sender must discover it and deliver one alert. The next real server check clears it.</small><div class="deadhead-watch-monitor-actions"><button class="btn small" type="button" onclick="deadheadWatchTestBackendDetection()">Simulate detection only</button></div></div>`:'';
-  host.innerHTML=`<div class="deadhead-watch-monitor"><div class="deadhead-watch-monitor-head"><div><strong>Automatic monitoring${test?' · TEST ONLY':''}</strong><span>${escapeHTML(line)}</span><small>Server schedule: every 6 hours · Last checked: ${escapeHTML(last)}${s?.feed_version?` · ${escapeHTML(s.feed_version)}`:''}</small><small>${escapeHTML(pushLine)}</small>${deadheadWatchMonitorMessage?`<small class="${deadheadWatchMonitorMessage.startsWith('Error:')?'is-error':'is-success'}">${escapeHTML(deadheadWatchMonitorMessage)}</small>`:''}</div><div class="deadhead-watch-monitor-state is-${status==='clear'?'clear':status==='attention'?'attention':status==='error'?'error':'pending'}">${deadheadWatchMonitorLoading?'Loading…':escapeHTML(deadheadWatchMonitorStateLabel(status))}</div></div><div class="deadhead-watch-monitor-actions">${review}<button class="btn small" type="button" onclick="deadheadWatchLoadMonitorStatus(true)">Refresh status</button></div>${testBtn}</div>`;
+  host.innerHTML=`<div class="deadhead-watch-monitor"><div class="deadhead-watch-monitor-head"><div><strong>Automatic monitoring${test?' · TEST ONLY':''}</strong><span>${escapeHTML(line)}</span><small>Server schedule: every 6 hours · Last checked: ${escapeHTML(last)}${s?.feed_version?` · ${escapeHTML(s.feed_version)}`:''}</small><small>${escapeHTML(pushLine)}</small>${deadheadWatchMonitorMessage?`<small class="${deadheadWatchMonitorMessage.startsWith('Error:')?'is-error':'is-success'}">${escapeHTML(deadheadWatchMonitorMessage)}</small>`:''}</div><div class="deadhead-watch-monitor-state is-${status==='clear'?'clear':status==='attention'?'attention':status==='error'?'error':'pending'}">${deadheadWatchMonitorLoading?'Loading…':escapeHTML(deadheadWatchMonitorStateLabel(status))}</div></div><div class="deadhead-watch-monitor-actions">${review}<button class="btn small" type="button" onclick="deadheadWatchLoadMonitorStatus(true)">Refresh status</button></div></div>`;
 }
 async function deadheadWatchLoadMonitorStatus(showMessage=false){
   const host=document.getElementById('deadheadWatchMonitorPanel');if(!host)return;
@@ -4209,12 +4208,6 @@ function deadheadWatchOpenAutomaticResults(){
   const s=deadheadWatchMonitorStatus;if(!s?.results?.length)return;
   deadheadWatchComparisonDraft={automatic:true,checkedAt:s.last_checked_at||new Date().toISOString(),feedVersion:s.feed_version||'',feedLabel:s.feed_label||'LIRR GTFS',routes:s.results};deadheadWatchRenderComparison();document.getElementById('deadheadWatchComparisonPanel')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
-async function deadheadWatchTestBackendDetection(){
-  const client=getCloudClient?.();if(!client)return alert('Cloud sign-in is required for this test.');deadheadWatchMonitorMessage='Creating a simulated detection for the normal scheduled push sender…';deadheadWatchRenderMonitorStatus();
-  try{const {data,error}=await client.functions.invoke('deadhead-watch-test-detection',{body:{action:'simulate'}});if(error)throw error;if(data?.error)throw new Error(data.error);const scheduled=!!data?.push?.scheduled_sender;deadheadWatchMonitorMessage=scheduled?'TEST ONLY · detection written. The normal push sender runs once a minute — go to Dashboard and lock your phone now.':'TEST ONLY · detection written. Scheduled push sender was not confirmed.';await deadheadWatchLoadMonitorStatus(false);deadheadWatchMonitorMessage=scheduled?'TEST ONLY · detection written. The normal push sender runs once a minute — go to Dashboard and lock your phone now.':'TEST ONLY · detection written. Scheduled push sender was not confirmed.';deadheadWatchRenderMonitorStatus();document.getElementById('deadheadWatchMonitorPanel')?.scrollIntoView({behavior:'smooth',block:'center'})}
-  catch(err){deadheadWatchMonitorMessage=`Error: ${err?.message||err}`;deadheadWatchRenderMonitorStatus()}
-}
-
 // ---- Deadhead Watch MVP 1.3: GTFS schedule baseline resolver ----
 const DEADHEAD_WATCH_GTFS_URL='https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip';
 const DEADHEAD_WATCH_GTFS_DB='epl_deadhead_watch_gtfs_v1';
@@ -4317,67 +4310,6 @@ function deadheadWatchCompareRoute(day,direction,trip){
   return {day,direction,status,targetDate,baseline,trip,legs,detail:connectionDetail};
 }
 function deadheadWatchComparisonCounts(routes){const counts={unchanged:0,time_changed:0,route_changed:0,train_missing:0,needs_review:0};for(const r of routes)counts[r.status]=(counts[r.status]||0)+1;return counts}
-function deadheadWatchRenderComparison(){
-  const host=document.getElementById('deadheadWatchComparisonPanel');if(!host)return;const d=deadheadWatchComparisonDraft;if(!d){host.innerHTML='';return}
-  const counts=deadheadWatchComparisonCounts(d.routes),attention=d.routes.length-counts.unchanged,baselineVersions=[...new Set(d.routes.map(r=>r.baseline?.feedVersion||r.baseline?.feedLabel||'').filter(Boolean))],baselineLabel=baselineVersions.length===1?baselineVersions[0]:baselineVersions.length?`${baselineVersions.length} saved feed versions`:'saved baseline',summary=attention===0?`✓ No schedule changes found. All ${counts.unchanged} LIRR commutes match the saved baseline.`:`${attention} of ${d.routes.length} LIRR commutes need review · ${counts.time_changed} time change${counts.time_changed===1?'':'s'}, ${counts.route_changed} route change${counts.route_changed===1?'':'s'}, ${counts.train_missing} missing train${counts.train_missing===1?'':'s'}, ${counts.needs_review} ambiguous.`;
-  host.innerHTML=`<div class="deadhead-watch-compare"><div class="deadhead-watch-compare-head"><div><strong>Current schedule check</strong><span>Saved: ${escapeHTML(baselineLabel)} · Current: ${escapeHTML(d.feedVersion||d.feedLabel||'LIRR GTFS')} · checked ${escapeHTML(new Date(d.checkedAt).toLocaleString())}</span></div><button class="btn small" type="button" onclick="deadheadWatchCloseComparison()">Close</button></div><div class="deadhead-watch-compare-summary ${attention===0?'is-clear':'is-attention'}">${escapeHTML(summary)}</div>${d.routes.map(r=>{const routeText=deadheadWatchBaselineRouteText(r.baseline),title=`${deadheadWatchCap(r.day)} · ${r.direction==='toWork'?'To Work':'Home'}`,needsAction=r.status!=='unchanged';return `<div class="deadhead-watch-compare-route"><div class="deadhead-watch-compare-route-head"><div><strong>${escapeHTML(title)}</strong><span>${escapeHTML(r.trip.trains.join(' → '))}${routeText?` · ${escapeHTML(routeText)}`:''}</span></div><div class="deadhead-watch-compare-status status-${escapeHTML(r.status)}">${escapeHTML(deadheadWatchComparisonStatusLabel(r.status))}</div></div>${r.detail?`<div class="deadhead-watch-compare-leg"><span>${escapeHTML(r.detail)}</span></div>`:''}${r.legs.map(l=>`<div class="deadhead-watch-compare-leg"><strong>Train ${escapeHTML(l.train)} · ${escapeHTML(deadheadWatchComparisonStatusLabel(l.status))}</strong><span>${escapeHTML(l.detail)}</span></div>`).join('')}${needsAction?`<div class="deadhead-watch-compare-actions"><button class="btn small" type="button" onclick="deadheadWatchRematchFromComparison('${r.day}','${r.direction}')">Review / rematch this commute</button></div>`:''}</div>`}).join('')}<div class="deadhead-watch-compare-footer"><button class="btn primary" type="button" onclick="deadheadWatchStartComparison()">Check again</button><button class="btn" type="button" onclick="deadheadWatchChooseGtfsFile('compare')">Compare another GTFS ZIP</button><button class="btn" type="button" onclick="deadheadWatchCloseComparison();deadheadWatchStartResolver()">Rebuild all baselines</button><div style="width:100%;margin-top:8px;padding-top:10px;border-top:1px dashed #c9d7e6"><div class="muted" style="font-weight:800;margin-bottom:7px">TEST ONLY · comparison validation</div><div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn small" type="button" onclick="deadheadWatchTestSimulateRouteChange()">Simulate route change</button><button class="btn small" type="button" onclick="deadheadWatchTestSimulateTrainMissing()">Simulate train missing</button><button class="btn small" type="button" onclick="deadheadWatchTestSimulateAmbiguous()">Simulate ambiguous match</button></div></div></div></div>`;
-}
-function deadheadWatchTestPreferredRoute(){
-  const routes=deadheadWatchRouteItems(),usage=new Map();
-  for(const r of routes)for(const t of r.trip.trains)usage.set(String(t),(usage.get(String(t))||0)+1);
-  return routes.find(r=>r.day==='fri'&&r.direction==='toWork'&&r.trip.trains.length===1&&usage.get(String(r.trip.trains[0]))===1)
-    ||routes.find(r=>r.trip.trains.length===1&&usage.get(String(r.trip.trains[0]))===1)
-    ||routes.find(r=>r.trip.trains.length===1)
-    ||routes[0]
-    ||null;
-}
-function deadheadWatchTestContext(label){
-  const preferred=deadheadWatchTestPreferredRoute();
-  if(!preferred){alert('No saved LIRR commute is available for the comparison test.');return null}
-  const baseline=deadheadWatchNormalizeBaseline(preferred.trip.baseline);
-  if(!baseline?.legs?.length){alert('This commute does not have a complete saved GTFS baseline yet.');return null}
-  if(baseline.legs.length!==1){alert(`${label} needs a one-train saved commute. Choose another test route or rematch this commute first.`);return null}
-  const offset=deadheadWatchSavedOffset(preferred.day,preferred.direction),assignmentDate=deadheadWatchAssignmentDate(preferred.day),targetDate=deadheadWatchDatePlus(assignmentDate,offset),old=baseline.legs[0];
-  const probe=deadheadWatchCompareLeg(preferred.day,preferred.direction,old,targetDate),tripId=probe?.candidate?.tripId;
-  if(!tripId){alert(`Could not locate current Train ${old.train} for the test simulation.`);return null}
-  const raw=deadheadWatchGtfs?.byTrip?.get(tripId),meta=deadheadWatchGtfs?.tripMeta?.get(tripId);
-  if(!raw?.length||!meta){alert('The current GTFS trip data is unavailable for the test simulation.');return null}
-  return {preferred,baseline,old,targetDate,tripId,raw,meta,title:`${deadheadWatchCap(preferred.day)} ${preferred.direction==='toWork'?'To Work':'Home'} Train ${old.train}`};
-}
-function deadheadWatchTestSimulateRouteChange(){
-  const c=deadheadWatchTestContext('Route-change simulation');if(!c)return;
-  const candidates=deadheadWatchTrainCandidates(c.old.train,c.targetDate),changes=[];
-  for(const candidate of candidates){const raw=deadheadWatchGtfs?.byTrip?.get(candidate.tripId);if(!raw)continue;for(const e of raw){if(e.stopId===c.old.exitStopId){changes.push([e,e.stopId]);e.stopId=`__EPL_TEST_ROUTE_REMOVED_${candidate.tripId}`}}}
-  if(!changes.length)return alert(`Could not remove the saved exit stop from current Train ${c.old.train} for the test.`);
-  try{
-    deadheadWatchBeginComparison();
-    deadheadWatchRenderGtfsControl(`TEST ONLY · Simulated route change on ${c.title}. Your saved baseline was not changed.`,'error');
-  }finally{for(const [e,stopId] of changes)e.stopId=stopId}
-}
-function deadheadWatchTestSimulateTrainMissing(){
-  const c=deadheadWatchTestContext('Missing-train simulation');if(!c)return;
-  const key=String(c.old.train),map=deadheadWatchGtfs?.tripsByNumber;if(!map)return;
-  const had=map.has(key),saved=had?[...(map.get(key)||[])]:null;
-  try{
-    map.set(key,[]);
-    deadheadWatchBeginComparison();
-    deadheadWatchRenderGtfsControl(`TEST ONLY · Simulated missing Train ${c.old.train} on ${deadheadWatchCap(c.preferred.day)} ${c.preferred.direction==='toWork'?'To Work':'Home'}. Your saved baseline was not changed.`,'error');
-  }finally{if(had)map.set(key,saved);else map.delete(key)}
-}
-function deadheadWatchTestSimulateAmbiguous(){
-  const c=deadheadWatchTestContext('Ambiguous-match simulation');if(!c)return;
-  const d=deadheadWatchGtfs,key=String(c.old.train),ids=d?.tripsByNumber?.get(key);if(!d||!ids)return;
-  const savedIds=[...ids],savedTimes=c.raw.map(e=>({arr:e.arr,dep:e.dep})),testId=`__EPL_TEST_AMBIGUOUS_${c.tripId}`;
-  const cloneMeta={...c.meta,trip_id:testId},cloneRaw=c.raw.map((e,i)=>({...e,arr:Number.isFinite(savedTimes[i].arr)?savedTimes[i].arr-5:savedTimes[i].arr,dep:Number.isFinite(savedTimes[i].dep)?savedTimes[i].dep-5:savedTimes[i].dep}));
-  try{
-    for(const e of c.raw){if(Number.isFinite(e.arr))e.arr+=5;if(Number.isFinite(e.dep))e.dep+=5}
-    d.tripMeta.set(testId,cloneMeta);d.byTrip.set(testId,cloneRaw);d.tripsByNumber.set(key,[c.tripId,testId]);
-    deadheadWatchBeginComparison();
-    deadheadWatchRenderGtfsControl(`TEST ONLY · Simulated two equally plausible current matches for ${c.title}. EPL should require review rather than guess. Your saved baseline was not changed.`,'error');
-  }finally{
-    c.raw.forEach((e,i)=>{e.arr=savedTimes[i].arr;e.dep=savedTimes[i].dep});d.tripMeta.delete(testId);d.byTrip.delete(testId);d.tripsByNumber.set(key,savedIds);
-  }
-}
 function deadheadWatchRenderComparison(){
   const host=document.getElementById('deadheadWatchComparisonPanel');if(!host)return;const d=deadheadWatchComparisonDraft;if(!d){host.innerHTML='';return}
   const counts=deadheadWatchComparisonCounts(d.routes),attention=d.routes.length-counts.unchanged,baselineVersions=[...new Set(d.routes.map(r=>r.baseline?.feedVersion||r.baseline?.feedLabel||'').filter(Boolean))],baselineLabel=baselineVersions.length===1?baselineVersions[0]:baselineVersions.length?`${baselineVersions.length} saved feed versions`:'saved baseline',summary=attention===0?`✓ No schedule changes found. All ${counts.unchanged} LIRR commutes match the saved baseline.`:`${attention} of ${d.routes.length} LIRR commutes need review · ${counts.time_changed} time change${counts.time_changed===1?'':'s'}, ${counts.route_changed} route change${counts.route_changed===1?'':'s'}, ${counts.train_missing} missing train${counts.train_missing===1?'':'s'}, ${counts.needs_review} ambiguous.`;
@@ -5113,6 +5045,7 @@ async function crewBookProductionLoad(force=false){
 }
 
 function crewBookPassengerRevision(date){const base=date>=CREW_BOOK_REV7_EFFECTIVE?{go:'202',revision:'7',paperRevision:'8',effective:CREW_BOOK_REV7_EFFECTIVE,paperEffective:CREW_BOOK_PAPER_REV8_EFFECTIVE,draft:false,jobs:CREW_BOOK_REV7_AUDITED_JOBS,relief:CREW_BOOK_RELIEF_REV7}:{go:'201',revision:'6',effective:'2026-07-06',draft:false,jobs:CREW_BOOK_REV6_AUDITED_JOBS,relief:CREW_BOOK_RELIEF};return crewBookProductionMergeRevision(base,date)}
+function crewBookRevisionLabel(rev,prefix=''){if(!rev)return '';const lead=prefix?`${prefix} `:'';const production=String(rev.productionRevision||'').trim();if(production)return `${lead}GO ${rev.go} ${production}`;const paper=rev.paperRevision?` + Paper Rev. ${rev.paperRevision}`:'';return `${lead}GO ${rev.go} Rev. ${rev.revision}${paper}`}
 
 // 2026 Labor Day holiday coverage (GO 201 Rev. 6 Holiday Crews H-2 through H-6).
 // Values are the regular/relief crew assigned to each H assignment on Monday, Sept. 7, 2026.
@@ -5425,7 +5358,7 @@ function jobCompareSourceLabel(hit){
   if(hit.source==='holiday')return 'Labor Day 2026';
   if(hit.source==='yard')return 'Yard Crew Book';
   if(hit.source==='yard-relief')return 'Yard Relief Crew';
-  const r=hit.revision;if(r){const paper=r.paperRevision?` + Paper Rev. ${r.paperRevision}`:'';return `GO ${r.go} Rev. ${r.revision}${paper}`;}return hit.source==='passenger-relief'?'Passenger Relief Crew':'Passenger Crew Book';
+  const r=hit.revision;if(r)return crewBookRevisionLabel(r);return hit.source==='passenger-relief'?'Passenger Relief Crew':'Passenger Crew Book';
 }
 function jobCompareReliefCrewDefinition(key,date){
   key=normalizeCrewBookKey(key);
@@ -5658,7 +5591,7 @@ function communityRevisionMeta(key,date){
   if(hit?.source==='holiday')return {key:`holiday:${date}`,label:'Labor Day 2026',effective:date};
   const rev=hit?.revision||null;
   if(hit?.source==='yard'||hit?.source==='yard-relief')return {key:`yard:${rev?.effective||'current'}`,label:'Yard Crew Book',effective:rev?.effective||'2026-07-06'};
-  if(rev){const paper=rev.paperRevision?` + Paper Rev. ${rev.paperRevision}`:'';return {key:`passenger:${rev.go}:${rev.revision}:${rev.paperRevision||0}:${rev.effective}`,label:`GO ${rev.go} Rev. ${rev.revision}${paper}`,effective:rev.effective};}
+  if(rev){const revisionKey=rev.productionVersionId||`${rev.go}:${rev.revision}:${rev.paperRevision||0}:${rev.effective}`;return {key:`passenger:${revisionKey}`,label:crewBookRevisionLabel(rev),effective:rev.productionEffective||rev.effective};}
   return {key:`assignment:${date}`,label:'Crew Book assignment',effective:date};
 }
 function communityJobPanelShellHTML(key,date){
@@ -5802,7 +5735,7 @@ async function communityReact(noteId,reaction){
   await communityLoadForLookup(COMMUNITY_CONTEXT.jobKey,COMMUNITY_CONTEXT.date);
 }
 
-function runQuickJobLookup(showValidation=true){initQuickJobLookup();const raw=(document.getElementById('quickLookupJob')?.value||'').trim(),date=document.getElementById('quickLookupDate')?.value,result=document.getElementById('quickLookupResult'),note=document.getElementById('quickLookupSourceNote');if(!result)return;if(!raw||!date){if(showValidation)result.innerHTML='<div class="quick-lookup-error"><strong>Enter an assignment and date.</strong><br>Both are required for a date-aware Crew Book lookup.</div>';return}const key=normalizeCrewBookKey(raw);result.innerHTML=quickLookupResultHTML(key,date);void communityLoadForLookup(key,date);if(note){const rev=crewBookPassengerRevision(date);note.innerHTML=`<strong>${escapeHTML(date)}</strong> • Passenger GO ${escapeHTML(rev.go)} Rev. ${escapeHTML(rev.revision)}${rev.paperRevision?` + Paper Rev. ${escapeHTML(rev.paperRevision)}`:''}<br>Regular assignments, relief crews, Yard assignments, and supported holiday assignments are resolved from the selected date. Weekly OT excludes paid meal-period allowances; paid meals are shown separately.`}}
+function runQuickJobLookup(showValidation=true){initQuickJobLookup();const raw=(document.getElementById('quickLookupJob')?.value||'').trim(),date=document.getElementById('quickLookupDate')?.value,result=document.getElementById('quickLookupResult'),note=document.getElementById('quickLookupSourceNote');if(!result)return;if(!raw||!date){if(showValidation)result.innerHTML='<div class="quick-lookup-error"><strong>Enter an assignment and date.</strong><br>Both are required for a date-aware Crew Book lookup.</div>';return}const key=normalizeCrewBookKey(raw);result.innerHTML=quickLookupResultHTML(key,date);void communityLoadForLookup(key,date);if(note){const rev=crewBookPassengerRevision(date);note.innerHTML=`<strong>${escapeHTML(date)}</strong> • ${escapeHTML(crewBookRevisionLabel(rev,'Passenger'))}<br>Regular assignments, relief crews, Yard assignments, and supported holiday assignments are resolved from the selected date. Weekly OT excludes paid meal-period allowances; paid meals are shown separately.`}}
 
 
 function renderCrewBookAssistUI(){
@@ -5811,7 +5744,8 @@ function renderCrewBookAssistUI(){
   if(box){box.checked=on;box.disabled=false}
   if(status){
     status.style.display=(on||trainee)?'block':'none';
-    status.innerHTML=trainee?'<strong>Engineer Trainee Mode:</strong> Crew Book Assistance is unavailable. Engineer Trainees are strongly encouraged to learn how to read and interpret the Crew Book independently.':(on?'<strong>Active:</strong> Passenger GO 201 Rev. 6 • GO 202 Rev. 7 + Paper Rev. 8 (human-certified; effective Sept. 8) • Yard assignments loaded.':'');
+    const assistRevision=crewBookPassengerRevision(typeof isoLocal==='function'?isoLocal(new Date()):'2026-09-28');
+    status.innerHTML=trainee?'<strong>Engineer Trainee Mode:</strong> Crew Book Assistance is unavailable. Engineer Trainees are strongly encouraged to learn how to read and interpret the Crew Book independently.':(on?`<strong>Active:</strong> ${escapeHTML(crewBookRevisionLabel(assistRevision,'Passenger'))} (human-certified) • Yard assignments loaded.`:'');
   }
   if(reg)reg.style.display=on?'inline-flex':'none';if(rel)rel.style.display=on?'inline-flex':'none';if(shift)shift.style.display=on?'inline-flex':'none';if(viewReg)viewReg.style.display=on?'inline-flex':'none';if(viewRel)viewRel.style.display=on?'inline-flex':'none';
 }
@@ -5851,8 +5785,8 @@ function fillRegularMyJobFromCrewBook(){
   }
   if(!/^\d+$/.test(key)){alert('Enter a passenger job number or supported Yard assignment.');return}
   const rev=crewBookPassengerRevision(refDate),job=rev.jobs[key];
-  if(!job||job.status==='abolished'){alert(`Job ${key} is not active in Passenger GO ${rev.go} Rev. ${rev.revision} for ${refDate}.`);return}
-  if(job.type==='extraCrewOnly'||job.type==='workableNotOwnable'){alert(`Job ${key} can be worked but cannot be saved as an owned Regular My Job assignment in Passenger GO ${rev.go} Rev. ${rev.revision}.`);return}
+  if(!job||job.status==='abolished'){alert(`Job ${key} is not active in ${crewBookRevisionLabel(rev,'Passenger')} for ${refDate}.`);return}
+  if(job.type==='extraCrewOnly'||job.type==='workableNotOwnable'){alert(`Job ${key} can be worked but cannot be saved as an owned Regular My Job assignment in ${crewBookRevisionLabel(rev,'Passenger')}.`);return}
   document.getElementById('myJobNumber').value=key;setRegularLocationUI(job.terminal||job.weekday?.location);
   for(const day of CREW_BOOK_DAYS){
     const cap=day[0].toUpperCase()+day.slice(1),off=job.relief?.includes(day),box=document.getElementById(`myJobRegular${cap}Off`);if(box)box.checked=!!off;
@@ -5860,7 +5794,7 @@ function fillRegularMyJobFromCrewBook(){
     const st=document.getElementById(`myJobRegular${cap}Start`),en=document.getElementById(`myJobRegular${cap}End`),meal=document.getElementById(`myJobRegular${cap}PaysMeal`);
     if(st)st.value=off?'':(x.start||'');if(en)en.value=off?'':(x.end||'');if(meal)meal.checked=!off&&!!x.paysMeal;toggleMyJobRegularDay(day);
   }
-  renderMyJobWeekPreview();alert(`Job ${key} filled using Passenger GO ${rev.go} Rev. ${rev.revision}, effective ${rev.effective}. If the current week crosses a revision boundary, earlier dates remain on the previous revision and each shift resolves from its actual date.`);
+  renderMyJobWeekPreview();alert(`Job ${key} filled using ${crewBookRevisionLabel(rev,'Passenger')}, effective ${rev.effective}. If the current week crosses a revision boundary, earlier dates remain on the previous revision and each shift resolves from its actual date.`);
 }
 function fillReliefMyJobFromCrewBook(){
   if(!crewBookAssistEnabled())return;
@@ -5879,7 +5813,7 @@ function fillReliefMyJobFromCrewBook(){
     if(a)a.value=jn||'';if(st)st.value=off?'':(x?.start||'');if(en)en.value=off?'':(x?.end||'');if(meal)meal.checked=!off&&source==='passenger'&&!!x?.paysMeal;
     if(!off&&job)setReliefLocationUI(day,x?.location||job.terminal);else setReliefLocationUI(day,'');toggleMyJobReliefDay(day);
   }
-  alert(`Relief Crew ${key} filled from the ${source==='yard'?'Yard':`Passenger GO ${rev.go} Rev. ${rev.revision}`} Crew Book dataset. Daily terminal and times inherit from the covered assignment.`);
+  alert(`Relief Crew ${key} filled from the ${source==='yard'?'Yard':`${crewBookRevisionLabel(rev,'Passenger')}`} Crew Book dataset. Daily terminal and times inherit from the covered assignment.`);
 }
 
 function clearCrewBookShiftAutofillFields(){
@@ -10416,7 +10350,7 @@ function renderMyJobWeekPreview(){
     const oldRev=passengerRows[0]?.revision,newRev=firstNew?.revision;
     if(firstNew&&oldRev&&newRev){
       const d=new Date(firstNew.date+'T12:00:00');
-      revisionNote=`<div class="myjob-revision-note"><strong>Crew Book revision changes during this week.</strong> Dates before ${escapeHTML(d.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}))} use Passenger GO ${escapeHTML(oldRev.go)} Rev. ${escapeHTML(oldRev.revision)}. Beginning ${escapeHTML(d.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}))}, this assignment uses Passenger GO ${escapeHTML(newRev.go)} Rev. ${escapeHTML(newRev.revision)}. When you add a shift, My Job resolves the schedule again using that shift's actual date.</div>`;
+      revisionNote=`<div class="myjob-revision-note"><strong>Crew Book revision changes during this week.</strong> Dates before ${escapeHTML(d.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}))} use ${escapeHTML(crewBookRevisionLabel(oldRev,'Passenger'))}. Beginning ${escapeHTML(d.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'}))}, this assignment uses ${escapeHTML(crewBookRevisionLabel(newRev,'Passenger'))}. When you add a shift, My Job resolves the schedule again using that shift's actual date.</div>`;
     }
   }
   host.innerHTML=`<div class="myjob-preview-head">Weekly Schedule Preview</div>${revisionNote}${rows.map(r=>{
@@ -12011,7 +11945,7 @@ async function trimDevLoad(showStatus=true){
     if(!rows?.length){if(summary){summary.classList.add('show');summary.textContent='No published roster rows are available yet.'}filters?.classList.remove('show');results?.classList.remove('show');return}
     const rankInfo=trimDevEffectiveRank(rows);trimDevState.rows=rows;trimDevState.rank=rankInfo.rank;trimDevState.source='override';trimDevState.sourceGeneratedAt=rosterAdminState.latest?.source_generated_at||null;trimDevState.uploadedAt=rosterAdminState.latest?.uploaded_at||null;trimDevState.rowCount=Number(rosterAdminState.latest?.row_count||rows.length);
     const below=rows.filter(r=>Number(r.rank)>rankInfo.rank&&(r.assignment_type==='regular'||r.assignment_type==='extra_list'||r.assignment_type==='other')),regular=below.filter(r=>r.assignment_type==='regular').length,extra=below.filter(r=>r.assignment_type==='extra_list').length,other=below.filter(r=>r.assignment_type==='other').length;
-    if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Testing as roster rank ${rankInfo.rank}</strong> (local override)<br>${below.length} currently ownable assignments below this rank • ${regular} passenger • ${extra} Extra List • ${other} Yard / other<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(trimDevState.sourceGeneratedAt||trimDevState.uploadedAt))} • Crew Book: GO 202 Rev. 7 + Paper Rev. 8</span>${trimRosterFreshnessHTML(trimDevState.sourceGeneratedAt||trimDevState.uploadedAt,trimDevState.uploadedAt)}`}
+    if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Testing as roster rank ${rankInfo.rank}</strong> (local override)<br>${below.length} currently ownable assignments below this rank • ${regular} passenger • ${extra} Extra List • ${other} Yard / other<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(trimDevState.sourceGeneratedAt||trimDevState.uploadedAt))} • Crew Book: ${escapeHTML(crewBookRevisionLabel(crewBookPassengerRevision(TRIM_CREW_BOOK_DATE)))}</span>${trimRosterFreshnessHTML(trimDevState.sourceGeneratedAt||trimDevState.uploadedAt,trimDevState.uploadedAt)}`}
     if(note)note.textContent=rankInfo.profileRank?`Local override ${rankInfo.rank} is active. Profile would otherwise match rank ${rankInfo.profileRank}.`:`Local override ${rankInfo.rank} is active. It does not modify this account's profile.`;
     trimDevTerminalOptions(below);filters?.classList.add('show');results?.classList.add('show');trimDevApplyFilters();return;
   }
@@ -12022,7 +11956,7 @@ async function trimDevLoad(showStatus=true){
   if(!payload.match_found){trimDevState.rows=[];trimDevState.rank=null;trimDevState.source='profile';if(summary){summary.classList.add('show');const why=payload.reason==='missing_employee_number'?'Your profile does not have an IBM / employee number saved.':'Your saved IBM / employee number was not found in the latest roster.';summary.innerHTML=`<strong>We could not match you to the current roster.</strong><br>${escapeHTML(why)} Check <strong>Settings → Account → Edit Profile</strong>, then try again.<br><span style="font-size:9px">Latest roster: ${escapeHTML(rosterDateDisplay(payload.source_generated_at||payload.uploaded_at))}</span>${trimRosterFreshnessHTML(payload.source_generated_at||payload.uploaded_at,payload.uploaded_at)}`}filters?.classList.remove('show');results?.classList.remove('show');return}
   trimDevState.rows=Array.isArray(payload.jobs)?payload.jobs:[];trimDevState.rank=Number(payload.own_rank||0);trimDevState.source=trimPublicDataLastResult.source==='cache'?'cache':'profile';
   const regular=Number(payload.regular_count||0),extra=Number(payload.extra_list_count||0),other=Number(payload.other_count||0),below=regular+extra+other;
-  if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Roster rank ${trimDevState.rank}</strong><br>${below} currently ownable assignments below you • ${regular} passenger • ${extra} Extra List • ${other} Yard / other<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(payload.source_generated_at||payload.uploaded_at))} • Crew Book: GO 202 Rev. 7 + Paper Rev. 8</span>${trimRosterFreshnessHTML(payload.source_generated_at||payload.uploaded_at,payload.uploaded_at)}${trimAssistantCacheFallbackHTML()}`}
+  if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Roster rank ${trimDevState.rank}</strong><br>${below} currently ownable assignments below you • ${regular} passenger • ${extra} Extra List • ${other} Yard / other<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(payload.source_generated_at||payload.uploaded_at))} • Crew Book: ${escapeHTML(crewBookRevisionLabel(crewBookPassengerRevision(TRIM_CREW_BOOK_DATE)))}</span>${trimRosterFreshnessHTML(payload.source_generated_at||payload.uploaded_at,payload.uploaded_at)}${trimAssistantCacheFallbackHTML()}`}
   trimDevTerminalOptions(trimDevState.rows);filters?.classList.add('show');results?.classList.add('show');trimDevApplyFilters();
 }
 function trimDevCheckedValues(containerId){return [...document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)].map(x=>x.value)}
@@ -12158,7 +12092,7 @@ function trimDevOpenCrewBook(assignment){
     if(sub)sub.textContent=`GO 202 Rev. 7 • ${covered.length} covered job${covered.length===1?'':'s'} • scroll to view all`;
     body.innerHTML=temporaryRevisionNote+trimDevReliefCoveredImagesHTML(relief);modal.classList.add('open');return;
   }
-  const hit=crewBookLookupJobV8(key,TRIM_CREW_BOOK_DATE);if(title)title.textContent=`Job ${key} • Official Assignment`;if(sub)sub.textContent='GO 202 Rev. 7 + Paper Rev. 8 • Effective Sep. 8, 2026';body.innerHTML=crewBookOfficialViewerBodyHTML(key,TRIM_CREW_BOOK_DATE,hit);modal.classList.add('open');
+  const hit=crewBookLookupJobV8(key,TRIM_CREW_BOOK_DATE);if(title)title.textContent=`Job ${key} • Official Assignment`;if(sub){const trimRevision=crewBookPassengerRevision(TRIM_CREW_BOOK_DATE);sub.textContent=`${crewBookRevisionLabel(trimRevision)} • Effective ${trimRevision.productionEffective||'2026-09-08'}`;}body.innerHTML=crewBookOfficialViewerBodyHTML(key,TRIM_CREW_BOOK_DATE,hit);modal.classList.add('open');
 }
 
 function trimDevApplyFilters(){
@@ -12442,7 +12376,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 window.addEventListener('pageshow',()=>trimAssistantRefreshLiveIfVisible());
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.2-deadhead-watch-mvp1-3-20260927').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.2-deadhead-watch-prod-integration-20260928').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
