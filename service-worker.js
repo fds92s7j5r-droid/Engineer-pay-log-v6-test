@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-deadhead-watch-mvp1-5-auto-monitor-20260927';
+const CACHE_NAME='engineer-pay-log-v10-2-deadhead-watch-mvp1-5-1-monitor-refresh-20260927';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(

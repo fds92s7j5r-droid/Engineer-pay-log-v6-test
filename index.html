@@ -4190,7 +4190,15 @@ async function deadheadWatchLoadMonitorStatus(showMessage=false){
   deadheadWatchMonitorLoading=true;if(showMessage)deadheadWatchMonitorMessage='Refreshing automatic-monitor status…';deadheadWatchRenderMonitorStatus();
   try{const {data,error}=await client.from('deadhead_watch_monitor_status').select('last_checked_at,last_success_at,feed_version,feed_label,status,commute_count,change_count,summary,results,last_error').maybeSingle();if(error)throw error;deadheadWatchMonitorStatus=data||null;deadheadWatchMonitorMessage=showMessage?(data?'Automatic-monitor status refreshed.':'Waiting for the first server check.'):''}
   catch(err){deadheadWatchMonitorMessage=`Error: ${err?.message||err}`}
-  finally{deadheadWatchMonitorLoading=false;deadheadWatchRenderMonitorStatus()}
+  finally{
+    deadheadWatchMonitorLoading=false;
+    deadheadWatchRenderMonitorStatus();
+    if(deadheadWatchComparisonDraft?.automatic&&deadheadWatchMonitorStatus?.results?.length){
+      const s=deadheadWatchMonitorStatus;
+      deadheadWatchComparisonDraft={automatic:true,checkedAt:s.last_checked_at||new Date().toISOString(),feedVersion:s.feed_version||'',feedLabel:s.feed_label||'LIRR GTFS',routes:s.results};
+      deadheadWatchRenderComparison();
+    }
+  }
 }
 function deadheadWatchOpenAutomaticResults(){
   const s=deadheadWatchMonitorStatus;if(!s?.results?.length)return;
