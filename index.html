@@ -4267,25 +4267,62 @@ function deadheadWatchComparisonCounts(routes){const counts={unchanged:0,time_ch
 function deadheadWatchRenderComparison(){
   const host=document.getElementById('deadheadWatchComparisonPanel');if(!host)return;const d=deadheadWatchComparisonDraft;if(!d){host.innerHTML='';return}
   const counts=deadheadWatchComparisonCounts(d.routes),attention=d.routes.length-counts.unchanged,baselineVersions=[...new Set(d.routes.map(r=>r.baseline?.feedVersion||r.baseline?.feedLabel||'').filter(Boolean))],baselineLabel=baselineVersions.length===1?baselineVersions[0]:baselineVersions.length?`${baselineVersions.length} saved feed versions`:'saved baseline',summary=attention===0?`✓ No schedule changes found. All ${counts.unchanged} LIRR commutes match the saved baseline.`:`${attention} of ${d.routes.length} LIRR commutes need review · ${counts.time_changed} time change${counts.time_changed===1?'':'s'}, ${counts.route_changed} route change${counts.route_changed===1?'':'s'}, ${counts.train_missing} missing train${counts.train_missing===1?'':'s'}, ${counts.needs_review} ambiguous.`;
-  host.innerHTML=`<div class="deadhead-watch-compare"><div class="deadhead-watch-compare-head"><div><strong>Current schedule check</strong><span>Saved: ${escapeHTML(baselineLabel)} · Current: ${escapeHTML(d.feedVersion||d.feedLabel||'LIRR GTFS')} · checked ${escapeHTML(new Date(d.checkedAt).toLocaleString())}</span></div><button class="btn small" type="button" onclick="deadheadWatchCloseComparison()">Close</button></div><div class="deadhead-watch-compare-summary ${attention===0?'is-clear':'is-attention'}">${escapeHTML(summary)}</div>${d.routes.map(r=>{const routeText=deadheadWatchBaselineRouteText(r.baseline),title=`${deadheadWatchCap(r.day)} · ${r.direction==='toWork'?'To Work':'Home'}`,needsAction=r.status!=='unchanged';return `<div class="deadhead-watch-compare-route"><div class="deadhead-watch-compare-route-head"><div><strong>${escapeHTML(title)}</strong><span>${escapeHTML(r.trip.trains.join(' → '))}${routeText?` · ${escapeHTML(routeText)}`:''}</span></div><div class="deadhead-watch-compare-status status-${escapeHTML(r.status)}">${escapeHTML(deadheadWatchComparisonStatusLabel(r.status))}</div></div>${r.detail?`<div class="deadhead-watch-compare-leg"><span>${escapeHTML(r.detail)}</span></div>`:''}${r.legs.map(l=>`<div class="deadhead-watch-compare-leg"><strong>Train ${escapeHTML(l.train)} · ${escapeHTML(deadheadWatchComparisonStatusLabel(l.status))}</strong><span>${escapeHTML(l.detail)}</span></div>`).join('')}${needsAction?`<div class="deadhead-watch-compare-actions"><button class="btn small" type="button" onclick="deadheadWatchRematchFromComparison('${r.day}','${r.direction}')">Review / rematch this commute</button></div>`:''}</div>`}).join('')}<div class="deadhead-watch-compare-footer"><button class="btn primary" type="button" onclick="deadheadWatchStartComparison()">Check again</button><button class="btn" type="button" onclick="deadheadWatchChooseGtfsFile('compare')">Compare another GTFS ZIP</button><button class="btn" type="button" onclick="deadheadWatchCloseComparison();deadheadWatchStartResolver()">Rebuild all baselines</button><button class="btn" type="button" onclick="deadheadWatchTestSimulateTimeChange()">TEST ONLY · Simulate +5 min</button></div></div>`;
+  host.innerHTML=`<div class="deadhead-watch-compare"><div class="deadhead-watch-compare-head"><div><strong>Current schedule check</strong><span>Saved: ${escapeHTML(baselineLabel)} · Current: ${escapeHTML(d.feedVersion||d.feedLabel||'LIRR GTFS')} · checked ${escapeHTML(new Date(d.checkedAt).toLocaleString())}</span></div><button class="btn small" type="button" onclick="deadheadWatchCloseComparison()">Close</button></div><div class="deadhead-watch-compare-summary ${attention===0?'is-clear':'is-attention'}">${escapeHTML(summary)}</div>${d.routes.map(r=>{const routeText=deadheadWatchBaselineRouteText(r.baseline),title=`${deadheadWatchCap(r.day)} · ${r.direction==='toWork'?'To Work':'Home'}`,needsAction=r.status!=='unchanged';return `<div class="deadhead-watch-compare-route"><div class="deadhead-watch-compare-route-head"><div><strong>${escapeHTML(title)}</strong><span>${escapeHTML(r.trip.trains.join(' → '))}${routeText?` · ${escapeHTML(routeText)}`:''}</span></div><div class="deadhead-watch-compare-status status-${escapeHTML(r.status)}">${escapeHTML(deadheadWatchComparisonStatusLabel(r.status))}</div></div>${r.detail?`<div class="deadhead-watch-compare-leg"><span>${escapeHTML(r.detail)}</span></div>`:''}${r.legs.map(l=>`<div class="deadhead-watch-compare-leg"><strong>Train ${escapeHTML(l.train)} · ${escapeHTML(deadheadWatchComparisonStatusLabel(l.status))}</strong><span>${escapeHTML(l.detail)}</span></div>`).join('')}${needsAction?`<div class="deadhead-watch-compare-actions"><button class="btn small" type="button" onclick="deadheadWatchRematchFromComparison('${r.day}','${r.direction}')">Review / rematch this commute</button></div>`:''}</div>`}).join('')}<div class="deadhead-watch-compare-footer"><button class="btn primary" type="button" onclick="deadheadWatchStartComparison()">Check again</button><button class="btn" type="button" onclick="deadheadWatchChooseGtfsFile('compare')">Compare another GTFS ZIP</button><button class="btn" type="button" onclick="deadheadWatchCloseComparison();deadheadWatchStartResolver()">Rebuild all baselines</button><div style="width:100%;margin-top:8px;padding-top:10px;border-top:1px dashed #c9d7e6"><div class="muted" style="font-weight:800;margin-bottom:7px">TEST ONLY · comparison validation</div><div style="display:flex;flex-wrap:wrap;gap:8px"><button class="btn small" type="button" onclick="deadheadWatchTestSimulateRouteChange()">Simulate route change</button><button class="btn small" type="button" onclick="deadheadWatchTestSimulateTrainMissing()">Simulate train missing</button><button class="btn small" type="button" onclick="deadheadWatchTestSimulateAmbiguous()">Simulate ambiguous match</button></div></div></div></div>`;
 }
-function deadheadWatchTestSimulateTimeChange(){
-  const routes=deadheadWatchRouteItems(),preferred=routes.find(r=>r.day==='fri'&&r.direction==='toWork')||routes[0];
-  if(!preferred)return alert('No saved LIRR commute is available for the comparison test.');
+function deadheadWatchTestPreferredRoute(){
+  const routes=deadheadWatchRouteItems(),usage=new Map();
+  for(const r of routes)for(const t of r.trip.trains)usage.set(String(t),(usage.get(String(t))||0)+1);
+  return routes.find(r=>r.day==='fri'&&r.direction==='toWork'&&r.trip.trains.length===1&&usage.get(String(r.trip.trains[0]))===1)
+    ||routes.find(r=>r.trip.trains.length===1&&usage.get(String(r.trip.trains[0]))===1)
+    ||routes.find(r=>r.trip.trains.length===1)
+    ||routes[0]
+    ||null;
+}
+function deadheadWatchTestContext(label){
+  const preferred=deadheadWatchTestPreferredRoute();
+  if(!preferred){alert('No saved LIRR commute is available for the comparison test.');return null}
   const baseline=deadheadWatchNormalizeBaseline(preferred.trip.baseline);
-  if(!baseline?.legs?.length)return alert('This commute does not have a complete saved GTFS baseline yet.');
+  if(!baseline?.legs?.length){alert('This commute does not have a complete saved GTFS baseline yet.');return null}
+  if(baseline.legs.length!==1){alert(`${label} needs a one-train saved commute. Choose another test route or rematch this commute first.`);return null}
   const offset=deadheadWatchSavedOffset(preferred.day,preferred.direction),assignmentDate=deadheadWatchAssignmentDate(preferred.day),targetDate=deadheadWatchDatePlus(assignmentDate,offset),old=baseline.legs[0];
   const probe=deadheadWatchCompareLeg(preferred.day,preferred.direction,old,targetDate),tripId=probe?.candidate?.tripId;
-  if(!tripId)return alert(`Could not locate current Train ${old.train} for the test simulation.`);
-  const raw=deadheadWatchGtfs?.byTrip?.get(tripId);
-  if(!raw?.length)return alert('The current GTFS trip data is unavailable for the test simulation.');
-  const saved=raw.map(e=>({arr:e.arr,dep:e.dep}));
+  if(!tripId){alert(`Could not locate current Train ${old.train} for the test simulation.`);return null}
+  const raw=deadheadWatchGtfs?.byTrip?.get(tripId),meta=deadheadWatchGtfs?.tripMeta?.get(tripId);
+  if(!raw?.length||!meta){alert('The current GTFS trip data is unavailable for the test simulation.');return null}
+  return {preferred,baseline,old,targetDate,tripId,raw,meta,title:`${deadheadWatchCap(preferred.day)} ${preferred.direction==='toWork'?'To Work':'Home'} Train ${old.train}`};
+}
+function deadheadWatchTestSimulateRouteChange(){
+  const c=deadheadWatchTestContext('Route-change simulation');if(!c)return;
+  const candidates=deadheadWatchTrainCandidates(c.old.train,c.targetDate),changes=[];
+  for(const candidate of candidates){const raw=deadheadWatchGtfs?.byTrip?.get(candidate.tripId);if(!raw)continue;for(const e of raw){if(e.stopId===c.old.exitStopId){changes.push([e,e.stopId]);e.stopId=`__EPL_TEST_ROUTE_REMOVED_${candidate.tripId}`}}}
+  if(!changes.length)return alert(`Could not remove the saved exit stop from current Train ${c.old.train} for the test.`);
   try{
-    for(const e of raw){if(Number.isFinite(e.arr))e.arr+=5;if(Number.isFinite(e.dep))e.dep+=5}
     deadheadWatchBeginComparison();
-    deadheadWatchRenderGtfsControl(`TEST ONLY · Simulated +5 minute change on ${deadheadWatchCap(preferred.day)} ${preferred.direction==='toWork'?'To Work':'Home'} Train ${old.train}. Your saved baseline was not changed.`,'error');
+    deadheadWatchRenderGtfsControl(`TEST ONLY · Simulated route change on ${c.title}. Your saved baseline was not changed.`,'error');
+  }finally{for(const [e,stopId] of changes)e.stopId=stopId}
+}
+function deadheadWatchTestSimulateTrainMissing(){
+  const c=deadheadWatchTestContext('Missing-train simulation');if(!c)return;
+  const key=String(c.old.train),map=deadheadWatchGtfs?.tripsByNumber;if(!map)return;
+  const had=map.has(key),saved=had?[...(map.get(key)||[])]:null;
+  try{
+    map.set(key,[]);
+    deadheadWatchBeginComparison();
+    deadheadWatchRenderGtfsControl(`TEST ONLY · Simulated missing Train ${c.old.train} on ${deadheadWatchCap(c.preferred.day)} ${c.preferred.direction==='toWork'?'To Work':'Home'}. Your saved baseline was not changed.`,'error');
+  }finally{if(had)map.set(key,saved);else map.delete(key)}
+}
+function deadheadWatchTestSimulateAmbiguous(){
+  const c=deadheadWatchTestContext('Ambiguous-match simulation');if(!c)return;
+  const d=deadheadWatchGtfs,key=String(c.old.train),ids=d?.tripsByNumber?.get(key);if(!d||!ids)return;
+  const savedIds=[...ids],savedTimes=c.raw.map(e=>({arr:e.arr,dep:e.dep})),testId=`__EPL_TEST_AMBIGUOUS_${c.tripId}`;
+  const cloneMeta={...c.meta,trip_id:testId},cloneRaw=c.raw.map((e,i)=>({...e,arr:Number.isFinite(savedTimes[i].arr)?savedTimes[i].arr-5:savedTimes[i].arr,dep:Number.isFinite(savedTimes[i].dep)?savedTimes[i].dep-5:savedTimes[i].dep}));
+  try{
+    for(const e of c.raw){if(Number.isFinite(e.arr))e.arr+=5;if(Number.isFinite(e.dep))e.dep+=5}
+    d.tripMeta.set(testId,cloneMeta);d.byTrip.set(testId,cloneRaw);d.tripsByNumber.set(key,[c.tripId,testId]);
+    deadheadWatchBeginComparison();
+    deadheadWatchRenderGtfsControl(`TEST ONLY · Simulated two equally plausible current matches for ${c.title}. EPL should require review rather than guess. Your saved baseline was not changed.`,'error');
   }finally{
-    raw.forEach((e,i)=>{e.arr=saved[i].arr;e.dep=saved[i].dep});
+    c.raw.forEach((e,i)=>{e.arr=savedTimes[i].arr;e.dep=savedTimes[i].dep});d.tripMeta.delete(testId);d.byTrip.delete(testId);d.tripsByNumber.set(key,savedIds);
   }
 }
 function deadheadWatchCloseComparison(){deadheadWatchComparisonDraft=null;deadheadWatchRenderComparison();deadheadWatchRenderGtfsControl()}
