@@ -8413,23 +8413,46 @@ function pushHasPendingDeadheadLaunch(){
   try{return sessionStorage.getItem(PUSH_PENDING_DEADHEAD_KEY)==='1'||new URLSearchParams(window.location.search).get('deadheadWatch')==='1'}catch{return false}
 }
 function pushMarkPendingDeadheadLaunch(){try{sessionStorage.setItem(PUSH_PENDING_DEADHEAD_KEY,'1')}catch{}}
+function pushDeadheadLaunchVerified(){
+  const settingsActive=!!document.getElementById('settingsView')?.classList.contains('active');
+  const disclosure=document.getElementById('myJobSettingsCard');
+  const card=document.getElementById('deadheadWatchCard');
+  const needsResults=!!deadheadWatchMonitorStatus?.results?.length;
+  const resultsVisible=!needsResults||!!document.querySelector('#deadheadWatchComparisonPanel .deadhead-watch-compare');
+  return !!(settingsActive&&disclosure?.open&&card&&resultsVisible);
+}
 async function pushOpenDeadheadWatchFromNotification(){
   pushMarkPendingDeadheadLaunch();
-  try{showView('settings');window.scrollTo({top:0,behavior:'auto'})}catch{}
   for(let i=0;i<32;i++){
     if(typeof accountStartupResolved!=='undefined'&&accountStartupResolved&&String(activeWorkspaceUserId||''))break;
     await new Promise(r=>setTimeout(r,250));
   }
   try{
-    showView('settings');
-    const disclosure=document.getElementById('myJobSettingsCard');if(disclosure)disclosure.open=true;
+    // Load the latest server result first, then repeatedly assert the target UI.
+    // iOS can resume the PWA into its previously visible view after our first
+    // navigation attempt, so success means the target DOM is actually visible.
     await deadheadWatchLoadMonitorStatus(false);
-    showView('settings');
-    if(deadheadWatchMonitorStatus?.results?.length)deadheadWatchOpenAutomaticResults();
-    else document.getElementById('deadheadWatchCard')?.scrollIntoView({behavior:'smooth',block:'start'});
-  }catch(err){console.warn('Deadhead Watch notification launch refresh failed:',err);return}
-  try{sessionStorage.removeItem(PUSH_PENDING_DEADHEAD_KEY)}catch{}
-  try{const url=new URL(window.location.href);url.searchParams.delete('deadheadWatch');history.replaceState({},'',url.pathname+(url.search||''))}catch{}
+    for(let attempt=0;attempt<12;attempt++){
+      showView('settings');
+      await new Promise(r=>setTimeout(r,60));
+      const disclosure=document.getElementById('myJobSettingsCard');
+      if(disclosure)disclosure.open=true;
+      if(deadheadWatchMonitorStatus?.results?.length)deadheadWatchOpenAutomaticResults();
+      else document.getElementById('deadheadWatchCard')?.scrollIntoView({behavior:'auto',block:'start'});
+      await new Promise(r=>setTimeout(r,140));
+      if(pushDeadheadLaunchVerified()){
+        const target=deadheadWatchMonitorStatus?.results?.length?document.getElementById('deadheadWatchComparisonPanel'):document.getElementById('deadheadWatchCard');
+        target?.scrollIntoView({behavior:'smooth',block:'start'});
+        try{sessionStorage.removeItem(PUSH_PENDING_DEADHEAD_KEY)}catch{}
+        try{const url=new URL(window.location.href);url.searchParams.delete('deadheadWatch');history.replaceState({},'',url.pathname+(url.search||''))}catch{}
+        return true;
+      }
+      await new Promise(r=>setTimeout(r,180));
+    }
+  }catch(err){console.warn('Deadhead Watch notification launch refresh failed:',err)}
+  // Do NOT clear the launch marker on failure. The local cache/server intent
+  // remains available so EPL can retry instead of silently losing the tap.
+  return false;
 }
 function pushHandleNotificationLaunch(){
   if(pushHasPendingAwardLaunch())void pushOpenAwardFromNotification();
@@ -8449,10 +8472,11 @@ async function pushConsumeNotificationIntent(){
     if(!response)return;
     let intent=null;
     try{intent=await response.json()}catch{}
-    await cache.delete(PUSH_INTENT_URL);
+    let handled=true;
     if(intent?.type==='EPL_NOTIFICATION_OPEN'&&intent?.notificationType==='bulletin_award')await pushOpenAwardFromNotification();
     else if(intent?.type==='EPL_NOTIFICATION_OPEN'&&intent?.notificationType==='seniority')await pushOpenSeniorityFromNotification();
-    else if(intent?.type==='EPL_NOTIFICATION_OPEN'&&intent?.notificationType==='deadhead_watch')await pushOpenDeadheadWatchFromNotification();
+    else if(intent?.type==='EPL_NOTIFICATION_OPEN'&&intent?.notificationType==='deadhead_watch')handled=await pushOpenDeadheadWatchFromNotification();
+    if(handled)await cache.delete(PUSH_INTENT_URL);
   }catch(err){console.warn('Notification intent handoff failed:',err)}finally{pushIntentConsumeBusy=false}
 }
 function pushRepairResumeLayout(){
@@ -8505,8 +8529,7 @@ async function pushCheckServerIntent(){
       await pushOpenSeniorityFromNotification();
       handled=true;
     }else if(intent.intent_type==='deadhead_watch'){
-      await pushOpenDeadheadWatchFromNotification();
-      handled=true;
+      handled=await pushOpenDeadheadWatchFromNotification();
     }
     if(handled){
       try{await pushRouteInvoke({action:'consume',endpoint:subscription.endpoint,intent_id:intent.id})}catch(err){console.warn('Could not mark notification route consumed:',err)}
