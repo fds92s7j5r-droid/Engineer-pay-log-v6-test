@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-deadhead-watch-mvp1-6-push-alerts-20260927';
+const CACHE_NAME='engineer-pay-log-v10-2-deadhead-watch-mvp1-6-1-push-routing-fix-20260928';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(
@@ -106,8 +106,12 @@ self.addEventListener('notificationclick',event=>{
     const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
     if(windows.length){
       const client=windows[0];
-      try{client.postMessage(message)}catch{}
+      // Prefer a real navigation when WebKit will allow it. This gives the page
+      // a durable ?deadheadWatch=1 launch marker even if postMessage/focus is
+      // swallowed while iOS resumes an already-open Home Screen PWA.
+      try{if(typeof client.navigate==='function')await client.navigate(target)}catch{}
       try{await client.focus()}catch{}
+      try{client.postMessage(message)}catch{}
       // WebKit can make a resumed WindowClient responsive a little late. Keep the
       // service worker alive briefly and retry the message after the app wakes.
       for(const delay of [350,1000,2200,3500]){
@@ -135,3 +139,5 @@ self.addEventListener('notificationclick',event=>{
 // Deadhead Watch MVP 1.5 automatic server monitor cache bump
 
 // Deadhead Watch MVP 1.6 deduplicated push alerts cache bump
+
+// Deadhead Watch MVP 1.6.1: iOS tap routing + at-most-once push fix cache bump
