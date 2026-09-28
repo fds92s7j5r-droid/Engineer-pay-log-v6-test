@@ -2545,7 +2545,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     <div id="deadheadWatchEditor">
       <p class="notice" style="margin-top:12px">Trips belong to the day your assignment starts. If your job releases after midnight, EPL automatically treats the trip home as the following calendar day. Non-LIRR transportation can be saved too, but only LIRR trains will be checked against GTFS.</p>
       <div id="deadheadWatchDays" class="deadhead-watch-days"></div>
-      <div class="deadhead-watch-status"><strong>Deadhead Watch automatic-monitoring test:</strong> EPL can now check saved GTFS baselines on the server even when the PWA is closed. This build records and displays changes in-app; push alerts are not active yet.</div>
+      <div class="deadhead-watch-status"><strong>Deadhead Watch automatic-monitoring test:</strong> EPL checks saved GTFS baselines on the server even when the PWA is closed. This build also sends deduplicated push alerts for newly detected schedule changes.</div>
     </div>
   </div>
 </div>
@@ -4169,6 +4169,7 @@ function readDeadheadWatchFromUI(){
 let deadheadWatchMonitorStatus=null;
 let deadheadWatchMonitorLoading=false;
 let deadheadWatchMonitorMessage='';
+let deadheadWatchPushDeviceState='unknown';
 function deadheadWatchMonitorStateLabel(status){return ({clear:'Clear',attention:'Needs review',error:'Check failed',not_configured:'Setup incomplete',pending:'Waiting'})[status]||'Waiting'}
 function deadheadWatchRenderMonitorStatus(){
   const host=document.getElementById('deadheadWatchMonitorPanel');if(!host)return;
@@ -4180,15 +4181,19 @@ function deadheadWatchRenderMonitorStatus(){
   else if(status==='error')line=`The last server check could not complete${s.last_error?`: ${s.last_error}`:'.'}`;
   else if(status==='not_configured')line='Automatic monitoring is waiting for every saved LIRR commute to have a schedule baseline.';
   const review=s?.results?.length?`<button class="btn small" type="button" onclick="deadheadWatchOpenAutomaticResults()">${status==='attention'?'Review automatic check':'View last automatic check'}</button>`:'';
-  const testBtn=(typeof rosterAdminState!=='undefined'&&rosterAdminState.canPublish&&typeof EPL_TEST_TOOLS_ENABLED!=='undefined'&&EPL_TEST_TOOLS_ENABLED)?`<div class="test-only"><small><strong>TEST ONLY</strong> · writes one simulated server detection so we can verify the recording/display path. The next real server check clears it.</small><div class="deadhead-watch-monitor-actions"><button class="btn small" type="button" onclick="deadheadWatchTestBackendDetection()">Simulate backend detection</button></div></div>`:'';
-  host.innerHTML=`<div class="deadhead-watch-monitor"><div class="deadhead-watch-monitor-head"><div><strong>Automatic monitoring${test?' · TEST ONLY':''}</strong><span>${escapeHTML(line)}</span><small>Server schedule: every 6 hours · Last checked: ${escapeHTML(last)}${s?.feed_version?` · ${escapeHTML(s.feed_version)}`:''}</small><small>Push notifications are not active yet.</small>${deadheadWatchMonitorMessage?`<small class="${deadheadWatchMonitorMessage.startsWith('Error:')?'is-error':'is-success'}">${escapeHTML(deadheadWatchMonitorMessage)}</small>`:''}</div><div class="deadhead-watch-monitor-state is-${status==='clear'?'clear':status==='attention'?'attention':status==='error'?'error':'pending'}">${deadheadWatchMonitorLoading?'Loading…':escapeHTML(deadheadWatchMonitorStateLabel(status))}</div></div><div class="deadhead-watch-monitor-actions">${review}<button class="btn small" type="button" onclick="deadheadWatchLoadMonitorStatus(true)">Refresh status</button></div>${testBtn}</div>`;
+  const pushLine=deadheadWatchPushDeviceState==='ready'?'Push alerts are active on this device.':deadheadWatchPushDeviceState==='unavailable'?'Push alerts are unavailable on this device.':deadheadWatchPushDeviceState==='off'?'Automatic checks are active. Enable Notifications in EPL Settings to receive Deadhead Watch push alerts on this device.':'Push alerts use EPL’s registered notification devices.';
+  const testBtn=(typeof rosterAdminState!=='undefined'&&rosterAdminState.canPublish&&typeof EPL_TEST_TOOLS_ENABLED!=='undefined'&&EPL_TEST_TOOLS_ENABLED)?`<div class="test-only"><small><strong>TEST ONLY</strong> · writes one simulated server detection and sends it through the real Deadhead Watch push-delivery path. The next real server check clears it.</small><div class="deadhead-watch-monitor-actions"><button class="btn small" type="button" onclick="deadheadWatchTestBackendDetection()">Simulate detection + push</button></div></div>`:'';
+  host.innerHTML=`<div class="deadhead-watch-monitor"><div class="deadhead-watch-monitor-head"><div><strong>Automatic monitoring${test?' · TEST ONLY':''}</strong><span>${escapeHTML(line)}</span><small>Server schedule: every 6 hours · Last checked: ${escapeHTML(last)}${s?.feed_version?` · ${escapeHTML(s.feed_version)}`:''}</small><small>${escapeHTML(pushLine)}</small>${deadheadWatchMonitorMessage?`<small class="${deadheadWatchMonitorMessage.startsWith('Error:')?'is-error':'is-success'}">${escapeHTML(deadheadWatchMonitorMessage)}</small>`:''}</div><div class="deadhead-watch-monitor-state is-${status==='clear'?'clear':status==='attention'?'attention':status==='error'?'error':'pending'}">${deadheadWatchMonitorLoading?'Loading…':escapeHTML(deadheadWatchMonitorStateLabel(status))}</div></div><div class="deadhead-watch-monitor-actions">${review}<button class="btn small" type="button" onclick="deadheadWatchLoadMonitorStatus(true)">Refresh status</button></div>${testBtn}</div>`;
 }
 async function deadheadWatchLoadMonitorStatus(showMessage=false){
   const host=document.getElementById('deadheadWatchMonitorPanel');if(!host)return;
   const watch=normalizeDeadheadWatch(normalizeMyJob(getMyJob())?.deadheadWatch);if(!watch.enabled){deadheadWatchMonitorStatus=null;deadheadWatchRenderMonitorStatus();return}
   const client=getCloudClient?.();if(!client){deadheadWatchMonitorStatus=null;deadheadWatchMonitorMessage='Automatic monitoring requires cloud sign-in.';deadheadWatchRenderMonitorStatus();return}
   deadheadWatchMonitorLoading=true;if(showMessage)deadheadWatchMonitorMessage='Refreshing automatic-monitor status…';deadheadWatchRenderMonitorStatus();
-  try{const {data,error}=await client.from('deadhead_watch_monitor_status').select('last_checked_at,last_success_at,feed_version,feed_label,status,commute_count,change_count,summary,results,last_error').maybeSingle();if(error)throw error;deadheadWatchMonitorStatus=data||null;deadheadWatchMonitorMessage=showMessage?(data?'Automatic-monitor status refreshed.':'Waiting for the first server check.'):''}
+  try{
+    const {data,error}=await client.from('deadhead_watch_monitor_status').select('last_checked_at,last_success_at,feed_version,feed_label,status,commute_count,change_count,summary,results,last_error').maybeSingle();if(error)throw error;deadheadWatchMonitorStatus=data||null;deadheadWatchMonitorMessage=showMessage?(data?'Automatic-monitor status refreshed.':'Waiting for the first server check.'):'';
+    try{if(typeof pushSupported==='function'&&pushSupported()){const sub=await pushCurrentSubscription();deadheadWatchPushDeviceState=(typeof Notification!=='undefined'&&Notification.permission==='granted'&&sub)?'ready':'off'}else deadheadWatchPushDeviceState='unavailable'}catch{deadheadWatchPushDeviceState='off'}
+  }
   catch(err){deadheadWatchMonitorMessage=`Error: ${err?.message||err}`}
   finally{
     deadheadWatchMonitorLoading=false;
@@ -4205,8 +4210,8 @@ function deadheadWatchOpenAutomaticResults(){
   deadheadWatchComparisonDraft={automatic:true,checkedAt:s.last_checked_at||new Date().toISOString(),feedVersion:s.feed_version||'',feedLabel:s.feed_label||'LIRR GTFS',routes:s.results};deadheadWatchRenderComparison();document.getElementById('deadheadWatchComparisonPanel')?.scrollIntoView({behavior:'smooth',block:'start'});
 }
 async function deadheadWatchTestBackendDetection(){
-  const client=getCloudClient?.();if(!client)return alert('Cloud sign-in is required for this test.');deadheadWatchMonitorMessage='Asking the server to write a test detection…';deadheadWatchRenderMonitorStatus();
-  try{const {data,error}=await client.functions.invoke('deadhead-watch-test-detection',{body:{action:'simulate'}});if(error)throw error;if(data?.error)throw new Error(data.error);deadheadWatchMonitorMessage='TEST ONLY · backend detection written.';await deadheadWatchLoadMonitorStatus(false);deadheadWatchMonitorMessage='TEST ONLY · backend detection written.';deadheadWatchRenderMonitorStatus();document.getElementById('deadheadWatchMonitorPanel')?.scrollIntoView({behavior:'smooth',block:'center'})}
+  const client=getCloudClient?.();if(!client)return alert('Cloud sign-in is required for this test.');deadheadWatchMonitorMessage='Creating a simulated detection and sending a Deadhead Watch push…';deadheadWatchRenderMonitorStatus();
+  try{const {data,error}=await client.functions.invoke('deadhead-watch-test-detection',{body:{action:'simulate'}});if(error)throw error;if(data?.error)throw new Error(data.error);const sent=Number(data?.push?.sent_events||0)>0;deadheadWatchMonitorMessage=sent?'TEST ONLY · backend detection written and push sent.':'TEST ONLY · backend detection written; no push was delivered.';await deadheadWatchLoadMonitorStatus(false);deadheadWatchMonitorMessage=sent?'TEST ONLY · backend detection written and push sent.':'TEST ONLY · backend detection written; no push was delivered.';deadheadWatchRenderMonitorStatus();document.getElementById('deadheadWatchMonitorPanel')?.scrollIntoView({behavior:'smooth',block:'center'})}
   catch(err){deadheadWatchMonitorMessage=`Error: ${err?.message||err}`;deadheadWatchRenderMonitorStatus()}
 }
 
@@ -8346,6 +8351,7 @@ async function pushSendSeniorityTestNotification(){
 
 const PUSH_PENDING_AWARD_KEY='eplPendingAwardNotificationLaunch_v1';
 const PUSH_PENDING_SENIORITY_KEY='eplPendingSeniorityNotificationLaunch_v1';
+const PUSH_PENDING_DEADHEAD_KEY='eplPendingDeadheadWatchNotificationLaunch_v1';
 const PUSH_PROMPT_DISMISSED_KEY='eplPushPromptDismissed_v1';
 const PUSH_ONBOARDING_SEEN_KEY='eplPushOnboardingSeen_v1';
 
@@ -8403,9 +8409,32 @@ async function pushOpenSeniorityFromNotification(){
   try{sessionStorage.removeItem(PUSH_PENDING_SENIORITY_KEY)}catch{}
   try{const url=new URL(window.location.href);url.searchParams.delete('seniority');history.replaceState({},'',url.pathname+(url.search||''))}catch{}
 }
+function pushHasPendingDeadheadLaunch(){
+  try{return sessionStorage.getItem(PUSH_PENDING_DEADHEAD_KEY)==='1'||new URLSearchParams(window.location.search).get('deadheadWatch')==='1'}catch{return false}
+}
+function pushMarkPendingDeadheadLaunch(){try{sessionStorage.setItem(PUSH_PENDING_DEADHEAD_KEY,'1')}catch{}}
+async function pushOpenDeadheadWatchFromNotification(){
+  pushMarkPendingDeadheadLaunch();
+  try{showView('settings');window.scrollTo({top:0,behavior:'auto'})}catch{}
+  for(let i=0;i<32;i++){
+    if(typeof accountStartupResolved!=='undefined'&&accountStartupResolved&&String(activeWorkspaceUserId||''))break;
+    await new Promise(r=>setTimeout(r,250));
+  }
+  try{
+    showView('settings');
+    const disclosure=document.getElementById('myJobSettingsCard');if(disclosure)disclosure.open=true;
+    await deadheadWatchLoadMonitorStatus(false);
+    showView('settings');
+    if(deadheadWatchMonitorStatus?.results?.length)deadheadWatchOpenAutomaticResults();
+    else document.getElementById('deadheadWatchCard')?.scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(err){console.warn('Deadhead Watch notification launch refresh failed:',err);return}
+  try{sessionStorage.removeItem(PUSH_PENDING_DEADHEAD_KEY)}catch{}
+  try{const url=new URL(window.location.href);url.searchParams.delete('deadheadWatch');history.replaceState({},'',url.pathname+(url.search||''))}catch{}
+}
 function pushHandleNotificationLaunch(){
   if(pushHasPendingAwardLaunch())void pushOpenAwardFromNotification();
   else if(pushHasPendingSeniorityLaunch())void pushOpenSeniorityFromNotification();
+  else if(pushHasPendingDeadheadLaunch())void pushOpenDeadheadWatchFromNotification();
 }
 window.addEventListener('load',()=>setTimeout(pushHandleNotificationLaunch,150));
 const PUSH_INTENT_CACHE='epl-notification-intents-v1';
@@ -8423,6 +8452,7 @@ async function pushConsumeNotificationIntent(){
     await cache.delete(PUSH_INTENT_URL);
     if(intent?.type==='EPL_NOTIFICATION_OPEN'&&intent?.notificationType==='bulletin_award')await pushOpenAwardFromNotification();
     else if(intent?.type==='EPL_NOTIFICATION_OPEN'&&intent?.notificationType==='seniority')await pushOpenSeniorityFromNotification();
+    else if(intent?.type==='EPL_NOTIFICATION_OPEN'&&intent?.notificationType==='deadhead_watch')await pushOpenDeadheadWatchFromNotification();
   }catch(err){console.warn('Notification intent handoff failed:',err)}finally{pushIntentConsumeBusy=false}
 }
 function pushRepairResumeLayout(){
@@ -8453,6 +8483,7 @@ if('serviceWorker' in navigator){
     const data=event?.data||{};
     if(data.type==='EPL_NOTIFICATION_OPEN'&&data.notificationType==='bulletin_award')void pushOpenAwardFromNotification();
     else if(data.type==='EPL_NOTIFICATION_OPEN'&&data.notificationType==='seniority')void pushOpenSeniorityFromNotification();
+    else if(data.type==='EPL_NOTIFICATION_OPEN'&&data.notificationType==='deadhead_watch')void pushOpenDeadheadWatchFromNotification();
   });
 }
 
@@ -8472,6 +8503,9 @@ async function pushCheckServerIntent(){
       handled=true;
     }else if(intent.intent_type==='seniority'){
       await pushOpenSeniorityFromNotification();
+      handled=true;
+    }else if(intent.intent_type==='deadhead_watch'){
+      await pushOpenDeadheadWatchFromNotification();
       handled=true;
     }
     if(handled){
