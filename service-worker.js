@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-deadhead-watch-prod-integration-20260928';
+const CACHE_NAME='engineer-pay-log-v10-2-deadhead-watch-exact-change-test-20260928';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(
@@ -135,4 +135,4 @@ self.addEventListener('notificationclick',event=>{
   })());
 });
 
-// Deadhead Watch production integration candidate · 2026-09-28
+// Deadhead Watch production integration + user-facing update · 2026-09-28

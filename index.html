@@ -1040,6 +1040,15 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .deadhead-watch-compare-leg{margin-top:8px;padding-top:8px;border-top:1px solid var(--line)}.deadhead-watch-compare-leg strong{display:block;font-size:11px}.deadhead-watch-compare-leg span{display:block;margin-top:3px;font-size:10px;line-height:1.4;color:var(--muted)}
     .deadhead-watch-compare-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.deadhead-watch-compare-footer{display:flex;gap:8px;flex-wrap:wrap;padding:12px 14px;border-top:1px solid var(--line)}
     html[data-theme="dark"] .deadhead-watch-compare{background:#101d2d!important;border-color:#314158!important}html[data-theme="dark"] .deadhead-watch-compare-head{background:#15263a!important;border-color:#314158!important}
+    .deadhead-watch-change-modal{position:fixed;inset:0;z-index:10050;background:rgba(4,10,18,.62);display:flex;align-items:flex-end;justify-content:center;padding:14px;backdrop-filter:blur(4px)}
+    .deadhead-watch-change-sheet{width:min(680px,100%);max-height:min(82vh,760px);overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:20px 20px 14px 14px;box-shadow:0 20px 60px rgba(0,0,0,.32)}
+    .deadhead-watch-change-head{position:sticky;top:0;z-index:2;display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:15px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+    .deadhead-watch-change-head strong{display:block;font-size:17px}.deadhead-watch-change-head span{display:block;margin-top:3px;font-size:11px;line-height:1.4;color:var(--muted)}
+    .deadhead-watch-change-body{padding:12px 14px 16px}.deadhead-watch-change-route{border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:10px;background:var(--soft)}
+    .deadhead-watch-change-route:first-child{margin-top:0}.deadhead-watch-change-route-title{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}.deadhead-watch-change-route-title strong{font-size:13px}.deadhead-watch-change-route-title span{font-size:10px;color:var(--muted)}
+    .deadhead-watch-change-grid{display:grid;grid-template-columns:minmax(90px,1.2fr) minmax(74px,.8fr) minmax(74px,.8fr);gap:6px;margin-top:10px}.deadhead-watch-change-grid>div{padding:7px 8px;border-radius:9px;background:var(--card);font-size:10px;line-height:1.35}.deadhead-watch-change-grid .hdr{font-weight:900;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.04em}.deadhead-watch-change-grid .changed{font-weight:900;color:var(--bad)}
+    .deadhead-watch-change-note{margin-top:9px;padding:9px 10px;border-radius:10px;background:var(--card);font-size:10px;line-height:1.45}.deadhead-watch-change-note strong{display:block;margin-bottom:3px;font-size:10px}.deadhead-watch-change-actions{display:flex;gap:8px;flex-wrap:wrap;padding:0 14px 14px}
+    body.deadhead-watch-modal-open{overflow:hidden}html[data-theme="dark"] .deadhead-watch-change-sheet{background:#101d2d!important;border-color:#314158!important}html[data-theme="dark"] .deadhead-watch-change-head{background:#101d2d!important;border-color:#314158!important}html[data-theme="dark"] .deadhead-watch-change-route{background:#15263a!important;border-color:#314158!important}html[data-theme="dark"] .deadhead-watch-change-grid>div,html[data-theme="dark"] .deadhead-watch-change-note{background:#101d2d!important}
     .deadhead-watch-monitor{margin-top:10px;border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:#f8fbff}.deadhead-watch-monitor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.deadhead-watch-monitor strong{display:block;font-size:12px}.deadhead-watch-monitor span,.deadhead-watch-monitor small{display:block;margin-top:3px;font-size:10px;line-height:1.4;color:var(--muted)}.deadhead-watch-monitor-state{font-size:9px;font-weight:900;padding:5px 8px;border:1px solid var(--line);border-radius:999px;background:var(--card);white-space:nowrap}.deadhead-watch-monitor-state.is-clear{color:#1f7a42}.deadhead-watch-monitor-state.is-attention,.deadhead-watch-monitor-state.is-error{color:var(--bad)}.deadhead-watch-monitor-state.is-pending{color:#8a5a00}.deadhead-watch-monitor-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.deadhead-watch-monitor .test-only{margin-top:9px;padding-top:9px;border-top:1px dashed var(--line)}
     html[data-theme="dark"] .deadhead-watch-monitor{background:#101d2d!important;border-color:#314158!important}
     @media(max-width:700px){.deadhead-watch-gtfs{align-items:flex-start;flex-direction:column}.deadhead-watch-gtfs-actions{justify-content:flex-start}.deadhead-watch-resolver-leg{grid-template-columns:1fr}.deadhead-watch-resolver-route-head,.deadhead-watch-compare-head,.deadhead-watch-compare-route-head{flex-direction:column;gap:5px}.deadhead-watch-compare-status{align-self:flex-start}}
@@ -2545,7 +2554,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     <div id="deadheadWatchEditor">
       <p class="notice" style="margin-top:12px">Trips belong to the day your assignment starts. If your job releases after midnight, EPL automatically treats the trip home as the following calendar day. Non-LIRR transportation can be saved too, but only LIRR trains will be checked against GTFS.</p>
       <div id="deadheadWatchDays" class="deadhead-watch-days"></div>
-      <div class="deadhead-watch-status"><strong>Deadhead Watch automatic-monitoring test:</strong> EPL checks saved GTFS baselines on the server even when the PWA is closed. This build also sends deduplicated push alerts for newly detected schedule changes.</div>
+      <div class="deadhead-watch-status"><strong>Automatic monitoring:</strong> Once your LIRR commute has a saved schedule baseline, EPL periodically checks it for published schedule changes even when the PWA is closed. If notifications are enabled, Deadhead Watch can alert you when a saved commute needs review.</div>
     </div>
   </div>
 </div>
@@ -2784,29 +2793,25 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
 <div id="whatsNewModal" class="modal">
   <div class="modal-card" style="max-width:620px">
-    <div class="modal-head"><div><h2 style="margin:0">What's New in Engineer Pay Log 10.2</h2></div></div>
+    <div class="modal-head"><div><h2 style="margin:0">What's New in Engineer Pay Log 10.2 — Deadhead Watch</h2></div></div>
     <div class="modal-body">
-      <p style="margin-top:0">This update adds several new tools designed to make Engineer Pay Log more useful throughout the bid and roster process.</p>
+      <p style="margin-top:0">This update introduces <strong>Deadhead Watch</strong>, a new way to keep an eye on the LIRR trains you normally use to get to and from work.</p>
 
-      <h3>Push Notifications</h3>
-      <p>Enable notifications to receive important EPL alerts even when the app is closed.</p>
+      <h3>Save Your Commute</h3>
+      <p>In <strong>Settings → My Job</strong>, save the LIRR train or trains you normally use for each workday. EPL matches those trips to the current schedule and saves a baseline for comparison.</p>
 
-      <h3>Bulletin Award Alerts</h3>
-      <p>If EPL detects that you were awarded an assignment, you can be notified and view the award directly in the app. <strong>Always call the Crew Dispatcher to officially confirm your award.</strong></p>
+      <h3>Automatic Schedule Monitoring</h3>
+      <p>Once your commute is matched, EPL can periodically compare your saved trips against current LIRR schedule data — even while the app is closed.</p>
 
-      <h3>Seniority Intensifies 📈</h3>
-      <p>When a new monthly roster shows that engineers above you have retired, EPL can let you know that your seniority improved.</p>
+      <h3>Deadhead Watch Alerts</h3>
+      <p>If EPL detects that a saved train time, route, or availability has changed, Deadhead Watch can alert you and take you directly to the affected commute for review.</p>
 
-      <h3>Bid Sheet Assistant Improvements</h3>
-      <p>Build and review your bid choices using Crew Book information directly inside EPL.</p>
+      <h3>Your Baseline Stays Under Your Control</h3>
+      <p>EPL will never silently replace your saved commute when it detects a change. If a trip needs attention, you can review it and rematch it yourself.</p>
 
-      <h3>Crew Book Improvements</h3>
-      <p>Better relief-job information, report/release times, overtime and meal details, and improved job lookup tools.</p>
+      <p><strong>Deadhead Watch monitors published schedule changes.</strong> It is not a live train-status or delay-alert system and should not be used as a substitute for official LIRR service information.</p>
 
-      <h3>Smarter Shift Entry</h3>
-      <p>Crew-member autofill and several quality-of-life improvements make adding shifts faster.</p>
-
-      <p>This update also includes a major behind-the-scenes upgrade to how Crew Book information is maintained. This should allow future Crew Book changes and revisions to reach EPL faster and more reliably.</p>
+      <p>This update also includes the latest Crew Book revision-label improvements and other reliability fixes.</p>
 
       <p>Thank you for using Engineer Pay Log and for all of the feedback that continues to make the app better.</p>
       <p><strong>— Justin</strong></p>
@@ -2837,6 +2842,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         <strong>What EPL can alert you about</strong>
         <div style="margin-top:7px">• Bulletin Awards that match your employee number</div>
         <div style="margin-top:5px">• Monthly seniority gains when engineers above you retire</div>
+        <div style="margin-top:5px">• Saved commute schedule changes from Deadhead Watch</div>
         <div style="margin-top:5px">• No assignment details are shown on your Lock Screen</div>
       </div>
     </div>
@@ -3211,7 +3217,7 @@ const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
 const APP_VERSION='10.2';
-const WHATS_NEW_VERSION='10.2-production-20260913';
+const WHATS_NEW_VERSION='10.2-deadhead-watch-production-20260928';
 const CONTACT_EMAIL='admin@engineerpaylog.com';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
 const BACKUP_REMIND_LATER_KEY='engineerPayLogBackupRemindLaterUntil';
@@ -4171,6 +4177,48 @@ let deadheadWatchMonitorLoading=false;
 let deadheadWatchMonitorMessage='';
 let deadheadWatchPushDeviceState='unknown';
 function deadheadWatchMonitorStateLabel(status){return ({clear:'Clear',attention:'Needs review',error:'Check failed',not_configured:'Setup incomplete',pending:'Waiting'})[status]||'Waiting'}
+function deadheadWatchChangedRoutes(){return (deadheadWatchMonitorStatus?.results||[]).filter(r=>r&&r.status!=='unchanged')}
+function deadheadWatchStoredTime(v){return Number.isFinite(Number(v))?deadheadWatchFmtGtfsTime(Number(v)):'—'}
+function deadheadWatchSavedLegSummary(leg){const b=leg?.before||{};return `Train ${leg?.train||b.train||''} · ${b.boardStopName||'Boarding stop'} ${deadheadWatchStoredTime(b.boardTime)} → ${b.exitStopName||'Exit stop'} ${deadheadWatchStoredTime(b.exitTime)}`}
+function deadheadWatchRenderChangeLeg(leg,route){
+  const b=leg?.before||{},a=leg?.after||{},status=leg?.status||route?.status||'needs_review';
+  if(status==='time_changed'&&Number.isFinite(Number(b.boardTime))&&Number.isFinite(Number(a.boardTime))){
+    const rows=[
+      [b.boardStopName||'Boarding stop',deadheadWatchStoredTime(b.boardTime),deadheadWatchStoredTime(a.boardTime),deadheadWatchDeltaText(a.boardDelta)],
+      [b.exitStopName||'Exit stop',deadheadWatchStoredTime(b.exitTime),deadheadWatchStoredTime(a.exitTime),deadheadWatchDeltaText(a.exitDelta)]
+    ];
+    return `<div class="deadhead-watch-change-note"><strong>Train ${escapeHTML(leg.train)} · Time changed</strong><div class="deadhead-watch-change-grid"><div class="hdr">Stop</div><div class="hdr">Saved</div><div class="hdr">Current</div>${rows.map(x=>`<div>${escapeHTML(x[0])}</div><div>${escapeHTML(x[1])}</div><div class="changed">${escapeHTML(x[2])}<br><span>${escapeHTML(x[3])}</span></div>`).join('')}</div></div>`;
+  }
+  if(status==='train_missing')return `<div class="deadhead-watch-change-note"><strong>Train ${escapeHTML(leg.train)} · No longer found</strong><div><b>Saved:</b> ${escapeHTML(deadheadWatchSavedLegSummary(leg))}</div><div style="margin-top:5px"><b>Current:</b> Train ${escapeHTML(leg.train)} is not present on ${escapeHTML(a.serviceDay||route?.targetDate||'the checked')} service.</div></div>`;
+  if(status==='route_changed'){
+    const beforeStops=(b.routeStops||[]).filter(Boolean),afterStops=(a.routeStops||[]).filter(Boolean);
+    if(a.kind==='segment_unavailable')return `<div class="deadhead-watch-change-note"><strong>Train ${escapeHTML(leg.train)} · Saved segment unavailable</strong><div><b>Saved:</b> ${escapeHTML(deadheadWatchSavedLegSummary(leg))}</div><div style="margin-top:5px"><b>Current:</b> Train ${escapeHTML(leg.train)} no longer carries the saved ${escapeHTML(b.boardStopName||'boarding stop')} → ${escapeHTML(b.exitStopName||'exit stop')} segment.</div></div>`;
+    return `<div class="deadhead-watch-change-note"><strong>Train ${escapeHTML(leg.train)} · Route changed</strong><div><b>Saved watched segment:</b> ${escapeHTML((beforeStops.length?beforeStops:[b.boardStopName,b.exitStopName]).filter(Boolean).join(' → '))}</div><div style="margin-top:5px"><b>Current stop pattern:</b> ${escapeHTML(afterStops.join(' → ')||leg.detail||'Changed')}</div></div>`;
+  }
+  if(status==='needs_review'){
+    const opts=Array.isArray(a.options)?a.options:[];
+    return `<div class="deadhead-watch-change-note"><strong>Train ${escapeHTML(leg.train)} · EPL will not guess</strong><div><b>Saved:</b> ${escapeHTML(deadheadWatchSavedLegSummary(leg))}</div>${opts.length?`<div style="margin-top:6px"><b>Current possible matches:</b>${opts.map((o,i)=>`<div style="margin-top:4px">Option ${i+1}: ${escapeHTML(b.boardStopName||'Board')} ${escapeHTML(deadheadWatchStoredTime(o.boardTime))} → ${escapeHTML(b.exitStopName||'Exit')} ${escapeHTML(deadheadWatchStoredTime(o.exitTime))}</div>`).join('')}</div>`:`<div style="margin-top:5px">${escapeHTML(leg.detail||'More than one current match is possible.')}</div>`}</div>`;
+  }
+  return `<div class="deadhead-watch-change-note"><strong>Train ${escapeHTML(leg?.train||'')} · ${escapeHTML(deadheadWatchComparisonStatusLabel(status))}</strong><div>${escapeHTML(leg?.detail||route?.detail||'This commute needs review.')}</div></div>`;
+}
+function deadheadWatchCloseChangeDetails(){document.getElementById('deadheadWatchChangeModal')?.remove();document.body.classList.remove('deadhead-watch-modal-open')}
+async function deadheadWatchTestExactChangePush(){
+  const client=getCloudClient?.();if(!client){deadheadWatchMonitorMessage='Error: Cloud sign-in is required for the push test.';deadheadWatchRenderMonitorStatus();return}
+  const btn=document.getElementById('deadheadWatchExactTestBtn');if(btn){btn.disabled=true;btn.textContent='Creating test change…'}
+  try{
+    const {data,error}=await client.functions.invoke('deadhead-watch-test-detection',{body:{}});if(error)throw error;if(data?.error)throw new Error(data.error);
+    deadheadWatchMonitorMessage='TEST ONLY · +5 minute change created. The scheduled sender should deliver one push within about a minute.';
+    await new Promise(r=>setTimeout(r,500));await deadheadWatchLoadMonitorStatus(false);
+  }catch(err){deadheadWatchMonitorMessage=`Error: ${err?.message||err}`;deadheadWatchRenderMonitorStatus()}
+  finally{if(btn){btn.disabled=false;btn.textContent='TEST ONLY · Simulate +5 min push'}}
+}
+function deadheadWatchShowChangeDetails(){
+  const routes=deadheadWatchChangedRoutes();if(!routes.length)return false;deadheadWatchCloseChangeDetails();
+  const modal=document.createElement('div');modal.id='deadheadWatchChangeModal';modal.className='deadhead-watch-change-modal';
+  const checked=deadheadWatchMonitorStatus?.last_checked_at?new Date(deadheadWatchMonitorStatus.last_checked_at).toLocaleString():'latest automatic check';
+  modal.innerHTML=`<div class="deadhead-watch-change-sheet" role="dialog" aria-modal="true" aria-labelledby="deadheadWatchChangeTitle"><div class="deadhead-watch-change-head"><div><strong id="deadheadWatchChangeTitle">Schedule Change Details</strong><span>${routes.length} saved commute${routes.length===1?'':'s'} changed · checked ${escapeHTML(checked)}${deadheadWatchMonitorStatus?.feed_version?` · ${escapeHTML(deadheadWatchMonitorStatus.feed_version)}`:''}</span></div><button class="btn small" type="button" onclick="deadheadWatchCloseChangeDetails()">Close</button></div><div class="deadhead-watch-change-body">${routes.map(r=>{const title=`${deadheadWatchCap(r.day)} · ${r.direction==='toWork'?'To Work':'Home'}`,trains=(r.trip?.trains||[]).join(' → ');return `<div class="deadhead-watch-change-route"><div class="deadhead-watch-change-route-title"><div><strong>${escapeHTML(title)}</strong><span>${escapeHTML(trains?`Train ${trains}`:'Saved commute')}</span></div><div class="deadhead-watch-compare-status status-${escapeHTML(r.status)}">${escapeHTML(deadheadWatchComparisonStatusLabel(r.status))}</div></div>${r.connection?`<div class="deadhead-watch-change-note"><strong>Connection changed</strong><div><b>Saved connection:</b> ${Number.isFinite(Number(r.connection.beforeWaitMinutes))?escapeHTML(String(r.connection.beforeWaitMinutes))+' min':'—'}</div><div style="margin-top:5px"><b>Current connection:</b> ${Number(r.connection.currentWaitMinutes)<0?`Train ${escapeHTML(r.connection.toTrain)} leaves ${escapeHTML(String(Math.abs(r.connection.currentWaitMinutes)))} min before Train ${escapeHTML(r.connection.fromTrain)} arrives.`:`${escapeHTML(String(r.connection.currentWaitMinutes))} min wait`}</div></div>`:''}${(r.legs||[]).filter(l=>l.status!=='unchanged').map(l=>deadheadWatchRenderChangeLeg(l,r)).join('')||`<div class="deadhead-watch-change-note">${escapeHTML(r.detail||'This commute needs review.')}</div>`}</div>`}).join('')}</div><div class="deadhead-watch-change-actions"><button class="btn primary" type="button" onclick="deadheadWatchCloseChangeDetails()">Got it</button><button class="btn" type="button" onclick="deadheadWatchCloseChangeDetails();document.getElementById('deadheadWatchComparisonPanel')?.scrollIntoView({behavior:'smooth',block:'start'})">View full automatic check</button></div></div>`;
+  modal.addEventListener('click',e=>{if(e.target===modal)deadheadWatchCloseChangeDetails()});document.body.appendChild(modal);document.body.classList.add('deadhead-watch-modal-open');return true;
+}
 function deadheadWatchRenderMonitorStatus(){
   const host=document.getElementById('deadheadWatchMonitorPanel');if(!host)return;
   const watch=normalizeDeadheadWatch(normalizeMyJob(getMyJob())?.deadheadWatch);if(!watch.enabled){host.innerHTML='';return}
@@ -4180,9 +4228,10 @@ function deadheadWatchRenderMonitorStatus(){
   else if(status==='attention')line=`${Number(s.change_count||0)} saved commute${Number(s.change_count||0)===1?'':'s'} need review.`;
   else if(status==='error')line=`The last server check could not complete${s.last_error?`: ${s.last_error}`:'.'}`;
   else if(status==='not_configured')line='Automatic monitoring is waiting for every saved LIRR commute to have a schedule baseline.';
+  const exact=status==='attention'&&s?.results?.length?`<button class="btn small primary" type="button" onclick="deadheadWatchShowChangeDetails()">What changed?</button>`:'';
   const review=s?.results?.length?`<button class="btn small" type="button" onclick="deadheadWatchOpenAutomaticResults()">${status==='attention'?'Review automatic check':'View last automatic check'}</button>`:'';
   const pushLine=deadheadWatchPushDeviceState==='ready'?'Push alerts are active on this device.':deadheadWatchPushDeviceState==='unavailable'?'Push alerts are unavailable on this device.':deadheadWatchPushDeviceState==='off'?'Automatic checks are active. Enable Notifications in EPL Settings to receive Deadhead Watch push alerts on this device.':'Push alerts use EPL’s registered notification devices.';
-  host.innerHTML=`<div class="deadhead-watch-monitor"><div class="deadhead-watch-monitor-head"><div><strong>Automatic monitoring${test?' · TEST ONLY':''}</strong><span>${escapeHTML(line)}</span><small>Server schedule: every 6 hours · Last checked: ${escapeHTML(last)}${s?.feed_version?` · ${escapeHTML(s.feed_version)}`:''}</small><small>${escapeHTML(pushLine)}</small>${deadheadWatchMonitorMessage?`<small class="${deadheadWatchMonitorMessage.startsWith('Error:')?'is-error':'is-success'}">${escapeHTML(deadheadWatchMonitorMessage)}</small>`:''}</div><div class="deadhead-watch-monitor-state is-${status==='clear'?'clear':status==='attention'?'attention':status==='error'?'error':'pending'}">${deadheadWatchMonitorLoading?'Loading…':escapeHTML(deadheadWatchMonitorStateLabel(status))}</div></div><div class="deadhead-watch-monitor-actions">${review}<button class="btn small" type="button" onclick="deadheadWatchLoadMonitorStatus(true)">Refresh status</button></div></div>`;
+  host.innerHTML=`<div class="deadhead-watch-monitor"><div class="deadhead-watch-monitor-head"><div><strong>Automatic monitoring${test?' · TEST ONLY':''}</strong><span>${escapeHTML(line)}</span><small>Server schedule: every 6 hours · Last checked: ${escapeHTML(last)}${s?.feed_version?` · ${escapeHTML(s.feed_version)}`:''}</small><small>${escapeHTML(pushLine)}</small>${deadheadWatchMonitorMessage?`<small class="${deadheadWatchMonitorMessage.startsWith('Error:')?'is-error':'is-success'}">${escapeHTML(deadheadWatchMonitorMessage)}</small>`:''}</div><div class="deadhead-watch-monitor-state is-${status==='clear'?'clear':status==='attention'?'attention':status==='error'?'error':'pending'}">${deadheadWatchMonitorLoading?'Loading…':escapeHTML(deadheadWatchMonitorStateLabel(status))}</div></div><div class="deadhead-watch-monitor-actions"><button id="deadheadWatchExactTestBtn" class="btn small" type="button" onclick="deadheadWatchTestExactChangePush()">TEST ONLY · Simulate +5 min push</button>${exact}${review}<button class="btn small" type="button" onclick="deadheadWatchLoadMonitorStatus(true)">Refresh status</button></div></div>`;
 }
 async function deadheadWatchLoadMonitorStatus(showMessage=false){
   const host=document.getElementById('deadheadWatchMonitorPanel');if(!host)return;
@@ -8377,6 +8426,7 @@ async function pushOpenDeadheadWatchFromNotification(){
       if(pushDeadheadLaunchVerified()){
         const target=deadheadWatchMonitorStatus?.results?.length?document.getElementById('deadheadWatchComparisonPanel'):document.getElementById('deadheadWatchCard');
         target?.scrollIntoView({behavior:'smooth',block:'start'});
+        if(deadheadWatchMonitorStatus?.status==='attention')deadheadWatchShowChangeDetails();
         try{sessionStorage.removeItem(PUSH_PENDING_DEADHEAD_KEY)}catch{}
         try{const url=new URL(window.location.href);url.searchParams.delete('deadheadWatch');history.replaceState({},'',url.pathname+(url.search||''))}catch{}
         return true;
