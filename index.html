@@ -11224,6 +11224,9 @@ function developerApplyEnvironmentVisibility(){
     try{localStorage.removeItem('epl_trim_test_rank_override_v1')}catch{}
     try{localStorage.removeItem('epl_bid_lifecycle_test_v1')}catch{}
   }
+  // Future GO 203 entry-point visibility is environment-based, not Settings/admin-check based.
+  // renderAll() calls this function on initial app load, so the button is visible immediately in GitHub testing.
+  futureCrewBookApplyVisibility();
 }
 async function rosterCheckAdmin(force=false){
   developerApplyEnvironmentVisibility();
