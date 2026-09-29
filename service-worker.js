@@ -1,5 +1,5 @@
-const CACHE_NAME='engineer-pay-log-v10-2-quick-job-browse-test-20260929';
-const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
+const CACHE_NAME='engineer-pay-log-v10-2-go203-future-foundation-test-20260929';
+const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./assets/generalpick/go203/data.js','./assets/generalpick/go203/pick-week.js'];
 
 self.addEventListener('install',e=>e.waitUntil(
   caches.open(CACHE_NAME)
@@ -137,4 +137,6 @@ self.addEventListener('notificationclick',event=>{
 
 // Deadhead Watch production integration + user-facing update · 2026-09-28
 
-// Quick Job Lookup Browse test build · 2026-09-29
+// Quick Job Lookup Browse production release · 2026-09-29
+
+// GO 203 future Crew Book foundation test · 2026-09-29
