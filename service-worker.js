@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-go203-future-foundation-test-r3-20260929';
+const CACHE_NAME='engineer-pay-log-v10-2-go203-general-pick-step2-test-r1-20260929';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./assets/generalpick/go203/data.js','./assets/generalpick/go203/pick-week.js'];
 
 self.addEventListener('install',e=>e.waitUntil(
