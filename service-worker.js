@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-deadhead-watch-production-recent5-20260928';
+const CACHE_NAME='engineer-pay-log-v10-2-quick-job-browse-test-20260929';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg'];
 
 self.addEventListener('install',e=>e.waitUntil(
@@ -136,3 +136,5 @@ self.addEventListener('notificationclick',event=>{
 });
 
 // Deadhead Watch production integration + user-facing update · 2026-09-28
+
+// Quick Job Lookup Browse test build · 2026-09-29

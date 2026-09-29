@@ -1299,6 +1299,18 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .job-compare-error,.quick-lookup-error{padding:14px;border:1px solid #efc4c0;border-radius:14px;background:#fff4f3;color:#7d251f;font-size:12px;line-height:1.45}
     .job-compare-empty,.quick-lookup-empty{padding:18px 14px;text-align:center;color:var(--muted);font-size:12px;border:1px dashed var(--line);border-radius:14px}
     .quick-lookup-result{margin-top:14px}
+    .quick-lookup-mode-toggle{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:4px;margin:0 0 12px;border:1px solid var(--line);border-radius:13px;background:var(--bg)}
+    .quick-lookup-mode-toggle button{border:0;border-radius:9px;padding:9px 10px;background:transparent;color:var(--muted);font:inherit;font-size:10.5px;font-weight:900;cursor:pointer}
+    .quick-lookup-mode-toggle button.active{background:var(--card);color:var(--brand);box-shadow:0 1px 5px rgba(16,35,63,.10)}
+    .quick-lookup-pane[hidden]{display:none!important}
+    .quick-browse-controls{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:8px;margin-top:12px}
+    .quick-browse-date-row{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
+    .quick-browse-count{margin-top:11px;color:var(--muted);font-size:10px;font-weight:850;line-height:1.4}
+    .quick-browse-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+    .quick-browse-card{border:1px solid var(--line);border-radius:14px;background:var(--card);padding:12px;cursor:pointer;box-shadow:0 4px 14px rgba(16,35,63,.04);transition:transform .08s ease,border-color .12s ease}
+    .quick-browse-card:hover{border-color:#9ab6d4}.quick-browse-card:active{transform:scale(.995)}.quick-browse-card:focus-visible{outline:2px solid #6f9fd1;outline-offset:2px}
+    .quick-browse-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.quick-browse-job{font-size:20px;font-weight:950;color:var(--brand);letter-spacing:-.02em}.quick-browse-type{font-size:8.5px;font-weight:900;line-height:1.25;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);text-align:right}
+    .quick-browse-terminal{margin-top:4px;font-size:11px;font-weight:850;line-height:1.35}.quick-browse-meta{margin-top:7px;color:var(--muted);font-size:9.5px;line-height:1.5}.quick-browse-empty{grid-column:1/-1;padding:18px 14px;text-align:center;color:var(--muted);font-size:11px;border:1px dashed var(--line);border-radius:14px}
     .quick-lookup-card{border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden;box-shadow:0 6px 18px rgba(16,35,63,.06)}
     .quick-lookup-head{padding:15px;border-bottom:1px solid var(--line);background:var(--bg)}
     .quick-lookup-titleline{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.quick-lookup-job{font-size:24px;font-weight:900;color:var(--brand)}.quick-lookup-source{font-size:9px;text-align:right;text-transform:uppercase;letter-spacing:.05em;font-weight:850;color:var(--muted)}
@@ -1339,6 +1351,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     html[data-theme="dark"] .job-compare-error,html[data-theme="dark"] .quick-lookup-error{background:#351b1b;border-color:#713636;color:#ffd1cc}
     html[data-theme="dark"] .quick-lookup-exception{background:#2a2415;color:#f2dfaa}
     html[data-theme="dark"] .quick-lookup-week-row.selected{background:#10233b}
+    html[data-theme="dark"] .quick-lookup-mode-toggle{background:#0a1727}html[data-theme="dark"] .quick-lookup-mode-toggle button.active{background:#17273a;color:#fff}html[data-theme="dark"] .quick-browse-card{background:var(--card)}
 
     .crewbook-official-wrap{border-top:1px solid var(--line);background:var(--card)}
     .crewbook-official-details,.crewbook-paper-details{margin:0;border:0}
@@ -1388,7 +1401,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     html[data-theme="dark"] .crewbook-temporary-revision-note{background:#171c24;border-color:#354150}
     html[data-theme="dark"] .job-compare-official-launch{background:var(--card)}
     @media(max-width:620px){#jobCompareOfficialModal .modal-card{width:100%;max-height:95vh;margin:0;border-radius:22px 22px 0 0}#jobCompareOfficialModal .modal-body{padding:0 12px 16px}.job-compare-official-viewer .crewbook-image-viewer{max-height:64vh}}
-    @media(max-width:620px){.job-compare-controls,.quick-lookup-controls{grid-template-columns:1fr}.job-compare-card{flex-basis:min(292px,88vw)}.job-compare-job-row{grid-template-columns:42px minmax(0,1fr) auto}.job-compare-remove-job{min-width:auto;padding:9px 10px}.job-compare-actions .btn.primary,.quick-lookup-actions .btn.primary{flex:1}}
+    @media(max-width:620px){.job-compare-controls,.quick-lookup-controls,.quick-browse-controls{grid-template-columns:1fr}.quick-browse-list{grid-template-columns:1fr}.job-compare-card{flex-basis:min(292px,88vw)}.job-compare-job-row{grid-template-columns:42px minmax(0,1fr) auto}.job-compare-remove-job{min-width:auto;padding:9px 10px}.job-compare-actions .btn.primary,.quick-lookup-actions .btn.primary{flex:1}}
 
 
     /* Developer roster maintenance - hidden unless authorized by Supabase RLS */
@@ -1791,7 +1804,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
             <strong>Bid Sheet Assistant</strong><span>View the latest advertised assignments with verified Crew Book schedules, relief days, overtime, and official job details.</span>
           </button>
           <button class="crew-tools-compact-btn" type="button" onclick="openQuickJobLookup()">
-            <strong>Quick Job Lookup</strong><span>Open one assignment for a fast, date-aware Crew Book summary.</span>
+            <strong>Quick Job Lookup</strong><span>Look up one assignment or browse the full current Crew Book by terminal and assignment type.</span>
           </button>
           <button class="crew-tools-compact-btn" type="button" onclick="openJobComparison()">
             <strong>Job Comparison</strong><span>Compare multiple assignments by schedule, relief days, earnings, and official Crew Book pages.</span>
@@ -1852,14 +1865,29 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
   <section id="lookupView" class="view">
     <div class="card">
       <div class="section-title"><h2>Quick Job Lookup</h2><button class="btn small" id="quickLookupTopButton" type="button" onclick="quickLookupTopAction()">Dashboard</button></div>
-      <p class="quick-lookup-intro">Look up one regular assignment, relief crew, Yard assignment, or supported holiday assignment. The selected date applies the correct revision and any day-specific Crew Book exception automatically. <strong>For relief crews, the full Monday–Sunday coverage is shown together so you can see every job the crew protects without changing the date.</strong> For GO 202 passenger jobs, official September 8 assignment images are loaded and become viewable beginning September 8.</p>
-      <div class="quick-lookup-controls">
-        <div class="field full"><label>Assignment</label><input id="quickLookupJob" type="text" autocomplete="off" autocapitalize="characters" placeholder="e.g. 293, 470, YE-1" onkeydown="if(event.key==='Enter'){event.preventDefault();runQuickJobLookup()}"></div>
-        <div class="field full"><label>Date</label><input id="quickLookupDate" type="date" onchange="runQuickJobLookup(false)"></div>
+      <div class="quick-lookup-mode-toggle" role="group" aria-label="Quick Job Lookup mode"><button id="quickLookupModeLookup" class="active" type="button" onclick="setQuickJobLookupMode('lookup')">Lookup</button><button id="quickLookupModeBrowse" type="button" onclick="setQuickJobLookupMode('browse')">Browse</button></div>
+      <div id="quickLookupPaneLookup" class="quick-lookup-pane">
+        <p class="quick-lookup-intro">Look up one regular assignment, relief crew, Yard assignment, or supported holiday assignment. The selected date applies the correct revision and any day-specific Crew Book exception automatically. <strong>For relief crews, the full Monday–Sunday coverage is shown together so you can see every job the crew protects without changing the date.</strong> For GO 202 passenger jobs, official September 8 assignment images are loaded and become viewable beginning September 8.</p>
+        <div class="quick-lookup-controls">
+          <div class="field full"><label>Assignment</label><input id="quickLookupJob" type="text" autocomplete="off" autocapitalize="characters" placeholder="e.g. 293, 470, YE-1" onkeydown="if(event.key==='Enter'){event.preventDefault();runQuickJobLookup()}"></div>
+          <div class="field full"><label>Date</label><input id="quickLookupDate" type="date" onchange="quickLookupDateChanged(this.value)"></div>
+        </div>
+        <div class="quick-lookup-actions"><button class="btn primary" type="button" onclick="runQuickJobLookup()">Look Up</button><button class="btn" type="button" onclick="clearQuickJobLookup()">Clear</button></div>
+        <div id="quickLookupSourceNote" class="quick-lookup-note">Quick Job Lookup uses the same verified Crew Book resolver as Crew Book Assistance and Job Comparison.</div>
+        <div id="quickLookupResult" class="quick-lookup-result"><div class="quick-lookup-empty">Enter an assignment and date to begin.</div></div>
       </div>
-      <div class="quick-lookup-actions"><button class="btn primary" type="button" onclick="runQuickJobLookup()">Look Up</button><button class="btn" type="button" onclick="clearQuickJobLookup()">Clear</button></div>
-      <div id="quickLookupSourceNote" class="quick-lookup-note">Quick Job Lookup uses the same verified Crew Book resolver as Crew Book Assistance and Job Comparison.</div>
-      <div id="quickLookupResult" class="quick-lookup-result"><div class="quick-lookup-empty">Enter an assignment and date to begin.</div></div>
+      <div id="quickLookupPaneBrowse" class="quick-lookup-pane" hidden>
+        <p class="quick-lookup-intro">Browse the Crew Book data already built into Engineer Pay Log. Filter by terminal or assignment type, then tap any card to open the existing full Quick Job Lookup view for that assignment.</p>
+        <div class="quick-browse-date-row"><div class="field full"><label>Browse Crew Book Effective On</label><input id="quickBrowseDate" type="date" onchange="quickBrowseDateChanged(this.value)"></div></div>
+        <div class="quick-browse-controls">
+          <div class="field full"><label>Search Assignment</label><input id="quickBrowseSearch" type="search" autocomplete="off" autocapitalize="characters" placeholder="e.g. 113, 470, YE-1" oninput="renderQuickJobBrowse()"></div>
+          <div class="field full"><label>Terminal</label><select id="quickBrowseTerminal" onchange="renderQuickJobBrowse()"><option value="">All terminals</option></select></div>
+          <div class="field full"><label>Assignment Type</label><select id="quickBrowseType" onchange="renderQuickJobBrowse()"><option value="all">All assignments</option><option value="passenger">Passenger jobs</option><option value="passenger-relief">Passenger Relief Crews</option><option value="extra">Extra Crews</option><option value="yard">Yard jobs</option><option value="yard-relief">Yard Relief Crews</option></select></div>
+        </div>
+        <div id="quickBrowseSourceNote" class="quick-lookup-note">Browse uses EPL's verified, date-aware Crew Book resolver. Relief Crew terminal filtering is based on the terminals of the assignments that crew covers.</div>
+        <div id="quickBrowseCount" class="quick-browse-count"></div>
+        <div id="quickBrowseList" class="quick-browse-list"><div class="quick-browse-empty">Loading Crew Book assignments…</div></div>
+      </div>
     </div>
     <div class="contact-footer"><button type="button" onclick="openContactSettings()">Questions? Comments?</button></div>
   </section>
@@ -5518,9 +5546,59 @@ function runJobComparison(showValidation=true){
 }
 
 
+let QUICK_JOB_LOOKUP_MODE='lookup';
 function openQuickJobLookup(){bidSheetClearLookupReturn();showView('lookup');initQuickJobLookup()}
-function initQuickJobLookup(){const date=document.getElementById('quickLookupDate');if(date&&!date.value)date.value=isoLocal(new Date())}
+function initQuickJobLookup(){
+  const lookupDate=document.getElementById('quickLookupDate'),browseDate=document.getElementById('quickBrowseDate'),today=isoLocal(new Date());
+  if(lookupDate&&!lookupDate.value)lookupDate.value=today;if(browseDate&&!browseDate.value)browseDate.value=lookupDate?.value||today;
+  setQuickJobLookupMode(QUICK_JOB_LOOKUP_MODE||'lookup',false);
+}
+function setQuickJobLookupMode(mode,focus=true){
+  QUICK_JOB_LOOKUP_MODE=mode==='browse'?'browse':'lookup';
+  const lookupPane=document.getElementById('quickLookupPaneLookup'),browsePane=document.getElementById('quickLookupPaneBrowse'),lookupBtn=document.getElementById('quickLookupModeLookup'),browseBtn=document.getElementById('quickLookupModeBrowse');
+  if(lookupPane)lookupPane.hidden=QUICK_JOB_LOOKUP_MODE!=='lookup';if(browsePane)browsePane.hidden=QUICK_JOB_LOOKUP_MODE!=='browse';if(lookupBtn)lookupBtn.classList.toggle('active',QUICK_JOB_LOOKUP_MODE==='lookup');if(browseBtn)browseBtn.classList.toggle('active',QUICK_JOB_LOOKUP_MODE==='browse');
+  if(QUICK_JOB_LOOKUP_MODE==='browse'){const lookupDate=document.getElementById('quickLookupDate'),browseDate=document.getElementById('quickBrowseDate');if(browseDate&&!browseDate.value)browseDate.value=lookupDate?.value||isoLocal(new Date());renderQuickJobBrowse();if(focus)setTimeout(()=>document.getElementById('quickBrowseSearch')?.focus(),0)}
+  else if(focus)setTimeout(()=>document.getElementById('quickLookupJob')?.focus(),0);
+}
+function quickLookupDateChanged(value){const browseDate=document.getElementById('quickBrowseDate');if(browseDate&&value)browseDate.value=value;runQuickJobLookup(false)}
+function quickBrowseDateChanged(value){renderQuickJobBrowse()}
 function clearQuickJobLookup(){const job=document.getElementById('quickLookupJob'),result=document.getElementById('quickLookupResult'),note=document.getElementById('quickLookupSourceNote');if(job)job.value='';if(result)result.innerHTML='<div class="quick-lookup-empty">Enter an assignment and date to begin.</div>';if(note)note.textContent='Quick Job Lookup uses the same verified Crew Book resolver as Crew Book Assistance and Job Comparison.'}
+function quickBrowseTypeLabel(type){return type==='passenger'?'Passenger Job':type==='passenger-relief'?'Passenger Relief Crew':type==='extra'?'Extra Crew':type==='yard'?'Yard Job':type==='yard-relief'?'Yard Relief Crew':'Assignment'}
+function quickBrowseDayPair(days){return (Array.isArray(days)?days:[]).map(d=>String(d||'').slice(0,3).toUpperCase()).join('/')||'—'}
+function quickBrowseReliefDays(map){return quickBrowseDayPair(CREW_BOOK_DAYS.filter(day=>!map?.[day]))}
+function quickBrowseUnique(values){return [...new Set((values||[]).map(v=>String(v||'').trim()).filter(Boolean))]}
+function quickBrowseReliefTerminals(info){
+  if(!info?.map)return [];const terminals=[];
+  for(const covered of quickBrowseUnique(CREW_BOOK_DAYS.map(day=>info.map?.[day]))){if(info.type==='yard'){const job=CREW_BOOK_YARD_JOBS?.[normalizeCrewBookKey(covered)];if(job?.terminal)terminals.push(job.terminal)}else{const job=info.revision?.jobs?.[String(covered)];if(job?.terminal)terminals.push(job.terminal)}}
+  return quickBrowseUnique(terminals);
+}
+function quickBrowseTerminalSummary(item){const t=item?.terminals||[];if(!t.length)return item?.type?.includes('relief')?'Coverage terminals vary':'Terminal not listed';if(t.length===1)return t[0];if(t.length===2)return t.join(' • ');return `${t.slice(0,2).join(' • ')} • +${t.length-2} more`}
+function quickBrowseItems(date){
+  const rev=crewBookPassengerRevision(date),out=[];
+  for(const [key,job] of Object.entries(rev?.jobs||{})){if(!job||job.status==='abolished')continue;const type=job.type==='extraCrewOnly'?'extra':'passenger';out.push({key:String(key),type,terminals:quickBrowseUnique([job.terminal]),job,revision:rev})}
+  for(const [key,map] of Object.entries(rev?.relief||{})){const info={key:String(key),map,type:'passenger',revision:rev};out.push({key:String(key),type:'passenger-relief',terminals:quickBrowseReliefTerminals(info),map,revision:rev})}
+  for(const [key,job] of Object.entries(CREW_BOOK_YARD_JOBS||{})){if(!job)continue;out.push({key:String(key),type:'yard',terminals:quickBrowseUnique([job.terminal]),job})}
+  for(const [key,map] of Object.entries(CREW_BOOK_YARD_RELIEF||{})){const info={key:String(key),map,type:'yard',revision:{}};out.push({key:String(key),type:'yard-relief',terminals:quickBrowseReliefTerminals(info),map})}
+  return out;
+}
+function quickBrowseSort(a,b){const an=/^\d+$/.test(a.key),bn=/^\d+$/.test(b.key);if(an&&bn)return Number(a.key)-Number(b.key);if(an!==bn)return an?-1:1;return a.key.localeCompare(b.key,undefined,{numeric:true})}
+function quickBrowseMeta(item,date){
+  const stats=quickLookupWeeklyStats(item.key,date),earn=stats?`Weekly OT: ${fmtMinutes(stats.overtime)} • Paid meals: ${stats.meals}`:'No scheduled work in selected week';
+  if(item.type==='passenger'||item.type==='yard')return `Relief: ${quickBrowseDayPair(item.job?.relief)} • ${earn}`;
+  if(item.type==='passenger-relief'||item.type==='yard-relief'){const covered=quickBrowseUnique(CREW_BOOK_DAYS.map(day=>item.map?.[day])),coverText=covered.length<=5?covered.join(', '):`${covered.slice(0,5).join(', ')} +${covered.length-5} more`;return `Relief: ${quickBrowseReliefDays(item.map)} • Covers: ${coverText||'—'} • ${earn}`}
+  const x=item.job?.extra;return `${x?.start&&x?.end?`${jobCompareTimeLabel(x.start)}–${jobCompareTimeLabel(x.end)} • `:''}${earn}`;
+}
+function renderQuickJobBrowse(){
+  const date=document.getElementById('quickBrowseDate')?.value||document.getElementById('quickLookupDate')?.value||isoLocal(new Date()),search=document.getElementById('quickBrowseSearch'),terminalSelect=document.getElementById('quickBrowseTerminal'),typeSelect=document.getElementById('quickBrowseType'),list=document.getElementById('quickBrowseList'),count=document.getElementById('quickBrowseCount'),note=document.getElementById('quickBrowseSourceNote');if(!list)return;
+  const type=typeSelect?.value||'all',items=quickBrowseItems(date),typed=items.filter(item=>type==='all'||item.type===type),currentTerminal=terminalSelect?.value||'',terminals=quickBrowseUnique(typed.flatMap(item=>item.terminals||[])).sort((a,b)=>a.localeCompare(b));
+  if(terminalSelect){terminalSelect.innerHTML='<option value="">All terminals</option>'+terminals.map(t=>`<option value="${escapeHTML(t)}">${escapeHTML(t)}</option>`).join('');if(terminals.includes(currentTerminal))terminalSelect.value=currentTerminal}
+  const terminal=terminalSelect?.value||'',q=String(search?.value||'').trim().toLowerCase();let filtered=typed.filter(item=>!terminal||(item.terminals||[]).includes(terminal));if(q)filtered=filtered.filter(item=>`${item.key} ${quickBrowseTypeLabel(item.type)} ${(item.terminals||[]).join(' ')} ${(item.map?quickBrowseUnique(CREW_BOOK_DAYS.map(day=>item.map?.[day])).join(' '):'')}`.toLowerCase().includes(q));filtered.sort(quickBrowseSort);
+  if(count)count.textContent=`${filtered.length} assignment${filtered.length===1?'':'s'} • ${date}`;if(note){const rev=crewBookPassengerRevision(date);note.innerHTML=`<strong>${escapeHTML(crewBookRevisionLabel(rev,'Passenger'))}</strong> • Effective selection ${escapeHTML(date)}<br>Passenger assignments and Relief Crews come from that revision. Yard assignments use the current Yard Crew Book dataset. Relief Crew terminal filtering uses the terminals of covered assignments.`}
+  if(!filtered.length){list.innerHTML='<div class="quick-browse-empty">No assignments match these filters.</div>';return}
+  list.innerHTML=filtered.map(item=>`<div class="quick-browse-card" role="button" tabindex="0" data-quick-browse-job="${escapeHTML(item.key)}"><div class="quick-browse-top"><div class="quick-browse-job">${escapeHTML(item.key)}</div><div class="quick-browse-type">${escapeHTML(quickBrowseTypeLabel(item.type))}</div></div><div class="quick-browse-terminal">${escapeHTML(quickBrowseTerminalSummary(item))}</div><div class="quick-browse-meta">${escapeHTML(quickBrowseMeta(item,date))}</div></div>`).join('');
+  list.querySelectorAll('[data-quick-browse-job]').forEach(card=>{const open=()=>quickBrowseOpenJob(card.dataset.quickBrowseJob,date);card.addEventListener('click',open);card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}})});
+}
+function quickBrowseOpenJob(key,date){const job=document.getElementById('quickLookupJob'),lookupDate=document.getElementById('quickLookupDate');if(job)job.value=key;if(lookupDate)lookupDate.value=date;setQuickJobLookupMode('lookup',false);runQuickJobLookup(false);requestAnimationFrame(()=>document.getElementById('quickLookupResult')?.scrollIntoView({behavior:'smooth',block:'start'}))}
 function compareQuickLookupJob(key,date){
   key=normalizeCrewBookKey(key);if(!key||!date)return;
   bidSheetClearLookupReturn();
@@ -5774,7 +5852,7 @@ async function communityReact(noteId,reaction){
   await communityLoadForLookup(COMMUNITY_CONTEXT.jobKey,COMMUNITY_CONTEXT.date);
 }
 
-function runQuickJobLookup(showValidation=true){initQuickJobLookup();const raw=(document.getElementById('quickLookupJob')?.value||'').trim(),date=document.getElementById('quickLookupDate')?.value,result=document.getElementById('quickLookupResult'),note=document.getElementById('quickLookupSourceNote');if(!result)return;if(!raw||!date){if(showValidation)result.innerHTML='<div class="quick-lookup-error"><strong>Enter an assignment and date.</strong><br>Both are required for a date-aware Crew Book lookup.</div>';return}const key=normalizeCrewBookKey(raw);result.innerHTML=quickLookupResultHTML(key,date);void communityLoadForLookup(key,date);if(note){const rev=crewBookPassengerRevision(date);note.innerHTML=`<strong>${escapeHTML(date)}</strong> • ${escapeHTML(crewBookRevisionLabel(rev,'Passenger'))}<br>Regular assignments, relief crews, Yard assignments, and supported holiday assignments are resolved from the selected date. Weekly OT excludes paid meal-period allowances; paid meals are shown separately.`}}
+function runQuickJobLookup(showValidation=true){QUICK_JOB_LOOKUP_MODE='lookup';initQuickJobLookup();const raw=(document.getElementById('quickLookupJob')?.value||'').trim(),date=document.getElementById('quickLookupDate')?.value,result=document.getElementById('quickLookupResult'),note=document.getElementById('quickLookupSourceNote');if(!result)return;if(!raw||!date){if(showValidation)result.innerHTML='<div class="quick-lookup-error"><strong>Enter an assignment and date.</strong><br>Both are required for a date-aware Crew Book lookup.</div>';return}const key=normalizeCrewBookKey(raw);result.innerHTML=quickLookupResultHTML(key,date);void communityLoadForLookup(key,date);if(note){const rev=crewBookPassengerRevision(date);note.innerHTML=`<strong>${escapeHTML(date)}</strong> • ${escapeHTML(crewBookRevisionLabel(rev,'Passenger'))}<br>Regular assignments, relief crews, Yard assignments, and supported holiday assignments are resolved from the selected date. Weekly OT excludes paid meal-period allowances; paid meals are shown separately.`}}
 
 
 function renderCrewBookAssistUI(){
