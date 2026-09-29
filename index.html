@@ -11147,7 +11147,7 @@ const TRIM_EX1_RELIEF=(()=>{
 const FUTURE_CREW_BOOK_GO203={go:'203',bookNo:'2',effective:'2026-11-09',status:'draft',generalPickAvailable:true,productionResolverEnabled:false};
 function futureCrewBookApplyVisibility(){
   const btn=document.getElementById('dashboardFutureGeneralPickBtn');
-  if(btn)btn.hidden=!(!!EPL_TEST_TOOLS_ENABLED&&!!rosterAdminState?.canPublish);
+  if(btn)btn.hidden=!EPL_TEST_TOOLS_ENABLED;
 }
 function futureCrewBookSummaryHTML(){
   const data=window.GO203_DATA||{},pick=window.GO203_PICK_WEEK||{};
@@ -11163,8 +11163,10 @@ function futureCrewBookSummaryHTML(){
 function renderFutureGeneralPickFoundation(){
   const summary=document.getElementById('futureBookSummary');if(summary)summary.innerHTML=futureCrewBookSummaryHTML();
 }
-function openFutureGeneralPick(){
-  if(!(EPL_TEST_TOOLS_ENABLED&&rosterAdminState?.canPublish)){alert('The future Crew Book workspace is available only to an authorized maintainer in the GitHub test environment during this foundation step.');return}
+async function openFutureGeneralPick(){
+  if(!EPL_TEST_TOOLS_ENABLED){alert('The future Crew Book workspace is available only in the GitHub test environment during this foundation step.');return}
+  if(!rosterAdminState?.checked)await rosterCheckAdmin(true);
+  if(!rosterAdminState?.canPublish){alert('The future Crew Book workspace is available only to an authorized maintainer during this foundation step.');return}
   showView('futurepick');renderFutureGeneralPickFoundation();
 }
 function futureCrewBookRunIsolationCheck(){
