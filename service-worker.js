@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-go203-general-pick-step6-mypick-r3-20260930';
+const CACHE_NAME='engineer-pay-log-v10-2-go203-general-pick-step7-revision-manager-r1-20260930';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./assets/generalpick/go203/data.js','./assets/generalpick/go203/pick-week.js'];
 
 self.addEventListener('install',e=>e.waitUntil(
@@ -142,3 +142,5 @@ self.addEventListener('notificationclick',event=>{
 // GO 203 future Crew Book foundation test · 2026-09-29
 
 // GO 203 Step 5 certification/audit center · 2026-09-29
+
+// GO 203 Step 7 future Crew Book Revision Manager · 2026-09-30
