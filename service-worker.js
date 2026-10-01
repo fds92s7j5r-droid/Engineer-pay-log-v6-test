@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-go203-general-pick-step11-dual-source-revisions-r1-20261001';
+const CACHE_NAME='engineer-pay-log-v10-2-go203-general-pick-step11-dual-source-revisions-r2-20261001';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./assets/generalpick/go203/data.js','./assets/generalpick/go203/pick-week.js','./GO203_ROAD_YARD_DRAFT_NOV9_2026.pdf'];
 
 self.addEventListener('install',e=>e.waitUntil(
