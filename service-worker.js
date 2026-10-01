@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-go203-general-pick-step10-road-yard-r2-20261001';
+const CACHE_NAME='engineer-pay-log-v10-2-go203-general-pick-step11-dual-source-revisions-r1-20261001';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./assets/generalpick/go203/data.js','./assets/generalpick/go203/pick-week.js','./GO203_ROAD_YARD_DRAFT_NOV9_2026.pdf'];
 
 self.addEventListener('install',e=>e.waitUntil(
@@ -144,3 +144,5 @@ self.addEventListener('notificationclick',event=>{
 // GO 203 Step 5 certification/audit center · 2026-09-29
 
 // GO 203 Step 7 future Crew Book Revision Manager · 2026-09-30
+
+// GO 203 Step 11 dual-source revision manager — Passenger and Road/Yard revise independently · 2026-10-01
