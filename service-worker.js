@@ -1,5 +1,5 @@
-const CACHE_NAME='engineer-pay-log-v10-2-go203-general-pick-step9-availability-publisher-r1-20260930';
-const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./assets/generalpick/go203/data.js','./assets/generalpick/go203/pick-week.js'];
+const CACHE_NAME='engineer-pay-log-v10-2-go203-general-pick-step10-road-yard-r1-20261001';
+const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./assets/generalpick/go203/data.js','./assets/generalpick/go203/pick-week.js','./GO203_ROAD_YARD_DRAFT_NOV9_2026.pdf'];
 
 self.addEventListener('install',e=>e.waitUntil(
   caches.open(CACHE_NAME)
