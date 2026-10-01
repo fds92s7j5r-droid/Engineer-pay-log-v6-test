@@ -2030,9 +2030,15 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
               <h4>Maintainer — Union General Pick Awards Upload</h4>
               <p>Upload the newest union PDF in the standard RANK / IBM / EMPLOYEE NAME / AWARDS format. EPL stores the raw rows privately and exposes only assignment availability to normal users.</p>
               <div class="future-rev-file"><input id="futurePickAvailabilityFile" type="file" accept="application/pdf,.pdf" onchange="futurePickAvailabilitySelectFile(this.files&&this.files[0])"></div>
-              <div class="future-rev-actions"><button class="btn primary" type="button" onclick="futurePickAvailabilityAnalyzeSelected()">Analyze Awards PDF</button><button id="futurePickAvailabilityPublishBtn" class="btn" type="button" onclick="futurePickAvailabilityPublishPreview()" disabled>Publish Availability Snapshot</button><button id="futurePickAvailabilityOpenSourceBtn" class="btn" type="button" onclick="futurePickAvailabilityOpenSource()" disabled>Open Active Union PDF</button><button class="btn danger" type="button" onclick="futurePickAvailabilityClearActive()">Clear Active Snapshot</button></div>
+              <div class="future-rev-actions"><button class="btn primary" type="button" onclick="futurePickAvailabilityAnalyzeSelected()">Analyze Awards PDF</button><button id="futurePickAvailabilityPublishBtn" class="btn" type="button" onclick="futurePickAvailabilityPublishPreview()" disabled>Publish Availability Snapshot</button><button id="futurePickAvailabilityOpenSourceBtn" class="btn" type="button" onclick="futurePickAvailabilityOpenSource()" disabled>Open Active Union PDF</button><button class="btn danger" type="button" onclick="futurePickAvailabilityClearActive()">Disable Live Availability</button></div>
               <div id="futurePickAvailabilityAdminStatus" class="future-rev-status" style="margin-top:9px">Choose the newest union General Pick awards PDF.</div>
               <div id="futurePickAvailabilityPreview" class="future-availability-preview"></div>
+              <div class="future-rev-card" style="margin-top:12px">
+                <h4>Published Snapshot History</h4>
+                <p>Every published union update stays in history. If a bad file is published, you can restore an earlier snapshot as long as it belongs to the active future Crew Book revision.</p>
+                <div class="future-rev-actions"><button class="btn small" type="button" onclick="futurePickAvailabilityLoadHistory(true)">Refresh History</button></div>
+                <div id="futurePickAvailabilityHistory" class="future-rev-history"><div class="future-rev-status">No availability history loaded yet.</div></div>
+              </div>
             </div>
           </div>
         </div>
@@ -11513,11 +11519,13 @@ function futureRevisionUsingCloudSource(){const r=futureRevisionState.active;ret
 
 // ===== GO 203 Live General Pick Availability =====
 const FUTURE_PICK_AVAIL_RPC='future_pick_current_availability';
-const FUTURE_PICK_AWARD_PARSER_VERSION='general_pick_union_awards_v1';
+const FUTURE_PICK_AWARD_PARSER_VERSION='general_pick_union_awards_v2';
 let futurePickAvailabilityState={loaded:false,loading:false,payload:null,error:null};
 let futurePickAvailabilityPreview=null;
 let futurePickAvailabilitySelectedFile=null;
 let futurePickAvailabilitySourceObjectUrl=null;
+let futurePickAvailabilityHistory=[];
+let futurePickAvailabilityHistoryLoaded=false;
 
 function futurePickAvailabilityPickedSet(){
   const p=futurePickAvailabilityState.payload;
@@ -11596,16 +11604,16 @@ async function futurePickAvailabilityParsePdf(file){
     }
   }
   const text=allText.join(' ').normalize('NFKC'),titleOk=/GENERAL\s+PICK/i.test(text)&&/\bRANK\b/i.test(text)&&/\bIBM\b/i.test(text)&&/EMPLOYEE\s+NAME/i.test(text)&&/\bAWARDS\b/i.test(text),ts=futurePickAvailabilityParseTimestamp(text);
-  const errors=[],warnings=[];
+  const errors=[],warnings=[],publishBlockers=[];
   if(!titleOk)errors.push('This does not look like the standard union General Pick awards format.');
   if(rows.length<25)errors.push(`Only ${rows.length} roster rows were detected; the awards export looks incomplete.`);
-  if(!ts.label)warnings.push('The union update timestamp could not be read from the PDF footer.');
+  if(!ts.label)publishBlockers.push('The union update timestamp could not be read from the PDF footer. Publishing is blocked until the timestamp can be verified.');
   const rankDup=[...new Set(rows.map(r=>r.rank).filter((x,i,a)=>a.indexOf(x)!==i))],ibmDup=[...new Set(rows.map(r=>r.employee_id).filter((x,i,a)=>a.indexOf(x)!==i))];
   if(rankDup.length)errors.push(`Duplicate roster ranks were parsed: ${rankDup.slice(0,10).join(', ')}.`);
   if(ibmDup.length)errors.push(`Duplicate IBM numbers were parsed in ${ibmDup.length} row${ibmDup.length===1?'':'s'}.`);
   const matched=rows.filter(r=>r.award_kind==='assignment'),referenceRows=rows.filter(r=>r.award_kind==='reference'),unmatched=[...new Set(rows.filter(r=>r.award_kind==='unmatched').map(r=>r.award_raw).filter(Boolean))],statusRows=rows.filter(r=>r.award_kind==='status'),blankRows=rows.filter(r=>r.award_kind==='blank');
   if(unmatched.length)warnings.push(`${unmatched.length} award code${unmatched.length===1?' does':'s do'} not map to the active GO 203 pick dataset. They will be retained privately for review but will not mark a job unavailable.`);
-  return {file,sha256,pages:pdf.numPages,rows,titleOk,timestampLabel:ts.label,timestampIso:ts.iso,matched,referenceRows,unmatched,statusRows,blankRows,errors,warnings,valid:errors.length===0,publishable:errors.length===0,historical:false,diff:null};
+  return {file,sha256,pages:pdf.numPages,rows,titleOk,timestampLabel:ts.label,timestampIso:ts.iso,matched,referenceRows,unmatched,statusRows,blankRows,errors,warnings,publishBlockers,valid:errors.length===0,publishable:errors.length===0&&publishBlockers.length===0,historical:false,diff:null};
 }
 function futurePickAvailabilityAdminStatus(message='',type=''){
   const el=document.getElementById('futurePickAvailabilityAdminStatus');if(!el)return;el.className=`future-rev-status${type?' '+type:''}`;el.textContent=message||'';
@@ -11621,12 +11629,44 @@ async function futurePickAvailabilityLoad(force=false){
   }catch(err){console.warn('General Pick availability load failed:',err);futurePickAvailabilityState={loaded:true,loading:false,payload:null,error:err?.message||String(err)}}
   return futurePickAvailabilityState.payload;
 }
-async function futurePickAvailabilityRefresh(){futurePickAvailabilityState.loaded=false;await futurePickAvailabilityLoad(true);futurePickAvailabilityRender();futurePickRefreshCurrentDetail();if(futurePickMode==='browse')futurePickRenderBrowse();if(futurePickMode==='mypick')futurePickRenderMyPick();if(futurePickMode==='compare')futurePickRenderCompare()}
+async function futurePickAvailabilityRefresh(){futurePickAvailabilityState.loaded=false;await futurePickAvailabilityLoad(true);if(rosterAdminState?.canPublish)await futurePickAvailabilityLoadHistory(true);futurePickAvailabilityRender();futurePickRefreshCurrentDetail();if(futurePickMode==='browse')futurePickRenderBrowse();if(futurePickMode==='mypick')futurePickRenderMyPick();if(futurePickMode==='compare')futurePickRenderCompare()}
 async function futurePickAvailabilityLoadAdminCurrent(){
   if(!rosterAdminState?.canPublish)return null;
   const client=getCloudClient(),state=futurePickAvailabilityState.payload?.snapshot;if(!client||!state?.id)return null;
   const {data,error}=await client.from('general_pick_award_rows').select('award_key,award_kind,award_raw,rank').eq('snapshot_id',state.id).order('row_order');
   if(error)throw error;return data||[];
+}
+
+function futurePickAvailabilityHistoryDate(value){
+  if(!value)return '—';
+  try{return new Intl.DateTimeFormat(undefined,{month:'short',day:'numeric',year:'numeric',hour:'numeric',minute:'2-digit'}).format(new Date(value))}catch{return String(value)}
+}
+async function futurePickAvailabilityLoadHistory(force=false){
+  if(!rosterAdminState?.canPublish)return [];
+  if(futurePickAvailabilityHistoryLoaded&&!force){futurePickAvailabilityRenderHistory();return futurePickAvailabilityHistory}
+  const client=getCloudClient();if(!client)return [];
+  const host=document.getElementById('futurePickAvailabilityHistory');if(host)host.innerHTML='<div class="future-rev-status">Loading snapshot history…</div>';
+  try{
+    const {data,error}=await client.from('general_pick_award_snapshots').select('id,future_revision_id,source_file_name,source_timestamp_label,source_timestamp,source_storage_path,source_sha256,row_count,awarded_row_count,matched_assignment_count,status,metadata,created_at,published_at').eq('go_number','203').order('published_at',{ascending:false}).limit(20);
+    if(error)throw error;futurePickAvailabilityHistory=Array.isArray(data)?data:[];futurePickAvailabilityHistoryLoaded=true;futurePickAvailabilityRenderHistory();return futurePickAvailabilityHistory;
+  }catch(err){console.warn('General Pick availability history failed:',err);if(host){host.innerHTML=`<div class="future-rev-status error">Could not load snapshot history: ${escapeHTML(err?.message||err)}</div>`}return []}
+}
+function futurePickAvailabilityRenderHistory(){
+  const host=document.getElementById('futurePickAvailabilityHistory');if(!host)return;
+  const rows=futurePickAvailabilityHistory||[],activeId=futurePickAvailabilityState.payload?.snapshot?.id||'',activeRevision=futureRevisionState.active?.id||'';
+  if(!rows.length){host.innerHTML='<div class="future-rev-status">No published availability snapshots yet.</div>';return}
+  host.innerHTML=rows.map(r=>{
+    const active=r.id===activeId,test=!!r.metadata?.controlled_test,revisionMatch=!activeRevision||r.future_revision_id===activeRevision;
+    const added=Array.isArray(r.metadata?.newly_picked)?r.metadata.newly_picked.length:0,removed=Array.isArray(r.metadata?.no_longer_picked)?r.metadata.no_longer_picked.length:0;
+    return `<div class="future-rev-history-row${active?' active':''}"><div class="future-rev-history-title"><span>${escapeHTML(r.source_timestamp_label||r.source_file_name||'Union update')}</span><span>${active?'LIVE':test?'TEST':escapeHTML(String(r.status||'superseded').toUpperCase())}</span></div><div class="future-rev-history-meta">${escapeHTML(r.source_file_name||'No source filename')} • published ${escapeHTML(futurePickAvailabilityHistoryDate(r.published_at))}<br>${r.row_count||0} roster rows • ${r.matched_assignment_count||0} mapped picks${added||removed?` • ${added} added / ${removed} removed`:''}${revisionMatch?'':' • belongs to an older future revision'}</div><div class="future-rev-history-actions">${!active&&revisionMatch?`<button class="btn small" type="button" onclick="futurePickAvailabilityActivateSnapshot('${escapeHTML(r.id)}')">Restore as Live</button>`:''}${r.source_storage_path?`<button class="btn small" type="button" onclick="futurePickAvailabilityOpenSource('${escapeHTML(r.id)}')">Open PDF</button>`:''}</div></div>`
+  }).join('');
+}
+async function futurePickAvailabilityActivateSnapshot(id){
+  const row=(futurePickAvailabilityHistory||[]).find(r=>r.id===id);if(!row)return alert('That availability snapshot is not loaded. Refresh history and try again.');
+  if(row.future_revision_id!==futureRevisionState.active?.id)return alert('That snapshot belongs to a different future Crew Book revision and cannot be restored.');
+  if(!confirm(`Restore this union availability snapshot as LIVE?\n\n${row.source_timestamp_label||row.source_file_name||'Union update'}\n${row.matched_assignment_count||0} mapped picked assignments\n\nThe current live snapshot will remain in history and can be restored later.`))return;
+  if(!await rosterCheckAdmin(true))return;const client=getCloudClient();if(!client)return;
+  try{const {error}=await client.rpc('general_pick_activate_snapshot',{p_go_number:'203',p_snapshot_id:id});if(error)throw error;futurePickAvailabilityState.loaded=false;futurePickAvailabilityHistoryLoaded=false;await futurePickAvailabilityLoad(true);await futurePickAvailabilityLoadHistory(true);futurePickAvailabilityRender();futurePickRefreshCurrentDetail();futurePickRenderBrowse();futurePickRenderMyPick();futurePickRenderCompare();futurePickAvailabilityAdminStatus(`Restored ${row.source_timestamp_label||row.source_file_name||'snapshot'} as the live availability feed.`,'pass')}catch(err){futurePickAvailabilityAdminStatus(`Could not restore snapshot: ${err?.message||err}`,'error')}
 }
 async function futurePickAvailabilityComparePreview(parsed){
   let prior=[];
@@ -11641,9 +11681,17 @@ async function futurePickAvailabilityAnalyzeSelected(){
   if(!/\.pdf$/i.test(file.name))return alert('Choose a PDF file.');
   try{
     const parsed=await futurePickAvailabilityParsePdf(file);
-    const sourceTime=parsed.timestampIso?Date.parse(parsed.timestampIso):NaN,activeCreated=Date.parse(futureRevisionState.active?.created_at||'');
+    if(rosterAdminState?.canPublish)await futurePickAvailabilityLoadHistory(false);
+    const duplicate=(futurePickAvailabilityHistory||[]).find(r=>r.source_sha256&&r.source_sha256===parsed.sha256);
+    if(duplicate){parsed.publishable=false;parsed.publishBlockers.push(`This exact PDF is already in snapshot history (${duplicate.source_timestamp_label||duplicate.source_file_name||'previous union update'}).`)}
+    const sourceTime=parsed.timestampIso?Date.parse(parsed.timestampIso):NaN,activeCreated=Date.parse(futureRevisionState.active?.created_at||''),liveTime=Date.parse(futurePickAvailabilityState.payload?.snapshot?.source_timestamp||'');
     if(Number.isFinite(sourceTime)&&Number.isFinite(activeCreated)&&sourceTime<activeCreated-(7*24*60*60*1000)){
-      parsed.historical=true;parsed.publishable=false;parsed.warnings.unshift('Historical sample detected: this union update predates the active GO 203 cloud revision by more than seven days. Parser review is allowed, but publishing is disabled.');
+      parsed.historical=true;parsed.publishable=false;parsed.publishBlockers.push('Historical sample detected: this union update predates the active GO 203 cloud revision by more than seven days. Parser review is allowed, but publishing is disabled.');
+    }
+    if(Number.isFinite(sourceTime)&&Number.isFinite(liveTime)&&sourceTime<liveTime){
+      parsed.publishable=false;parsed.publishBlockers.push(`This union update (${parsed.timestampLabel}) is older than the currently published snapshot (${futurePickAvailabilityLabel()||'current live update'}). EPL will not publish an older availability file over a newer one.`);
+    }else if(Number.isFinite(sourceTime)&&Number.isFinite(liveTime)&&sourceTime===liveTime){
+      parsed.warnings.unshift('This PDF has the same union timestamp as the live snapshot. Publish only if the union intentionally reissued/corrected that update.');
     }
     await futurePickAvailabilityComparePreview(parsed);futurePickAvailabilityPreview=parsed;futurePickAvailabilityRenderPreview();
   }catch(err){console.error('General Pick awards parse failed:',err);futurePickAvailabilityPreview=null;futurePickAvailabilityAdminStatus(`Could not read this PDF: ${err?.message||err}`,'error')}
@@ -11651,17 +11699,17 @@ async function futurePickAvailabilityAnalyzeSelected(){
 function futurePickAvailabilityRenderPreview(){
   const p=futurePickAvailabilityPreview,host=document.getElementById('futurePickAvailabilityPreview'),btn=document.getElementById('futurePickAvailabilityPublishBtn');if(!host)return;
   if(!p){host.innerHTML='';if(btn)btn.disabled=true;return}
-  const d=p.diff||{added:[],removed:[],unchanged:[]},warnings=[...p.warnings,...p.errors],unmatched=p.unmatched.slice(0,35),more=p.unmatched.length-unmatched.length;
-  host.innerHTML=`<div class="future-availability-summary"><div class="future-availability-stat"><div class="label">Roster rows</div><div class="value">${p.rows.length}</div><div class="detail">${p.blankRows.length} not yet awarded</div></div><div class="future-availability-stat"><div class="label">Mapped picks</div><div class="value">${p.matched.length}</div><div class="detail">${p.statusRows.length} statuses • ${p.referenceRows?.length||0} reference-only awards</div></div><div class="future-availability-stat"><div class="label">Union timestamp</div><div class="value" style="font-size:10px">${escapeHTML(p.timestampLabel||'Not read')}</div><div class="detail">${p.pages} PDF page${p.pages===1?'':'s'}</div></div></div><div class="future-availability-diff"><strong>${p.valid?'Format validation passed':'Format validation failed'}</strong>${p.historical?' • <strong>Historical sample — publish disabled</strong>':''}<br>Newly picked since current EPL snapshot: ${d.added.length}${d.added.length?` — ${escapeHTML(d.added.slice(0,30).join(', '))}${d.added.length>30?'…':''}`:''}<br>No longer listed as picked: ${d.removed.length}${d.removed.length?` — ${escapeHTML(d.removed.slice(0,30).join(', '))}${d.removed.length>30?'…':''}`:''}${unmatched.length?`<br><br><strong>Unmatched award codes (${p.unmatched.length}):</strong> ${escapeHTML(unmatched.join(', '))}${more>0?` +${more} more`:''}`:''}${warnings.length?`<br><br>${warnings.map(x=>escapeHTML(x)).join('<br>')}`:''}</div>`;
+  const d=p.diff||{added:[],removed:[],unchanged:[]},blockers=[...(p.publishBlockers||[])],warnings=[...p.warnings,...p.errors],unmatched=p.unmatched.slice(0,35),more=p.unmatched.length-unmatched.length;
+  host.innerHTML=`<div class="future-availability-summary"><div class="future-availability-stat"><div class="label">Roster rows</div><div class="value">${p.rows.length}</div><div class="detail">${p.blankRows.length} not yet awarded</div></div><div class="future-availability-stat"><div class="label">Mapped picks</div><div class="value">${p.matched.length}</div><div class="detail">${p.statusRows.length} statuses • ${p.referenceRows?.length||0} reference-only awards</div></div><div class="future-availability-stat"><div class="label">Union timestamp</div><div class="value" style="font-size:10px">${escapeHTML(p.timestampLabel||'Not read')}</div><div class="detail">${p.pages} PDF page${p.pages===1?'':'s'}</div></div></div><div class="future-availability-diff"><strong>${p.valid?'Format validation passed':'Format validation failed'}</strong>${p.publishable?' • <strong>Ready to publish</strong>':' • <strong>Publish blocked</strong>'}<br>Newly picked since current EPL snapshot: ${d.added.length}${d.added.length?` — ${escapeHTML(d.added.slice(0,30).join(', '))}${d.added.length>30?'…':''}`:''}<br>No longer listed as picked: ${d.removed.length}${d.removed.length?` — ${escapeHTML(d.removed.slice(0,30).join(', '))}${d.removed.length>30?'…':''}`:''}${unmatched.length?`<br><br><strong>Unmatched award codes (${p.unmatched.length}):</strong> ${escapeHTML(unmatched.join(', '))}${more>0?` +${more} more`:''}`:''}${blockers.length?`<br><br><strong>Publish blockers:</strong><br>${blockers.map(x=>escapeHTML(x)).join('<br>')}`:''}${warnings.length?`<br><br><strong>Review notes:</strong><br>${warnings.map(x=>escapeHTML(x)).join('<br>')}`:''}</div>`;
   if(btn)btn.disabled=!p.valid||!p.publishable;
-  futurePickAvailabilityAdminStatus(!p.valid?'Validation failed. Nothing can be published. PDF format or row parsing needs review.':p.historical?'Historical sample parsed successfully for testing. Publishing is intentionally disabled.':p.warnings.length?'PDF parsed with review warnings. Review the unmatched codes and changes before publishing.':'PDF parsed successfully. Review the changes, then publish.',!p.valid?'error':p.historical?'warn':'pass');
+  futurePickAvailabilityAdminStatus(!p.valid?'Validation failed. Nothing can be published. PDF format or row parsing needs review.':!p.publishable?'PDF parsed, but publishing is blocked. Review the reason below.':p.warnings.length?'PDF parsed with review notes. Review the changes, then publish.':'PDF parsed successfully. Review the changes, then publish.',''+(!p.valid?'error':!p.publishable?'warn':'pass'));
 }
 async function futurePickAvailabilityPublishPreview(){
-  const p=futurePickAvailabilityPreview;if(!p?.valid||!p.publishable)return alert(p?.historical?'This historical sample is available for parser testing only and cannot be published.':'Analyze a valid union awards PDF first.');
+  const p=futurePickAvailabilityPreview;if(!p?.valid||!p.publishable)return alert((p?.publishBlockers||[])[0]||'Analyze a valid, publishable union awards PDF first.');
   if(!futureRevisionState.active?.id||!futurePickCertificationCurrent())return alert('The active future Crew Book revision must be certified before live availability can be published.');
   if(!await rosterCheckAdmin(true))return alert('This account is not authorized to publish General Pick availability.');
   const d=p.diff||{added:[],removed:[]},warning=p.unmatched.length?`\n\n${p.unmatched.length} award code(s) do not map to the active GO 203 pick dataset and will not affect availability.`:'';
-  if(!confirm(`Publish this General Pick availability snapshot?\n\n${p.rows.length} roster rows\n${p.matched.length} mapped picked assignments\n${p.timestampLabel||'Union timestamp not read'}\n${d.added.length} newly picked / ${d.removed.length} no longer listed${warning}\n\nNormal users will see assignment availability only — not employee names or IBM numbers.`))return;
+  if(!confirm(`Publish this General Pick availability snapshot LIVE now?\n\nUnion update: ${p.timestampLabel||'Timestamp not read'}\nFuture Crew Book: ${futureRevisionCurrentLabel()}\n${p.rows.length} roster rows\n${p.matched.length} mapped picked assignments\n${d.added.length} newly picked / ${d.removed.length} no longer listed${warning}\n\nThis immediately changes Already Picked status for November General Pick users. Employee names and IBM numbers remain maintainer-only.`))return;
   const client=getCloudClient();if(!client)return;let storagePath='';
   try{
     const user=await cloudCurrentUser(client);if(!user)throw new Error('Sign in before publishing General Pick availability.');
@@ -11685,20 +11733,22 @@ async function futurePickAvailabilityPublishPreview(){
     });if(error)throw error;
     futurePickAvailabilityPreview=null;futurePickAvailabilitySelectedFile=null;const input=document.getElementById('futurePickAvailabilityFile');if(input)input.value='';const preview=document.getElementById('futurePickAvailabilityPreview');if(preview)preview.innerHTML='';
     const b=document.getElementById('futurePickAvailabilityPublishBtn');if(b)b.disabled=true;
-    futurePickAvailabilityState.loaded=false;await futurePickAvailabilityLoad(true);futurePickAvailabilityAdminStatus(`Published ${data?.matched_assignment_count??p.matched.length} picked assignments from ${p.timestampLabel||p.file.name}.`,'pass');futurePickAvailabilityRender();futurePickRefreshCurrentDetail();futurePickRenderBrowse();futurePickRenderMyPick();futurePickRenderCompare();
+    futurePickAvailabilityState.loaded=false;futurePickAvailabilityHistoryLoaded=false;await futurePickAvailabilityLoad(true);await futurePickAvailabilityLoadHistory(true);futurePickAvailabilityAdminStatus(`Published ${data?.matched_assignment_count??p.matched.length} picked assignments from ${p.timestampLabel||p.file.name}.`,'pass');futurePickAvailabilityRender();futurePickRefreshCurrentDetail();futurePickRenderBrowse();futurePickRenderMyPick();futurePickRenderCompare();
   }catch(err){
     console.error('General Pick availability publish failed:',err);
     if(storagePath){try{await client.storage.from('general-pick-awards').remove([storagePath])}catch{}}
     futurePickAvailabilityAdminStatus(`Publish failed: ${err?.message||err}`,'error');
   }
 }
-async function futurePickAvailabilityOpenSource(){
-  const snap=futurePickAvailabilityState.payload?.snapshot;if(!snap?.id)return alert('There is no active union General Pick awards source PDF.');
+async function futurePickAvailabilityOpenSource(snapshotId=''){
+  const active=futurePickAvailabilityState.payload?.snapshot,id=snapshotId||active?.id;if(!id)return alert('There is no union General Pick awards source PDF to open.');
   if(!await rosterCheckAdmin(true))return alert('This source PDF is available only to an authorized maintainer.');
   const client=getCloudClient();if(!client)return;const win=window.open('about:blank','_blank');
   try{
-    const {data:row,error}=await client.from('general_pick_award_snapshots').select('source_storage_path,source_file_name').eq('id',snap.id).single();if(error)throw error;if(!row?.source_storage_path)throw new Error('This snapshot has no stored source PDF.');
-    const {data,error:downloadError}=await client.storage.from('general-pick-awards').download(row.source_storage_path);if(downloadError)throw downloadError;
+    const cached=(futurePickAvailabilityHistory||[]).find(r=>r.id===id),row=cached?.source_storage_path?cached:null;let source=row;
+    if(!source){const q=await client.from('general_pick_award_snapshots').select('source_storage_path,source_file_name').eq('id',id).single();if(q.error)throw q.error;source=q.data}
+    if(!source?.source_storage_path)throw new Error('This snapshot has no stored source PDF.');
+    const {data,error:downloadError}=await client.storage.from('general-pick-awards').download(source.source_storage_path);if(downloadError)throw downloadError;
     if(futurePickAvailabilitySourceObjectUrl)URL.revokeObjectURL(futurePickAvailabilitySourceObjectUrl);futurePickAvailabilitySourceObjectUrl=URL.createObjectURL(data);
     if(win)win.location.href=futurePickAvailabilitySourceObjectUrl;else window.location.href=futurePickAvailabilitySourceObjectUrl;
   }catch(err){try{win?.close()}catch{}alert(`Could not open the union awards PDF: ${err?.message||err}`)}
@@ -11708,7 +11758,7 @@ async function futurePickAvailabilityClearActive(){
   if(!confirm('Clear the active live General Pick availability snapshot?\n\nThis does not delete revision history. It only removes the current Already Picked overlay.'))return;
   if(!await rosterCheckAdmin(true))return;
   const client=getCloudClient();if(!client)return;
-  try{const {error}=await client.rpc('general_pick_clear_availability',{p_go_number:'203'});if(error)throw error;futurePickAvailabilityState.loaded=false;await futurePickAvailabilityLoad(true);futurePickAvailabilityRender();futurePickRefreshCurrentDetail();futurePickRenderBrowse();futurePickRenderMyPick();futurePickRenderCompare();futurePickAvailabilityAdminStatus('Active availability overlay cleared.','pass')}catch(err){futurePickAvailabilityAdminStatus(`Could not clear availability: ${err?.message||err}`,'error')}
+  try{const {error}=await client.rpc('general_pick_clear_availability',{p_go_number:'203'});if(error)throw error;futurePickAvailabilityState.loaded=false;futurePickAvailabilityHistoryLoaded=false;await futurePickAvailabilityLoad(true);await futurePickAvailabilityLoadHistory(true);futurePickAvailabilityRender();futurePickRefreshCurrentDetail();futurePickRenderBrowse();futurePickRenderMyPick();futurePickRenderCompare();futurePickAvailabilityAdminStatus('Live availability disabled. The previous snapshot remains in history and can be restored.','pass')}catch(err){futurePickAvailabilityAdminStatus(`Could not disable availability: ${err?.message||err}`,'error')}
 }
 function futurePickAvailabilityRender(){
   const p=futurePickAvailabilityState.payload||{},snap=p.snapshot,status=document.getElementById('futurePickAvailabilityStatus'),summary=document.getElementById('futurePickAvailabilitySummary'),list=document.getElementById('futurePickAvailabilityList'),note=document.getElementById('futurePickAvailabilityNote'),tab=document.getElementById('futurePickAvailabilityTabCount'),admin=document.getElementById('futurePickAvailabilityAdmin'),openSource=document.getElementById('futurePickAvailabilityOpenSourceBtn');
