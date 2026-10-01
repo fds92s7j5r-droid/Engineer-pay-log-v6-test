@@ -11907,9 +11907,12 @@ function futurePickData(){
 }
 let FUTURE_PICK_DERIVED_WEEK_CACHE=null;
 function futurePickWeek(){
-  const cloud=futureRevisionActiveDataset();if(cloud?.pickWeek)return cloud.pickWeek;
-  const raw=window.GO203_PICK_WEEK||{};
+  const cloud=futureRevisionActiveDataset(),raw=cloud?.pickWeek||window.GO203_PICK_WEEK||{};
   if(FUTURE_PICK_DERIVED_WEEK_CACHE?.raw===raw)return FUTURE_PICK_DERIVED_WEEK_CACHE.value;
+  /* The cloud Passenger Draft 1 predates the Road/Yard supplement. Clone the
+     active structured week and merge the reviewed Road/Yard engineer week into
+     that clone. Once a combined cloud revision is registered, the same merge is
+     deterministic and simply refreshes those revision-scoped Road/Yard rows. */
   let pick;try{pick=JSON.parse(JSON.stringify(raw))}catch{pick=raw}
   const p202=pick?.regular?.['202'];
   if(p202?.days){const long={status:'resolved',start:'16:39',end:'01:07',mealDot:false,source:'union-confirmed-condition',variant:'Mon–Thu: DH to Brooklyn + Train 2804',durationMinutes:508,paysMeal:true};for(const day of ['monday','tuesday','wednesday','thursday'])if(p202.days[day])p202.days[day].schedule={...long};if(p202.days.friday)p202.days.friday.schedule={status:'resolved',start:'16:39',end:'23:25',mealDot:false,source:'union-confirmed-condition',variant:'Friday: no Brooklyn DH / Train 2804',durationMinutes:406,paysMeal:true};p202.weeklyOTMinutes=58;p202.paidMeals=3;p202.weeklyResolved=true}
@@ -11953,7 +11956,7 @@ function futurePickEx1Meta(value){const n=futurePickEx1Number(value);if(!n)retur
 function futurePickNorm(v){const ex1=futurePickEx1Key(v);if(ex1)return ex1;const raw=String(v||'').trim().toUpperCase().replace(/^JOB\s*/i,'').replace(/^RC\s*/i,'');const yard=normalizeCrewBookKey(raw);if(/^(?:YE|YPD|YFD|HMP|CE|RF|YER|YPR|CER)-\d+$/.test(yard))return yard;return raw.replace(/[^0-9]/g,'')}
 function futurePickFmtTime(t){if(!t)return '—';let [h,m]=String(t).split(':').map(Number),ap=h>=12?'PM':'AM';h=h%12||12;return `${h}:${String(m).padStart(2,'0')} ${ap}`}
 function futurePickFmtMin(n){if(n==null||!Number.isFinite(Number(n)))return '—';n=Number(n);return `${Math.floor(n/60)}:${String(n%60).padStart(2,'0')}`}
-function futurePickFmtDate(iso){try{return new Date(iso+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}catch{return iso||''}}
+function futurePickFmtDate(iso){if(!iso)return '';try{const d=new Date(String(iso)+'T12:00:00');return Number.isNaN(d.getTime())?'':d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}catch{return ''}}
 function futurePickMealText(s){if(!s||s.status!=='resolved')return '';if(s.mealDot)return 'Meal shown';return s.paysMeal?'Pays meal*':'No paid meal'}
 function futurePickReliefLabel(j){return (j?.reliefDays||[]).map(d=>FUTURE_PICK_DAY[d]||d).join('/')||'—'}
 function futurePickReliefTerminal(key,r){return FUTURE_PICK_RELIEF_TERMINAL_BY_CREW[String(key)]||r?.terminalLabel||'Relief Crew'}
