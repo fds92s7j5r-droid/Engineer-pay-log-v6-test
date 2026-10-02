@@ -2113,13 +2113,13 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
         <div id="futurePickPaneCutover" class="future-pick-pane" hidden>
           <div class="future-audit">
-            <div class="future-audit-head"><div><h3>GO 203 Cutover Staging Rehearsal</h3><div class="future-audit-sub">Step 15A verifies the pinned future production stage and date-aware selection for the Nov. 9 transition. Staging cannot activate GO 203, change the production pointer, or alter normal GO 202 Crew Book behavior.</div></div><span id="futurePickCutoverStatus" class="future-audit-status blocked">Not run</span></div>
+            <div class="future-audit-head"><div><h3>GO 203 Cutover Resolver Rehearsal</h3><div class="future-audit-sub">Step 15B verifies the Road/Yard production adapter against the pinned GO 203 stage. The adapter remains behind the production kill switch, so this test cannot activate GO 203 or change normal GO 202/Yard behavior.</div></div><span id="futurePickCutoverStatus" class="future-audit-status blocked">Not run</span></div>
             <div id="futurePickCutoverSummary" class="future-audit-grid"></div>
             <div id="futurePickCutoverChecks"></div>
             <div id="futurePickCutoverLocks"></div>
             <div class="future-audit-actions"><button id="futurePickCutoverRunBtn" class="btn primary" type="button" onclick="futurePickRunCutoverRehearsal()">Run Cutover Rehearsal</button></div>
             <div id="futurePickCutoverIdentity" class="future-audit-cert"><strong>Cutover identity:</strong> Run the rehearsal to capture the exact future revision, certification fingerprint, and current GO 202 production version that Step 15 must preserve.</div>
-            <div class="future-audit-note">A passing Step 14 rehearsal means the data and isolation are ready for production-wiring work. It does <strong>not</strong> mean GO 203 can be promoted yet. Date-aware production selection, Road/Yard production resolution, and the final Nov. 9 activation path remain locked until a later incremental build.</div>
+            <div class="future-audit-note">Step 15B wires the Road/Yard resolver interface only. A passing result means both date-aware staging and Road/Yard resolution are ready, but <strong>GO 203 still cannot activate</strong>. The final Nov. 9 activation/rollback path remains the sole promotion lock.</div>
           </div>
         </div>
       </div>
@@ -5530,24 +5530,49 @@ const CREW_BOOK_YARD_LIMITED_DAYS={
   'YE-52':['monday','tuesday','wednesday','thursday','friday'],
   'RF-1':['wednesday','thursday','friday','saturday','sunday']
 };
-function yardJobOperatesOnDayV8(key,day){
-  const k=normalizeCrewBookKey(key),limited=CREW_BOOK_YARD_LIMITED_DAYS[k];
-  return limited?limited.includes(day):!!CREW_BOOK_YARD_JOBS[k];
+function crewBookRoadYardNormalizeStagedJob(key,row){
+  if(!row||typeof row!=='object')return null;
+  const reliefDays=Array.isArray(row.reliefDays)?[...row.reliefDays]:[],ownerRelief=new Set(reliefDays),days={};for(const [day,schedule] of Object.entries(row.daySchedules||{}))if(schedule&&typeof schedule==='object'&&!ownerRelief.has(day))days[day]={...schedule,paysMeal:false};
+  return {...JSON.parse(JSON.stringify(row)),key:normalizeCrewBookKey(key),relief:reliefDays,days,__go203RoadYard:true};
 }
-function resolveYardJobV8(key,day){
-  const k=normalizeCrewBookKey(key),job=CREW_BOOK_YARD_JOBS[k];
-  if(!job||!yardJobOperatesOnDayV8(k,day))return null;
+function crewBookRoadYardStagedPayload(date,options={}){
+  const force=options?.allowStaged===true,enabled=force||FUTURE_CREW_BOOK_GO203?.productionResolverEnabled===true,stage=futurePickProductionStageState?.stage,d=String(date||'');
+  if(!enabled||!stage||!['staged','activated'].includes(String(stage.status||''))||!stage.effective_date||d<String(stage.effective_date))return null;
+  const payload=stage.road_yard_payload;if(!payload||typeof payload!=='object')return null;
+  if(String(payload.go||'')!=='203'||String(payload.effectiveDate||'')!==String(stage.effective_date||'')||String(payload.certificationFingerprint||'')!==String(stage.certification_fingerprint||''))return null;
+  const jobs=payload.jobs||{},reliefCrews=payload.reliefCrews||{};
+  const jobKeys=Object.keys(jobs),reliefKeys=Object.keys(reliefCrews),forbidden=[...jobKeys,...reliefKeys].filter(futureRevisionForbiddenConductorKey);
+  if(jobKeys.length!==35||reliefKeys.length!==7||forbidden.length)return null;
+  return payload;
+}
+function crewBookRoadYardDatasetForDate(date,options={}){
+  const payload=crewBookRoadYardStagedPayload(date,options);
+  if(payload){const jobs={},relief={};for(const [key,row] of Object.entries(payload.jobs||{})){const normalized=crewBookRoadYardNormalizeStagedJob(key,row);if(normalized)jobs[normalizeCrewBookKey(key)]=normalized}for(const [key,row] of Object.entries(payload.reliefCrews||{}))relief[normalizeCrewBookKey(key)]=JSON.parse(JSON.stringify(row?.map||{}));return {source:'go203-stage-adapter',go:'203',revision:payload.sourceRevisionLabel||'GO 203',effective:String(payload.effectiveDate||date||''),stageId:futurePickProductionStageState?.stage?.id||'',jobs,relief,payload}}
+  return {source:'bundled-yard-current',go:'201',revision:'Yard current',effective:'2026-07-06',stageId:'',jobs:CREW_BOOK_YARD_JOBS,relief:CREW_BOOK_YARD_RELIEF,payload:null};
+}
+function crewBookRoadYardJobDefinition(key,date,options={}){return crewBookRoadYardDatasetForDate(date,options).jobs?.[normalizeCrewBookKey(key)]||null}
+function crewBookRoadYardReliefMap(key,date,options={}){return crewBookRoadYardDatasetForDate(date,options).relief?.[normalizeCrewBookKey(key)]||null}
+function crewBookRoadYardRevision(date,options={}){const ds=crewBookRoadYardDatasetForDate(date,options);return {go:ds.go,revision:ds.revision,effective:ds.effective,roadYardSource:ds.source,stageId:ds.stageId}}
+function yardJobOperatesOnDayV8(key,day,date='',options={}){
+  const k=normalizeCrewBookKey(key),ds=crewBookRoadYardDatasetForDate(date,options),job=ds.jobs?.[k];if(!job)return false;
+  if(ds.source==='go203-stage-adapter'){const active=Array.isArray(job.activeDays)?job.activeDays:Object.keys(job.days||{});return active.includes(day)}
+  const limited=CREW_BOOK_YARD_LIMITED_DAYS[k];return limited?limited.includes(day):!!job;
+}
+function resolveYardJobV8(key,day,date='',options={}){
+  const k=normalizeCrewBookKey(key),ds=crewBookRoadYardDatasetForDate(date,options),job=ds.jobs?.[k];
+  if(!job||!yardJobOperatesOnDayV8(k,day,date,options))return null;
+  if(ds.source==='go203-stage-adapter'&&job.daySchedules?.[day])return {...job.daySchedules[day],paysMeal:false};
   if(job.days?.[day])return {...job.days[day],paysMeal:false};
   // Relief days are the regular owner's days off; the assignment still exists.
   // Use the printed daily time unless the book gives a day-specific variation.
-  if(k==='YE-1'&&day==='sunday')return {start:'08:00',end:'16:00',paysMeal:false};
+  if(ds.source!=='go203-stage-adapter'&&k==='YE-1'&&day==='sunday')return {start:'08:00',end:'16:00',paysMeal:false};
   const sample=Object.values(job.days||{}).find(Boolean);
   return sample?{...sample,paysMeal:false}:null;
 }
-function resolveYardReliefCoveredJobV8(key,day){
+function resolveYardReliefCoveredJobV8(key,day,date='',options={}){
   // A relief crew protects the underlying assignment on the owner's relief day,
   // so use assignment-operating logic rather than owner-workday logic.
-  return resolveYardJobV8(key,day);
+  return resolveYardJobV8(key,day,date,options);
 }
 function crewBookLookupJobV8(input,date){
   const key=normalizeCrewBookKey(input),day=crewBookDayForDate(date);
@@ -5562,7 +5587,7 @@ function crewBookLookupJobV8(input,date){
   }
   if(isHolidayCrewKey(key))return null;
   if(/^\d+$/.test(key)){const rev=crewBookPassengerRevision(date),job=rev.jobs[key],schedule=resolvePassengerJobV8(key,date,day);return job?{key,day,source:'passenger',revision:rev,job,schedule}:null}
-  if(isYardCrewKey(key)){const job=CREW_BOOK_YARD_JOBS[key],schedule=resolveYardJobV8(key,day);return job?{key,day,source:'yard',revision:{go:'201',revision:'Yard current',effective:'2026-07-06'},job,schedule}:null}
+  if(isYardCrewKey(key)){const job=crewBookRoadYardJobDefinition(key,date),schedule=resolveYardJobV8(key,day,date),revision=crewBookRoadYardRevision(date);return job?{key,day,source:'yard',revision,job,schedule}:null}
   return null
 }
 
@@ -5699,7 +5724,7 @@ function jobCompareSourceLabel(hit){
 }
 function jobCompareReliefCrewDefinition(key,date){
   key=normalizeCrewBookKey(key);
-  if(isYardReliefKey(key)){const map=CREW_BOOK_YARD_RELIEF?.[key];return map?{key,map,type:'yard',source:'yard-relief',revision:{go:'201',revision:'Yard current',effective:'2026-07-06'}}:null}
+  if(isYardReliefKey(key)){const map=crewBookRoadYardReliefMap(key,date),revision=crewBookRoadYardRevision(date);return map?{key,map,type:'yard',source:'yard-relief',revision}:null}
   if(!/^\d+$/.test(key))return null;
   const rev=crewBookPassengerRevision(date),map=rev.relief?.[key];
   return map?{key,map,type:'passenger',source:'passenger-relief',revision:rev}:null;
@@ -5708,13 +5733,13 @@ function jobCompareResolveReliefCrewForDay(key,date){
   const info=jobCompareReliefCrewDefinition(key,date);if(!info)return null;
   const day=crewBookDayForDate(date),coveredKey=info.map?.[day]||null;
   if(!coveredKey)return {hit:{key:info.key,day,source:info.source,revision:info.revision,reliefCrew:true,reliefMap:info.map,coveredKey:null,job:null},schedule:null,state:'off'};
-  if(info.type==='yard'){const normalized=normalizeCrewBookKey(coveredKey),job=CREW_BOOK_YARD_JOBS[normalized],schedule=resolveYardReliefCoveredJobV8(normalized,day);return {hit:{key:info.key,day,source:info.source,revision:info.revision,reliefCrew:true,reliefMap:info.map,coveredKey:normalized,job},schedule,state:schedule?'active':'off'}}
+  if(info.type==='yard'){const normalized=normalizeCrewBookKey(coveredKey),job=crewBookRoadYardJobDefinition(normalized,date),schedule=resolveYardReliefCoveredJobV8(normalized,day,date);return {hit:{key:info.key,day,source:info.source,revision:info.revision,reliefCrew:true,reliefMap:info.map,coveredKey:normalized,job},schedule,state:schedule?'active':'off'}}
   const job=info.revision.jobs?.[String(coveredKey)],schedule=resolvePassengerJobV8(String(coveredKey),date,day);return {hit:{key:info.key,day,source:info.source,revision:info.revision,reliefCrew:true,reliefMap:info.map,coveredKey:String(coveredKey),job},schedule,state:schedule?'active':'off'};
 }
 function jobCompareReliefCoverage(key,date){
   key=normalizeCrewBookKey(key);const result={};
   if(isYardCrewKey(key)){
-    for(const [reliefCrew,map] of Object.entries(CREW_BOOK_YARD_RELIEF||{}))for(const day of CREW_BOOK_DAYS)if(normalizeCrewBookKey(map?.[day])===key)(result[day]||(result[day]=[])).push(reliefCrew);
+    for(const [reliefCrew,map] of Object.entries(crewBookRoadYardDatasetForDate(date).relief||{}))for(const day of CREW_BOOK_DAYS)if(normalizeCrewBookKey(map?.[day])===key)(result[day]||(result[day]=[])).push(reliefCrew);
     return result;
   }
   if(!/^\d+$/.test(key))return result;
@@ -5839,7 +5864,7 @@ function quickBrowseReliefDays(map){return quickBrowseDayPair(CREW_BOOK_DAYS.fil
 function quickBrowseUnique(values){return [...new Set((values||[]).map(v=>String(v||'').trim()).filter(Boolean))]}
 function quickBrowseReliefTerminals(info){
   if(!info?.map)return [];const terminals=[];
-  for(const covered of quickBrowseUnique(CREW_BOOK_DAYS.map(day=>info.map?.[day]))){if(info.type==='yard'){const job=CREW_BOOK_YARD_JOBS?.[normalizeCrewBookKey(covered)];if(job?.terminal)terminals.push(job.terminal)}else{const job=info.revision?.jobs?.[String(covered)];if(job?.terminal)terminals.push(job.terminal)}}
+  for(const covered of quickBrowseUnique(CREW_BOOK_DAYS.map(day=>info.map?.[day]))){if(info.type==='yard'){const job=crewBookRoadYardJobDefinition(covered,info?.revision?.effective||'');if(job?.terminal)terminals.push(job.terminal)}else{const job=info.revision?.jobs?.[String(covered)];if(job?.terminal)terminals.push(job.terminal)}}
   return quickBrowseUnique(terminals);
 }
 function quickBrowseTerminalSummary(item){const t=item?.terminals||[];if(!t.length)return item?.type?.includes('relief')?'Coverage terminals vary':'Terminal not listed';if(t.length===1)return t[0];if(t.length===2)return t.join(' • ');return `${t.slice(0,2).join(' • ')} • +${t.length-2} more`}
@@ -5847,8 +5872,9 @@ function quickBrowseItems(date){
   const rev=crewBookPassengerRevision(date),out=[];
   for(const [key,job] of Object.entries(rev?.jobs||{})){if(!job||job.status==='abolished')continue;const type=job.type==='extraCrewOnly'?'extra':'passenger';out.push({key:String(key),type,terminals:quickBrowseUnique([job.terminal]),job,revision:rev})}
   for(const [key,map] of Object.entries(rev?.relief||{})){const info={key:String(key),map,type:'passenger',revision:rev};out.push({key:String(key),type:'passenger-relief',terminals:quickBrowseReliefTerminals(info),map,revision:rev})}
-  for(const [key,job] of Object.entries(CREW_BOOK_YARD_JOBS||{})){if(!job)continue;out.push({key:String(key),type:'yard',terminals:quickBrowseUnique([job.terminal]),job})}
-  for(const [key,map] of Object.entries(CREW_BOOK_YARD_RELIEF||{})){const info={key:String(key),map,type:'yard',revision:{}};out.push({key:String(key),type:'yard-relief',terminals:quickBrowseReliefTerminals(info),map})}
+  const yardDataset=crewBookRoadYardDatasetForDate(date);
+  for(const [key,job] of Object.entries(yardDataset.jobs||{})){if(!job)continue;out.push({key:String(key),type:'yard',terminals:quickBrowseUnique([job.terminal]),job,revision:crewBookRoadYardRevision(date)})}
+  for(const [key,map] of Object.entries(yardDataset.relief||{})){const info={key:String(key),map,type:'yard',revision:crewBookRoadYardRevision(date)};out.push({key:String(key),type:'yard-relief',terminals:quickBrowseReliefTerminals(info),map,revision:info.revision})}
   return out;
 }
 function quickBrowseSort(a,b){const an=/^\d+$/.test(a.key),bn=/^\d+$/.test(b.key);if(an&&bn)return Number(a.key)-Number(b.key);if(an!==bn)return an?-1:1;return a.key.localeCompare(b.key,undefined,{numeric:true})}
@@ -6160,10 +6186,10 @@ function fillRegularMyJobFromCrewBook(){
   if(!crewBookAssistEnabled())return;
   const raw=(document.getElementById('myJobNumber')?.value||'').trim(),key=normalizeCrewBookKey(raw),refDate=myJobCrewBookReferenceDate();
   if(isYardCrewKey(key)){
-    const job=CREW_BOOK_YARD_JOBS[key];if(!job){alert(`Yard job ${key} is not in the verified dataset.`);return}
+    const job=crewBookRoadYardJobDefinition(key,refDate);if(!job){alert(`Yard job ${key} is not in the verified dataset.`);return}
     document.getElementById('myJobNumber').value=key;setRegularLocationUI(job.terminal||job.weekday?.location);
     for(const day of CREW_BOOK_DAYS){
-      const cap=day[0].toUpperCase()+day.slice(1),ownerOff=job.relief?.includes(day)||!yardJobOperatesOnDayV8(key,day),x=resolveYardJobV8(key,day),box=document.getElementById(`myJobRegular${cap}Off`);
+      const cap=day[0].toUpperCase()+day.slice(1),dayDate=crewBookDateForDayNear(day,refDate),ownerOff=job.relief?.includes(day)||!yardJobOperatesOnDayV8(key,day,dayDate),x=resolveYardJobV8(key,day,dayDate),box=document.getElementById(`myJobRegular${cap}Off`);
       if(box)box.checked=!!ownerOff;
       const st=document.getElementById(`myJobRegular${cap}Start`),en=document.getElementById(`myJobRegular${cap}End`),meal=document.getElementById(`myJobRegular${cap}PaysMeal`);
       if(st)st.value=ownerOff?'':(x?.start||'');if(en)en.value=ownerOff?'':(x?.end||'');if(meal)meal.checked=false;toggleMyJobRegularDay(day);
@@ -6187,13 +6213,13 @@ function fillReliefMyJobFromCrewBook(){
   if(!crewBookAssistEnabled())return;
   const raw=(document.getElementById('myJobReliefCrewNumber')?.value||'').trim(),key=normalizeCrewBookKey(raw),refDate=myJobCrewBookReferenceDate();
   let map,source,rev;
-  if(isYardReliefKey(key)){map=CREW_BOOK_YARD_RELIEF[key];source='yard';document.getElementById('myJobReliefCrewNumber').value=key}
+  if(isYardReliefKey(key)){map=crewBookRoadYardReliefMap(key,refDate);source='yard';document.getElementById('myJobReliefCrewNumber').value=key}
   else{rev=crewBookPassengerRevision(refDate);map=rev.relief[key];source='passenger'}
   if(!map){alert(`Relief Crew ${key||'(blank)'} is not in the verified Crew Book dataset for ${refDate}.`);return}
   for(const day of CREW_BOOK_DAYS){
     const cap=day[0].toUpperCase()+day.slice(1),jn=map[day],off=!jn,box=document.getElementById(`myJobRelief${cap}Off`);if(box)box.checked=off;
     let job=null,x=null;if(jn){
-      if(source==='yard'){job=CREW_BOOK_YARD_JOBS[jn];x=resolveYardJobV8(jn,day)}
+      if(source==='yard'){const dayDate=crewBookDateForDayNear(day,refDate);job=crewBookRoadYardJobDefinition(jn,dayDate);x=resolveYardJobV8(jn,day,dayDate)}
       else{const dayDate=crewBookDateForDayNear(day,refDate),dayRev=crewBookPassengerRevision(dayDate);job=dayRev.jobs[jn];x=resolvePassengerJobV8(jn,dayDate,day)}
     }
     const a=document.getElementById(`myJobRelief${cap}Assignment`),st=document.getElementById(`myJobRelief${cap}Start`),en=document.getElementById(`myJobRelief${cap}End`),meal=document.getElementById(`myJobRelief${cap}PaysMeal`);
@@ -6261,13 +6287,13 @@ function applyMyJob(){
     if(j.type==='relief'){
       const key=normalizeCrewBookKey(j.reliefCrewNumber);
       let map,src;
-      if(isYardReliefKey(key)){map=CREW_BOOK_YARD_RELIEF[key];src='yard'}
+      if(isYardReliefKey(key)){map=crewBookRoadYardReliefMap(key,date);src='yard'}
       else {map=crewBookPassengerRevision(date).relief[key];src='passenger'}
       if(map){
         const jn=map[day];
         if(!jn){alert(`${dayLabel} is a Relief Day for My Job.`);return}
         let job,x;
-        if(src==='yard'){job=CREW_BOOK_YARD_JOBS[jn];x=resolveYardReliefCoveredJobV8(jn,day)}
+        if(src==='yard'){job=crewBookRoadYardJobDefinition(jn,date);x=resolveYardReliefCoveredJobV8(jn,day,date)}
         else {const rev=crewBookPassengerRevision(date);job=rev.jobs[jn];x=resolvePassengerJobV8(jn,date,day)}
         if(job&&x){
           document.getElementById('assignment').value=jn;
@@ -6282,7 +6308,7 @@ function applyMyJob(){
     } else {
       const key=normalizeCrewBookKey(j.assignment);
       if(isYardCrewKey(key)){
-        const job=CREW_BOOK_YARD_JOBS[key],x=resolveYardJobV8(key,day);
+        const job=crewBookRoadYardJobDefinition(key,date),x=resolveYardJobV8(key,day,date);
         if(job&&x){
           document.getElementById('assignment').value=key;setLocationUI(x.location||job.terminal);
           document.getElementById('start').value=x.start;document.getElementById('end').value=x.end;
@@ -12096,10 +12122,14 @@ const FUTURE_PICK_COMPARE_KEY='epl_go203_general_pick_compare_v1';
 const FUTURE_PICK_COMPARE_MAX=4;
 let futurePickMode='lookup',futurePickSourcePage=null,futurePickSourceBook=null,futurePickSourceZoom=1,futurePickPlan=[],futurePickCompare=[];
 const FUTURE_PICK_CUTOVER_EFFECTIVE='2026-11-09';
-const FUTURE_PICK_CUTOVER_CAPABILITIES=Object.freeze({dateAwareProductionHistory:true,roadYardProductionResolver:false,activationWiring:false});
+const FUTURE_PICK_CUTOVER_CAPABILITIES=Object.freeze({dateAwareProductionHistory:true,roadYardProductionResolver:true,activationWiring:false});
 const FUTURE_PICK_PRODUCTION_STAGES_TABLE='crew_book_production_stages';
+const FUTURE_PICK_PRODUCTION_STAGE_CACHE_KEY='epl_go203_production_stage_cache_v1';
+function futurePickProductionStageCacheRead(){try{const x=JSON.parse(localStorage.getItem(FUTURE_PICK_PRODUCTION_STAGE_CACHE_KEY)||'null');return x&&typeof x==='object'?x:null}catch{return null}}
+function futurePickProductionStageCacheWrite(){try{localStorage.setItem(FUTURE_PICK_PRODUCTION_STAGE_CACHE_KEY,JSON.stringify({stage:futurePickProductionStageState.stage,storedAt:new Date().toISOString()}))}catch{}}
 let futurePickCutoverState={running:false,last:null};
-let futurePickProductionStageState={loaded:false,loading:false,error:'',stage:null};
+const _futurePickStageCache=futurePickProductionStageCacheRead();
+let futurePickProductionStageState={loaded:!!_futurePickStageCache,loading:false,error:'',stage:_futurePickStageCache?.stage||null};
 async function futurePickProductionStageLoad(force=false){
   if(futurePickProductionStageState.loading)return futurePickProductionStageState.stage;
   if(futurePickProductionStageState.loaded&&!force)return futurePickProductionStageState.stage;
@@ -12107,9 +12137,9 @@ async function futurePickProductionStageLoad(force=false){
   const user=await cloudCurrentUser(client);if(!user)return futurePickProductionStageState.stage;
   futurePickProductionStageState.loading=true;futurePickProductionStageState.error='';
   try{
-    const {data,error}=await client.from(FUTURE_PICK_PRODUCTION_STAGES_TABLE).select('*').eq('go_number','203').eq('status','staged').order('staged_at',{ascending:false}).limit(1).maybeSingle();
+    const {data,error}=await client.from(FUTURE_PICK_PRODUCTION_STAGES_TABLE).select('*').eq('go_number','203').in('status',['staged','activated']).order('staged_at',{ascending:false}).limit(1).maybeSingle();
     if(error)throw error;
-    futurePickProductionStageState.stage=data||null;futurePickProductionStageState.loaded=true;return futurePickProductionStageState.stage;
+    futurePickProductionStageState.stage=data||null;futurePickProductionStageState.loaded=true;futurePickProductionStageCacheWrite();return futurePickProductionStageState.stage;
   }catch(err){console.warn('GO 203 production stage load failed:',err);futurePickProductionStageState.error=err?.message||String(err);return futurePickProductionStageState.stage}
   finally{futurePickProductionStageState.loading=false}
 }
@@ -12397,12 +12427,27 @@ function futurePickPopulateTerminals(){const type=document.getElementById('futur
 function futurePickBrowseTypeChanged(){futurePickPopulateTerminals();futurePickRenderBrowse()}
 function futurePickBrowseCard(item){const pick=futurePickWeek(),own=futurePickOwnability(item.key),picked=futurePickAvailabilityIsPicked(item.key),saved=futurePickPlanHas(item.key)?' • ✓ My Pick':'',ownability=!own.ownable?' • Not ownable':'',availability=picked?' • Already Picked':'',comparing=futurePickCompareHas(item.key);let body='';if(item.type==='regular'){const p=pick.regular?.[item.key],j=item.j;body=`<div class="future-pick-browse-top"><div class="future-pick-browse-job">${escapeHTML(item.key)}${picked?' <span class="future-pick-picked-badge">Already Picked</span>':''}</div><div class="future-pick-browse-type">${j.sourceKind==='road_yard'?'Road / Yard assignment':'Regular assignment'}</div></div><div class="future-pick-browse-terminal">${escapeHTML(item.terminal)}</div><div class="future-pick-browse-meta">Relief: ${escapeHTML(futurePickReliefLabel(j))} • Weekly OT: ${p?.weeklyResolved?futurePickFmtMin(p.weeklyOTMinutes):'source check'} • Meals*: ${p?.weeklyResolved?p.paidMeals:'—'}${saved}${ownability}${availability}${comparing?' • ✓ Compare':''}</div>`}else if(item.type==='relief'){const p=pick.relief?.[item.key],off=FUTURE_PICK_DAYS.filter(d=>item.r.map?.[d]==null).map(d=>FUTURE_PICK_DAY[d]).join('/');body=`<div class="future-pick-browse-top"><div class="future-pick-browse-job">${escapeHTML(item.key)}${picked?' <span class="future-pick-picked-badge">Already Picked</span>':''}</div><div class="future-pick-browse-type">${item.r.sourceKind==='road_yard'?'Road / Yard Relief Crew':'Relief Crew'}</div></div><div class="future-pick-browse-terminal">${escapeHTML(item.terminal)}</div><div class="future-pick-browse-meta">Relief: ${escapeHTML(off)} • Covers: ${escapeHTML(item.covered.join(', '))} • Weekly OT: ${p?.weeklyResolved?futurePickFmtMin(p.weeklyOTMinutes):'source check'} • Meals*: ${p?.weeklyResolved?p.paidMeals:'—'}${saved}${ownability}${availability}${comparing?' • ✓ Compare':''}</div>`}else if(item.type==='ex1'){const x=item.ex1;body=`<div class="future-pick-browse-top"><div class="future-pick-browse-job">${escapeHTML(item.key)}${picked?' <span class="future-pick-picked-badge">Already Picked</span>':''}</div><div class="future-pick-browse-type">Guaranteed Extra List</div></div><div class="future-pick-browse-meta">Relief: ${escapeHTML(x.reliefLabel)} • IPMA: ${escapeHTML(x.ipma||'—')}${x.firstWorkDay?` • first workday ${escapeHTML(x.firstWorkDay)}`:''}${saved}${ownability}${availability}${comparing?' • ✓ Compare':''}</div>`}else{const s=item.j.schedule,active=item.j.activeDays||[],resolved=active.map(d=>futurePickExtraScheduleForDay(item.key,d)).filter(Boolean),times=[...new Set(resolved.map(x=>`${x.start}-${x.end}`))],scheduleText=times.length>1?'Schedule varies by day':`${futurePickFmtTime(s.start)}–${futurePickFmtTime(s.end)} • ${futurePickFmtMin(s.durationMinutes)}`;body=`<div class="future-pick-browse-top"><div class="future-pick-browse-job">${escapeHTML(item.key)}</div><div class="future-pick-browse-type">Extra Crew</div></div><div class="future-pick-browse-terminal">${escapeHTML(item.terminal)}</div><div class="future-pick-browse-meta">${escapeHTML(item.j.descriptor||'')} • ${escapeHTML(scheduleText)}${saved}${ownability}${comparing?' • ✓ Compare':''}</div>`}return `<div class="future-pick-browse-card${picked?' picked':''}" role="button" tabindex="0" data-future-browse-job="${escapeHTML(item.key)}">${body}<div class="future-pick-browse-actions"><button class="btn small future-pick-compare${comparing?' added':''}" type="button" data-future-browse-compare="${escapeHTML(item.key)}"${comparing?' disabled':''}>${comparing?'✓ Comparing':'Compare'}</button></div></div>`}
 function futurePickRenderBrowse(){const search=(document.getElementById('futurePickBrowseSearch')?.value||'').trim().toLowerCase(),term=document.getElementById('futurePickBrowseTerminal')?.value||'',type=document.getElementById('futurePickBrowseType')?.value||'all',count=document.getElementById('futurePickBrowseCount'),list=document.getElementById('futurePickBrowseList');if(!list)return;let arr=futurePickBrowseItems().filter(x=>futurePickBrowseTypeMatch(x,type)&&(!term||x.terminal===term));if(search)arr=arr.filter(x=>`${x.key} ${x.terminal} ${x.trains.join(' ')} ${x.covered.join(' ')}`.toLowerCase().includes(search));arr.sort((a,b)=>Number(String(a.key).replace(/\D/g,''))-Number(String(b.key).replace(/\D/g,''))||String(a.key).localeCompare(String(b.key)));if(count)count.textContent=`${arr.length} assignment${arr.length===1?'':'s'} • GO 203 draft`;if(!arr.length){list.innerHTML='<div class="future-pick-empty">No GO 203 assignments match these filters.</div>';return}list.innerHTML=arr.map(futurePickBrowseCard).join('');list.querySelectorAll('[data-future-browse-compare]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();futurePickCompareAdd(b.dataset.futureBrowseCompare,false)}));list.querySelectorAll('[data-future-browse-job]').forEach(card=>{const open=()=>futurePickOpenLookup(card.dataset.futureBrowseJob);card.addEventListener('click',open);card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open()}})})}
+function futurePickRoadYardAdapterEvaluate(){
+  const before=crewBookRoadYardDatasetForDate('2026-11-08',{allowStaged:true}),staged=crewBookRoadYardDatasetForDate(FUTURE_PICK_CUTOVER_EFFECTIVE,{allowStaged:true}),live=crewBookRoadYardDatasetForDate(FUTURE_PICK_CUTOVER_EFFECTIVE);
+  const jobs=staged?.jobs||{},relief=staged?.relief||{},jobKeys=Object.keys(jobs),reliefKeys=Object.keys(relief),forbidden=[...jobKeys,...reliefKeys].filter(futureRevisionForbiddenConductorKey),missing=[];
+  for(const [crew,map] of Object.entries(relief))for(const day of FUTURE_PICK_DAYS){const covered=normalizeCrewBookKey(map?.[day]);if(!covered)continue;const job=jobs[covered],schedule=resolveYardReliefCoveredJobV8(covered,day,FUTURE_PICK_CUTOVER_EFFECTIVE,{allowStaged:true});if(!job||!schedule)missing.push(`${crew}:${day}:${covered}`)}
+  const ye1Sun=resolveYardJobV8('YE-1','sunday',FUTURE_PICK_CUTOVER_EFFECTIVE,{allowStaged:true}),ypd131Mon=resolveYardJobV8('YPD-131','monday',FUTURE_PICK_CUTOVER_EFFECTIVE,{allowStaged:true}),rf1Mon=resolveYardJobV8('RF-1','monday',FUTURE_PICK_CUTOVER_EFFECTIVE,{allowStaged:true}),rf1Wed=resolveYardJobV8('RF-1','wednesday',FUTURE_PICK_CUTOVER_EFFECTIVE,{allowStaged:true});
+  const checks={
+    stagedSource:staged?.source==='go203-stage-adapter'&&String(staged?.go||'')==='203',
+    exactScope:jobKeys.length===35&&reliefKeys.length===7&&!forbidden.length,
+    beforeDate:before?.source==='bundled-yard-current'&&String(before?.go||'')!=='203',
+    liveIsolation:live?.source==='bundled-yard-current'&&String(live?.go||'')!=='203',
+    reliefReferences:missing.length===0,
+    samples:ye1Sun?.start==='08:00'&&ye1Sun?.end==='16:00'&&ypd131Mon?.start==='06:45'&&ypd131Mon?.end==='18:44'&&!rf1Mon&&rf1Wed?.start==='08:00'&&rf1Wed?.end==='16:00'&&relief?.['YER-2']?.saturday==='YE-1'&&relief?.['CER-1']?.wednesday==='CE-2'
+  };
+  return {ok:Object.values(checks).every(Boolean),checks,before,staged,live,jobCount:jobKeys.length,reliefCount:reliefKeys.length,forbidden,missing,examples:{ye1Sun,ypd131Mon,rf1Mon,rf1Wed}};
+}
 function futurePickCutoverEvaluate(){
   const audit=futurePickAudit(),data=futurePickData(),active=futureRevisionState.active,production=crewBookProductionState.version,phase=futurePickLaunchPhase();
   const roadRegular=Object.entries(data.jobs||{}).filter(([,j])=>j?.sourceKind==='road_yard'&&j?.type==='regular'),roadRelief=Object.entries(data.reliefCrews||{}).filter(([,r])=>r?.sourceKind==='road_yard');
   const forbidden=[...roadRegular.map(([k])=>k),...roadRelief.map(([k])=>k)].filter(k=>/^(?:UB|RFC|YFC)(?:-|$)/i.test(k)||/^(?:17|18)\d{2}$/i.test(k));
   const preCut=crewBookPassengerRevision('2026-11-08'),cutDate=crewBookPassengerRevision(FUTURE_PICK_CUTOVER_EFFECTIVE),displayFp=active?futureRevisionCertificationDisplayFingerprint(active,audit.fingerprint):audit.fingerprint;
-  const stageValidity=futurePickProductionStageValidity(active,production,displayFp),stageBefore=futurePickProductionStageCandidateForDate('2026-11-08'),stageAt=futurePickProductionStageCandidateForDate(FUTURE_PICK_CUTOVER_EFFECTIVE);
+  const stageValidity=futurePickProductionStageValidity(active,production,displayFp),stageBefore=futurePickProductionStageCandidateForDate('2026-11-08'),stageAt=futurePickProductionStageCandidateForDate(FUTURE_PICK_CUTOVER_EFFECTIVE),roadAdapter=futurePickRoadYardAdapterEvaluate();
   const dateAwareReady=stageValidity.ok&&String(stageBefore?.go||'')==='202'&&String(stageAt?.go||'')==='203'&&stageBefore?.source==='active-production'&&stageAt?.source==='staged-future';
   const checks=[
     {ok:!!active&&String(active.go_number||'')==='203',title:'Active future revision',detail:active?`${active.revision_label||'GO 203 revision'} is the isolated active future preview.`:'No active GO 203 future revision is loaded.'},
@@ -12410,30 +12455,32 @@ function futurePickCutoverEvaluate(){
     {ok:futurePickCertificationCurrent()&&!!active?.certification_fingerprint,title:'Certified dataset identity',detail:futurePickCertificationCurrent()?`Certification is current for ${displayFp}.`:'The active future dataset is not certified for its current fingerprint.'},
     {ok:audit.blockers.length===0,title:'Certification audit',detail:audit.blockers.length?`${audit.blockers.length} source blocker${audit.blockers.length===1?' remains':'s remain'}.`:'The full GO 203 certification audit has no blockers.'},
     {ok:roadRegular.length===35&&roadRelief.length===7&&!forbidden.length,title:'Road/Yard engineer-only scope',detail:`${roadRegular.length} regular Road/Yard engineer assignments + ${roadRelief.length} engineer Relief Crews; ${forbidden.length?'forbidden conductor-side assignment(s) detected':'conductor-only families excluded'}.`},
-    {ok:phase==='planning',title:'Launch state remains Planning',detail:phase==='planning'?'Planning is still active; live union availability cannot affect user choices.':`Current launch state is ${phase}. Step 15A expects Planning.`},
+    {ok:phase==='planning',title:'Launch state remains Planning',detail:phase==='planning'?'Planning is still active; live union availability cannot affect user choices.':`Current launch state is ${phase}. Step 15B expects Planning.`},
     {ok:futurePickAvailabilityPickedSet().size===0,title:'Live availability isolation',detail:futurePickAvailabilityPickedSet().size===0?'No Already Picked overlay is being applied in Planning.':'A live Already Picked overlay is unexpectedly active.'},
     {ok:!!production&&String(production.go_number||'')==='202',title:'Current production pointer',detail:production?`Production remains GO ${production.go_number} ${production.revision_label||''} (${production.id}).`:'Current production version is unavailable.'},
     {ok:stageValidity.ok,title:'Future production stage pinned',detail:stageValidity.ok?`Stage ${stageValidity.stage?.id||'—'} pins ${displayFp} to the current GO 202 rollback baseline.`:`Stage identity mismatch: ${Object.entries(stageValidity.checks).filter(([,ok])=>!ok).map(([k])=>k).join(', ')||futurePickProductionStageState.error||'stage unavailable'}.`},
-    {ok:dateAwareReady,title:'Date-aware staging selection',detail:`Staging selector returns GO ${stageBefore?.go||'—'} on Nov. 8 and GO ${stageAt?.go||'—'} on Nov. 9. This selector is rehearsal-only in Step 15A.`},
+    {ok:dateAwareReady,title:'Date-aware staging selection',detail:`Staging selector returns GO ${stageBefore?.go||'—'} on Nov. 8 and GO ${stageAt?.go||'—'} on Nov. 9.`},
+    {ok:roadAdapter.checks.stagedSource&&roadAdapter.checks.exactScope,title:'Road/Yard staged production payload',detail:`Production stage exposes ${roadAdapter.jobCount} engineer Road/Yard assignments + ${roadAdapter.reliefCount} engineer Relief Crews from the exact certified GO 203 identity; conductor-only families remain excluded.`},
+    {ok:roadAdapter.ok,title:'Road/Yard production resolver rehearsal',detail:roadAdapter.ok?'The adapter resolves GO 203 Road/Yard schedules and relief coverage on/after Nov. 9 while preserving current Yard behavior before the effective date.':`Adapter check failed: ${Object.entries(roadAdapter.checks).filter(([,ok])=>!ok).map(([k])=>k).join(', ')||'unknown'}.`},
     {ok:String(preCut?.go||'')!=='203'&&String(cutDate?.go||'')!=='203',title:'Normal production resolver remains isolated',detail:`Normal passenger resolver still returns GO ${preCut?.go||'—'} on Nov. 8 and GO ${cutDate?.go||'—'} on Nov. 9. The new stage is not live production.`},
     {ok:FUTURE_CREW_BOOK_GO203.productionResolverEnabled===false,title:'Production resolver kill switch',detail:'GO 203 productionResolverEnabled remains false.'},
     {ok:true,title:'Historical awards publish guard',detail:'Awards PDFs older than the active GO 203 revision by more than seven days remain parser-only and cannot be published live.'}
   ];
   const promotionLocks=[
     {ready:FUTURE_PICK_CUTOVER_CAPABILITIES.dateAwareProductionHistory&&dateAwareReady,title:'Date-aware production version selection',detail:dateAwareReady?'GO 203 is pinned as a future candidate effective Nov. 9 while GO 202 remains the active production baseline.':'The staged future candidate or its date-aware selection does not match the certified cutover identity.'},
-    {ready:FUTURE_PICK_CUTOVER_CAPABILITIES.roadYardProductionResolver,title:'Road/Yard production resolver adapter',detail:'Still deliberately locked. Road/Yard lookups must be given a production adapter before GO 203 can become live.'},
+    {ready:FUTURE_PICK_CUTOVER_CAPABILITIES.roadYardProductionResolver&&roadAdapter.ok,title:'Road/Yard production resolver adapter',detail:roadAdapter.ok?'Adapter is wired and passes staged GO 203 regular/relief resolution without changing the live Yard resolver.':'Road/Yard adapter rehearsal must pass before activation wiring can begin.'},
     {ready:FUTURE_PICK_CUTOVER_CAPABILITIES.activationWiring,title:'Nov. 9 activation / rollback wiring',detail:'Still deliberately locked. Final activation must switch to the exact staged GO 203 identity and retain the pinned GO 202 rollback baseline.'}
   ];
   const blockers=checks.filter(c=>!c.ok),promotionReady=blockers.length===0&&promotionLocks.every(x=>x.ready);
-  return {checkedAt:new Date().toISOString(),audit,active,production,stage:stageValidity.stage,stageValidity,stageBefore,stageAt,dateAwareReady,phase,displayFp,roadRegular:roadRegular.length,roadRelief:roadRelief.length,checks,blockers,promotionLocks,rehearsalOk:blockers.length===0,promotionReady};
+  return {checkedAt:new Date().toISOString(),audit,active,production,stage:stageValidity.stage,stageValidity,stageBefore,stageAt,dateAwareReady,roadAdapter,phase,displayFp,roadRegular:roadRegular.length,roadRelief:roadRelief.length,checks,blockers,promotionLocks,rehearsalOk:blockers.length===0,promotionReady};
 }
 function futurePickRenderCutover(){
   const r=futurePickCutoverState.last||futurePickCutoverEvaluate(),status=document.getElementById('futurePickCutoverStatus'),summary=document.getElementById('futurePickCutoverSummary'),checks=document.getElementById('futurePickCutoverChecks'),locks=document.getElementById('futurePickCutoverLocks'),identity=document.getElementById('futurePickCutoverIdentity'),btn=document.getElementById('futurePickCutoverRunBtn');
-  if(status){status.className=`future-audit-status ${r.rehearsalOk?'pass':'blocked'}`;status.textContent=futurePickCutoverState.running?'Running…':r.rehearsalOk?'Staging pass':`${r.blockers.length} data blocker${r.blockers.length===1?'':'s'}`}
-  if(summary)summary.innerHTML=`<div class="future-audit-stat"><div class="label">Future dataset</div><div class="value" style="font-size:11px">${escapeHTML(r.displayFp||'Not certified')}</div><div class="detail">${escapeHTML(r.active?.revision_label||'No active GO 203 revision')}</div></div><div class="future-audit-stat"><div class="label">Current production</div><div class="value">GO ${escapeHTML(String(r.production?.go_number||'—'))}</div><div class="detail">${escapeHTML(r.production?.revision_label||'Production version unavailable')}</div></div><div class="future-audit-stat"><div class="label">Promotion gate</div><div class="value" style="font-size:13px">${r.promotionReady?'READY':'LOCKED'}</div><div class="detail">Step 15A stages only; ${r.promotionLocks.filter(x=>!x.ready).length} wiring lock${r.promotionLocks.filter(x=>!x.ready).length===1?'':'s'} remain.</div></div>`;
+  if(status){status.className=`future-audit-status ${r.rehearsalOk?'pass':'blocked'}`;status.textContent=futurePickCutoverState.running?'Running…':r.rehearsalOk?'Resolver pass':`${r.blockers.length} data blocker${r.blockers.length===1?'':'s'}`}
+  if(summary)summary.innerHTML=`<div class="future-audit-stat"><div class="label">Future dataset</div><div class="value" style="font-size:11px">${escapeHTML(r.displayFp||'Not certified')}</div><div class="detail">${escapeHTML(r.active?.revision_label||'No active GO 203 revision')}</div></div><div class="future-audit-stat"><div class="label">Current production</div><div class="value">GO ${escapeHTML(String(r.production?.go_number||'—'))}</div><div class="detail">${escapeHTML(r.production?.revision_label||'Production version unavailable')}</div></div><div class="future-audit-stat"><div class="label">Promotion gate</div><div class="value" style="font-size:13px">${r.promotionReady?'READY':'LOCKED'}</div><div class="detail">Step 15B resolver adapter; ${r.promotionLocks.filter(x=>!x.ready).length} wiring lock${r.promotionLocks.filter(x=>!x.ready).length===1?'':'s'} remain.</div></div>`;
   if(checks)checks.innerHTML=`<div class="future-audit-section"><div class="future-audit-section-head">Cutover data & isolation checks</div>${r.checks.map(c=>`<div class="future-audit-item ${c.ok?'pass':'blocker'}"><strong>${c.ok?'✓':'!'} ${escapeHTML(c.title)}</strong><span>${escapeHTML(c.detail)}</span></div>`).join('')}</div>`;
-  if(locks)locks.innerHTML=`<div class="future-audit-section"><div class="future-audit-section-head">Production wiring status — Step 15A</div>${r.promotionLocks.map(x=>`<div class="future-audit-item ${x.ready?'pass':'dependency'}"><strong>${x.ready?'✓':'🔒'} ${escapeHTML(x.title)}</strong><span>${escapeHTML(x.detail)}</span></div>`).join('')}</div>`;
-  if(identity){const prodId=r.production?.id||'unavailable',futureId=r.active?.id||'unavailable';identity.innerHTML=`<strong>Cutover identity:</strong> Future revision <code>${escapeHTML(futureId)}</code> • certification <code>${escapeHTML(r.displayFp||'unavailable')}</code> • staged row <code>${escapeHTML(r.stage?.id||'unavailable')}</code> • GO 202 rollback <code>${escapeHTML(prodId)}</code>.<br>${r.rehearsalOk?'Step 15A staging passes. The staged row is pinned but remains non-production until later resolver and activation wiring pass.':'Resolve the staging blocker(s) above before later production wiring begins.'}`}
+  if(locks)locks.innerHTML=`<div class="future-audit-section"><div class="future-audit-section-head">Production wiring status — Step 15B</div>${r.promotionLocks.map(x=>`<div class="future-audit-item ${x.ready?'pass':'dependency'}"><strong>${x.ready?'✓':'🔒'} ${escapeHTML(x.title)}</strong><span>${escapeHTML(x.detail)}</span></div>`).join('')}</div>`;
+  if(identity){const prodId=r.production?.id||'unavailable',futureId=r.active?.id||'unavailable';identity.innerHTML=`<strong>Cutover identity:</strong> Future revision <code>${escapeHTML(futureId)}</code> • certification <code>${escapeHTML(r.displayFp||'unavailable')}</code> • staged row <code>${escapeHTML(r.stage?.id||'unavailable')}</code> • GO 202 rollback <code>${escapeHTML(prodId)}</code>.<br>${r.rehearsalOk?'Step 15B resolver adapter passes. The staged row and Road/Yard payload remain non-production until the final activation/rollback wiring passes.':'Resolve the staging blocker(s) above before later production wiring begins.'}`}
   if(btn)btn.disabled=futurePickCutoverState.running;
   return r;
 }
@@ -13461,7 +13508,7 @@ function trimDevYardScheduleCard(label,schedule,coveredKey='',terminal=''){
 function trimDevYardRegularScheduleCardsHTML(row){
   if(row?.assignment_type!=='other')return '';
   const key=normalizeCrewBookKey(row?.assignment);if(!isYardCrewKey(key))return '';
-  const job=CREW_BOOK_YARD_JOBS?.[key];if(!job?.days)return '';
+  const job=crewBookRoadYardJobDefinition(key,TRIM_CREW_BOOK_DATE);if(!job?.days)return '';
   const groups=[],bySignature=new Map();
   CREW_BOOK_DAYS.forEach((day,i)=>{
     const schedule=job.days?.[day]?{...job.days[day],paysMeal:false}:null;if(!schedule?.start||!schedule?.end)return;
@@ -13476,8 +13523,8 @@ function trimDevYardReliefScheduleCardsHTML(row,relief){
   const groups=[],bySignature=new Map();
   CREW_BOOK_DAYS.forEach((day,i)=>{
     const covered=normalizeCrewBookKey(relief.map?.[day]);if(!covered)return;
-    const schedule=resolveYardReliefCoveredJobV8(covered,day);if(!schedule?.start||!schedule?.end)return;
-    const terminal=CREW_BOOK_YARD_JOBS?.[covered]?.terminal||'';
+    const schedule=resolveYardReliefCoveredJobV8(covered,day,TRIM_CREW_BOOK_DATE);if(!schedule?.start||!schedule?.end)return;
+    const terminal=crewBookRoadYardJobDefinition(covered,TRIM_CREW_BOOK_DATE)?.terminal||'';
     const signature=`${covered}|${schedule.start}|${schedule.end}|${terminal}`;
     let group=bySignature.get(signature);if(!group){group={days:[],schedule,covered,terminal};bySignature.set(signature,group);groups.push(group)}group.days.push(i+1);
   });
