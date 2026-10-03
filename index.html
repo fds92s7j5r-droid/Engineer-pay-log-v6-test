@@ -2022,7 +2022,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
         <div id="futurePickPaneAvailability" class="future-pick-pane" hidden>
           <div class="future-availability">
-            <div class="future-availability-head"><div><h3>Live General Pick Availability <span class="future-rev-badge" style="vertical-align:middle;margin-left:6px;min-height:20px;padding:3px 7px">Step 17A R2</span></h3><div class="future-availability-sub">Union awards snapshots mark assignments that have already been picked without changing the Crew Book itself.</div></div><span id="futurePickAvailabilityStatus" class="future-availability-status">No live snapshot</span></div>
+            <div class="future-availability-head"><div><h3>Live General Pick Availability <span class="future-rev-badge" style="vertical-align:middle;margin-left:6px;min-height:20px;padding:3px 7px">Step 17B R1</span></h3><div class="future-availability-sub">Union awards snapshots mark assignments that have already been picked without changing the Crew Book itself.</div></div><span id="futurePickAvailabilityStatus" class="future-availability-status">No live snapshot</span></div>
             <div id="futurePickAvailabilitySummary" class="future-availability-summary"></div>
             <div class="future-rev-actions" style="margin:0 0 10px"><button class="btn" type="button" onclick="futurePickAvailabilityRefresh()">Refresh Availability</button></div>
             <div class="field"><label>Search already-picked assignments</label><input id="futurePickAvailabilitySearch" type="search" autocomplete="off" placeholder="e.g. 113, 470, EX1144" oninput="futurePickAvailabilityRender()"></div>
@@ -2036,6 +2036,15 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
               <div id="futurePickOperationalReadinessChecks"><div class="future-rev-status">Run the readiness check before moving from Planning to Pick Open.</div></div>
               <div class="future-rev-actions" style="margin-top:9px"><button id="futurePickOperationalReadinessBtn" class="btn" type="button" onclick="futurePickRunOperationalReadiness()">Run Pick Open Readiness Check</button></div>
               <div id="futurePickOperationalReadinessStatus" class="future-rev-status" style="margin-top:9px">Phase remains Planning until you intentionally select Pick Open.</div>
+            </div>
+
+            <div id="futurePickAvailabilityRehearsalCard" class="future-rev-card" style="margin:12px 0" hidden>
+              <div class="future-rev-badge" style="margin-bottom:8px">Step 17B R1</div>
+              <h4>Live Availability Operational Rehearsal</h4>
+              <p>Dry-run the Already Picked workflow with controlled Passenger, Relief, Road/Yard, Road/Yard Relief, and Guaranteed Extra List assignments. The server exercises the real Planning publish/restore guards and a rollback-only emergency clear, then proves snapshot history and the live pointer are unchanged.</p>
+              <div id="futurePickAvailabilityRehearsalChecks"><div class="future-rev-status">Run the rehearsal while General Pick remains Planning. No snapshot will be published.</div></div>
+              <div class="future-rev-actions" style="margin-top:9px"><button id="futurePickAvailabilityRehearsalBtn" class="btn" type="button" onclick="futurePickRunAvailabilityRehearsal()">Run Live Availability Rehearsal</button></div>
+              <div id="futurePickAvailabilityRehearsalStatus" class="future-rev-status" style="margin-top:9px">Planning and the current availability state will remain unchanged.</div>
             </div>
 
             <div id="futurePickAvailabilityAdmin" class="future-availability-admin" hidden>
@@ -11924,6 +11933,42 @@ let futurePickAvailabilitySelectedFile=null;
 let futurePickAvailabilitySourceObjectUrl=null;
 let futurePickAvailabilityHistory=[];
 let futurePickAvailabilityHistoryLoaded=false;
+let futurePickAvailabilityRehearsalState={loaded:false,loading:false,payload:null,error:null,clientMapping:null};
+
+function futurePickAvailabilityClientMappingSelfTest(){
+  const cases=[
+    {raw:'113',kind:'assignment',key:'113',label:'Passenger job 113'},
+    {raw:'470',kind:'assignment',key:'470',label:'Passenger Relief Crew 470'},
+    {raw:'YE-1',kind:'assignment',key:'YE-1',label:'Road/Yard assignment YE-1'},
+    {raw:'YER-2',kind:'assignment',key:'YER-2',label:'Road/Yard Relief Crew YER-2'},
+    {raw:'1144',kind:'assignment',key:'EX1144',label:'Guaranteed Extra List EX1144'},
+    {raw:'133',kind:'reference',key:'133',label:'Non-ownable protect job 133 stays reference-only'},
+    {raw:'VAC',kind:'status',key:null,label:'VAC remains a status, never an assignment'}
+  ];
+  const results=cases.map(c=>{const got=futurePickAvailabilityResolveAward(c.raw);return {...c,got,ok:got?.kind===c.kind&&String(got?.key||'')===String(c.key||'')}});
+  return {ok:results.every(x=>x.ok),results};
+}
+function futurePickAvailabilityRehearsalReset(){futurePickAvailabilityRehearsalState={loaded:false,loading:false,payload:null,error:null,clientMapping:null};futurePickAvailabilityRehearsalRender()}
+function futurePickAvailabilityRehearsalRender(){
+  const card=document.getElementById('futurePickAvailabilityRehearsalCard'),host=document.getElementById('futurePickAvailabilityRehearsalChecks'),status=document.getElementById('futurePickAvailabilityRehearsalStatus'),btn=document.getElementById('futurePickAvailabilityRehearsalBtn');
+  if(card)card.hidden=!rosterAdminState?.canPublish;if(!host||!status||!btn)return;
+  const st=futurePickAvailabilityRehearsalState,p=st.payload,client=st.clientMapping;btn.disabled=!!st.loading;btn.textContent=st.loading?'Running Live Availability Rehearsal…':'Run Live Availability Rehearsal';
+  if(st.loading){host.innerHTML='<div class="future-rev-status">Exercising controlled mapping and rollback-only server checks…</div>';status.className='future-rev-status';status.textContent='No General Pick phase or availability state is being changed.';return}
+  if(st.error){host.innerHTML=`<div class="future-audit-item blocked"><strong>! Rehearsal failed</strong><span>${escapeHTML(st.error)}</span></div>`;status.className='future-rev-status error';status.textContent='No live snapshot was intentionally published.';return}
+  if(!p){host.innerHTML='<div class="future-rev-status">Run the rehearsal while General Pick remains Planning. No snapshot will be published.</div>';status.className='future-rev-status';status.textContent='Planning and the current availability state will remain unchanged.';return}
+  const clientRows=(client?.results||[]).map(r=>`<div class="future-audit-item ${r.ok?'pass':'blocked'}"><strong>${r.ok?'✓':'!'} Client parser — ${escapeHTML(r.label)}</strong><span>${escapeHTML(r.raw)} → ${escapeHTML(String(r.got?.kind||'missing'))}${r.got?.key?` / ${escapeHTML(String(r.got.key))}`:''}</span></div>`).join('');
+  const serverRows=(Array.isArray(p.checks)?p.checks:[]).map(r=>{let d=r?.detail;if(d&&typeof d==='object')d=JSON.stringify(d);return `<div class="future-audit-item ${r?.ok?'pass':'blocked'}"><strong>${r?.ok?'✓':'!'} ${escapeHTML(r?.title||r?.key||'Server check')}</strong><span>${escapeHTML(String(d||''))}</span></div>`}).join('');
+  host.innerHTML=`<div class="future-audit-section"><div class="future-audit-section-head">Controlled parser mapping — Step 17B</div>${clientRows}</div><div class="future-audit-section"><div class="future-audit-section-head">Server availability state machine — Step 17B</div>${serverRows}</div>`;
+  const blockers=Array.isArray(p.blockers)?p.blockers:[],pass=!!p.ready&&!!client?.ok;status.className=`future-rev-status ${pass?'pass':'warn'}`;status.textContent=pass?'Live Availability rehearsal PASS — publish/update/restore/clear behavior is proven without persisting a snapshot. General Pick is still Planning.':`Live Availability rehearsal BLOCKED${blockers.length?` — ${blockers.join(', ')}`:''}. No production or live availability change occurred.`;
+}
+async function futurePickRunAvailabilityRehearsal(){
+  const clientMap=futurePickAvailabilityClientMappingSelfTest();futurePickAvailabilityRehearsalState={loaded:false,loading:true,payload:null,error:null,clientMapping:clientMap};futurePickAvailabilityRehearsalRender();
+  if(!clientMap.ok){futurePickAvailabilityRehearsalState={loaded:true,loading:false,payload:null,error:'Controlled client award mapping did not match the expected GO 203 assignment types.',clientMapping:clientMap};futurePickAvailabilityRehearsalRender();return null}
+  if(futurePickLaunchPhase()!=='planning'){const msg='Step 17B rehearsal is intentionally restricted to Planning.';futurePickAvailabilityRehearsalState={loaded:true,loading:false,payload:null,error:msg,clientMapping:clientMap};futurePickAvailabilityRehearsalRender();return null}
+  if(!await rosterCheckAdmin(true)){const msg='Maintainer authorization is required.';futurePickAvailabilityRehearsalState={loaded:true,loading:false,payload:null,error:msg,clientMapping:clientMap};futurePickAvailabilityRehearsalRender();return null}
+  const cloud=getCloudClient();if(!cloud){futurePickAvailabilityRehearsalState={loaded:true,loading:false,payload:null,error:'Cloud connection unavailable.',clientMapping:clientMap};futurePickAvailabilityRehearsalRender();return null}
+  try{const {data,error}=await cloud.rpc('general_pick_availability_rehearsal',{p_go_number:'203'});if(error)throw error;futurePickAvailabilityRehearsalState={loaded:true,loading:false,payload:data||null,error:null,clientMapping:clientMap};futurePickAvailabilityRehearsalRender();futurePickAvailabilityState.loaded=false;await futurePickAvailabilityLoad(true);futurePickAvailabilityRender();return data||null}catch(err){const msg=err?.message||String(err);futurePickAvailabilityRehearsalState={loaded:true,loading:false,payload:null,error:msg,clientMapping:clientMap};futurePickAvailabilityRehearsalRender();return null}
+}
 
 function futurePickAvailabilityPickedSet(){
   const p=futurePickAvailabilityState.payload;
@@ -12161,11 +12206,11 @@ async function futurePickAvailabilityClearActive(){
   try{const {error}=await client.rpc('general_pick_clear_availability',{p_go_number:'203'});if(error)throw error;futurePickAvailabilityState.loaded=false;futurePickAvailabilityHistoryLoaded=false;await futurePickAvailabilityLoad(true);await futurePickAvailabilityLoadHistory(true);futurePickAvailabilityRender();futurePickRefreshCurrentDetail();futurePickRenderBrowse();futurePickRenderMyPick();futurePickRenderCompare();futurePickAvailabilityAdminStatus('Live availability disabled. The previous snapshot remains in history and can be restored.','pass')}catch(err){futurePickAvailabilityAdminStatus(`Could not disable availability: ${err?.message||err}`,'error')}
 }
 function futurePickAvailabilityRender(){
-  const p=futurePickAvailabilityState.payload||{},snap=p.snapshot,status=document.getElementById('futurePickAvailabilityStatus'),summary=document.getElementById('futurePickAvailabilitySummary'),list=document.getElementById('futurePickAvailabilityList'),note=document.getElementById('futurePickAvailabilityNote'),tab=document.getElementById('futurePickAvailabilityTabCount'),admin=document.getElementById('futurePickAvailabilityAdmin'),readinessCard=document.getElementById('futurePickOperationalReadinessCard'),openSource=document.getElementById('futurePickAvailabilityOpenSourceBtn');
+  const p=futurePickAvailabilityState.payload||{},snap=p.snapshot,status=document.getElementById('futurePickAvailabilityStatus'),summary=document.getElementById('futurePickAvailabilitySummary'),list=document.getElementById('futurePickAvailabilityList'),note=document.getElementById('futurePickAvailabilityNote'),tab=document.getElementById('futurePickAvailabilityTabCount'),admin=document.getElementById('futurePickAvailabilityAdmin'),readinessCard=document.getElementById('futurePickOperationalReadinessCard'),rehearsalCard=document.getElementById('futurePickAvailabilityRehearsalCard'),openSource=document.getElementById('futurePickAvailabilityOpenSourceBtn');
   const picked=[...futurePickAvailabilityPickedSet()].sort((a,b)=>Number(String(a).replace(/\D/g,''))-Number(String(b).replace(/\D/g,''))||String(a).localeCompare(String(b)));
   if(tab)tab.textContent=String(picked.length);
-  const phase=futurePickLaunchPhase();const canPublish=!!rosterAdminState?.canPublish;if(admin)admin.hidden=!canPublish;if(readinessCard)readinessCard.hidden=!canPublish;if(openSource)openSource.disabled=!snap?.id;const analyze=document.getElementById('futurePickAvailabilityAnalyzeBtn'),disable=document.getElementById('futurePickAvailabilityDisableBtn');if(analyze)analyze.disabled=false;if(disable)disable.disabled=!snap?.id;
-  if(canPublish)futurePickOperationalReadinessRender();
+  const phase=futurePickLaunchPhase();const canPublish=!!rosterAdminState?.canPublish;if(admin)admin.hidden=!canPublish;if(readinessCard)readinessCard.hidden=!canPublish;if(rehearsalCard)rehearsalCard.hidden=!canPublish;if(openSource)openSource.disabled=!snap?.id;const analyze=document.getElementById('futurePickAvailabilityAnalyzeBtn'),disable=document.getElementById('futurePickAvailabilityDisableBtn');if(analyze)analyze.disabled=false;if(disable)disable.disabled=!snap?.id;
+  if(canPublish){futurePickOperationalReadinessRender();futurePickAvailabilityRehearsalRender()}
   if(status){status.className=`future-availability-status${p.stale_revision?' stale':snap?.id&&phase!=='planning'?' live':''}`;status.textContent=phase==='planning'?'Planning — live availability off':phase==='complete'?'Pick complete — final snapshot':p.stale_revision?'Snapshot needs revalidation':snap?.id?`${picked.length} already picked`:'Pick open — awaiting snapshot'}
   if(summary)summary.innerHTML=`<div class="future-availability-stat"><div class="label">Already picked</div><div class="value">${picked.length}</div><div class="detail">Mapped ownable assignments</div></div><div class="future-availability-stat"><div class="label">Union update</div><div class="value" style="font-size:10px">${escapeHTML(snap?.source_timestamp_label||'Not published')}</div><div class="detail">${snap?.row_count?`${snap.row_count} roster rows`:''}</div></div><div class="future-availability-stat"><div class="label">Future revision</div><div class="value" style="font-size:10px">${escapeHTML(futureRevisionCurrentLabel())}</div><div class="detail">${p.stale_revision?'Availability snapshot belongs to an older revision':'Availability overlay matches active preview'}</div></div>`;
   const q=String(document.getElementById('futurePickAvailabilitySearch')?.value||'').trim().toLowerCase(),shown=q?picked.filter(k=>`${k} ${futurePickCompareTitle(k)}`.toLowerCase().includes(q)):picked;
