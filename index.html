@@ -1883,7 +1883,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
             <strong>Job Comparison</strong><span>Compare multiple assignments by schedule, relief days, earnings, and official Crew Book pages.</span>
           </button>
           <button id="dashboardFutureGeneralPickBtn" class="crew-tools-compact-btn" type="button" onclick="openFutureGeneralPick()" hidden>
-            <strong>November General Pick</strong><span>Maintainer preview of the future GO 203 Crew Book. This does not change the current EPL Crew Book.</span>
+            <strong>November General Pick</strong><span>Browse the GO 203 draft, compare assignments, and build your My Pick list before your turn.</span>
           </button>
         </div>
         <button id="retirementWatchStrip" class="retirement-watch-strip" type="button" onclick="openRetirementWatch()" hidden>
@@ -1971,15 +1971,15 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
   <section id="futurepickView" class="view">
     <div class="card">
       <div class="section-title"><h2>November General Pick</h2><button class="btn small" type="button" onclick="showView('dashboard')">Dashboard</button></div>
-      <div class="future-book-banner"><strong id="futureBookBannerTitle">Future Crew Book — DRAFT GO 203</strong><span id="futureBookBannerText">General Pick preview for the book effective Nov. 9, 2026. Step 20 RC2 keeps the public preview entry point locked while the real production surface is simulated and verified. GO 203 remains isolated; current Quick Job Lookup, Browse, Crew Book Assistance, My Job, Trim Assistant, and Bid Sheet Assistant still use the current production Crew Book.</span></div>
+      <div class="future-book-banner"><strong id="futureBookBannerTitle">Future Crew Book — DRAFT GO 203</strong><span id="futureBookBannerText">Planning preview for the draft Crew Book effective Nov. 9, 2026. Browse and compare GO 203 assignments and build your My Pick list now. If revised pages are issued, EPL will update this preview to match. As the union publishes General Pick awards, Already Picked availability will be updated here. GO 202 remains the active Crew Book until the Nov. 9 production cutover.</span></div>
       <div id="futurePickPhaseCard" class="future-pick-phase" data-phase="planning"><div class="future-pick-phase-main"><div class="future-pick-phase-title">General Pick Status <span id="futurePickPhaseBadge" class="future-pick-phase-badge">Planning</span></div><div id="futurePickPhaseCopy" class="future-pick-phase-copy">Build and sync My Pick now. Live union availability has not started.</div></div><div id="futurePickPhaseAdmin" class="future-pick-phase-admin" hidden><button id="futurePickPhasePlanningBtn" class="btn small" type="button" onclick="futurePickOperationsSelectTarget('planning')">Planning</button><button id="futurePickPhaseOpenBtn" class="btn small" type="button" onclick="futurePickOperationsSelectTarget('open')">Pick Open</button><button id="futurePickPhaseCompleteBtn" class="btn small" type="button" onclick="futurePickOperationsSelectTarget('complete')">Pick Complete</button></div></div>
       <div id="futurePickReleaseCandidateCard" class="future-rev-card" style="margin:0 0 14px" hidden>
-        <div class="future-rev-badge" style="margin-bottom:7px">Step 20 RC2</div>
-        <h4 style="margin:0 0 4px">GO 203 Production-Surface Release Candidate</h4>
-        <p style="margin:0 0 10px">Read-only final surface gate for the current EPL build. It verifies GO 202 production protection, the exact certified GO 203 stage, Planning isolation, real-production hostname behavior, normal-user versus maintainer visibility, and core GO 202 feature wiring. It never opens the pick, arms cutover, or changes production.</p>
-        <div id="futurePickFinalUpdatePreview" class="future-rev-status" style="margin:0 0 10px"><strong>Prepared final user update — not published in RC2</strong><br><span id="futurePickFinalUpdatePreviewText"></span></div>
+        <div class="future-rev-badge" style="margin-bottom:7px">Production Preview R1</div>
+        <h4 style="margin:0 0 4px">GO 203 Production Preview Verification</h4>
+        <p style="margin:0 0 10px">Read-only verification for the released November General Pick planning preview. It verifies GO 202 production protection, the exact certified GO 203 stage, Planning isolation, public-user versus maintainer visibility, and core GO 202 feature wiring. It never opens the pick, arms cutover, or changes production.</p>
+        <div id="futurePickFinalUpdatePreview" class="future-rev-status" style="margin:0 0 10px"><strong>Published user update copy</strong><br><span id="futurePickFinalUpdatePreviewText"></span></div>
         <div id="futurePickReleaseCandidateSummary" class="future-live-ops-grid"></div>
-        <div class="future-rev-actions" style="margin-top:10px"><button id="futurePickReleaseCandidateBtn" class="btn primary" type="button" onclick="futurePickRunReleaseCandidateRegression()">Run RC Regression</button></div>
+        <div class="future-rev-actions" style="margin-top:10px"><button id="futurePickReleaseCandidateBtn" class="btn primary" type="button" onclick="futurePickRunReleaseCandidateRegression()">Run Production Release Verification</button></div>
         <div id="futurePickReleaseCandidateChecks" style="margin-top:10px"><div class="future-rev-status">Run the RC regression after each candidate build.</div></div>
         <div id="futurePickReleaseCandidateStatus" class="future-rev-status" style="margin-top:9px">No RC regression has been run in this session.</div>
       </div>
@@ -3152,25 +3152,23 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
 <div id="whatsNewModal" class="modal">
   <div class="modal-card" style="max-width:620px">
-    <div class="modal-head"><div><h2 style="margin:0">What's New in Engineer Pay Log 10.2 — Deadhead Watch</h2></div></div>
+    <div class="modal-head"><div><h2 style="margin:0">What's New in Engineer Pay Log 10.2 — November General Pick</h2></div></div>
     <div class="modal-body">
-      <p style="margin-top:0">This update introduces <strong>Deadhead Watch</strong>, a new way to keep an eye on the LIRR trains you normally use to get to and from work.</p>
+      <p style="margin-top:0"><strong>November General Pick is now available in Engineer Pay Log.</strong></p>
 
-      <h3>Save Your Commute</h3>
-      <p>In <strong>Settings → My Job</strong>, save the LIRR train or trains you normally use for each workday. EPL matches those trips to the current schedule and saves a baseline for comparison.</p>
+      <h3>Browse the Draft GO 203 Crew Book</h3>
+      <p>Open <strong>November General Pick</strong> from the dashboard to browse and compare the Passenger and engineer Road/Yard assignments planned for the book effective Nov. 9.</p>
 
-      <h3>Automatic Schedule Monitoring</h3>
-      <p>Once your commute is matched, EPL can periodically compare your saved trips against current LIRR schedule data — even while the app is closed.</p>
+      <h3>Build Your My Pick List</h3>
+      <p>Add assignments to <strong>My Pick</strong>, put them in your preferred order, and keep your list handy before your turn in the General Pick.</p>
 
-      <h3>Deadhead Watch Alerts</h3>
-      <p>If EPL detects that a saved train time, route, or availability has changed, Deadhead Watch can alert you and take you directly to the affected commute for review.</p>
+      <h3>Draft Changes Will Be Reflected in EPL</h3>
+      <p>This is still a <strong>draft Crew Book</strong>. If revised pages are issued, Engineer Pay Log will update the General Pick data to match the latest available draft.</p>
 
-      <h3>Your Baseline Stays Under Your Control</h3>
-      <p>EPL will never silently replace your saved commute when it detects a change. If a trip needs attention, you can review it and rematch it yourself.</p>
+      <h3>Already Picked Updates</h3>
+      <p>As the union publishes General Pick awards, EPL will update <strong>Already Picked</strong> availability so you can see which assignments have already been selected. Live availability will begin when the General Pick is opened.</p>
 
-      <p><strong>Deadhead Watch monitors published schedule changes.</strong> It is not a live train-status or delay-alert system and should not be used as a substitute for official LIRR service information.</p>
-
-      <p>This update also includes the latest Crew Book revision-label improvements and other reliability fixes.</p>
+      <p><strong>GO 202 remains the active Crew Book for normal EPL tools until the new book takes effect.</strong> The November General Pick section is for advance planning.</p>
 
       <p>Thank you for using Engineer Pay Log and for all of the feedback that continues to make the app better.</p>
       <p><strong>— Justin</strong></p>
@@ -3596,7 +3594,7 @@ const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
 const APP_VERSION='10.2';
-const WHATS_NEW_VERSION='10.2-deadhead-watch-production-20260928';
+const WHATS_NEW_VERSION='10.2-go203-general-pick-preview-20261002';
 const CONTACT_EMAIL='admin@engineerpaylog.com';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
 const BACKUP_REMIND_LATER_KEY='engineerPayLogBackupRemindLaterUntil';
@@ -11593,11 +11591,11 @@ const TRIM_EX1_RELIEF=(()=>{
   return map;
 })();
 const FUTURE_CREW_BOOK_GO203={go:'203',bookNo:'2',effective:'2026-11-09',status:'draft',generalPickAvailable:true,productionResolverEnabled:false};
-const GO203_RELEASE_CANDIDATE='Step 20 RC2';
-const GO203_PUBLIC_PREVIEW_ENABLED=false; // Final public-preview promotion is a separate intentional release action.
+const GO203_RELEASE_CANDIDATE='Production Preview R1';
+const GO203_PUBLIC_PREVIEW_ENABLED=true; // Public November General Pick planning preview is intentionally released; GO 203 production cutover remains separately gated.
 const GO203_FINAL_USER_UPDATE=Object.freeze({
   title:'November General Pick is now available',
-  body:'Browse the draft GO 203 assignments, compare jobs, and build and save your My Pick list before your turn. This is still a draft Crew Book; if revised pages are issued, Engineer Pay Log will update the General Pick data to match. As the union publishes General Pick awards, EPL will update Already Picked availability in the app so you can see which assignments have already been picked.'
+  body:'Browse the draft GO 203 assignments, compare jobs, and build and save your My Pick list before your turn. This is still a draft Crew Book; if revised pages are issued, Engineer Pay Log will update the General Pick data to match. As the union publishes General Pick awards, EPL will update Already Picked availability in the app so you can see which assignments have already been picked. GO 202 remains the active Crew Book until the new book takes effect.'
 });
 function futurePickSurfacePolicy(hostname,isAdmin,publicPreviewEnabled=GO203_PUBLIC_PREVIEW_ENABLED){
   const host=String(hostname||'').toLowerCase(),test=/\.github\.io$/i.test(host)||host==='localhost'||host==='127.0.0.1',admin=!!isAdmin,published=!!publicPreviewEnabled;
@@ -11608,7 +11606,7 @@ function futureCrewBookApplyVisibility(){
   if(btn){
     btn.hidden=!policy.publicEntryVisible;
     const title=btn.querySelector('strong'),copy=btn.querySelector('span');
-    if(GO203_PUBLIC_PREVIEW_ENABLED){if(title)title.textContent='November General Pick';if(copy)copy.textContent='Browse the GO 203 draft, compare assignments, and build your My Pick list.'}
+    if(GO203_PUBLIC_PREVIEW_ENABLED){if(title)title.textContent='November General Pick';if(copy)copy.textContent='Browse the GO 203 draft, compare assignments, and build your My Pick list before your turn.'}
     else{if(title)title.textContent='November General Pick';if(copy)copy.textContent='Maintainer preview of the future GO 203 Crew Book. This does not change the current EPL Crew Book.'}
   }
   futurePickApplyAdminSurfaceVisibility();
@@ -12086,7 +12084,7 @@ function futurePickLaunchRender(){
 async function futurePickSetLaunchPhase(phase){return futurePickOperationsSelectTarget(phase)}
 
 
-// ===== Step 20 RC2 — production release candidate containment/regression =====
+// ===== GO 203 Production Preview R1 — release containment/regression =====
 let futurePickReleaseCandidateState={running:false,payload:null,error:null};
 function futurePickApplyAdminSurfaceVisibility(){
   const policy=futurePickSurfacePolicy(window.location.hostname,!!rosterAdminState?.canPublish),admin=policy.adminTabsVisible,diag=policy.diagnosticsVisible;
@@ -12102,42 +12100,41 @@ function futurePickReleaseCandidateClientChecks(){
   let normal=null;try{normal=crewBookPassengerRevision('2026-11-09')}catch{}
   const shellIds=['dashboardView','historyView','lookupView','trimView','bidView','settingsView'];
   const funcs=['renderDashboard','newShift','saveShift','renderHistory','initQuickJobLookup','renderQuickJobBrowse','trimDevLoad','bidSheetLoad','deadheadWatchRenderMonitorStatus','deadheadWatchRenderComparison','crewBookPassengerRevision'];
-  const prodUser=futurePickSurfacePolicy('engineerpaylog.com',false,false),prodAdmin=futurePickSurfacePolicy('engineerpaylog.com',true,false),githubAdmin=futurePickSurfacePolicy('engineerpaylog.github.io',true,false),finalUser=futurePickSurfacePolicy('engineerpaylog.com',false,true);
-  const updateReady=GO203_FINAL_USER_UPDATE.title==='November General Pick is now available'&&/My Pick/.test(GO203_FINAL_USER_UPDATE.body)&&/draft Crew Book/i.test(GO203_FINAL_USER_UPDATE.body)&&/revised pages/i.test(GO203_FINAL_USER_UPDATE.body)&&/union publishes General Pick awards/i.test(GO203_FINAL_USER_UPDATE.body)&&/Already Picked/i.test(GO203_FINAL_USER_UPDATE.body);
+  const lockedUser=futurePickSurfacePolicy('engineerpaylog.com',false,false),prodUser=futurePickSurfacePolicy('engineerpaylog.com',false,true),prodAdmin=futurePickSurfacePolicy('engineerpaylog.com',true,true),githubAdmin=futurePickSurfacePolicy('engineerpaylog.github.io',true,true);
+  const updateReady=GO203_FINAL_USER_UPDATE.title==='November General Pick is now available'&&/My Pick/.test(GO203_FINAL_USER_UPDATE.body)&&/draft Crew Book/i.test(GO203_FINAL_USER_UPDATE.body)&&/revised pages/i.test(GO203_FINAL_USER_UPDATE.body)&&/union publishes General Pick awards/i.test(GO203_FINAL_USER_UPDATE.body)&&/Already Picked/i.test(GO203_FINAL_USER_UPDATE.body)&&/GO 202 remains the active Crew Book/i.test(GO203_FINAL_USER_UPDATE.body);
   return [
-    {ok:shellIds.every(id=>!!document.getElementById(id)),title:'Core EPL views present',detail:'Dashboard, History, Quick Job Lookup, Trim Assistant, Bid Sheet Assistant, and Settings remain in the candidate.'},
+    {ok:shellIds.every(id=>!!document.getElementById(id)),title:'Core EPL views present',detail:'Dashboard, History, Quick Job Lookup, Trim Assistant, Bid Sheet Assistant, and Settings remain in the production release.'},
     {ok:funcs.every(name=>typeof window[name]==='function'),title:'Core EPL feature functions wired',detail:'Add Shift, history, lookup/browse, Trim, Bid Sheet, Deadhead Watch, and Crew Book resolver functions are present.'},
     {ok:String(normal?.go||'')!=='203',title:'Normal GO 202 passenger resolver remains isolated',detail:`Nov. 9 normal resolver currently returns ${escapeHTML(crewBookRevisionLabel(normal,'Passenger'))}; GO 203 has not been promoted.`},
-    {ok:typeof futurePickRoadYardAdapterEvaluate==='function'&&typeof futurePickPassengerActivationAdapterEvaluate==='function',title:'GO 203 Passenger + Road/Yard adapters present',detail:'Both staged production adapter regression functions are included in the RC.'},
-    {ok:!GO203_PUBLIC_PREVIEW_ENABLED,title:'Public preview release lock remains OFF',detail:'RC2 can be tested without exposing the November General Pick entry point on engineerpaylog.com.'},
-    {ok:!prodUser.publicEntryVisible&&!prodUser.adminTabsVisible&&!prodUser.realOperationsVisible&&!prodUser.diagnosticsVisible,title:'Production normal-user surface locked',detail:'With the release lock OFF on engineerpaylog.com, a normal user cannot see the General Pick entry point, maintainer tabs, operations controls, or QA diagnostics.'},
-    {ok:!prodAdmin.publicEntryVisible&&prodAdmin.adminTabsVisible&&prodAdmin.realOperationsVisible&&!prodAdmin.diagnosticsVisible&&!prodAdmin.releaseCandidateVisible,title:'Production maintainer surface contained',detail:'On engineerpaylog.com, maintainer-only operational surfaces remain role-gated while rollback-only diagnostics and RC cards stay hidden.'},
-    {ok:githubAdmin.publicEntryVisible&&githubAdmin.publicCanOpen&&githubAdmin.adminTabsVisible&&githubAdmin.diagnosticsVisible&&githubAdmin.releaseCandidateVisible,title:'GitHub QA surface available',detail:'The GitHub/localhost test environment intentionally exposes maintainer RC and rollback-only verification controls.'},
-    {ok:finalUser.publicEntryVisible&&finalUser.publicCanOpen&&!finalUser.adminTabsVisible&&!finalUser.realOperationsVisible&&!finalUser.diagnosticsVisible,title:'Final public-release policy ready',detail:'When the final release switch is intentionally enabled, normal users can open General Pick while maintainer and QA surfaces remain hidden.'},
-    {ok:updateReady,title:'Final user-facing update copy prepared',detail:'Release copy covers browsing GO 203, building My Pick, draft revisions, and union awards / Already Picked updates.'}
+    {ok:typeof futurePickRoadYardAdapterEvaluate==='function'&&typeof futurePickPassengerActivationAdapterEvaluate==='function',title:'GO 203 Passenger + Road/Yard adapters present',detail:'Both staged production adapter regression functions remain included.'},
+    {ok:GO203_PUBLIC_PREVIEW_ENABLED,title:'Public November General Pick preview is ON',detail:'The production release intentionally exposes the November General Pick planning entry point.'},
+    {ok:prodUser.publicEntryVisible&&prodUser.publicCanOpen&&!prodUser.adminTabsVisible&&!prodUser.realOperationsVisible&&!prodUser.diagnosticsVisible&&!prodUser.releaseCandidateVisible,title:'Production normal-user surface is correctly released',detail:'A normal user on engineerpaylog.com can browse General Pick and My Pick without seeing maintainer, cutover, revision, or QA controls.'},
+    {ok:prodAdmin.publicEntryVisible&&prodAdmin.publicCanOpen&&prodAdmin.adminTabsVisible&&prodAdmin.realOperationsVisible&&!prodAdmin.diagnosticsVisible&&!prodAdmin.releaseCandidateVisible,title:'Production maintainer surface remains contained',detail:'Maintainers retain real operational controls on engineerpaylog.com while rollback-only diagnostics and release-verification cards stay hidden.'},
+    {ok:githubAdmin.publicEntryVisible&&githubAdmin.publicCanOpen&&githubAdmin.adminTabsVisible&&githubAdmin.diagnosticsVisible&&githubAdmin.releaseCandidateVisible,title:'GitHub QA surface remains available',detail:'GitHub/localhost continues to expose maintainer release and rollback-only verification controls for testing.'},
+    {ok:!lockedUser.publicEntryVisible&&!lockedUser.publicCanOpen,title:'Public release kill switch still works',detail:'Turning the public-preview flag back OFF would immediately hide the normal-user General Pick entry point without changing GO 203 data or production.'},
+    {ok:updateReady,title:'User-facing General Pick update is published',detail:'What’s New and the General Pick release copy cover browsing, My Pick, draft revisions, union awards / Already Picked updates, and GO 202 production isolation.'}
   ];
 }
-
 function futurePickRenderReleaseCandidate(){
   const card=document.getElementById('futurePickReleaseCandidateCard'),summary=document.getElementById('futurePickReleaseCandidateSummary'),host=document.getElementById('futurePickReleaseCandidateChecks'),status=document.getElementById('futurePickReleaseCandidateStatus'),btn=document.getElementById('futurePickReleaseCandidateBtn');if(!card||!summary||!host||!status||!btn)return;
   card.hidden=!futurePickSurfacePolicy(window.location.hostname,!!rosterAdminState?.canPublish).releaseCandidateVisible; if(card.hidden)return;const updatePreview=document.getElementById('futurePickFinalUpdatePreviewText');if(updatePreview)updatePreview.textContent=`${GO203_FINAL_USER_UPDATE.title}: ${GO203_FINAL_USER_UPDATE.body}`;
   const st=futurePickReleaseCandidateState,p=st.payload,prod=p?.production,fut=p?.future_revision,stage=p?.stage;
-  summary.innerHTML=`<div class="future-live-ops-metric"><span>RC build</span><strong>Step 20 RC2</strong><small>Production-surface simulation</small></div><div class="future-live-ops-metric"><span>Live production</span><strong>${escapeHTML(prod?.go_number?'GO '+prod.go_number:'GO 202')}</strong><small>${escapeHTML(prod?.revision_label||'Paper Rev. 9')}</small></div><div class="future-live-ops-metric"><span>Future candidate</span><strong>${escapeHTML(fut?.fingerprint||'go203-dd1264a0-1282915')}</strong><small>${escapeHTML(fut?.revision_label||futureRevisionCurrentLabel())}</small></div><div class="future-live-ops-metric"><span>Cutover state</span><strong>${stage?.armed?'ARMED':'DISARMED'}</strong><small>${escapeHTML(stage?.status||'staged')} • ${escapeHTML(stage?.effective_date||'2026-11-09')}</small></div>`;
-  btn.disabled=!!st.running;btn.textContent=st.running?'Running RC Regression…':'Run RC Regression';
-  if(st.running){host.innerHTML='<div class="future-rev-status">Running server + client release-candidate checks…</div>';status.className='future-rev-status';status.textContent='No phase, snapshot, arm, or production change is being made.';return}
-  if(st.error){host.innerHTML=`<div class="future-audit-item blocked"><strong>! RC regression failed</strong><span>${escapeHTML(st.error)}</span></div>`;status.className='future-rev-status error';status.textContent='Release candidate is not cleared.';return}
-  if(!p){host.innerHTML='<div class="future-rev-status">Run the RC regression after each candidate build.</div>';status.className='future-rev-status';status.textContent='No RC regression has been run in this session.';return}
+  summary.innerHTML=`<div class="future-live-ops-metric"><span>Release build</span><strong>Production Preview R1</strong><small>Public planning preview ON</small></div><div class="future-live-ops-metric"><span>Live production</span><strong>${escapeHTML(prod?.go_number?'GO '+prod.go_number:'GO 202')}</strong><small>${escapeHTML(prod?.revision_label||'Paper Rev. 9')}</small></div><div class="future-live-ops-metric"><span>Future candidate</span><strong>${escapeHTML(fut?.fingerprint||'go203-dd1264a0-1282915')}</strong><small>${escapeHTML(fut?.revision_label||futureRevisionCurrentLabel())}</small></div><div class="future-live-ops-metric"><span>Cutover state</span><strong>${stage?.armed?'ARMED':'DISARMED'}</strong><small>${escapeHTML(stage?.status||'staged')} • ${escapeHTML(stage?.effective_date||'2026-11-09')}</small></div>`;
+  btn.disabled=!!st.running;btn.textContent=st.running?'Running Production Release Verification…':'Run Production Release Verification';
+  if(st.running){host.innerHTML='<div class="future-rev-status">Running server + client production-release checks…</div>';status.className='future-rev-status';status.textContent='No phase, snapshot, arm, or production change is being made.';return}
+  if(st.error){host.innerHTML=`<div class="future-audit-item blocked"><strong>! RC regression failed</strong><span>${escapeHTML(st.error)}</span></div>`;status.className='future-rev-status error';status.textContent='Production preview release is not cleared.';return}
+  if(!p){host.innerHTML='<div class="future-rev-status">Run the production release verification after each final build.</div>';status.className='future-rev-status';status.textContent='No production release verification has been run in this session.';return}
   const serverRows=(Array.isArray(p.checks)?p.checks:[]).map(r=>`<div class="future-audit-item ${r?.ok?'pass':'blocked'}"><strong>${r?.ok?'✓':'!'} ${escapeHTML(r?.title||r?.key||'Server check')}</strong><span>${escapeHTML(String(r?.detail||''))}</span></div>`).join('');
   const clientRows=(Array.isArray(p.client_checks)?p.client_checks:[]).map(r=>`<div class="future-audit-item ${r?.ok?'pass':'blocked'}"><strong>${r?.ok?'✓':'!'} ${escapeHTML(r?.title||'Client check')}</strong><span>${r?.detail||''}</span></div>`).join('');
   host.innerHTML=`<div class="future-audit-section"><div class="future-audit-section-head">Backend release candidate</div>${serverRows}</div><div class="future-audit-section"><div class="future-audit-section-head">EPL client regression</div>${clientRows}</div>`;
-  const pass=!!p.ready&&p.client_checks?.every(x=>x.ok);status.className=`future-rev-status ${pass?'pass':'warn'}`;status.textContent=pass?'Step 20 RC2 PASS — production hostname, normal-user, maintainer, QA, and final-public-release surfaces are correctly separated while GO 202 remains protected.':'Step 20 RC BLOCKED — resolve the failed check(s) before promotion.';
+  const pass=!!p.ready&&p.client_checks?.every(x=>x.ok);status.className=`future-rev-status ${pass?'pass':'warn'}`;status.textContent=pass?'PRODUCTION PREVIEW PASS — November General Pick is public for planning, maintainer/QA surfaces remain contained, and GO 202 stays protected.':'PRODUCTION PREVIEW BLOCKED — resolve the failed check(s) before deployment.';
 }
 async function futurePickRunReleaseCandidateRegression(){
   if(futurePickReleaseCandidateState.running)return;if(!await rosterCheckAdmin(true))return;const client=getCloudClient();if(!client)return;
   futurePickReleaseCandidateState={running:true,payload:null,error:null};futurePickRenderReleaseCandidate();
   try{const {data,error}=await client.rpc('go203_release_candidate_status');if(error)throw error;const clientChecks=futurePickReleaseCandidateClientChecks();futurePickReleaseCandidateState={running:false,payload:{...(data||{}),client_checks:clientChecks},error:null};futurePickApplyAdminSurfaceVisibility();futurePickRenderReleaseCandidate()}catch(err){futurePickReleaseCandidateState={running:false,payload:null,error:err?.message||String(err)};futurePickRenderReleaseCandidate()}
 }
-// ===== End Step 20 RC2 =====
+// ===== End GO 203 Production Preview R1 =====
 
 // ===== End GO 203 General Pick launch/readiness state =====
 
