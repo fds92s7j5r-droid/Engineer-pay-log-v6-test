@@ -2175,7 +2175,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
         <div id="futurePickPaneCutover" class="future-pick-pane" hidden>
           <div class="future-audit">
-            <div class="future-audit-head"><div><h3>GO 203 Cutover Control Center</h3><div class="future-audit-sub">Step 16B adds the real maintainer-only arming workflow on top of Step 16A revision-safe restaging and the Step 15C activation/rollback state machine. Arming never activates GO 203 by itself, and the control remains unavailable until the certified stage is current, General Pick is Pick Complete, and the New York date is Nov. 9 or later.</div></div><span id="futurePickCutoverStatus" class="future-audit-status blocked">Not run</span></div>
+            <div class="future-audit-head"><div><h3>GO 203 Cutover Control Center</h3><div class="future-audit-sub">Revision-safe staging, admin arming, and Step 19 cutover-day activation/rollback operations. No production action is available until the certified GO 203 identity, Pick Complete closeout, Nov. 9 date gate, and explicit server confirmations all pass.</div></div><span id="futurePickCutoverStatus" class="future-audit-status blocked">Not run</span></div>
             <div id="futurePickCutoverSummary" class="future-audit-grid"></div>
             <div id="futurePickRevisionWatch"></div>
             <div class="future-audit-actions"><button id="futurePickRevisionSafetyBtn" class="btn" type="button" onclick="futurePickRunRevisionSafetySelfTest()">Run Revision-Safety Self-Test</button><button id="futurePickRestageBtn" class="btn" type="button" onclick="futurePickRestageCertifiedRevision()" disabled>Rebuild &amp; Re-pin Stage</button></div>
@@ -2188,6 +2188,16 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
             <div class="future-audit-actions"><button id="futurePickArmCheckBtn" class="btn" type="button" onclick="futurePickRunArmReadinessCheck()">Run Arm Readiness Check</button><button id="futurePickArmBtn" class="btn cutover-locked" type="button" onclick="futurePickArmGo203()" aria-disabled="true" disabled>🔒 Arm GO 203 — Locked</button><button id="futurePickDisarmBtn" class="btn cutover-locked" type="button" onclick="futurePickDisarmGo203()" aria-disabled="true" disabled>🔒 Disarm GO 203 — Locked</button></div>
             <div id="futurePickArmState" class="future-audit-cert"><strong>Arm control:</strong> Run the readiness check. The real Arm button stays disabled until every server-side gate is open.</div>
             <div class="future-audit-note">Step 16B exposes a maintainer-only <strong>Arm GO 203</strong> control. It requires an exact confirmation of the staged fingerprint, Nov. 9 effective date, GO 202 rollback target, and certified payload counts. Arming only opens the final activation gate; <strong>it does not change production</strong>. Until then, GO 202 remains live and the stage remains DISARMED.</div>
+            <div id="futurePickCutoverDayPanel" class="future-pick-readiness-card" style="margin-top:14px">
+              <div class="future-pick-readiness-badge">Step 19 R1</div>
+              <h3 style="margin:8px 0 4px">Nov. 9 Cutover-Day Operations</h3>
+              <div class="future-audit-sub">Final operator workflow for GO 203 activation day. Status and rehearsal are safe to run now; real activation and rollback remain server-gated and require exact confirmation phrases.</div>
+              <div id="futurePickCutoverDaySummary" class="future-audit-grid" style="margin-top:12px"></div>
+              <div id="futurePickCutoverDayChecks" style="margin-top:12px"></div>
+              <div class="future-audit-actions" style="margin-top:12px"><button id="futurePickCutoverDayStatusBtn" class="btn" type="button" onclick="futurePickRefreshCutoverDayStatus()">Refresh Cutover-Day Status</button><button id="futurePickCutoverDayRehearsalBtn" class="btn primary" type="button" onclick="futurePickRunCutoverDayRehearsal()">Run Full Cutover-Day Rehearsal</button></div>
+              <div id="futurePickCutoverDayState" class="future-audit-cert"><strong>Step 19:</strong> Run the full rehearsal now. Real production actions remain locked until every server gate is open.</div>
+              <div id="futurePickActivatePanel" style="margin-top:12px"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -12843,6 +12853,7 @@ function futurePickRenderCutover(){
   if(identity){const prodId=r.production?.id||'unavailable',futureId=r.active?.id||'unavailable',runtime=r.server?.runtime;identity.innerHTML=`<strong>Cutover identity:</strong> Future revision <code>${escapeHTML(futureId)}</code> • certification <code>${escapeHTML(r.displayFp||'unavailable')}</code> • staged row <code>${escapeHTML(r.stage?.id||'unavailable')}</code> • GO 202 rollback <code>${escapeHTML(prodId)}</code>.<br>${r.rehearsalOk?`Step 16A revision watch and Step 15C wiring pass. Admin arm control is governed by Step 16B. Runtime gates: date ${runtime?.date_eligible?'open':'closed'} • Pick Complete ${runtime?.launch_complete?'open':'closed'} • explicit arm ${runtime?.armed?'ON':'OFF'}. No production change occurred.`:'Resolve the blocker(s) above. If the future book changed, certify it first and use Rebuild & Re-pin Stage before rerunning the rehearsal.'}`}
   if(btn)btn.disabled=futurePickCutoverState.running||futurePickRevisionSafetyState.restaging;
   futurePickRenderArmControl();
+  futurePickRenderCutoverDay();
   return r;
 }
 async function futurePickRunCutoverRehearsal(){
@@ -12855,7 +12866,7 @@ async function futurePickLoadCutoverOnOpen(){
   try{
     await Promise.all([futureRevisionLoadCloud(true),futurePickLaunchLoad(true),crewBookProductionLoad(true),futurePickProductionStageLoad(true)]);
   }catch(err){console.warn('GO 203 cutover initial refresh failed:',err)}
-  if(futurePickMode==='cutover')futurePickRenderCutover();
+  if(futurePickMode==='cutover'){futurePickRenderCutover();void futurePickRefreshCutoverDayStatus();}
 }
 function futurePickSetMode(mode){futurePickMode=['lookup','browse','compare','mypick','availability','audit','revisions','cutover'].includes(mode)?mode:'lookup';if(futurePickMode==='availability')void futurePickAvailabilityRefresh();const lookup=futurePickMode==='lookup',browse=futurePickMode==='browse',compare=futurePickMode==='compare',mine=futurePickMode==='mypick',availability=futurePickMode==='availability',audit=futurePickMode==='audit',revisions=futurePickMode==='revisions',cutover=futurePickMode==='cutover';const a=document.getElementById('futurePickModeLookup'),b=document.getElementById('futurePickModeBrowse'),c=document.getElementById('futurePickModeCompare'),d=document.getElementById('futurePickModeMyPick'),g=document.getElementById('futurePickModeAvailability'),e=document.getElementById('futurePickModeAudit'),f=document.getElementById('futurePickModeRevisions'),h=document.getElementById('futurePickModeCutover'),pa=document.getElementById('futurePickPaneLookup'),pb=document.getElementById('futurePickPaneBrowse'),pc=document.getElementById('futurePickPaneCompare'),pd=document.getElementById('futurePickPaneMyPick'),pg=document.getElementById('futurePickPaneAvailability'),pe=document.getElementById('futurePickPaneAudit'),pf=document.getElementById('futurePickPaneRevisions'),ph=document.getElementById('futurePickPaneCutover');if(a)a.classList.toggle('active',lookup);if(b)b.classList.toggle('active',browse);if(c)c.classList.toggle('active',compare);if(d)d.classList.toggle('active',mine);if(g)g.classList.toggle('active',availability);if(e)e.classList.toggle('active',audit);if(f)f.classList.toggle('active',revisions);if(h)h.classList.toggle('active',cutover);if(pa)pa.hidden=!lookup;if(pb)pb.hidden=!browse;if(pc)pc.hidden=!compare;if(pd)pd.hidden=!mine;if(pg)pg.hidden=!availability;if(pe)pe.hidden=!audit;if(pf)pf.hidden=!revisions;if(ph)ph.hidden=!cutover;if(browse){futurePickPopulateTerminals();futurePickRenderBrowse()}if(compare)futurePickRenderCompare();if(mine){futurePickRenderMyPick();if(navigator.onLine!==false)void cloudSyncFuturePickPlan({source:'mypick-open'})}if(availability)futurePickAvailabilityRender();if(audit)futurePickRenderAudit();if(revisions){futureRevisionRender();futureRoadYardRenderStatus()}if(cutover){futurePickRenderCutover();void futurePickLoadCutoverOnOpen()}}
 function futurePickRenderWorkspace(){renderFutureGeneralPickFoundation();futureRevisionRenderHeader();futurePickLaunchRender();futurePickPlanLoad();futurePickCompareLoad();futurePickPlanUpdateCount();futurePickCompareUpdateCount();const audit=futurePickAudit(),badge=document.getElementById('futurePickAuditTabCount');if(badge)badge.textContent=String(audit.blockers.length);futurePickAvailabilityRender();futurePickSetMode(futurePickMode);if(futurePickMode==='browse'){futurePickPopulateTerminals();futurePickRenderBrowse()}if(futurePickMode==='compare')futurePickRenderCompare();if(futurePickMode==='mypick')futurePickRenderMyPick();if(futurePickMode==='availability')futurePickAvailabilityRender();if(futurePickMode==='audit')futurePickRenderAudit();if(futurePickMode==='revisions')futureRevisionRender();if(futurePickMode==='cutover')futurePickRenderCutover()}
@@ -12864,6 +12875,74 @@ function futurePickOpenSource(page,book){if(!page)return;const p=Number(page),ki
 function futurePickCloseSource(){document.getElementById('futurePickSourceModal')?.classList.remove('show')}
 function futurePickSetSourceZoom(z){futurePickSourceZoom=Math.max(.5,Math.min(3,Number(z)||1));const viewport=document.getElementById('futurePickSourceViewport');if(viewport)viewport.style.width=`${futurePickSourceZoom*100}%`}
 function futurePickOpenSourcePdf(){if(!futurePickSourcePage)return;const kind=Number(futurePickSourcePage)<40?'road_yard':'passenger',row=futureRevisionSourceRow(kind);if(row?.source_storage_path){void futureRevisionOpenCloudSource(futurePickSourcePage,row);return}const url=new URL(kind==='road_yard'?FUTURE_ROAD_YARD_SOURCE.file:'GO203_DRAFT_NOV9_2026.pdf',document.baseURI);url.hash=`page=${futurePickSourcePage}`;window.open(url.href,'_blank','noopener')}
+
+
+// ===== Step 19 — GO 203 Cutover-Day Operations =====
+let futurePickCutoverDayState={status:null,rehearsal:null,running:false,message:'',activatePhrase:'',rollbackPhrase:'',activateAck:false,rollbackAck:false};
+function futurePickCutoverDayCheckRows(status){
+  const c=status?.checks||{};
+  return [
+    {ok:!!c.certified_revision_current,title:'Certified GO 203 revision current',detail:'The active future revision remains certified.'},
+    {ok:!!c.stage_identity_current,title:'Staged cutover identity current',detail:'The staged candidate still matches the certified revision.'},
+    {ok:!!c.pick_complete_closeout_frozen,title:'Pick Complete closeout frozen',detail:'The final union snapshot and GO 203 certification identity are frozen.'},
+    {ok:!!c.final_snapshot_is_active,title:'Frozen final snapshot still active',detail:'The final closeout snapshot is still the live availability snapshot.'},
+    {ok:!!c.nov9_date_gate,title:'Nov. 9 New York date gate',detail:`Server date: ${status?.new_york_date||'not checked'} • effective ${status?.stage?.effective_date||'2026-11-09'}.`},
+    {ok:!!c.go202_baseline_live,title:'GO 202 rollback baseline live',detail:`${status?.rollback_baseline?.revision_label||'GO 202 baseline'} • ${status?.rollback_baseline?.id||'unavailable'}`},
+    {ok:!!c.cutover_armed,title:'GO 203 explicit arm state',detail:c.cutover_armed?'GO 203 is ARMED; production has not changed yet.':'GO 203 remains DISARMED.'},
+    {ok:!!c.go203_activated,title:'GO 203 production activated',detail:c.go203_activated?`Production ${status?.production?.id||''} is GO 203.`:'GO 203 is not live production.'},
+    {ok:!!c.post_activation_smoke,title:'Immediate post-cutover smoke',detail:c.post_activation_smoke?'Production identity and staged payload counts match.':'Runs after GO 203 activation.'},
+    {ok:!!c.rollback_ready,title:'Rollback readiness',detail:c.rollback_ready?'Exact GO 202 rollback is ready.':'Available only after successful GO 203 activation smoke checks.'}
+  ];
+}
+function futurePickRenderCutoverDay(){
+  const summary=document.getElementById('futurePickCutoverDaySummary'),checks=document.getElementById('futurePickCutoverDayChecks'),state=document.getElementById('futurePickCutoverDayState'),panel=document.getElementById('futurePickActivatePanel');
+  if(!summary||!checks||!panel)return;
+  const st=futurePickCutoverDayState.status,r=futurePickCutoverDayState.rehearsal;
+  const phase=st?.launch?.phase||futurePickLaunchState?.phase||'planning',prod=st?.production;
+  summary.innerHTML=`<div class="future-audit-card"><div class="future-audit-label">SERVER DATE</div><strong>${escapeHTML(st?.new_york_date||'Not checked')}</strong><div class="future-audit-detail">New York cutover clock</div></div><div class="future-audit-card"><div class="future-audit-label">GENERAL PICK</div><strong>${escapeHTML(phase==='complete'?'Pick Complete':phase==='open'?'Pick Open':'Planning')}</strong><div class="future-audit-detail">Final closeout ${st?.checks?.pick_complete_closeout_frozen?'frozen':'not frozen'}</div></div><div class="future-audit-card"><div class="future-audit-label">PRODUCTION</div><strong>${escapeHTML(prod?`GO ${prod.go_number}`:'Not checked')}</strong><div class="future-audit-detail">${escapeHTML(prod?.revision_label||'Run status check')}</div></div><div class="future-audit-card"><div class="future-audit-label">CUTOVER STATE</div><strong>${escapeHTML(String(st?.state||'pre_cutover').replaceAll('_',' ').toUpperCase())}</strong><div class="future-audit-detail">Stage ${escapeHTML(st?.stage?.status||'not checked')}</div></div>`;
+  if(st){
+    const rows=futurePickCutoverDayCheckRows(st);
+    checks.innerHTML=`<div class="future-audit-checks"><div class="future-audit-check-head">CUTOVER-DAY GATES — STEP 19</div>${rows.map(x=>`<div class="future-audit-check ${x.ok?'ok':'warn'}"><strong>${x.ok?'✓':'🔒'} ${escapeHTML(x.title)}</strong><div>${escapeHTML(x.detail)}</div></div>`).join('')}</div>`;
+  }else checks.innerHTML='<div class="future-audit-cert">Run Cutover-Day Status to load the live server gates.</div>';
+  if(r?.checks){
+    const rr=Array.isArray(r.checks)?r.checks:[];
+    checks.innerHTML+=`<div class="future-audit-checks" style="margin-top:12px"><div class="future-audit-check-head">ROLLBACK-ONLY FULL CUTOVER REHEARSAL — STEP 19</div>${rr.map(x=>`<div class="future-audit-check ${x.ok?'ok':'warn'}"><strong>${x.ok?'✓':'!'} ${escapeHTML(x.title||x.key||'Rehearsal check')}</strong><div>${escapeHTML(typeof x.detail==='string'?x.detail:JSON.stringify(x.detail||{}))}</div></div>`).join('')}</div>`;
+  }
+  const activateReady=st?.ready?.activate===true,rollbackReady=st?.ready?.rollback===true;
+  const activatePhrase=futurePickCutoverDayState.activatePhrase||'',rollbackPhrase=futurePickCutoverDayState.rollbackPhrase||'';
+  panel.innerHTML=`<div class="future-audit-checks"><div class="future-audit-check-head">REAL PRODUCTION ACTIONS — SERVER GATED</div>
+    <div class="future-audit-check ${activateReady?'ok':'warn'}"><strong>${activateReady?'✓':'🔒'} Activate GO 203</strong><div>Requires ARMED stage + frozen Pick Complete closeout + Nov. 9 date gate. Exact phrase: <code>ACTIVATE GO 203</code>.</div><div style="margin-top:8px"><input id="futurePickActivatePhrase" type="text" value="${escapeHTML(activatePhrase)}" placeholder="ACTIVATE GO 203" oninput="futurePickCutoverDayState.activatePhrase=this.value;futurePickRenderCutoverDay()" style="width:min(100%,420px)"></div><label class="trim-check" style="margin-top:8px;display:block"><input id="futurePickActivateAck" type="checkbox" ${futurePickCutoverDayState.activateAck?'checked':''} onchange="futurePickCutoverDayState.activateAck=this.checked;futurePickRenderCutoverDay()"> I understand this changes live EPL Crew Book production to GO 203.</label><div class="future-audit-actions"><button class="btn ${activateReady?'danger':'cutover-locked'}" type="button" onclick="futurePickActivateGo203Production()" ${activateReady&&activatePhrase.trim()==='ACTIVATE GO 203'&&futurePickCutoverDayState.activateAck?'':'disabled'}>${activateReady?'Activate GO 203 Production':'🔒 Activate GO 203 — Locked'}</button></div></div>
+    <div class="future-audit-check ${rollbackReady?'ok':'warn'}"><strong>${rollbackReady?'✓':'🔒'} Emergency rollback to GO 202</strong><div>Available only after post-activation smoke checks pass. Exact phrase: <code>ROLL BACK TO GO 202</code>.</div><div style="margin-top:8px"><input id="futurePickRollbackPhrase" type="text" value="${escapeHTML(rollbackPhrase)}" placeholder="ROLL BACK TO GO 202" oninput="futurePickCutoverDayState.rollbackPhrase=this.value;futurePickRenderCutoverDay()" style="width:min(100%,420px)"></div><label class="trim-check" style="margin-top:8px;display:block"><input id="futurePickRollbackAck" type="checkbox" ${futurePickCutoverDayState.rollbackAck?'checked':''} onchange="futurePickCutoverDayState.rollbackAck=this.checked;futurePickRenderCutoverDay()"> I understand this restores the exact pinned GO 202 production version.</label><div class="future-audit-actions"><button class="btn ${rollbackReady?'danger':'cutover-locked'}" type="button" onclick="futurePickRollbackGo202Production()" ${rollbackReady&&rollbackPhrase.trim()==='ROLL BACK TO GO 202'&&futurePickCutoverDayState.rollbackAck?'':'disabled'}>${rollbackReady?'Roll Back to GO 202':'🔒 Rollback — Locked'}</button></div></div></div>`;
+  if(state){
+    if(futurePickCutoverDayState.message)state.innerHTML=`<strong>Step 19:</strong> ${escapeHTML(futurePickCutoverDayState.message)}`;
+    else if(r)state.innerHTML=`<strong>Cutover-day rehearsal:</strong> ${r.ready?'PASS — actual arm → activate → smoke → rollback functions passed and the rehearsal was transactionally erased.':'BLOCKED — '+escapeHTML((r.blockers||[]).join(', ')||'one or more checks failed')}`;
+    else state.innerHTML='<strong>Step 19:</strong> Status/rehearsal are safe to run now. Real activation and rollback remain locked by server gates.';
+  }
+}
+async function futurePickRefreshCutoverDayStatus(){
+  if(futurePickCutoverDayState.running)return;futurePickCutoverDayState.running=true;futurePickCutoverDayState.message='Refreshing live cutover-day status…';futurePickRenderCutoverDay();
+  try{const client=getCloudClient();if(!client)throw new Error('Cloud connection unavailable.');const {data,error}=await client.rpc('crew_book_cutover_day_status',{p_go_number:'203'});if(error)throw error;futurePickCutoverDayState.status=data||null;futurePickCutoverDayState.message='Live cutover-day status refreshed. No production change occurred.'}catch(err){console.error('Step 19 status failed:',err);futurePickCutoverDayState.message=err?.message||String(err)}finally{futurePickCutoverDayState.running=false;futurePickRenderCutoverDay()}
+}
+async function futurePickRunCutoverDayRehearsal(){
+  if(futurePickCutoverDayState.running)return;futurePickCutoverDayState.running=true;futurePickCutoverDayState.message='Running rollback-only full cutover rehearsal…';futurePickRenderCutoverDay();
+  try{const client=getCloudClient();if(!client)throw new Error('Cloud connection unavailable.');const {data,error}=await client.rpc('crew_book_cutover_day_rehearsal',{p_go_number:'203'});if(error)throw error;futurePickCutoverDayState.rehearsal=data||null;const statusRes=await client.rpc('crew_book_cutover_day_status',{p_go_number:'203'});if(statusRes.error)throw statusRes.error;futurePickCutoverDayState.status=statusRes.data||null;futurePickCutoverDayState.message=futurePickCutoverDayState.rehearsal?.ready?'PASS — actual arm, activation, post-cutover smoke, rollback, and exact GO 202 restoration all passed without persistence.':'Rehearsal returned blockers.'}catch(err){console.error('Step 19 rehearsal failed:',err);futurePickCutoverDayState.message=err?.message||String(err)}finally{futurePickCutoverDayState.running=false;futurePickRenderCutoverDay()}
+}
+async function futurePickActivateGo203Production(){
+  const st=futurePickCutoverDayState.status;if(st?.ready?.activate!==true)return;
+  if((futurePickCutoverDayState.activatePhrase||'').trim()!=='ACTIVATE GO 203'||!futurePickCutoverDayState.activateAck)return;
+  if(!window.confirm('FINAL CONFIRMATION: Activate GO 203 as live Engineer Pay Log Crew Book production now?'))return;
+  futurePickCutoverDayState.running=true;futurePickCutoverDayState.message='Activating GO 203 production…';futurePickRenderCutoverDay();
+  try{const out=await crewOpsProductionInvoke({action:'future-cutover-activate',stage_id:st.stage?.id,confirmation:'ACTIVATE GO 203'});futurePickCutoverDayState.status=out?.status||await crewOpsProductionInvoke({action:'future-cutover-day-status'});futurePickCutoverDayState.activatePhrase='';futurePickCutoverDayState.activateAck=false;futurePickCutoverDayState.message=futurePickCutoverDayState.status?.checks?.post_activation_smoke?'GO 203 ACTIVATED — immediate server smoke checks PASS. Rollback remains available below.':'GO 203 activation returned, but post-cutover smoke must be reviewed immediately.'}catch(err){console.error('GO 203 production activation failed:',err);futurePickCutoverDayState.message=err?.message||String(err)}finally{futurePickCutoverDayState.running=false;futurePickRenderCutoverDay()}
+}
+async function futurePickRollbackGo202Production(){
+  const st=futurePickCutoverDayState.status;if(st?.ready?.rollback!==true)return;
+  if((futurePickCutoverDayState.rollbackPhrase||'').trim()!=='ROLL BACK TO GO 202'||!futurePickCutoverDayState.rollbackAck)return;
+  if(!window.confirm('FINAL CONFIRMATION: Roll live Crew Book production back to the exact pinned GO 202 version now?'))return;
+  futurePickCutoverDayState.running=true;futurePickCutoverDayState.message='Rolling production back to GO 202…';futurePickRenderCutoverDay();
+  try{const out=await crewOpsProductionInvoke({action:'future-cutover-rollback',stage_id:st.stage?.id,confirmation:'ROLL BACK TO GO 202'});futurePickCutoverDayState.status=out?.status||await crewOpsProductionInvoke({action:'future-cutover-day-status'});futurePickCutoverDayState.rollbackPhrase='';futurePickCutoverDayState.rollbackAck=false;futurePickCutoverDayState.message=futurePickCutoverDayState.status?.checks?.rolled_back_to_go202?'ROLLBACK COMPLETE — the exact pinned GO 202 production version is live again.':'Rollback returned; verify production identity immediately.'}catch(err){console.error('GO 202 rollback failed:',err);futurePickCutoverDayState.message=err?.message||String(err)}finally{futurePickCutoverDayState.running=false;futurePickRenderCutoverDay()}
+}
+// ===== End Step 19 =====
+
 // ===== End GO 203 Future General Pick helper =====
 
 let rosterAdminState={checked:false,canPublish:false,user:null,latest:null,latestRows:null};
