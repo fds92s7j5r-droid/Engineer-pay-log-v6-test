@@ -2022,21 +2022,23 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
         <div id="futurePickPaneAvailability" class="future-pick-pane" hidden>
           <div class="future-availability">
-            <div class="future-availability-head"><div><h3>Live General Pick Availability</h3><div class="future-availability-sub">Union awards snapshots mark assignments that have already been picked without changing the Crew Book itself.</div></div><span id="futurePickAvailabilityStatus" class="future-availability-status">No live snapshot</span></div>
+            <div class="future-availability-head"><div><h3>Live General Pick Availability <span class="future-rev-badge" style="vertical-align:middle;margin-left:6px;min-height:20px;padding:3px 7px">Step 17A R2</span></h3><div class="future-availability-sub">Union awards snapshots mark assignments that have already been picked without changing the Crew Book itself.</div></div><span id="futurePickAvailabilityStatus" class="future-availability-status">No live snapshot</span></div>
             <div id="futurePickAvailabilitySummary" class="future-availability-summary"></div>
             <div class="future-rev-actions" style="margin:0 0 10px"><button class="btn" type="button" onclick="futurePickAvailabilityRefresh()">Refresh Availability</button></div>
             <div class="field"><label>Search already-picked assignments</label><input id="futurePickAvailabilitySearch" type="search" autocomplete="off" placeholder="e.g. 113, 470, EX1144" oninput="futurePickAvailabilityRender()"></div>
             <div id="futurePickAvailabilityList" class="future-availability-list"></div>
             <div id="futurePickAvailabilityNote" class="future-rev-status" style="margin-top:10px">No union General Pick awards snapshot has been published yet.</div>
 
+            <div id="futurePickOperationalReadinessCard" class="future-rev-card" style="margin:12px 0" hidden>
+              <div class="future-rev-badge" style="margin-bottom:8px">Step 17A R2</div>
+              <h4>Pick Open Operational Readiness</h4>
+              <p>Dry-run the next General Pick phase transition against the certified GO 203 revision, staged cutover candidate, GO 202 production baseline, arm state, and live availability snapshot. Running this check never changes the General Pick phase.</p>
+              <div id="futurePickOperationalReadinessChecks"><div class="future-rev-status">Run the readiness check before moving from Planning to Pick Open.</div></div>
+              <div class="future-rev-actions" style="margin-top:9px"><button id="futurePickOperationalReadinessBtn" class="btn" type="button" onclick="futurePickRunOperationalReadiness()">Run Pick Open Readiness Check</button></div>
+              <div id="futurePickOperationalReadinessStatus" class="future-rev-status" style="margin-top:9px">Phase remains Planning until you intentionally select Pick Open.</div>
+            </div>
+
             <div id="futurePickAvailabilityAdmin" class="future-availability-admin" hidden>
-              <div class="future-rev-card" style="margin:0 0 12px">
-                <h4>Step 17A — Pick Open Operational Readiness</h4>
-                <p>Dry-run the next General Pick phase transition against the certified GO 203 revision, staged cutover candidate, GO 202 production baseline, arm state, and live availability snapshot. Running this check never changes the General Pick phase.</p>
-                <div id="futurePickOperationalReadinessChecks"><div class="future-rev-status">Run the readiness check before moving from Planning to Pick Open.</div></div>
-                <div class="future-rev-actions" style="margin-top:9px"><button id="futurePickOperationalReadinessBtn" class="btn" type="button" onclick="futurePickRunOperationalReadiness()">Run Pick Open Readiness Check</button></div>
-                <div id="futurePickOperationalReadinessStatus" class="future-rev-status" style="margin-top:9px">Phase remains Planning until you intentionally select Pick Open.</div>
-              </div>
               <h4>Maintainer — Union General Pick Awards Upload</h4>
               <p>Upload the newest union PDF in the standard RANK / IBM / EMPLOYEE NAME / AWARDS format. EPL stores the raw rows privately and exposes only assignment availability to normal users.</p>
               <div class="future-rev-file"><input id="futurePickAvailabilityFile" type="file" accept="application/pdf,.pdf" onchange="futurePickAvailabilitySelectFile(this.files&&this.files[0])"></div>
@@ -12159,10 +12161,11 @@ async function futurePickAvailabilityClearActive(){
   try{const {error}=await client.rpc('general_pick_clear_availability',{p_go_number:'203'});if(error)throw error;futurePickAvailabilityState.loaded=false;futurePickAvailabilityHistoryLoaded=false;await futurePickAvailabilityLoad(true);await futurePickAvailabilityLoadHistory(true);futurePickAvailabilityRender();futurePickRefreshCurrentDetail();futurePickRenderBrowse();futurePickRenderMyPick();futurePickRenderCompare();futurePickAvailabilityAdminStatus('Live availability disabled. The previous snapshot remains in history and can be restored.','pass')}catch(err){futurePickAvailabilityAdminStatus(`Could not disable availability: ${err?.message||err}`,'error')}
 }
 function futurePickAvailabilityRender(){
-  const p=futurePickAvailabilityState.payload||{},snap=p.snapshot,status=document.getElementById('futurePickAvailabilityStatus'),summary=document.getElementById('futurePickAvailabilitySummary'),list=document.getElementById('futurePickAvailabilityList'),note=document.getElementById('futurePickAvailabilityNote'),tab=document.getElementById('futurePickAvailabilityTabCount'),admin=document.getElementById('futurePickAvailabilityAdmin'),openSource=document.getElementById('futurePickAvailabilityOpenSourceBtn');
+  const p=futurePickAvailabilityState.payload||{},snap=p.snapshot,status=document.getElementById('futurePickAvailabilityStatus'),summary=document.getElementById('futurePickAvailabilitySummary'),list=document.getElementById('futurePickAvailabilityList'),note=document.getElementById('futurePickAvailabilityNote'),tab=document.getElementById('futurePickAvailabilityTabCount'),admin=document.getElementById('futurePickAvailabilityAdmin'),readinessCard=document.getElementById('futurePickOperationalReadinessCard'),openSource=document.getElementById('futurePickAvailabilityOpenSourceBtn');
   const picked=[...futurePickAvailabilityPickedSet()].sort((a,b)=>Number(String(a).replace(/\D/g,''))-Number(String(b).replace(/\D/g,''))||String(a).localeCompare(String(b)));
   if(tab)tab.textContent=String(picked.length);
-  const phase=futurePickLaunchPhase();if(admin)admin.hidden=!rosterAdminState?.canPublish;if(openSource)openSource.disabled=!snap?.id;const analyze=document.getElementById('futurePickAvailabilityAnalyzeBtn'),disable=document.getElementById('futurePickAvailabilityDisableBtn');if(analyze)analyze.disabled=false;if(disable)disable.disabled=!snap?.id;
+  const phase=futurePickLaunchPhase();const canPublish=!!rosterAdminState?.canPublish;if(admin)admin.hidden=!canPublish;if(readinessCard)readinessCard.hidden=!canPublish;if(openSource)openSource.disabled=!snap?.id;const analyze=document.getElementById('futurePickAvailabilityAnalyzeBtn'),disable=document.getElementById('futurePickAvailabilityDisableBtn');if(analyze)analyze.disabled=false;if(disable)disable.disabled=!snap?.id;
+  if(canPublish)futurePickOperationalReadinessRender();
   if(status){status.className=`future-availability-status${p.stale_revision?' stale':snap?.id&&phase!=='planning'?' live':''}`;status.textContent=phase==='planning'?'Planning — live availability off':phase==='complete'?'Pick complete — final snapshot':p.stale_revision?'Snapshot needs revalidation':snap?.id?`${picked.length} already picked`:'Pick open — awaiting snapshot'}
   if(summary)summary.innerHTML=`<div class="future-availability-stat"><div class="label">Already picked</div><div class="value">${picked.length}</div><div class="detail">Mapped ownable assignments</div></div><div class="future-availability-stat"><div class="label">Union update</div><div class="value" style="font-size:10px">${escapeHTML(snap?.source_timestamp_label||'Not published')}</div><div class="detail">${snap?.row_count?`${snap.row_count} roster rows`:''}</div></div><div class="future-availability-stat"><div class="label">Future revision</div><div class="value" style="font-size:10px">${escapeHTML(futureRevisionCurrentLabel())}</div><div class="detail">${p.stale_revision?'Availability snapshot belongs to an older revision':'Availability overlay matches active preview'}</div></div>`;
   const q=String(document.getElementById('futurePickAvailabilitySearch')?.value||'').trim().toLowerCase(),shown=q?picked.filter(k=>`${k} ${futurePickCompareTitle(k)}`.toLowerCase().includes(q)):picked;
