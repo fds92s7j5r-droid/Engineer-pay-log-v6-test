@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-go203-general-pick-production-preview-r1-containment2-20261003';
+const CACHE_NAME='engineer-pay-log-v10-2-go203-winter-pick-dayoff-filters-r1-20261004';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./GO203_ROAD_YARD_DRAFT_NOV9_2026.pdf'];
 
 self.addEventListener('install',e=>e.waitUntil(
