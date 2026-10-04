@@ -2111,7 +2111,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         </div>
       </div>
 
-      <details class="future-pick-status-details">
+      <details id="futureBookIsolationDetails" class="future-pick-status-details" hidden>
         <summary>Future book status & isolation check</summary>
         <div class="future-pick-status-inner">
           <div id="futureBookSummary" class="future-book-grid"></div>
@@ -11447,6 +11447,8 @@ const FUTURE_CREW_BOOK_GO203={go:'203',bookNo:'2',effective:'2026-11-09',status:
 function futureCrewBookApplyVisibility(){
   const btn=document.getElementById('dashboardFutureGeneralPickBtn');
   if(btn)btn.hidden=!EPL_TEST_TOOLS_ENABLED;
+  const foundationDiagnostics=document.getElementById('futureBookIsolationDetails');
+  if(foundationDiagnostics)foundationDiagnostics.hidden=!rosterAdminState?.canPublish;
 }
 function futureCrewBookSummaryHTML(){
   const data=futurePickData(),pick=futurePickWeek();

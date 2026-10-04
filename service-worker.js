@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-go203-general-pick-production-preview-r1-fullfix-20261003';
+const CACHE_NAME='engineer-pay-log-v10-2-go203-general-pick-production-preview-r1-containment2-20261003';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./GO203_ROAD_YARD_DRAFT_NOV9_2026.pdf'];
 
 self.addEventListener('install',e=>e.waitUntil(
@@ -150,3 +150,5 @@ self.addEventListener('notificationclick',event=>{
 // GO 203 Step 15A date-aware production staging rehearsal · 2026-10-01
 
 // GO 203 Step 15C activation / rollback rehearsal — DISARMED · 2026-10-02
+
+// GO 203 final public-surface containment: future-book isolation diagnostics are maintainer-only · 2026-10-03

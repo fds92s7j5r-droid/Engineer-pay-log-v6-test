@@ -2212,7 +2212,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         </div>
       </div>
 
-      <details class="future-pick-status-details">
+      <details id="futureBookIsolationDetails" class="future-pick-status-details" hidden>
         <summary>Future book status & isolation check</summary>
         <div class="future-pick-status-inner">
           <div id="futureBookSummary" class="future-book-grid"></div>
@@ -11597,7 +11597,7 @@ const GO203_FINAL_USER_UPDATE=Object.freeze({
 });
 function futurePickSurfacePolicy(hostname,isAdmin,publicPreviewEnabled=GO203_PUBLIC_PREVIEW_ENABLED){
   const host=String(hostname||'').toLowerCase(),test=/\.github\.io$/i.test(host)||host==='localhost'||host==='127.0.0.1',admin=!!isAdmin,published=!!publicPreviewEnabled;
-  return {hostname:host,test,published,publicEntryVisible:published||test,publicCanOpen:published||(test&&admin),adminTabsVisible:admin,realOperationsVisible:admin,diagnosticsVisible:admin&&test,releaseCandidateVisible:admin&&test};
+  return {hostname:host,test,published,publicEntryVisible:published||test,publicCanOpen:published||(test&&admin),adminTabsVisible:admin,realOperationsVisible:admin,foundationDiagnosticsVisible:admin,diagnosticsVisible:admin&&test,releaseCandidateVisible:admin&&test};
 }
 function futureCrewBookApplyVisibility(){
   const btn=document.getElementById('dashboardFutureGeneralPickBtn'),policy=futurePickSurfacePolicy(window.location.hostname,!!rosterAdminState?.canPublish);
@@ -12090,6 +12090,7 @@ function futurePickApplyAdminSurfaceVisibility(){
   const rc=document.getElementById('futurePickReleaseCandidateCard');if(rc)rc.hidden=!policy.releaseCandidateVisible;
   const ops=document.getElementById('futurePickOperationsCard');if(ops)ops.hidden=!policy.realOperationsVisible;
   const phaseAdmin=document.getElementById('futurePickPhaseAdmin');if(phaseAdmin)phaseAdmin.hidden=!admin;
+  const foundationDiagnostics=document.getElementById('futureBookIsolationDetails');if(foundationDiagnostics)foundationDiagnostics.hidden=!policy.foundationDiagnosticsVisible;
   for(const id of ['futurePickOperationalReadinessCard','futurePickAvailabilityRehearsalCard','futurePickCloseoutRehearsalCard','futurePickOpsRecoveryCard']){const el=document.getElementById(id);if(el)el.hidden=!diag}
   for(const id of ['futurePickRevisionSafetyBtn','futurePickCutoverRunBtn','futurePickCutoverDayRehearsalBtn']){const el=document.getElementById(id);if(el)el.hidden=!diag}
   if(!admin&&['audit','revisions','cutover'].includes(String(futurePickMode||''))){futurePickMode='lookup'}
@@ -12106,9 +12107,9 @@ function futurePickReleaseCandidateClientChecks(){
     {ok:String(normal?.go||'')!=='203',title:'Normal GO 202 passenger resolver remains isolated',detail:`Nov. 9 normal resolver currently returns ${escapeHTML(crewBookRevisionLabel(normal,'Passenger'))}; GO 203 has not been promoted.`},
     {ok:typeof futurePickRoadYardAdapterEvaluate==='function'&&typeof futurePickPassengerActivationAdapterEvaluate==='function',title:'GO 203 Passenger + Road/Yard adapters present',detail:'Both staged production adapter regression functions remain included.'},
     {ok:GO203_PUBLIC_PREVIEW_ENABLED,title:'Public November General Pick preview is ON',detail:'The production release intentionally exposes the November General Pick planning entry point.'},
-    {ok:prodUser.publicEntryVisible&&prodUser.publicCanOpen&&!prodUser.adminTabsVisible&&!prodUser.realOperationsVisible&&!prodUser.diagnosticsVisible&&!prodUser.releaseCandidateVisible,title:'Production normal-user surface is correctly released',detail:'A normal user on engineerpaylog.com can browse General Pick and My Pick without seeing maintainer, cutover, revision, or QA controls.'},
-    {ok:prodAdmin.publicEntryVisible&&prodAdmin.publicCanOpen&&prodAdmin.adminTabsVisible&&prodAdmin.realOperationsVisible&&!prodAdmin.diagnosticsVisible&&!prodAdmin.releaseCandidateVisible,title:'Production maintainer surface remains contained',detail:'Maintainers retain real operational controls on engineerpaylog.com while rollback-only diagnostics and release-verification cards stay hidden.'},
-    {ok:githubAdmin.publicEntryVisible&&githubAdmin.publicCanOpen&&githubAdmin.adminTabsVisible&&githubAdmin.diagnosticsVisible&&githubAdmin.releaseCandidateVisible,title:'GitHub QA surface remains available',detail:'GitHub/localhost continues to expose maintainer release and rollback-only verification controls for testing.'},
+    {ok:prodUser.publicEntryVisible&&prodUser.publicCanOpen&&!prodUser.adminTabsVisible&&!prodUser.realOperationsVisible&&!prodUser.foundationDiagnosticsVisible&&!prodUser.diagnosticsVisible&&!prodUser.releaseCandidateVisible,title:'Production normal-user surface is correctly released',detail:'A normal user on engineerpaylog.com can browse General Pick and My Pick without seeing maintainer, cutover, revision, isolation-diagnostic, or QA controls.'},
+    {ok:prodAdmin.publicEntryVisible&&prodAdmin.publicCanOpen&&prodAdmin.adminTabsVisible&&prodAdmin.realOperationsVisible&&prodAdmin.foundationDiagnosticsVisible&&!prodAdmin.diagnosticsVisible&&!prodAdmin.releaseCandidateVisible,title:'Production maintainer surface remains contained',detail:'Maintainers retain operational and future-book isolation controls on engineerpaylog.com while rollback-only diagnostics and release-verification cards stay hidden.'},
+    {ok:githubAdmin.publicEntryVisible&&githubAdmin.publicCanOpen&&githubAdmin.adminTabsVisible&&githubAdmin.foundationDiagnosticsVisible&&githubAdmin.diagnosticsVisible&&githubAdmin.releaseCandidateVisible,title:'GitHub QA surface remains available',detail:'GitHub/localhost continues to expose maintainer release, future-book isolation, and rollback-only verification controls for testing.'},
     {ok:!lockedUser.publicEntryVisible&&!lockedUser.publicCanOpen,title:'Public release kill switch still works',detail:'Turning the public-preview flag back OFF would immediately hide the normal-user General Pick entry point without changing GO 203 data or production.'},
     {ok:updateReady,title:'User-facing General Pick update is published',detail:'What’s New and the General Pick release copy cover browsing, My Pick, draft revisions, union awards / Already Picked updates, and GO 202 production isolation.'}
   ];
