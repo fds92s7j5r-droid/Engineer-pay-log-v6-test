@@ -3614,7 +3614,7 @@ const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
 const APP_VERSION='10.2';
-const WHATS_NEW_VERSION='10.2-go203-published-books-r1-20261009';
+const WHATS_NEW_VERSION='10.2-go203-published-books-r2-20261009';
 const CONTACT_EMAIL='admin@engineerpaylog.com';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
 const BACKUP_REMIND_LATER_KEY='engineerPayLogBackupRemindLaterUntil';
@@ -12054,7 +12054,13 @@ async function futureRevisionActivate(id){
   }catch(err){futureRevisionStatus(`Could not switch preview: ${err?.message||err}`,'error');futureRevisionRender()}
 }
 async function futureRevisionOpenRevisionSource(id,page=1){const r=(futureRevisionState.history||[]).find(x=>x.id===id)||futureRevisionState.active;if(!r?.source_storage_path)return alert('No versioned source PDF is stored for this revision.');await futureRevisionOpenCloudSource(page,r)}
-async function futureRevisionOpenCloudSource(page,row=futureRevisionState.active){if(!row?.source_storage_path)return;const win=window.open('about:blank','_blank');try{const client=getCloudClient(),{data,error}=await client.storage.from(FUTURE_REV_BUCKET).download(row.source_storage_path);if(error)throw error;if(futureRevisionState.sourceObjectUrl)URL.revokeObjectURL(futureRevisionState.sourceObjectUrl);futureRevisionState.sourceObjectUrl=URL.createObjectURL(data);const href=`${futureRevisionState.sourceObjectUrl}#page=${Number(page)||1}`;if(win)win.location.href=href;else window.location.href=href}catch(err){try{win?.close()}catch{}alert(`Could not open the versioned source PDF: ${err?.message||err}`)}}
+function futureRevisionBundledSourceForRow(row){
+  const kind=String(row?.source_kind||'passenger'),sha=String(row?.source_sha256||'');
+  if(kind==='passenger'&&sha==='2a3ac1e0e36a1c995c4c9eb41df477336e4b96b26f6cff8d4748da36fa4d8a3a')return 'GO203_PUBLISHED_NOV9_2026.pdf';
+  if(kind==='road_yard'&&sha==='6e1364a7cb4539d4f9710992fcbb50d3ea4a87bdf914f66baf376715b4afe65f')return 'GO203_ROAD_YARD_PUBLISHED_NOV9_2026.pdf';
+  return null;
+}
+async function futureRevisionOpenCloudSource(page,row=futureRevisionState.active){const bundled=futureRevisionBundledSourceForRow(row);if(bundled){const url=new URL(bundled,document.baseURI);url.hash=`page=${Number(page)||1}`;window.open(url.href,'_blank','noopener');return}if(!row?.source_storage_path)return;const win=window.open('about:blank','_blank');try{const client=getCloudClient(),{data,error}=await client.storage.from(FUTURE_REV_BUCKET).download(row.source_storage_path);if(error)throw error;if(futureRevisionState.sourceObjectUrl)URL.revokeObjectURL(futureRevisionState.sourceObjectUrl);futureRevisionState.sourceObjectUrl=URL.createObjectURL(data);const href=`${futureRevisionState.sourceObjectUrl}#page=${Number(page)||1}`;if(win)win.location.href=href;else window.location.href=href}catch(err){try{win?.close()}catch{}alert(`Could not open the versioned source PDF: ${err?.message||err}`)}}
 function futureRevisionUsingCloudSource(){const r=futureRevisionState.active;return !!(r?.source_storage_path&&r?.source_sha256&&r.source_sha256!==FUTURE_REV_BASE_SHA)}
 // ===== End GO 203 Future Crew Book Revision Manager =====
 
