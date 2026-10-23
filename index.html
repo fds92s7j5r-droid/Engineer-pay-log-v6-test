@@ -1556,8 +1556,27 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .bid-staging-item.drop-target{outline:2px dashed #3383bb;outline-offset:2px}
     .bid-stage-grip{border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);width:32px;height:40px;display:flex;align-items:center;justify-content:center;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;font-size:18px}
     .bid-stage-grip:active{cursor:grabbing}.bid-stage-grip:focus-visible{outline:3px solid #4f9dd0;outline-offset:2px}
-    .bid-stage-details{margin-top:6px;font-size:10px;color:var(--muted)}.bid-stage-details summary{cursor:pointer;color:var(--brand);font-weight:800;min-height:26px;display:list-item;line-height:26px}
-    .bid-stage-detail-body{padding:7px 0;line-height:1.5}.bid-stage-control-row{grid-column:1/-1;display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+    /* R2: concise, full-width in-card Crew Book schedule; closed cards stay easy to scan. */
+    .bid-stage-insights{grid-column:1/-1;min-width:0}
+    .bid-stage-pulse{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin:0 0 2px}
+    .bid-stage-chip{display:inline-flex;align-items:center;padding:3px 7px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:999px;font-size:9px;line-height:1.4;font-weight:700}
+    .bid-stage-chip.ot{color:var(--brand);font-weight:850}
+    .bid-stage-details{margin-top:4px;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:3px}
+    .bid-stage-details summary{cursor:pointer;color:var(--brand);font-weight:850;min-height:33px;line-height:33px;font-size:11px;list-style-position:inside}
+    .bid-stage-details summary:focus-visible{outline:2px solid #3485bb;outline-offset:2px;border-radius:5px}
+    .bid-stage-details[open] summary{margin-bottom:4px}
+    .bid-stage-detail-body{padding:0 0 5px;line-height:1.5}
+    .bid-stage-schedules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:5px}
+    .bid-stage-schedules .trim-result-schedule{margin:0;padding:8px 10px;min-width:0}
+    .bid-stage-schedules .trim-result-schedule span{font-size:9px}
+    .bid-stage-schedules .trim-result-schedule strong{font-size:11px}
+    .bid-stage-schedules .trim-result-schedule small{font-size:9px}
+    .bid-stage-coverage{padding:6px 0;color:var(--muted);font-size:10px;line-height:1.45}
+    .bid-stage-source{margin-top:6px;display:flex;align-items:center;justify-content:flex-start}
+    .bid-stage-source button{border:0;background:transparent;color:var(--brand);font:inherit;font-weight:850;font-size:10px;padding:5px 0;min-height:32px;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+    .bid-stage-source button:focus-visible{outline:2px solid #3485bb;outline-offset:2px}
+    .bid-stage-empty-detail{padding:8px 10px;border:1px dashed var(--line);background:var(--bg);border-radius:9px;color:var(--muted);font-size:10px}
+    .bid-stage-control-row{grid-column:1/-1;display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}
     .bid-stage-control-row .btn{font-size:10px;min-height:35px;padding:7px 11px}.bid-stage-control-row .btn:disabled{opacity:.4}
     .bid-stage-transfer{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:10px;margin-top:12px}
     .bid-stage-transfer label{display:block;font-size:10px;font-weight:800;color:var(--ink);margin-bottom:5px}.bid-stage-transfer select{width:100%;min-height:40px}
@@ -1567,7 +1586,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     html[data-theme="dark"] .bid-sheet-card-actions .bid-stage-add{background:#143450;color:#afd7f2;border-color:#365a7d}html[data-theme="dark"] .bid-sheet-card-actions .bid-stage-add.added{background:#123024;color:#99dfba}
     html[data-theme="dark"] .bid-staging{background:#14283a;border-color:#365a7d}
     html[data-theme="dark"] .bid-staging-item{border-color:#375773}
-    @media(max-width:620px){.bid-staging-item{grid-template-columns:30px 30px minmax(0,1fr);gap:7px}.bid-stage-transfer{grid-template-columns:1fr}.bid-stage-transfer button{width:100%}.bid-stage-control-row{justify-content:stretch}.bid-stage-control-row .btn{flex:1;min-width:0;padding:7px 5px}.bid-stage-inline-status{text-align:left}}
+    @media(max-width:620px){.bid-staging-item{grid-template-columns:30px 30px minmax(0,1fr);gap:7px}.bid-stage-schedules{grid-template-columns:1fr}.bid-stage-transfer{grid-template-columns:1fr}.bid-stage-transfer button{width:100%}.bid-stage-control-row{justify-content:stretch}.bid-stage-control-row .btn{flex:1;min-width:0;padding:7px 5px}.bid-stage-inline-status{text-align:left}}
     .bid-lifecycle-alert{display:none;margin:0 0 14px;padding:14px 16px;border:1px solid #a9c6e3;border-radius:16px;background:#f4f9ff;box-shadow:var(--shadow)}.bid-lifecycle-alert.show{display:block}.bid-lifecycle-alert.open{border-color:#8ec9ac;background:#f3fbf7}.bid-lifecycle-alert.pending{border-color:#bdc8d5;background:#f7f9fb}.bid-lifecycle-alert.results{border-color:#c9b8e5;background:#faf7ff}.bid-lifecycle-kicker{font-size:8.5px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;color:#35618b}.bid-lifecycle-alert.open .bid-lifecycle-kicker{color:#26724e}.bid-lifecycle-alert.pending .bid-lifecycle-kicker{color:#667487}.bid-lifecycle-alert.results .bid-lifecycle-kicker{color:#674696}.bid-lifecycle-title{margin-top:3px;font-size:16px;font-weight:950;color:var(--ink)}.bid-lifecycle-copy{margin-top:5px;font-size:9.5px;line-height:1.45;color:var(--muted)}.bid-lifecycle-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.bid-lifecycle-test-box{margin-top:12px;padding:12px;border:1px dashed #9db9d5;border-radius:12px;background:#f7fbff}.bid-lifecycle-test-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.bid-lifecycle-test-status{margin-top:9px;font-size:8.5px;line-height:1.45;color:var(--muted)}
     .award-alert{display:none;margin:0 0 14px;padding:15px 16px;border:1px solid #d6b45b;border-radius:16px;background:#fff9e8;box-shadow:var(--shadow)}.award-alert.show{display:block}.award-alert-kicker{font-size:8.5px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;color:#8a6410}.award-alert-title{margin-top:3px;font-size:17px;font-weight:950;color:#3d2d09}.award-alert-meta{margin-top:4px;font-size:10px;font-weight:800;color:#70551b}.award-alert-warning{margin-top:10px;padding:10px 11px;border:1px solid #e5cf91;border-radius:11px;background:rgba(255,255,255,.62);font-size:10px;line-height:1.45;color:#4e4328}.award-alert-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}.award-alert-confirmed{display:inline-flex;align-items:center;margin-top:9px;padding:5px 8px;border-radius:999px;background:#e4f5ec;color:#176742;font-size:8.5px;font-weight:900}.award-alert .btn:disabled{opacity:.48}.award-admin-card{display:none}.award-admin-card.show{display:block}.award-admin-diff{margin-top:10px;padding:10px 11px;border:1px solid var(--line);border-radius:11px;background:var(--card);font-size:9.5px;line-height:1.5}
     html[data-theme="dark"] .bid-lifecycle-alert{background:#14283a;border-color:#365a7d}html[data-theme="dark"] .bid-lifecycle-alert.open{background:#123024;border-color:#2c6c4d}html[data-theme="dark"] .bid-lifecycle-alert.pending{background:#252b34;border-color:#4b5664}html[data-theme="dark"] .bid-lifecycle-alert.results{background:#241d33;border-color:#655080}html[data-theme="dark"] .bid-lifecycle-title{color:#eef4fb}html[data-theme="dark"] .bid-lifecycle-copy{color:#c0cad6}html[data-theme="dark"] .bid-lifecycle-test-box{background:#102234;border-color:#365a7d}
@@ -14104,9 +14123,30 @@ function bidStagingRemove(index){
   if(!confirm(`Remove Job ${assignment} from Staging?\n\nYour My Bid Sheet will not be changed.`))return;
   bidStagingState.choices.splice(index,1);bidStagingChanged();
 }
+function bidStagingInlineDetailsHTML(row,key,date,extra,relief,canView,safeAssignment){
+  // Reuse the exact Crew Book resolver, schedule grouping and published pay/meal
+  // logic already used by Bid Sheet advertised-job cards. No new payroll rules.
+  const stats=extra?null:bidSheetWeekStats(row,key,date);
+  const ipma=extra?trimDevIpma({assignment:row?.assignment,assignment_type:'extra_list'}):'';
+  const pulse=[];
+  if(stats){
+    pulse.push('<span class="bid-stage-chip ot">Weekly OT: '+escapeHTML(fmtMinutes(stats.overtime))+'</span>');
+    const ratePct=stats.meals?payScaleForDate(date):null,mealEstimate=ratePct?otPay(stats.meals*20,ratePct):null;
+    pulse.push('<span class="bid-stage-chip">Paid meals: '+escapeHTML(String(stats.meals))+(mealEstimate!=null?' · est. '+escapeHTML(money(mealEstimate)):'')+'</span>');
+  }else if(extra&&ipma)pulse.push('<span class="bid-stage-chip">IPMA: '+escapeHTML(ipma)+'</span>');
+  const coverage=relief?trimDevReliefCoverageText(relief):'';
+  const coverageHTML=coverage?'<div class="bid-stage-coverage"><strong>Covers:</strong> '+escapeHTML(coverage)+'</div>':'';
+  const schedules=stats?.groups?.length?'<div class="bid-stage-schedules">'+stats.groups.map(group=>trimDevScheduleCard(`${trimDevDayGroupLabel(group.days)}${group.covered?' • Job '+group.covered:''}`,group.schedule)).join('')+'</div>':'';
+  const fallback=extra?'Extra List assignments do not have a published daily operating schedule in the Crew Book. Your relief days and IPMA are shown above.':'A structured daily schedule is not available for this assignment in the currently selected Crew Book.';
+  const scheduleHTML=schedules||'<div class="bid-stage-empty-detail">'+escapeHTML(fallback)+'</div>';
+  const official=canView?'<div class="bid-stage-source"><button type="button" data-bid-assignment="'+safeAssignment+'" onclick="bidSheetOpenDetails(this.dataset.bidAssignment)">View original Crew Book assignment ›</button></div>':'';
+  return {pulse:pulse.length?'<div class="bid-stage-pulse">'+pulse.join('')+'</div>':'',body:coverageHTML+scheduleHTML+official};
+}
 function bidStagingRender(){
   const panel=document.getElementById('bidStagingArea'),list=document.getElementById('bidStagingList');if(!panel||!list)return;
   const snapshot=bidSheetState.snapshot,ready=bidStagingReady(),choices=ready?bidStagingState.choices:[],editable=bidStagingCanEdit();
+  // Keep each expanded card expanded when sorting, transferring or refreshing.
+  const expanded=new Set([...list.querySelectorAll('.bid-stage-details[open][data-stage-assignment]')].map(el=>String(el.dataset.stageAssignment||'').toUpperCase()));
   panel.classList.toggle('show',!!snapshot);if(!snapshot)return;
   const count=document.getElementById('bidStagingCount'),status=document.getElementById('bidStagingStatus'),transfer=document.getElementById('bidStagingTransferButton'),note=document.getElementById('bidStagingLifecycleNote');
   if(count)count.textContent=`(${choices.length})`;
@@ -14117,9 +14157,11 @@ function bidStagingRender(){
   if(!choices.length){list.innerHTML='<div class="bid-draft-empty">Your shortlist is empty. Find a job in the advertised assignments below and tap “Add to Staging.”</div>';return}
   const date=snapshot?.effective_date||isoLocal(new Date());
   list.innerHTML=choices.map((assignment,i)=>{
-    const row=bidSheetDraftRow(assignment),key=normalizeCrewBookKey(assignment),kind=bidSheetKind(assignment),extra=kind==='extra_list',relief=extra?null:jobCompareReliefCrewDefinition(key,date),hit=extra?null:crewBookLookupJobV8(key,date),canView=!extra&&(!!relief||!!hit),safe=escapeHTML(assignment),rest=bidSheetRestLabel(row,key,date),ipma=extra?trimDevIpma({assignment,assignment_type:'extra_list'}):'',type=relief?'Relief Crew':bidSheetDraftTypeLabel(row);
-    const detail='<details class="bid-stage-details"><summary>Assignment details</summary><div class="bid-stage-detail-body">'+escapeHTML(`Type: ${type} • Terminal: ${row?.terminal||'Not listed'} • Relief: ${rest}${ipma?' • IPMA: '+ipma:''}`)+'</div>'+(canView?'<button class="btn" type="button" data-bid-assignment="'+safe+'" onclick="bidSheetOpenDetails(this.dataset.bidAssignment)">View full Crew Book assignment</button>':`<span>${extra?'No Crew Book operating schedule applies to this Extra List assignment.':'More Crew Book details are not currently available.'}</span>` )+'</details>';
-    return '<div class="bid-staging-item" data-stage-index="'+i+'" role="listitem"><div class="bid-draft-priority" aria-label="Staging priority '+(i+1)+'">'+(i+1)+'</div><button class="bid-stage-grip" type="button" data-stage-grip="'+i+'" aria-label="Drag Job '+safe+' to reorder"'+(!editable?' disabled':'')+'>⠿</button><div class="bid-draft-info"><div class="bid-draft-assignment">'+safe+'</div><div class="bid-draft-meta">'+escapeHTML(type)+' • '+escapeHTML(row?.terminal||'Terminal not listed')+' • Relief '+escapeHTML(rest)+'</div>'+detail+'</div><div class="bid-stage-control-row"><button class="btn" type="button" onclick="bidStagingMove('+i+',-1)" aria-label="Move Job '+safe+' up"'+(!editable||i===0?' disabled':'')+'>↑ Up</button><button class="btn" type="button" onclick="bidStagingMove('+i+',1)" aria-label="Move Job '+safe+' down"'+(!editable||i===choices.length-1?' disabled':'')+'>↓ Down</button><button class="btn danger" type="button" onclick="bidStagingRemove('+i+')" aria-label="Remove Job '+safe+' from staging"'+(!editable?' disabled':'')+'>Remove</button></div></div>';
+    const row=bidSheetDraftRow(assignment),key=normalizeCrewBookKey(assignment),kind=bidSheetKind(assignment),extra=kind==='extra_list',relief=extra?null:jobCompareReliefCrewDefinition(key,date),hit=extra?null:crewBookLookupJobV8(key,date),canView=!extra&&(!!relief||!!hit),safe=escapeHTML(assignment),rest=bidSheetRestLabel(row,key,date),type=relief?'Relief Crew':bidSheetDraftTypeLabel(row);
+    const info=bidStagingInlineDetailsHTML(row,key,date,extra,relief,canView,safe);
+    const open=expanded.has(String(assignment).toUpperCase())?' open':'';
+    const details='<details class="bid-stage-details" data-stage-assignment="'+safe+'"'+open+'><summary>Workdays, hours &amp; Crew Book details</summary><div class="bid-stage-detail-body">'+info.body+'</div></details>';
+    return '<div class="bid-staging-item" data-stage-index="'+i+'" role="listitem"><div class="bid-draft-priority" aria-label="Staging priority '+(i+1)+'">'+(i+1)+'</div><button class="bid-stage-grip" type="button" data-stage-grip="'+i+'" aria-label="Drag Job '+safe+' to reorder"'+(!editable?' disabled':'')+'>⠿</button><div class="bid-draft-info"><div class="bid-draft-assignment">'+safe+'</div><div class="bid-draft-meta">'+escapeHTML(type)+' • '+escapeHTML(row?.terminal||'Terminal not listed')+' • Relief '+escapeHTML(rest)+'</div></div><div class="bid-stage-insights">'+info.pulse+details+'</div><div class="bid-stage-control-row"><button class="btn" type="button" onclick="bidStagingMove('+i+',-1)" aria-label="Move Job '+safe+' up"'+(!editable||i===0?' disabled':'')+'>↑ Up</button><button class="btn" type="button" onclick="bidStagingMove('+i+',1)" aria-label="Move Job '+safe+' down"'+(!editable||i===choices.length-1?' disabled':'')+'>↓ Down</button><button class="btn danger" type="button" onclick="bidStagingRemove('+i+')" aria-label="Remove Job '+safe+' from staging"'+(!editable?' disabled':'')+'>Remove</button></div></div>';
   }).join('');
 }
 function bidStagingTransfer(){
