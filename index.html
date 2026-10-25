@@ -1545,48 +1545,6 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .bid-call-ready-warning{padding:11px 12px;border:1px solid #e1c468;border-radius:12px;background:#fff8d9;color:#5d4b00;font-size:10px;line-height:1.5}.bid-call-ready-list{display:grid;gap:8px;margin:12px 0 0;padding:0;list-style:none;counter-reset:bid-ready}.bid-call-ready-item{counter-increment:bid-ready;display:grid;grid-template-columns:34px minmax(0,1fr);gap:9px;align-items:center;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}.bid-call-ready-item:before{content:counter(bid-ready);display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;font-weight:900}.bid-call-ready-assignment{font-size:13px;font-weight:900;color:var(--ink)}.bid-call-ready-meta{margin-top:2px;color:var(--muted);font-size:9px}
     html[data-theme="dark"] .bid-sheet-summary{background:#241d33;border-color:#655080;color:#d8c9ed}html[data-theme="dark"] .bid-sheet-summary strong{color:#eee5fb}html[data-theme="dark"] .bid-sheet-status-pill.open{background:#123024;color:#99dfba}html[data-theme="dark"] .bid-sheet-status-pill.upcoming{background:#14283a;color:#b9d8f7}html[data-theme="dark"] .bid-sheet-status-pill.closed{background:#252b34;color:#b7c0cc}html[data-theme="dark"] .bid-sheet-status-pill.results{background:#302343;color:#d8c9ed}html[data-theme="dark"] .bid-sheet-status-pill.effective{background:#3d3210;color:#ffe58a}html[data-theme="dark"] .bid-sheet-status-pill.past{background:#252b34;color:#b7c0cc}html[data-theme="dark"] .bid-sheet-builder{background:#15273a;border-color:#365a7d}html[data-theme="dark"] .bid-draft-empty{background:#112235;border-color:#3b5874}html[data-theme="dark"] .bid-draft-sync.synced{background:#123024;color:#99dfba}html[data-theme="dark"] .bid-draft-sync.saving{background:#3d3210;color:#ffe58a}html[data-theme="dark"] .bid-draft-sync.local{background:#25364a;color:#c4d0dc}html[data-theme="dark"] .bid-draft-sync.error{background:#431e25;color:#ffb2bd}html[data-theme="dark"] .bid-sheet-card-actions .bid-add-choice.added{background:#123024;color:#99dfba}html[data-theme="dark"] .bid-call-ready-warning{background:#30280e;border-color:#806d25;color:#ffe8a1}
     @media(max-width:620px){.bid-sheet-search-row{grid-template-columns:1fr}.bid-sheet-builder-head{align-items:center}.bid-draft-choice{grid-template-columns:34px minmax(0,1fr)}.bid-draft-controls{grid-column:1 / -1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));justify-content:stretch}.bid-draft-controls .btn{font-size:9px}.bid-sheet-builder-actions{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}}
-
-    /* Bid Sheet Staging Area — isolated GitHub test build */
-    .bid-staging{display:none;margin:12px 0;padding:14px;border:1px solid #85aecf;border-radius:14px;background:#edf6fd}
-    .bid-staging.show{display:block}.bid-staging-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
-    .bid-staging-head h3{margin:0;color:var(--brand);font-size:15px}.bid-staging-sub{font-size:10px;color:var(--muted);margin:3px 0 0;line-height:1.45}
-    .bid-sheet-card-actions .bid-stage-add{background:#e2f1fc;color:#175d8f;border-color:#a6c9e6;font-weight:850}.bid-sheet-card-actions .bid-stage-add.added{background:#e4f5ec;color:#176742}.bid-sheet-card-actions .bid-stage-add:disabled{opacity:.65}
-    .bid-staging-test{margin-top:10px;font-size:10px;line-height:1.5;color:var(--muted)}.bid-staging-list{display:grid;gap:9px;margin-top:12px}
-    .bid-staging-item{display:grid;grid-template-columns:34px 32px minmax(0,1fr);gap:9px;align-items:center;padding:11px;border:1px solid #b4cadc;border-radius:12px;background:var(--card)}
-    .bid-staging-item.drop-target{outline:2px dashed #3383bb;outline-offset:2px}
-    .bid-stage-grip{border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);width:32px;height:40px;display:flex;align-items:center;justify-content:center;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;font-size:18px}
-    .bid-stage-grip:active{cursor:grabbing}.bid-stage-grip:focus-visible{outline:3px solid #4f9dd0;outline-offset:2px}
-    /* R2: concise, full-width in-card Crew Book schedule; closed cards stay easy to scan. */
-    .bid-stage-insights{grid-column:1/-1;min-width:0}
-    .bid-stage-pulse{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin:0 0 2px}
-    .bid-stage-chip{display:inline-flex;align-items:center;padding:3px 7px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:999px;font-size:9px;line-height:1.4;font-weight:700}
-    .bid-stage-chip.ot{color:var(--brand);font-weight:850}
-    .bid-stage-details{margin-top:4px;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:3px}
-    .bid-stage-details summary{cursor:pointer;color:var(--brand);font-weight:850;min-height:33px;line-height:33px;font-size:11px;list-style-position:inside}
-    .bid-stage-details summary:focus-visible{outline:2px solid #3485bb;outline-offset:2px;border-radius:5px}
-    .bid-stage-details[open] summary{margin-bottom:4px}
-    .bid-stage-detail-body{padding:0 0 5px;line-height:1.5}
-    .bid-stage-schedules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:5px}
-    .bid-stage-schedules .trim-result-schedule{margin:0;padding:8px 10px;min-width:0}
-    .bid-stage-schedules .trim-result-schedule span{font-size:9px}
-    .bid-stage-schedules .trim-result-schedule strong{font-size:11px}
-    .bid-stage-schedules .trim-result-schedule small{font-size:9px}
-    .bid-stage-coverage{padding:6px 0;color:var(--muted);font-size:10px;line-height:1.45}
-    .bid-stage-source{margin-top:6px;display:flex;align-items:center;justify-content:flex-start}
-    .bid-stage-source button{border:0;background:transparent;color:var(--brand);font:inherit;font-weight:850;font-size:10px;padding:5px 0;min-height:32px;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
-    .bid-stage-source button:focus-visible{outline:2px solid #3485bb;outline-offset:2px}
-    .bid-stage-empty-detail{padding:8px 10px;border:1px dashed var(--line);background:var(--bg);border-radius:9px;color:var(--muted);font-size:10px}
-    .bid-stage-control-row{grid-column:1/-1;display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}
-    .bid-stage-control-row .btn{font-size:10px;min-height:35px;padding:7px 11px}.bid-stage-control-row .btn:disabled{opacity:.4}
-    .bid-stage-transfer{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:10px;margin-top:12px}
-    .bid-stage-transfer label{display:block;font-size:10px;font-weight:800;color:var(--ink);margin-bottom:5px}.bid-stage-transfer select{width:100%;min-height:40px}
-    .bid-stage-transfer button{min-height:40px}.bid-stage-transfer button:disabled{opacity:.4}
-    .bid-staging .bid-draft-priority{font-size:12px}.bid-stage-note{margin-top:10px;font-size:10px;line-height:1.55;color:var(--muted)}
-    .bid-stage-inline-status{font-size:9px;min-width:100px;text-align:right;color:var(--muted)}
-    html[data-theme="dark"] .bid-sheet-card-actions .bid-stage-add{background:#143450;color:#afd7f2;border-color:#365a7d}html[data-theme="dark"] .bid-sheet-card-actions .bid-stage-add.added{background:#123024;color:#99dfba}
-    html[data-theme="dark"] .bid-staging{background:#14283a;border-color:#365a7d}
-    html[data-theme="dark"] .bid-staging-item{border-color:#375773}
-    @media(max-width:620px){.bid-staging-item{grid-template-columns:30px 30px minmax(0,1fr);gap:7px}.bid-stage-schedules{grid-template-columns:1fr}.bid-stage-transfer{grid-template-columns:1fr}.bid-stage-transfer button{width:100%}.bid-stage-control-row{justify-content:stretch}.bid-stage-control-row .btn{flex:1;min-width:0;padding:7px 5px}.bid-stage-inline-status{text-align:left}}
     .bid-lifecycle-alert{display:none;margin:0 0 14px;padding:14px 16px;border:1px solid #a9c6e3;border-radius:16px;background:#f4f9ff;box-shadow:var(--shadow)}.bid-lifecycle-alert.show{display:block}.bid-lifecycle-alert.open{border-color:#8ec9ac;background:#f3fbf7}.bid-lifecycle-alert.pending{border-color:#bdc8d5;background:#f7f9fb}.bid-lifecycle-alert.results{border-color:#c9b8e5;background:#faf7ff}.bid-lifecycle-kicker{font-size:8.5px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;color:#35618b}.bid-lifecycle-alert.open .bid-lifecycle-kicker{color:#26724e}.bid-lifecycle-alert.pending .bid-lifecycle-kicker{color:#667487}.bid-lifecycle-alert.results .bid-lifecycle-kicker{color:#674696}.bid-lifecycle-title{margin-top:3px;font-size:16px;font-weight:950;color:var(--ink)}.bid-lifecycle-copy{margin-top:5px;font-size:9.5px;line-height:1.45;color:var(--muted)}.bid-lifecycle-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.bid-lifecycle-test-box{margin-top:12px;padding:12px;border:1px dashed #9db9d5;border-radius:12px;background:#f7fbff}.bid-lifecycle-test-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.bid-lifecycle-test-status{margin-top:9px;font-size:8.5px;line-height:1.45;color:var(--muted)}
     .award-alert{display:none;margin:0 0 14px;padding:15px 16px;border:1px solid #d6b45b;border-radius:16px;background:#fff9e8;box-shadow:var(--shadow)}.award-alert.show{display:block}.award-alert-kicker{font-size:8.5px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;color:#8a6410}.award-alert-title{margin-top:3px;font-size:17px;font-weight:950;color:#3d2d09}.award-alert-meta{margin-top:4px;font-size:10px;font-weight:800;color:#70551b}.award-alert-warning{margin-top:10px;padding:10px 11px;border:1px solid #e5cf91;border-radius:11px;background:rgba(255,255,255,.62);font-size:10px;line-height:1.45;color:#4e4328}.award-alert-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}.award-alert-confirmed{display:inline-flex;align-items:center;margin-top:9px;padding:5px 8px;border-radius:999px;background:#e4f5ec;color:#176742;font-size:8.5px;font-weight:900}.award-alert .btn:disabled{opacity:.48}.award-admin-card{display:none}.award-admin-card.show{display:block}.award-admin-diff{margin-top:10px;padding:10px 11px;border:1px solid var(--line);border-radius:11px;background:var(--card);font-size:9.5px;line-height:1.5}
     html[data-theme="dark"] .bid-lifecycle-alert{background:#14283a;border-color:#365a7d}html[data-theme="dark"] .bid-lifecycle-alert.open{background:#123024;border-color:#2c6c4d}html[data-theme="dark"] .bid-lifecycle-alert.pending{background:#252b34;border-color:#4b5664}html[data-theme="dark"] .bid-lifecycle-alert.results{background:#241d33;border-color:#655080}html[data-theme="dark"] .bid-lifecycle-title{color:#eef4fb}html[data-theme="dark"] .bid-lifecycle-copy{color:#c0cad6}html[data-theme="dark"] .bid-lifecycle-test-box{background:#102234;border-color:#365a7d}
@@ -2296,19 +2254,6 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <div class="section-title"><h2>Bid Sheet Assistant</h2><button class="btn small" type="button" onclick="showView('dashboard')">Dashboard</button></div>
       <p class="trim-public-intro">Shows assignments from the latest published Engineer bid sheet and matches them to the verified Crew Book. Always confirm the closing time and submit your official choices through the railroad's normal bidding process.</p>
       <div class="bid-sheet-summary" id="bidSheetSummary"></div>
-      <section class="bid-staging" id="bidStagingArea" aria-labelledby="bidStagingTitle">
-        <div class="bid-staging-head">
-          <div><h3 id="bidStagingTitle">Staging Area <span id="bidStagingCount">(0)</span></h3><p class="bid-staging-sub">Shortlist assignments, compare them, and arrange priorities before deciding what belongs on My Bid Sheet.</p></div>
-          <span class="bid-stage-inline-status" id="bidStagingStatus" role="status" aria-live="polite">Device-only test</span>
-        </div>
-        <div class="bid-staging-test"><strong>GitHub test preview:</strong> Staging and My Bid Sheet changes are saved on this device only. This preview does not write either list to Supabase or sync these lists between devices.</div>
-        <div class="bid-staging-list" id="bidStagingList" role="list"></div>
-        <div class="bid-stage-transfer">
-          <div><label for="bidStagingTransferMode">Transfer to My Bid Sheet</label><select id="bidStagingTransferMode"><option value="append">Append after existing choices (skip duplicates)</option><option value="replace">Replace My Bid Sheet with staged order</option></select></div>
-          <button class="btn primary" type="button" id="bidStagingTransferButton" onclick="bidStagingTransfer()" disabled>Transfer Staged Jobs</button>
-        </div>
-        <div class="bid-stage-note" id="bidStagingLifecycleNote">Nothing is submitted to the railroad. Jobs stay in Staging after transfer, and My Bid Sheet stays separate.</div>
-      </section>
       <section class="bid-sheet-builder" id="bidSheetBuilder" aria-labelledby="bidSheetBuilderTitle">
         <div class="bid-sheet-builder-head">
           <div><h3 id="bidSheetBuilderTitle">My Bid Sheet</h3><div class="bid-sheet-builder-subtitle" id="bidSheetBuilderSubtitle">Your choices in call-in priority order</div></div>
@@ -5660,7 +5605,7 @@ function resolvePassengerJobV8(n,date,day){
   case '12':if(day==='friday')x.end='21:26';break;
   case '14':if(day==='friday')x.end='03:35';else if(day==='saturday')x.end='03:30';else x.end='04:25';break;
   case '42':if(day==='friday'||day==='saturday')x.end='02:13';break;
-  case '52':if(day==='sunday')x.start='14:42';break;
+  case '52':if(day==='sunday'&&date<'2026-10-25')x.start='14:42';break; // GO 202 Paper Rev. 12 (effective Oct. 25): one 1:52 PM Sat/Sun report; obsolete day-only notes deleted.
   case '100':if(day==='saturday')x.start='05:53';else if(day==='sunday')x.start='06:22';break;
   case '104':if(day==='saturday')x.end='20:50';else if(day==='sunday')x.end='23:56';break;
   case '109':if(day==='friday')x.end='01:57';break;
@@ -5803,10 +5748,16 @@ function crewBookImageZoom(btn,delta){
   const shell=btn?.closest?.('.crewbook-image-shell'),viewer=shell?.querySelector?.('.crewbook-image-viewer'),stage=shell?.querySelector?.('.crewbook-image-stage');if(!viewer||!stage)return;
   let scale=parseFloat(viewer.dataset.scale||'1');scale=delta===0?1:Math.max(.75,Math.min(2.5,scale+delta));viewer.dataset.scale=String(scale);stage.style.width=`${scale*100}%`;if(scale===1){viewer.scrollLeft=0;viewer.scrollTop=0}
 }
+// GO 202 Paper Revision 12 hotfix. Effective 2026-10-25. Isolated to Job 52 before GO 203 cutover.
+const GO202_PAPER_REV12_52_IMAGE={file:'assets/crewbook/go202_rev12_job52_20261025.jpg',offset:0,height:969,spriteHeight:969,width:1056};
+function crewBookRev12Job52Applies(key,date){return String(key)==='52'&&String(date)>='2026-10-25'&&String(date)<'2026-11-09'&&!crewBookProductionIsFutureCutover(date)}
+function crewBookRev12Job52BannerHTML(){return '<div class="crewbook-paper-banner"><strong>GO 202 Paper Revision 12 • Effective October 25, 2026</strong>Job 52 (Speonk): Saturday and Sunday report at 1:52 PM. Obsolete Saturday-only and Sunday-only report notes deleted. The updated official Crew Book excerpt is shown below.</div>'}
+function crewBookRev12Job52ImageHTML(){return crewBookSpriteCropHTML(GO202_PAPER_REV12_52_IMAGE,'Official GO 202 Crew Book • Job 52 • Paper Revision 12')}
 function crewBookOfficialAssignmentHTML(key,date,hit){
   if(!hit)return '';
   if(date<CREW_BOOK_GO202_IMAGE_EFFECTIVE)return `<div class="crewbook-official-unavailable"><strong>Official September 8 Crew Book images are loaded and ready.</strong><br>They will become available for viewing here beginning September 8. The summary above continues to use the Crew Book revision applicable to the selected date.</div>`;
   const imageKey=crewBookOfficialImageKey(key,hit);if(!imageKey)return '';
+  if(crewBookRev12Job52Applies(imageKey,date))return `<div class="crewbook-official-wrap">${crewBookRev12Job52BannerHTML()}<details class="crewbook-official-details"><summary>View Official Crew Book Assignment</summary><div class="crewbook-official-body">${crewBookRev12Job52ImageHTML()}</div></details></div>`;
   const cloudOfficial=crewBookProductionAsset(imageKey,'official_job',date),cloudRevision=crewBookProductionAsset(imageKey,'revision_excerpt',date),futureCutover=crewBookProductionIsFutureCutover(date),meta=futureCutover?null:CREW_BOOK_GO202_IMAGE_MAP[imageKey],paper=futureCutover||cloudRevision?null:crewBookPaperRev8VisualStatus(imageKey,date);let paperHTML='';
   if(cloudRevision){paperHTML=`<details class="crewbook-paper-details"><summary>View ${escapeHTML(crewBookProductionState.version?.revision_label||'Published revision')} excerpt</summary><div class="crewbook-official-body">${crewBookProductionImageHTML(cloudRevision,crewBookProductionState.version?.revision_label||'Published Crew Book revision')}</div></details>`}
   else if(paper){const dayLabel=jobCompareDayLabel(paper.day),scope=paper.portion==='m-f'?'Monday–Friday':paper.portion==='s-s'?'Saturday–Sunday':paper.portion==='saturday'?'Saturday':'Sunday';const msg=paper.applies?'This instruction supersedes the applicable portion of the Crew Book image below.':`Paper Revision 8 changes this job on ${scope}; it does not alter the selected ${dayLabel} schedule.`;paperHTML=`<div class="crewbook-paper-banner${paper.applies?'':' not-current'}"><strong>${paper.applies?'Paper Revision 8 applies to this assignment':'Paper Revision 8 also revises this job'}</strong>${escapeHTML(paper.change)}<br><span>${escapeHTML(msg)}</span></div><details class="crewbook-paper-details"><summary>View Paper Revision 8 excerpt</summary><div class="crewbook-official-body">${crewBookSpriteCropHTML(paper,'Paper Revision 8 • Aug. 31, 2026')}</div></details>`}
@@ -5819,6 +5770,7 @@ function crewBookOfficialViewerBodyHTML(key,date,hit){
   if(!hit)return temporaryRevisionNote+'<div class="crewbook-official-unavailable">An official Crew Book assignment image is not available for this lookup.</div>';
   if(date<CREW_BOOK_GO202_IMAGE_EFFECTIVE)return temporaryRevisionNote+'<div class="crewbook-official-unavailable"><strong>Official September 8 Crew Book images are loaded and ready.</strong><br>They will become available for viewing beginning September 8. The structured result continues to use the revision applicable to the selected date.</div>';
   const imageKey=crewBookOfficialImageKey(key,hit);if(!imageKey)return temporaryRevisionNote+'<div class="crewbook-official-unavailable">An official Crew Book assignment image is not available for this assignment type.</div>';
+  if(crewBookRev12Job52Applies(imageKey,date))return temporaryRevisionNote+crewBookRev12Job52BannerHTML()+`<section class="job-compare-official-section"><h3 class="job-compare-official-section-title">Official GO 202 Paper Revision 12 • Job 52</h3>${crewBookRev12Job52ImageHTML()}</section>`;
   const cloudOfficial=crewBookProductionAsset(imageKey,'official_job',date),cloudRevision=crewBookProductionAsset(imageKey,'revision_excerpt',date),futureCutover=crewBookProductionIsFutureCutover(date),meta=futureCutover?null:CREW_BOOK_GO202_IMAGE_MAP[imageKey],paper=futureCutover||cloudRevision?null:crewBookPaperRev8VisualStatus(imageKey,date);let html='';
   if(cloudRevision)html+=`<section class="job-compare-official-section"><h3 class="job-compare-official-section-title">${escapeHTML(crewBookProductionState.version?.revision_label||'Published revision')} excerpt</h3>${crewBookProductionImageHTML(cloudRevision,crewBookProductionState.version?.revision_label||'Published Crew Book revision')}</section>`;
   else if(paper){const dayLabel=jobCompareDayLabel(paper.day),scope=paper.portion==='m-f'?'Monday–Friday':paper.portion==='s-s'?'Saturday–Sunday':paper.portion==='saturday'?'Saturday':'Sunday';const msg=paper.applies?'This instruction supersedes the applicable portion of the Crew Book image below.':`Paper Revision 8 changes this job on ${scope}; it does not alter the selected ${dayLabel} schedule.`;html+=`<div class="crewbook-paper-banner${paper.applies?'':' not-current'}"><strong>${paper.applies?'Paper Revision 8 applies to this assignment':'Paper Revision 8 also revises this job'}</strong>${escapeHTML(paper.change)}<br><span>${escapeHTML(msg)}</span></div><section class="job-compare-official-section"><h3 class="job-compare-official-section-title">Paper Revision 8 excerpt</h3>${crewBookSpriteCropHTML(paper,'Paper Revision 8 • Aug. 31, 2026')}</section>`}
@@ -5838,6 +5790,7 @@ function crewBookOfficialComparisonLaunchHTML(key,date,hit){
     const msg=paper.applies?'This instruction supersedes the applicable portion of the official Crew Book assignment.':`Paper Revision 8 changes this job on ${scope}; it does not alter the selected ${dayLabel} schedule.`;
     paperHTML=`<div class="crewbook-paper-banner${paper.applies?'':' not-current'}"><strong>${paper.applies?'Paper Revision 8 applies to this assignment':'Paper Revision 8 also revises this job'}</strong>${escapeHTML(paper.change)}<br><span>${escapeHTML(msg)}</span></div>`;
   }
+  if(crewBookRev12Job52Applies(imageKey,date))paperHTML=crewBookRev12Job52BannerHTML();
   return `<div class="job-compare-official-launch">${paperHTML}<button class="job-compare-official-button" type="button" data-crewbook-key="${escapeHTML(String(key))}" data-crewbook-date="${escapeHTML(date)}" onclick="openJobCompareOfficialViewer(this)">View Official Crew Book Assignment <span aria-hidden="true">↗</span></button></div>`;
 }
 function openJobCompareOfficialViewer(btn){
@@ -7418,8 +7371,6 @@ const ACCOUNT_SCOPED_LOCAL_KEYS=[
   CREW_BOOK_ASSIST_PREF_KEY,
   TIME_SLIP_WAGE_DEFAULT_KEY,
   'epl_bid_sheet_drafts_v1',
-  'epl_bid_sheet_drafts_staging_test_v1',
-  'epl_bid_sheet_staging_v1',
   'epl_go203_general_pick_plan_v1',
   'epl_go203_general_pick_plan_local_updated_v1',
   'epl_go203_revision_plan_impact_v1',
@@ -8345,7 +8296,6 @@ function accountReloadWorkspaceMemory(){
 function accountRefreshWorkspaceUI(){
   accountReloadWorkspaceMemory();
   try{bidSheetDraftResetMemory()}catch{}
-  try{bidStagingResetMemory()}catch{}
   try{updateRateDisplays()}catch{}
   try{updateTraineeModeUI()}catch{}
   try{updateBackupUI()}catch{}
@@ -13554,8 +13504,7 @@ async function rosterPublishPreview(){
 // ---- Bid Sheet Assistant + developer PDF publisher ----
 const BID_SHEET_PARSER_VERSION='bid_sheet_pdf_v1';
 const BID_SHEET_CACHE_KEY='epl_bid_sheet_cache_v1';
-const BID_STAGING_TEST_ISOLATED=true; // NEVER ship this build as production: Bid Sheet edits stay local.
-const BID_SHEET_DRAFT_CACHE_KEY=BID_STAGING_TEST_ISOLATED?'epl_bid_sheet_drafts_staging_test_v1':'epl_bid_sheet_drafts_v1';
+const BID_SHEET_DRAFT_CACHE_KEY='epl_bid_sheet_drafts_v1';
 let bidSheetPreviewState=null;
 let bidSheetAdminState={latest:null};
 let bidSheetState={snapshot:null,rows:[],loaded:false,cached:false,error:null};
@@ -13600,7 +13549,7 @@ function bidLifecyclePhase(){
   if(s.effective_date&&today===s.effective_date)return {key:'effective',date:today,results:true};
   return {key:'off_cycle',date:today,results:true};
 }
-function bidSheetDraftEditable(){return ['upcoming','open'].includes(bidLifecyclePhase().key)&&billingCanWrite()}
+function bidSheetDraftEditable(){return ['upcoming','open'].includes(bidLifecyclePhase().key)}
 function bidSheetDraftLockedMessage(){
   const phase=bidLifecyclePhase();if(phase.key==='upcoming')return `Pre-bid planning is available now. Official bidding opens ${bidSheetDateLabel(bidSheetState.snapshot?.open_date)}.`;return `This bulletin closed ${bidSheetDateLabel(bidSheetState.snapshot?.close_date)}. Your saved list is preserved as a read-only personal reference.`;
 }
@@ -13695,7 +13644,6 @@ function bidSheetDraftTypeLabel(row){
 function bidSheetDraftSyncPresentation(){
   const state=bidSheetDraftState;
   if(!state.loaded)return {text:'Loading draft…',cls:'local'};
-  if(BID_STAGING_TEST_ISOLATED)return {text:'Test • device only',cls:'local',title:'GitHub staging preview does not read or write your cloud bid draft.'};
   if(state.saving)return {text:'Saving…',cls:'saving'};
   if(state.error)return {text:'Device saved • sync issue',cls:'error',title:state.error};
   if(state.dirty||navigator.onLine===false)return {text:'Saved on this device',cls:'local',title:'Will sync to your account when online.'};
@@ -13710,7 +13658,6 @@ function bidSheetDraftRender(){
   if(subtitle)subtitle.textContent=choices.length?(choices.length+' choice'+(choices.length===1?'':'s')+' in priority order'):'Your choices in priority order';
   const status=stateMatches?bidSheetDraftSyncPresentation():{text:'Loading draft…',cls:'local'};if(sync){sync.textContent=status.text;sync.className='bid-draft-sync '+status.cls;sync.title=status.title||''}
   if(callReady){callReady.disabled=!choices.length;callReady.textContent=preBid?'View Prepared Bid List':open?'Call-Ready List':'View Saved Bid List'}if(clear)clear.disabled=!choices.length||!editable;if(note)note.textContent=preBid?`Pre-bid planning is open now. Build and reorder your list before official bidding opens ${bidSheetDateLabel(bidSheetState.snapshot?.open_date)}. This saved list does not submit a bid.`:open?"This is a planning list only. Engineer Pay Log does not submit bids; call the Crew Dispatcher through the railroad's normal process.":bidSheetDraftLockedMessage();
-  bidStagingRender();
   if(!choices.length){const emptyText=preBid?'No choices yet. Add advertised assignments below and arrange them in your planned priority order. Your list will stay saved when bidding opens.':open?'No choices yet. Add advertised assignments below, then arrange them in the exact order you plan to call in.':bidSheetDraftLockedMessage();list.innerHTML=`<div class="bid-draft-empty">${escapeHTML(emptyText)}</div>`;bidLifecycleRender();return}
   list.innerHTML=choices.map((assignment,index)=>{
     const row=bidSheetDraftRow(assignment),terminal=row?.terminal||'Terminal not listed',type=bidSheetDraftTypeLabel(row),date=bidSheetState.snapshot?.effective_date||isoLocal(new Date()),key=normalizeCrewBookKey(assignment),extra=bidSheetKind(assignment)==='extra_list',relief=extra?null:jobCompareReliefCrewDefinition(key,date),hit=extra?null:crewBookLookupJobV8(key,date),canView=!extra&&(!!relief||!!hit),safeAssignment=escapeHTML(String(assignment));
@@ -13725,7 +13672,7 @@ async function bidSheetDraftLoad(snapshotId,force=false){
   const token=++bidSheetDraftLoadSequence,local=bidSheetDraftCacheRecord(snapshotId),choices=bidSheetDraftNormalizeChoices(local?.choices);
   bidSheetDraftState={snapshotId,userId,choices,loaded:true,dirty:!!local?.dirty,saving:false,synced:false,error:null,updatedAt:local?.updatedAt||null,revision:0};
   bidSheetDraftRender();bidSheetApplyFilters();
-  if(BID_STAGING_TEST_ISOLATED||navigator.onLine===false)return;
+  if(navigator.onLine===false)return;
   const client=getCloudClient();if(!client)return;
   const user=await cloudCurrentUser(client);if(token!==bidSheetDraftLoadSequence)return;
   if(!user||String(user.id)!==userId||!accountGuardWorkspace(user)){bidSheetDraftState.error='Account sync is unavailable. Your draft remains saved on this device.';bidSheetDraftRender();return}
@@ -13744,13 +13691,11 @@ async function bidSheetDraftLoad(snapshotId,force=false){
   bidSheetDraftRender();bidSheetApplyFilters();
 }
 function bidSheetDraftScheduleSave(delay=250){
-  if(BID_STAGING_TEST_ISOLATED){bidSheetDraftRender();return}
   if(bidSheetDraftSaveTimer)clearTimeout(bidSheetDraftSaveTimer);
   if(navigator.onLine===false){bidSheetDraftRender();return}
   bidSheetDraftSaveTimer=setTimeout(()=>{bidSheetDraftSaveTimer=null;void bidSheetDraftSaveCloud()},Math.max(0,Number(delay)||0));
 }
 async function bidSheetDraftSaveCloud(){
-  if(BID_STAGING_TEST_ISOLATED){bidSheetDraftRender();return}
   const state=bidSheetDraftState;if(!state.loaded||!state.dirty||!state.snapshotId||!state.userId||navigator.onLine===false){bidSheetDraftRender();return}
   if(bidSheetDraftSaveInFlight){bidSheetDraftScheduleSave(300);return}
   const snapshotId=state.snapshotId,userId=state.userId,choices=[...state.choices],revision=state.revision,saveToken=++bidSheetDraftSaveSequence;
@@ -13973,14 +13918,14 @@ async function bidSheetPublishPreview(){
 function bidSheetCacheSave(payload){try{localStorage.setItem(BID_SHEET_CACHE_KEY,JSON.stringify(payload))}catch{}}
 function bidSheetCacheLoad(){try{const raw=localStorage.getItem(BID_SHEET_CACHE_KEY);return raw?JSON.parse(raw):null}catch{return null}}
 async function bidSheetLoad(force=false){
-  if(bidSheetState.loaded&&!force&&!bidSheetState.error){bidStagingLoad(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);return}
+  if(bidSheetState.loaded&&!force&&!bidSheetState.error){bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);return}
   const summary=document.getElementById('bidSheetSummary');if(summary){summary.classList.add('show');summary.textContent='Loading the latest published bid sheet...'}
   const client=getCloudClient();
-  if(!client){const cached=bidSheetCacheLoad();bidSheetState={snapshot:cached?.snapshot||null,rows:cached?.rows||[],loaded:true,cached:!!cached,error:cached?null:'Cloud connection unavailable.'};bidStagingLoad(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);return}
+  if(!client){const cached=bidSheetCacheLoad();bidSheetState={snapshot:cached?.snapshot||null,rows:cached?.rows||[],loaded:true,cached:!!cached,error:cached?null:'Cloud connection unavailable.'};bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);return}
   try{
     const {data,error}=await client.rpc('bid_sheet_current_data');if(error)throw error;const payload=data||{snapshot:null,rows:[]};bidSheetCacheSave(payload);bidSheetState={snapshot:payload.snapshot||null,rows:Array.isArray(payload.rows)?payload.rows:[],loaded:true,cached:false,error:null};
   }catch(err){console.warn('Bid Sheet Assistant load failed:',err);const cached=bidSheetCacheLoad();bidSheetState={snapshot:cached?.snapshot||null,rows:cached?.rows||[],loaded:true,cached:!!cached,error:cached?null:(err?.message||String(err))}}
-  bidStagingLoad(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',force);
+  bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',force);
 }
 function openBidSheetAssistant(){
   if(crewToolsTraineeRestricted()){alert(isRosterTraineeSafeguard()?'Bid Sheet Assistant is not available while your current roster assignment is an Engineer Trainee (ET) assignment.':'Bid Sheet Assistant is not available while Engineer Trainee Mode is active.');return}
@@ -14000,10 +13945,10 @@ function bidSheetRender(){
   const summary=document.getElementById('bidSheetSummary'),filters=document.getElementById('bidSheetFilters'),results=document.getElementById('bidSheetResults'),snapshot=bidSheetState.snapshot,rows=bidSheetState.rows;
   if(!summary||!filters||!results)return;
   summary.classList.add('show');
-  if(!snapshot){summary.innerHTML=`<strong>No published bid sheet is available.</strong><br>${bidSheetState.error?'The Bid Sheet database setup may still be pending.':'Check again after the next bulletin is posted.'}`;filters.classList.remove('show');results.classList.remove('show');bidStagingRender();bidSheetDraftRender();return}
+  if(!snapshot){summary.innerHTML=`<strong>No published bid sheet is available.</strong><br>${bidSheetState.error?'The Bid Sheet database setup may still be pending.':'Check again after the next bulletin is posted.'}`;filters.classList.remove('show');results.classList.remove('show');bidSheetDraftRender();return}
   const status=bidSheetStatus(snapshot),cached=bidSheetState.cached?' • saved offline copy':'';
   summary.innerHTML=`<strong>${escapeHTML(snapshot.bulletin_name||snapshot.bulletin_id||'Engineer Bid Sheet')}</strong><br>${escapeHTML(snapshot.bulletin_id||'')} • ${Number(snapshot.row_count||rows.length)} advertised assignment${Number(snapshot.row_count||rows.length)===1?'':'s'}<br>Posted ${escapeHTML(bidSheetDateLabel(snapshot.posted_date))} • Effective ${escapeHTML(bidSheetDateLabel(snapshot.effective_date))}<br><span class="bid-sheet-status-pill ${status.key}">${escapeHTML(status.label)}</span><div class="bid-sheet-source">Published ${escapeHTML(rosterDateDisplay(snapshot.uploaded_at))}${escapeHTML(cached)}</div>`;
-  bidStagingRender();bidSheetDraftRender();bidSheetTerminalOptions(rows);filters.classList.add('show');results.classList.add('show');bidSheetApplyFilters();
+  bidSheetDraftRender();bidSheetTerminalOptions(rows);filters.classList.add('show');results.classList.add('show');bidSheetApplyFilters();
 }
 function bidSheetTerminalOptions(rows){
   const select=document.getElementById('bidSheetTerminal');if(!select)return;const prev=select.value,values=[...new Set((rows||[]).filter(r=>bidSheetKind(r.assignment)!=='extra_list').map(r=>String(r.terminal||'').trim()).filter(Boolean))].sort();
@@ -14056,155 +14001,13 @@ function bidSheetApplyFilters(){
     const typeLabel=extraJob?'Guaranteed Extra List':relief?'Relief Crew':kind==='numbered'?'Passenger Crew Book assignment':'Yard / other assignment',clickable=!extraJob&&known;
     const editable=bidSheetDraftEditable(),draftReady=bidSheetDraftState.loaded&&bidSheetDraftState.snapshotId===String(bidSheetState.snapshot?.id||''),added=draftReady&&bidSheetDraftHas(r.assignment),safeAssignment=escapeHTML(String(r.assignment));
     const detailAction=clickable?'<button class="btn" type="button" data-bid-assignment="'+safeAssignment+'" onclick="bidSheetOpenDetails(this.dataset.bidAssignment)">'+escapeHTML(isYardCrewKey(key)||isYardReliefKey(key)?'Open Crew Book Details':'View Official Assignment')+'</button>':'';
-    const stagingReady=bidStagingState.loaded&&bidStagingState.snapshotId===String(bidSheetState.snapshot?.id||'')&&bidStagingState.userId===String(activeWorkspaceUserId||''),staged=stagingReady&&bidStagingHas(r.assignment);
-    const stagingAction='<button class="btn bid-stage-add'+(staged?' added':'')+'" type="button" data-bid-assignment="'+safeAssignment+'" onclick="bidStagingAdd(this.dataset.bidAssignment)"'+(!stagingReady||staged||!bidSheetDraftEditable()?' disabled':'')+'>'+(stagingReady?(staged?'✓ Staged':bidSheetDraftEditable()?'Add to Staging':'Bid Closed / Read-Only'):'Loading Staging…')+'</button>';
     const phase=bidLifecyclePhase(),preBid=phase.key==='upcoming';const addAction='<button class="btn bid-add-choice'+(added?' added':'')+'" type="button" data-bid-assignment="'+safeAssignment+'" onclick="bidSheetDraftAdd(this.dataset.bidAssignment)"'+(!draftReady||added||!editable?' disabled':'')+'>'+(draftReady?(added?'✓ Added':editable?(preBid?'Add to Planned Bid List':'Add to My Bid Sheet'):'Bid Closed'):'Loading Draft…')+'</button>';
-    return '<div class="trim-result trim-static"><div class="trim-result-top"><div><div class="trim-result-job">'+escapeHTML(r.assignment)+'</div><div class="trim-result-type">'+escapeHTML(typeLabel)+'</div></div><div class="trim-result-rank bid-sheet-card-terminal">'+escapeHTML(r.terminal||'')+'</div></div><div class="trim-result-meta">'+chipHTML+'</div>'+detail+'<div class="trim-result-actions bid-sheet-card-actions">'+detailAction+stagingAction+addAction+'</div></div>';
+    return '<div class="trim-result trim-static"><div class="trim-result-top"><div><div class="trim-result-job">'+escapeHTML(r.assignment)+'</div><div class="trim-result-type">'+escapeHTML(typeLabel)+'</div></div><div class="trim-result-rank bid-sheet-card-terminal">'+escapeHTML(r.terminal||'')+'</div></div><div class="trim-result-meta">'+chipHTML+'</div>'+detail+'<div class="trim-result-actions bid-sheet-card-actions">'+detailAction+addAction+'</div></div>';
   }).join('');
 }
 function bidSheetClearFilters(){
   for(const id of ['bidTypeNumbered','bidTypeExtra','bidTypeYard']){const el=document.getElementById(id);if(el)el.checked=true}for(const id of ['bidReliefChecks','bidIpmaChecks'])document.querySelectorAll(`#${id} input[type="checkbox"]`).forEach(x=>x.checked=false);const search=document.getElementById('bidSheetSearch');if(search)search.value='';const terminal=document.getElementById('bidSheetTerminal');if(terminal)terminal.value='';bidSheetApplyFilters();
 }
-
-// ---- Bid Sheet Staging Area (isolated, device-only GitHub test) ----
-const BID_STAGING_CACHE_KEY='epl_bid_sheet_staging_v1';
-let bidStagingState={snapshotId:'',userId:'',choices:[],loaded:false,updatedAt:null};
-let bidStagingDrag=null;
-function bidStagingResetMemory(){bidStagingState={snapshotId:'',userId:'',choices:[],loaded:false,updatedAt:null};bidStagingDrag=null}
-function bidStagingCacheMap(){
-  try{const x=JSON.parse(localStorage.getItem(BID_STAGING_CACHE_KEY)||'{}');return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}catch{return {}}
-}
-function bidStagingLoad(snapshotId){
-  const userId=String(activeWorkspaceUserId||'');snapshotId=String(snapshotId||'');
-  if(!userId||!snapshotId){bidStagingResetMemory();bidStagingRender();return}
-  if(bidStagingState.loaded&&bidStagingState.userId===userId&&bidStagingState.snapshotId===snapshotId){bidStagingRender();return}
-  const record=bidStagingCacheMap()[snapshotId];
-  bidStagingState={snapshotId,userId,choices:bidSheetDraftNormalizeChoices(record?.choices),loaded:true,updatedAt:record?.updatedAt||null};
-  bidStagingRender();
-}
-function bidStagingReady(){return bidStagingState.loaded&&bidStagingState.snapshotId===String(bidSheetState.snapshot?.id||'')&&bidStagingState.userId===String(activeWorkspaceUserId||'')}
-function bidStagingCanEdit(){return bidStagingReady()&&bidSheetDraftEditable()}
-function bidStagingHas(assignment){return bidStagingState.choices.some(a=>String(a).toUpperCase()===String(assignment||'').toUpperCase())}
-function bidStagingPersist(){
-  if(!bidStagingReady())return;
-  try{
-    const cache=bidStagingCacheMap();cache[bidStagingState.snapshotId]={choices:[...bidStagingState.choices],updatedAt:new Date().toISOString()};
-    localStorage.setItem(BID_STAGING_CACHE_KEY,JSON.stringify(cache));
-    bidStagingState.updatedAt=cache[bidStagingState.snapshotId].updatedAt;
-    accountSaveWorkspace(bidStagingState.userId);
-  }catch(error){console.warn('Staging save on device failed:',error);alert('Could not save staging on this device. Check browser storage before closing this page.')}
-}
-function bidStagingChanged(){bidStagingState.choices=bidSheetDraftNormalizeChoices(bidStagingState.choices);bidStagingPersist();bidStagingRender();bidSheetApplyFilters()}
-function bidStagingAdd(assignment){
-  if(!billingRequireWriteAccess())return;
-  if(!bidStagingCanEdit()){alert(bidSheetDraftLockedMessage());return}
-  const row=bidSheetDraftRow(assignment);if(!row||bidStagingHas(row.assignment))return;
-  if(bidStagingState.choices.length>=200){alert('Staging has reached the 200-job limit.');return}
-  const panel=document.getElementById('bidStagingArea'),h=Number(panel?.offsetHeight)||0,y=Math.max(0,Number(window.scrollY)||0);
-  bidStagingState.choices.push(String(row.assignment));bidStagingChanged();
-  if(h)requestAnimationFrame(()=>{const delta=(Number(panel?.offsetHeight)||0)-h;if(delta)window.scrollTo({top:Math.max(0,y+delta),behavior:'auto'})});
-}
-function bidStagingMove(from,direction){
-  if(!billingRequireWriteAccess())return;if(!bidStagingCanEdit())return;
-  from=Number(from);const to=from+Number(direction),choices=bidStagingState.choices;
-  if(!Number.isInteger(from)||!Number.isInteger(to)||from<0||to<0||from>=choices.length||to>=choices.length)return;
-  [choices[from],choices[to]]=[choices[to],choices[from]];bidStagingChanged();
-}
-function bidStagingReorder(from,to){
-  if(!bidStagingCanEdit())return;
-  const choices=bidStagingState.choices;from=Number(from);to=Number(to);
-  if(!Number.isInteger(from)||!Number.isInteger(to)||from<0||to<0||from>=choices.length||to>=choices.length||from===to)return;
-  choices.splice(to,0,choices.splice(from,1)[0]);bidStagingChanged();
-}
-function bidStagingRemove(index){
-  if(!billingRequireWriteAccess())return;if(!bidStagingCanEdit())return;
-  index=Number(index);if(!Number.isInteger(index)||index<0||index>=bidStagingState.choices.length)return;
-  const assignment=bidStagingState.choices[index];
-  if(!confirm(`Remove Job ${assignment} from Staging?\n\nYour My Bid Sheet will not be changed.`))return;
-  bidStagingState.choices.splice(index,1);bidStagingChanged();
-}
-function bidStagingInlineDetailsHTML(row,key,date,extra,relief,canView,safeAssignment){
-  // Reuse the exact Crew Book resolver, schedule grouping and published pay/meal
-  // logic already used by Bid Sheet advertised-job cards. No new payroll rules.
-  const stats=extra?null:bidSheetWeekStats(row,key,date);
-  const ipma=extra?trimDevIpma({assignment:row?.assignment,assignment_type:'extra_list'}):'';
-  const pulse=[];
-  if(stats){
-    pulse.push('<span class="bid-stage-chip ot">Weekly OT: '+escapeHTML(fmtMinutes(stats.overtime))+'</span>');
-    const ratePct=stats.meals?payScaleForDate(date):null,mealEstimate=ratePct?otPay(stats.meals*20,ratePct):null;
-    pulse.push('<span class="bid-stage-chip">Paid meals: '+escapeHTML(String(stats.meals))+(mealEstimate!=null?' · est. '+escapeHTML(money(mealEstimate)):'')+'</span>');
-  }else if(extra&&ipma)pulse.push('<span class="bid-stage-chip">IPMA: '+escapeHTML(ipma)+'</span>');
-  const coverage=relief?trimDevReliefCoverageText(relief):'';
-  const coverageHTML=coverage?'<div class="bid-stage-coverage"><strong>Covers:</strong> '+escapeHTML(coverage)+'</div>':'';
-  const schedules=stats?.groups?.length?'<div class="bid-stage-schedules">'+stats.groups.map(group=>trimDevScheduleCard(`${trimDevDayGroupLabel(group.days)}${group.covered?' • Job '+group.covered:''}`,group.schedule)).join('')+'</div>':'';
-  const fallback=extra?'Extra List assignments do not have a published daily operating schedule in the Crew Book. Your relief days and IPMA are shown above.':'A structured daily schedule is not available for this assignment in the currently selected Crew Book.';
-  const scheduleHTML=schedules||'<div class="bid-stage-empty-detail">'+escapeHTML(fallback)+'</div>';
-  const official=canView?'<div class="bid-stage-source"><button type="button" data-bid-assignment="'+safeAssignment+'" onclick="bidSheetOpenDetails(this.dataset.bidAssignment)">View original Crew Book assignment ›</button></div>':'';
-  return {pulse:pulse.length?'<div class="bid-stage-pulse">'+pulse.join('')+'</div>':'',body:coverageHTML+scheduleHTML+official};
-}
-function bidStagingRender(){
-  const panel=document.getElementById('bidStagingArea'),list=document.getElementById('bidStagingList');if(!panel||!list)return;
-  const snapshot=bidSheetState.snapshot,ready=bidStagingReady(),choices=ready?bidStagingState.choices:[],editable=bidStagingCanEdit();
-  // Keep each expanded card expanded when sorting, transferring or refreshing.
-  const expanded=new Set([...list.querySelectorAll('.bid-stage-details[open][data-stage-assignment]')].map(el=>String(el.dataset.stageAssignment||'').toUpperCase()));
-  panel.classList.toggle('show',!!snapshot);if(!snapshot)return;
-  const count=document.getElementById('bidStagingCount'),status=document.getElementById('bidStagingStatus'),transfer=document.getElementById('bidStagingTransferButton'),note=document.getElementById('bidStagingLifecycleNote');
-  if(count)count.textContent=`(${choices.length})`;
-  if(status)status.textContent=ready?'Device-only test':'Loading staging…';
-  if(transfer)transfer.disabled=!ready||!editable||!choices.length||!bidSheetDraftState.loaded||bidSheetDraftState.snapshotId!==String(snapshot.id);
-  if(note)note.textContent=!editable?(billingIsReadOnly()?'Read-only account: staging remains visible, but editing and transfer are disabled.':bidSheetDraftLockedMessage()):'Drag the dotted handle to reorder on phones or computers; ↑ / ↓ also work. Transferring keeps Staging intact and never submits an official bid.';
-  if(!ready){list.innerHTML='<div class="bid-draft-empty">Loading staging for this account and bulletin…</div>';return}
-  if(!choices.length){list.innerHTML='<div class="bid-draft-empty">Your shortlist is empty. Find a job in the advertised assignments below and tap “Add to Staging.”</div>';return}
-  const date=snapshot?.effective_date||isoLocal(new Date());
-  list.innerHTML=choices.map((assignment,i)=>{
-    const row=bidSheetDraftRow(assignment),key=normalizeCrewBookKey(assignment),kind=bidSheetKind(assignment),extra=kind==='extra_list',relief=extra?null:jobCompareReliefCrewDefinition(key,date),hit=extra?null:crewBookLookupJobV8(key,date),canView=!extra&&(!!relief||!!hit),safe=escapeHTML(assignment),rest=bidSheetRestLabel(row,key,date),type=relief?'Relief Crew':bidSheetDraftTypeLabel(row);
-    const info=bidStagingInlineDetailsHTML(row,key,date,extra,relief,canView,safe);
-    const open=expanded.has(String(assignment).toUpperCase())?' open':'';
-    const details='<details class="bid-stage-details" data-stage-assignment="'+safe+'"'+open+'><summary>Workdays, hours &amp; Crew Book details</summary><div class="bid-stage-detail-body">'+info.body+'</div></details>';
-    return '<div class="bid-staging-item" data-stage-index="'+i+'" role="listitem"><div class="bid-draft-priority" aria-label="Staging priority '+(i+1)+'">'+(i+1)+'</div><button class="bid-stage-grip" type="button" data-stage-grip="'+i+'" aria-label="Drag Job '+safe+' to reorder"'+(!editable?' disabled':'')+'>⠿</button><div class="bid-draft-info"><div class="bid-draft-assignment">'+safe+'</div><div class="bid-draft-meta">'+escapeHTML(type)+' • '+escapeHTML(row?.terminal||'Terminal not listed')+' • Relief '+escapeHTML(rest)+'</div></div><div class="bid-stage-insights">'+info.pulse+details+'</div><div class="bid-stage-control-row"><button class="btn" type="button" onclick="bidStagingMove('+i+',-1)" aria-label="Move Job '+safe+' up"'+(!editable||i===0?' disabled':'')+'>↑ Up</button><button class="btn" type="button" onclick="bidStagingMove('+i+',1)" aria-label="Move Job '+safe+' down"'+(!editable||i===choices.length-1?' disabled':'')+'>↓ Down</button><button class="btn danger" type="button" onclick="bidStagingRemove('+i+')" aria-label="Remove Job '+safe+' from staging"'+(!editable?' disabled':'')+'>Remove</button></div></div>';
-  }).join('');
-}
-function bidStagingTransfer(){
-  if(!billingRequireWriteAccess())return;
-  if(!bidStagingCanEdit()||!bidSheetDraftState.loaded||bidSheetDraftState.snapshotId!==bidStagingState.snapshotId||bidSheetDraftState.userId!==bidStagingState.userId){alert('Both lists must be ready for the same account and bulletin before transferring.');return}
-  const staged=[...bidStagingState.choices],original=[...bidSheetDraftState.choices];if(!staged.length)return;
-  const mode=document.getElementById('bidStagingTransferMode')?.value==='replace'?'replace':'append';
-  const keys=new Set(original.map(x=>x.toUpperCase())),fresh=staged.filter(x=>!keys.has(x.toUpperCase()));
-  const next=mode==='replace'?staged:[...original,...fresh];
-  if(next.length>200){alert('The transfer would exceed the 200-choice My Bid Sheet limit. Remove some existing choices first.');return}
-  if(mode==='append'&&!fresh.length){alert('Every staged job is already on My Bid Sheet. No changes made.');return}
-  const prompt=mode==='replace'?`REPLACE My Bid Sheet with these ${staged.length} staged choices in the shown order?\n\nThis will remove ${original.length} existing choice(s) from My Bid Sheet. Staging stays unchanged.\n\nThis cannot be undone automatically.`:`Append ${fresh.length} new staged job(s) after your ${original.length} existing My Bid Sheet choice(s)?\n\n${staged.length-fresh.length} duplicate(s) will be skipped. Staging stays unchanged.`;
-  if(!confirm(prompt))return;
-  bidSheetDraftState.choices=next;bidSheetDraftChanged();bidStagingRender();
-  alert(mode==='replace'?`My Bid Sheet now contains the ${next.length} staged choices in order (device-only test).`:`Added ${fresh.length} job(s) to My Bid Sheet. ${staged.length-fresh.length} duplicate(s) skipped (device-only test).`);
-}
-function bidStagingPointerDown(event){
-  const grip=event.target.closest?.('[data-stage-grip]');if(!grip||event.button!==0||!bidStagingCanEdit())return;
-  const from=Number(grip.dataset.stageGrip);if(!Number.isInteger(from))return;
-  bidStagingDrag={pointerId:event.pointerId,grip,from,to:from};grip.setPointerCapture?.(event.pointerId);event.preventDefault();
-}
-function bidStagingPointerMove(event){
-  if(!bidStagingDrag||event.pointerId!==bidStagingDrag.pointerId)return;
-  const item=document.elementFromPoint(event.clientX,event.clientY)?.closest?.('[data-stage-index]');
-  if(item&&document.getElementById('bidStagingList')?.contains(item))bidStagingDrag.to=Number(item.dataset.stageIndex);
-  document.querySelectorAll('#bidStagingList .drop-target').forEach(x=>x.classList.remove('drop-target'));
-  document.querySelector(`#bidStagingList [data-stage-index="${bidStagingDrag.to}"]`)?.classList.add('drop-target');
-  event.preventDefault();
-}
-function bidStagingPointerEnd(event,cancel=false){
-  if(!bidStagingDrag||event.pointerId!==bidStagingDrag.pointerId)return;
-  const drag=bidStagingDrag;bidStagingDrag=null;
-  document.querySelectorAll('#bidStagingList .drop-target').forEach(x=>x.classList.remove('drop-target'));
-  if(!cancel&&drag.from!==drag.to)bidStagingReorder(drag.from,drag.to);
-}
-function bidStagingBindDrag(){
-  const list=document.getElementById('bidStagingList');if(!list||list.dataset.pointerBound)return;
-  list.dataset.pointerBound='1';list.addEventListener('pointerdown',bidStagingPointerDown);list.addEventListener('pointermove',bidStagingPointerMove);
-  list.addEventListener('pointerup',event=>bidStagingPointerEnd(event));list.addEventListener('pointercancel',event=>bidStagingPointerEnd(event,true));
-}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bidStagingBindDrag,{once:true});else bidStagingBindDrag();
-// ---- End Bid Sheet Staging Area ----
-
 // ---- End Bid Sheet Assistant ----
 
 // ---- Piece 4: private Bulletin Awards importer + signed-in award match ----
@@ -14830,7 +14633,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 window.addEventListener('pageshow',()=>trimAssistantRefreshLiveIfVisible());
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.2-go202-rev10-images-r1-20261012').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.2-go202-rev12-job52-hotfix-20261025').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
