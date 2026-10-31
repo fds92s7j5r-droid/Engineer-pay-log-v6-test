@@ -4083,6 +4083,34 @@ function timeSlipDurationBreakdown(claimed,denied){
   if(c===null||d===null||c<=0||d<=0||d>=c)return null;
   return {claimedMinutes:c,deniedMinutes:d,approvedMinutes:c-d};
 }
+// R4.5: Use the verified date-specific Crew Book schedule as the comparison
+// baseline. Do not mistake all time after 8 hours, or all night work, for a
+// claim ABOVE the published Crew Book earnings. A missing/off assignment must
+// remain manual, never a guessed schedule.
+function timeSlipVerifiedCrewBookComparison(s){
+  if(!s?.date||!s?.assignment||!s?.start||!s?.end||s.traineeMode||s.specialShift)return null;
+  try{
+    const key=normalizeCrewBookKey(s.assignment);
+    if(!key)return null;
+    const resolved=jobCompareResolveForDay(key,s.date);
+    const schedule=resolved?.state==='active'?resolved.schedule:null;
+    if(!schedule?.start||!schedule?.end||!Number.isFinite(parseClock(schedule.start))||!Number.isFinite(parseClock(schedule.end)))return null;
+    const actualStart=parseClock(s.start),actualEnd=parseClock(s.end);
+    if(!Number.isFinite(actualStart)||!Number.isFinite(actualEnd))return null;
+    return {start:schedule.start,end:schedule.end,key,date:s.date};
+  }catch(_){return null}
+}
+function timeSlipExtraNightMinutes(s,book){
+  if(!s||!book)return null;
+  const actualStart=parseClock(s.start),actualEnd=parseClock(s.end);
+  const bookStart=parseClock(book.start),bookEnd=parseClock(book.end);
+  if([actualStart,actualEnd,bookStart,bookEnd].some(x=>!Number.isFinite(x)))return null;
+  // EPL already values night time as the overlap of 8 PM to 6 AM.
+  // Compare actual night time with the night time already scheduled and paid.
+  const actualNight=overlapNight(actualStart,actualEnd);
+  const scheduledNight=overlapNight(bookStart,bookEnd);
+  return {actualNight,scheduledNight,extraMinutes:Math.max(0,actualNight-scheduledNight)};
+}
 function timeSlipDenialDollarBreakdown(s,c,key,claimed,denied){
   const t=timeSlipDurationBreakdown(claimed,denied);
   if(!t||!c||c.rateMissing||!c.ratePct)return null;
@@ -4096,8 +4124,9 @@ function timeSlipDenialDollarBreakdown(s,c,key,claimed,denied){
   // prorated minute-by-minute; don't represent a partial denial as a proved dollar value.
   else if(key==='09'&&c.twoClassesDecision==='overtime')rateType='overtime';
   else if(key==='11-misc'&&s.miscPenalty)rateType=c.miscPenaltyRate==='overtime'?'overtime':'straight';
+  else if(key==='13')rateType='night';
   if(!rateType)return null;
-  const pay=rateType==='overtime'?otPay:straightPay;
+  const pay=rateType==='overtime'?otPay:rateType==='night'?nightPay:straightPay;
   // If EPL has a matching calculated claim, reuse its baseline; otherwise calculate
   // from the engineer's explicitly entered time at the shift's applicable pay rate.
   const autoMatches=est&&est.minutes===t.claimedMinutes&&est.rateKind===rateType;
@@ -4148,8 +4177,17 @@ function estimatedTimeSlipClaimFor(s,c,key){
       if(s.otCompletion&&s.unscheduledOT)return null;
       if(s.otCompletion){dollars=Number(c.otCompletionPay)||0;detail='Overtime upon completion';minutes=c.otCompletionMinutes;rateKind='overtime';}
       else if(s.unscheduledOT&&c.twoClassesDecision!=='classes'){
-        const mins=calculateUnscheduledOTMinutes(s.start,s.crewBookReleaseTime,s.end);
-        if(mins!=null){dollars=otPay(mins,c.ratePct);detail='Overtime beyond Crew Book release';minutes=mins;rateKind='overtime';}
+        const book=s.crewBookReleaseTime?null:timeSlipVerifiedCrewBookComparison(s);
+        const release=s.crewBookReleaseTime||book?.end||'';
+        const mins=release?calculateUnscheduledOTMinutes(s.start,release,s.end):null;
+        if(mins>0){dollars=otPay(mins,c.ratePct);detail=`${fmtMinutes(mins)} beyond later of ${book?'verified':'entered'} Crew Book release or 8 hours on duty`;minutes=mins;rateKind='overtime';}
+      }else if(!s.unscheduledOT){
+        // Selecting Code 05 is itself a request to evaluate OT above the Book.
+        // Use the date-aware published job instead of requiring the user to
+        // check Unscheduled Overtime or reenter a known Crew Book release time.
+        const book=timeSlipVerifiedCrewBookComparison(s);
+        const mins=book?calculateUnscheduledOTMinutes(s.start,book.end,s.end):null;
+        if(mins>0){dollars=otPay(mins,c.ratePct);detail=`${fmtMinutes(mins)} beyond later of verified Crew Book release or 8 hours on duty`;minutes=mins;rateKind='overtime';}
       }
       break;
     case '08':
@@ -4167,7 +4205,18 @@ function estimatedTimeSlipClaimFor(s,c,key){
     case '11-misc':
       if(s.miscPenalty){dollars=Number(c.miscPenaltyPay)||0;detail='Calculated miscellaneous penalty';minutes=c.miscPenaltyMinutes;rateKind=c.miscPenaltyRate==='overtime'?'overtime':'straight';}
       break;
-    // 04 / 13: total job pay/night differential is NOT the amount above Crew Book.
+    case '13': {
+      const book=timeSlipVerifiedCrewBookComparison(s);
+      const comparison=timeSlipExtraNightMinutes(s,book);
+      if(comparison?.extraMinutes>0){
+        minutes=comparison.extraMinutes;
+        dollars=nightPay(minutes,c.ratePct);
+        rateKind='night';
+        detail=`${fmtMinutes(comparison.actualNight)} actual night minus ${fmtMinutes(comparison.scheduledNight)} Crew Book night`;
+      }
+      break;
+    }
+    // 04: total job pay is NOT the amount above Crew Book.
   }
   if(dollars===null||!Number.isFinite(dollars)||dollars<=0)return null;
   return {amount:Math.round(dollars*100)/100,detail,minutes,rateKind};
@@ -4183,7 +4232,7 @@ function refreshTimeSlipClaimEstimates(){
     const info=row.querySelector('[data-timeslip-calculated-estimate]');
     if(!info||!key)continue;
     const est=estimatedTimeSlipClaimFor(s,c,key);
-    info.textContent=est?`EPL calculated claim: ${money(est.amount)} · ${est.detail}`:'No reliable automatic claim amount for this code on the current shift.';
+    info.textContent=est?`EPL calculated claim: ${money(est.amount)} · ${est.detail}`:(key==='13'?'Automatic additional night differential requires an active, date-matched Crew Book assignment and qualifying extra night minutes. You can still enter the claimed time manually.':key==='05'?'No additional overtime could be verified from this shift and its Crew Book schedule. You can still enter the claimed time manually.':'No reliable automatic claim amount for this code on the current shift.');
     const claimed=row.querySelector('[data-claim-claimed]');
     const paid=row.querySelector('[data-claim-paid]');
     const status=row.querySelector('[data-claim-status]')?.value||'';
@@ -4225,7 +4274,7 @@ function refreshTimeSlipClaimDenialPreviews(){
     const preview=entry.querySelector('[data-claim-duration-preview]');
     if(!preview||!claimed||!denied)continue;
     const est=s&&c?estimatedTimeSlipClaimFor(s,c,key):null;
-    if(est&&est.minutes>0&&claimed.value.trim()===''){
+    if(est&&est.minutes>0&&(claimed.value.trim()===''||(claimed.dataset.eplAutoValue!==undefined&&claimed.dataset.eplAutoValue===claimed.value))){
       claimed.value=fmtMinutes(est.minutes);claimed.dataset.eplAutoValue=claimed.value;
     }
     const breakdown=timeSlipDurationBreakdown(claimed.value,denied.value);
