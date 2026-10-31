@@ -163,7 +163,7 @@
     .warning-panel{display:none;margin-top:12px;padding:12px 14px;border-radius:14px;border:1px solid #e2c05c;background:#fff8d8;color:#654f00;font-size:12px;line-height:1.5}.warning-panel.show{display:block}.warning-panel strong{display:block;margin-bottom:4px}
     .backup-reminder{display:none;margin-bottom:14px;padding:12px 14px;border-radius:14px;background:#fff8d8;border:1px solid #e4c65f;color:#685300;font-size:12px;line-height:1.45}.backup-reminder.show{display:block}.mode-banner{padding:10px 12px;border-radius:12px;background:#eaf2fb;border:1px solid #9bbce0;color:#12345b;font-size:12px;font-weight:800;margin-top:10px}.readonly-info{padding:11px 12px;border-radius:12px;background:#f3f6f9;border:1px solid #d8e0e8;color:#263342}.readonly-info strong{font-size:15px;color:#12345b}.trainee-only{display:none}.trainee-mode .trainee-only{display:block}.hidden-by-mode{display:none!important}
     .saved-job{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #e7edf3}.saved-job:last-child{border-bottom:0}.saved-job-title{font-weight:850}.saved-job-sub{font-size:12px;color:var(--muted);margin-top:3px}
-    .timeslip-group{margin-top:18px}.timeslip-group h3{margin:0 0 8px;font-size:15px}.timeslip-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}.timeslip-summary .statbox{padding:12px;border-radius:14px;background:#fff9d8;border:1px solid #e3ca66}.timeslip-summary .num{font-size:24px;font-weight:900}
+    .timeslip-group{margin-top:18px}.timeslip-group h3{margin:0 0 8px;font-size:15px}.timeslip-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}.timeslip-summary .statbox{padding:12px;border-radius:14px;background:#fff9d8;border:1px solid #e3ca66}.timeslip-summary .num{font-size:24px;font-weight:900}
     .shift.timeslip .shift-sub{white-space:normal;line-height:1.42}
     .time-slip-deadline-line{display:block;margin-top:4px;font-weight:800;color:#735d00}
     .time-slip-deadline-line.warning{color:#8a5a00}.time-slip-deadline-line.urgent,.time-slip-deadline-line.overdue{color:#a22922}
@@ -176,6 +176,16 @@
     .time-slip-claim-row{display:flex;align-items:center;gap:8px}
     .time-slip-claim-row select{flex:1;min-width:0}
     .time-slip-claim-row .btn{flex:0 0 auto}
+    .time-slip-claim-entry{padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--card);display:grid;gap:9px}
+    .time-slip-claim-entry .claim-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+    .time-slip-claim-entry .claim-status{display:grid;grid-template-columns:75px minmax(0,1fr);gap:8px;align-items:center;font-size:12px}
+    .time-slip-claim-entry select{min-width:0;width:100%}
+    .time-slip-claim-entry details{border-top:1px solid var(--line);padding-top:8px;color:var(--muted);font-size:12px}
+    .time-slip-claim-entry summary{cursor:pointer;font-weight:750;color:var(--ink)}
+    .time-slip-claim-entry .claim-amounts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+    .time-slip-claim-entry label{display:grid;gap:4px;font-size:11px;font-weight:750}
+    .time-slip-claim-entry input{min-width:0;width:100%}
+    @media(max-width:780px){.timeslip-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
     .time-slip-claim-add{margin-top:8px}
     .time-slip-claim-code-note{font-size:10.5px;color:var(--muted);line-height:1.4;margin-top:8px}
     .time-slip-claim-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
@@ -3540,13 +3550,15 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
               <div class="field full"><label>Date Submitted</label><input id="timeSlipSubmitted" type="date" onchange="handleTimeSlipSubmittedChange()"></div>
               <div class="field full"><label>Date Confirmed Received</label><input id="timeSlipConfirmedReceived" type="date" onchange="handleTimeSlipConfirmedReceivedChange()"><div class="time-slip-status-hint">Optional. Once Wage Examiners confirms the slip is on file, recording the date silences follow-up reminders while the slip remains Pending.</div></div>
               <div class="field full"><label>Location Submitted</label><input id="timeSlipLocation" placeholder="e.g. Jamaica"></div>
-              <div class="field full"><label>Status</label><select id="timeSlipStatus" onchange="handleTimeSlipStatusChange()"><option value="Pending">Pending</option><option value="Paid">Paid</option><option value="Denied">Denied</option></select><div id="timeSlipStatusHint" class="time-slip-status-hint"></div></div>
+              <div class="field full"><label>Overall status (fallback)</label><select id="timeSlipStatus" onchange="handleTimeSlipStatusChange()"><option value="Pending">Pending</option><option value="Paid">Paid</option><option value="Denied">Denied</option></select><div id="timeSlipStatusHint" class="time-slip-status-hint"></div></div>
               <div class="field full"><label>Date Paid / Denied</label><input id="timeSlipResolved" type="date"></div>
             </div>
             <div class="time-slip-claim-code-panel">
               <div class="subhead">Claim Type / Code</div>
-              <p class="time-slip-claim-code-lead">Add the exception claim code(s) that apply to this Time Slip. These labels are for personal tracking and do not change pay calculations.</p>
+              <p class="time-slip-claim-code-lead">Record each claim result. Results override the overall status above; amounts are optional and do not change pay calculations.</p>
               <div id="timeSlipClaimCodeRows" class="time-slip-claim-rows"></div>
+              <div id="timeSlipClaimOutcomePreview" class="time-slip-status-hint" aria-live="polite"></div>
+              <div class="time-slip-status-hint"><strong>GitHub preview:</strong> Shift saves stay on this testing device; shift cloud sync is disabled.</div>
               <button id="timeSlipAddClaimCode" class="btn small time-slip-claim-add" type="button" onclick="addTimeSlipClaimCodeRow()">+ Add claim code</button>
             </div>
             <div class="time-slip-wage-panel">
@@ -4041,6 +4053,31 @@ const TIME_SLIP_CLAIM_TYPES=[
   {key:'13',code:'13',card:'13 · Night Diff',label:'13 · Night differential above Crew Book earnings',title:'Night differential above the crew assignment book earnings'}
 ];
 const TIME_SLIP_CLAIM_TYPE_KEYS=new Set(TIME_SLIP_CLAIM_TYPES.map(x=>x.key));
+// GitHub R4: previews do not upload, sync, delete, or tombstone cloud shift rows.
+const EPL_CLAIM_R4_DEVICE_ONLY_TEST=true;
+const TIME_SLIP_OUTCOMES=new Set(['Pending','Paid','Denied','Partially Paid']);
+function normalizeClaimPayments(raw,types){
+  const result={};if(!raw||typeof raw!=='object'||Array.isArray(raw))return result;
+  for(const code of Array.isArray(types)?types:[]){
+    if(!TIME_SLIP_CLAIM_TYPE_KEYS.has(code))continue;
+    const row=raw[code];if(!row||typeof row!=='object'||Array.isArray(row))continue;
+    const status=TIME_SLIP_OUTCOMES.has(row.status)?row.status:'';
+    const money=v=>v==null||String(v).trim()===''?'':(Number.isFinite(Number(v))&&Number(v)>=0?String(Math.round(Number(v)*100)/100):'');
+    const claimed=money(row.claimed),paid=money(row.paid),date=/^\d{4}-\d{2}-\d{2}$/.test(String(row.date||''))?String(row.date):'';
+    if(status||claimed!==''||paid!==''||date)result[code]={status,claimed,paid,date};
+  }
+  return result;
+}
+function timeSlipClaimSummary(s){
+  const types=normalizeTimeSlipClaimTypes(s?.timeSlipClaimTypes),data=normalizeClaimPayments(s?.timeSlipClaimPayments,types);
+  const statuses=types.map(t=>data[t]?.status||'');if(!statuses.some(Boolean))return null; // old slips remain unchanged
+  const paid=statuses.filter(t=>t==='Paid').length,denied=statuses.filter(t=>t==='Denied').length;
+  const partial=statuses.filter(t=>t==='Partially Paid').length,unresolved=statuses.filter(t=>!t||t==='Pending').length;
+  const status=paid===types.length?'Paid':denied===types.length?'Denied':(!paid&&!denied&&!partial?'Pending':'Partially Resolved');
+  return {paid,denied,partial,unresolved,status,open:partial>0||unresolved>0};
+}
+function timeSlipNeedsFollowUp(s){if(!s?.timeSlipSubmitted)return false;const c=timeSlipClaimSummary(s);return c?c.open:timeSlipDisplayStatus(s)==='Pending'}
+
 
 function upgradeShift(s){
   const extras=s.extras||'', claims=s.claims||'';
@@ -4078,6 +4115,7 @@ function upgradeShift(s){
   if(s.timeSlipResolved===undefined)s.timeSlipResolved='';
   if(!Array.isArray(s.timeSlipClaimTypes))s.timeSlipClaimTypes=[];
   s.timeSlipClaimTypes=s.timeSlipClaimTypes.map(x=>String(x||'')).filter(x=>TIME_SLIP_CLAIM_TYPE_KEYS.has(x));
+  s.timeSlipClaimPayments=normalizeClaimPayments(s.timeSlipClaimPayments,s.timeSlipClaimTypes);
   if(!s.timeSlipPhotos||typeof s.timeSlipPhotos!=='object'||Array.isArray(s.timeSlipPhotos))s.timeSlipPhotos={};
   if(s.timeSlipWageReminderDays===undefined)s.timeSlipWageReminderDays=null;
   if(!Array.isArray(s.timeSlipFollowUps))s.timeSlipFollowUps=[];
@@ -6643,6 +6681,7 @@ function formData(){
     timeSlipStatus:$('timeSlipFlag').checked?($('timeSlipStatus').value||'Pending'):'Pending',
     timeSlipResolved:$('timeSlipFlag').checked?$('timeSlipResolved').value:'',
     timeSlipClaimTypes:$('timeSlipFlag').checked?collectTimeSlipClaimTypes():[],
+    timeSlipClaimPayments:$('timeSlipFlag').checked?collectTimeSlipClaimPayments():{},
     timeSlipWageReminderDays:$('timeSlipFlag').checked?parseTimeSlipWageReminderOverride($('timeSlipWageReminderDays').value):null,
     timeSlipFollowUps:(()=>{const old=shifts.find(x=>x.id===$('editId').value);return old&&Array.isArray(old.timeSlipFollowUps)?old.timeSlipFollowUps:[]})(),
     timeSlipPhotos:(()=>{const old=shifts.find(x=>x.id===$('editId').value);return old&&old.timeSlipPhotos&&typeof old.timeSlipPhotos==='object'?old.timeSlipPhotos:{}})(),
@@ -6959,61 +6998,82 @@ function normalizeTimeSlipClaimTypes(types){
   }
   return out;
 }
-function currentTimeSlipClaimRowValues(){
-  return [...document.querySelectorAll('[data-timeslip-claim-select]')].map(el=>String(el.value||''));
+function currentTimeSlipClaimRows(){
+  const host=document.getElementById('timeSlipClaimCodeRows');if(!host)return [];
+  return [...host.querySelectorAll('[data-claim-entry]')].map(entry=>{
+    const select=entry.querySelector('[data-timeslip-claim-select]'),key=String(select?.value||'');
+    const changed=key!==String(select?.dataset?.originalCode||'');
+    const get=attr=>changed?'':String(entry.querySelector(`[${attr}]`)?.value||'');
+    return {key,status:get('data-claim-status'),claimed:get('data-claim-claimed'),paid:get('data-claim-paid'),date:get('data-claim-date')};
+  });
 }
+function currentTimeSlipClaimRowValues(){return currentTimeSlipClaimRows().map(x=>x.key)}
 function claimTypeOptionHTML(meta,value,selectedElsewhere){
-  const duplicate=selectedElsewhere.has(meta.key);
-  return `<option value="${escapeHTML(meta.key)}"${meta.key===value?' selected':''}${duplicate&&meta.key!==value?' disabled':''}>${escapeHTML(meta.label)}</option>`;
+  return `<option value="${escapeHTML(meta.key)}"${meta.key===value?' selected':''}${selectedElsewhere.has(meta.key)&&meta.key!==value?' disabled':''}>${escapeHTML(meta.label)}</option>`;
 }
 function renderTimeSlipClaimRows(values){
-  const wrap=document.getElementById('timeSlipClaimCodeRows');if(!wrap)return;
-  let rows=Array.isArray(values)?values.map(x=>String(x||'')):[];
-  if(!rows.length)rows=[''];
-  wrap.innerHTML=rows.map((value,index)=>{
-    const selectedElsewhere=new Set(rows.filter((v,i)=>i!==index&&v));
-    const options=TIME_SLIP_CLAIM_TYPES.map(meta=>claimTypeOptionHTML(meta,value,selectedElsewhere)).join('');
-    const remove=rows.length>1?`<button class="btn small" type="button" onclick="removeTimeSlipClaimCodeRow(${index})">Remove</button>`:'';
-    return `<div class="time-slip-claim-row"><select data-timeslip-claim-select onchange="handleTimeSlipClaimSelectChange()"><option value="">Select claim type / code…</option>${options}</select>${remove}</div>`;
+  const host=document.getElementById('timeSlipClaimCodeRows');if(!host)return;
+  const rows=Array.isArray(values)&&values.length?values.map(v=>typeof v==='string'?{key:v}:{...v}):[{key:''}];
+  host.innerHTML=rows.map((row,i)=>{
+    const key=String(row.key||''),others=new Set(rows.filter((r,j)=>j!==i&&r.key).map(r=>r.key));
+    const options=TIME_SLIP_CLAIM_TYPES.map(meta=>claimTypeOptionHTML(meta,key,others)).join('');
+    const remove=rows.length>1?`<button type="button" class="btn small" onclick="removeTimeSlipClaimCodeRow(${i})">Remove</button>`:'';
+    const status=key?`<div class="claim-status"><strong>Result</strong><select data-claim-status onchange="renderTimeSlipClaimOutcomePreview()">${[['','Not recorded'],['Pending','Pending'],['Paid','Paid'],['Denied','Denied'],['Partially Paid','Partially paid']].map(([val,label])=>`<option value="${val}"${val===(row.status||'')?' selected':''}>${label}</option>`).join('')}</select></div><details><summary>Amounts &amp; date (optional)</summary><div class="claim-amounts"><label>Claimed ($)<input data-claim-claimed type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${escapeHTML(row.claimed??'')}"></label><label>Paid ($)<input data-claim-paid type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${escapeHTML(row.paid??'')}"></label></div><label style="margin-top:8px">Date resolved<input data-claim-date type="date" value="${escapeHTML(row.date??'')}"></label></details>`:'';
+    return `<div class="time-slip-claim-entry" data-claim-entry><div class="claim-head"><select data-timeslip-claim-select data-original-code="${escapeHTML(key)}" onchange="handleTimeSlipClaimSelectChange()"><option value="">Select claim type / code…</option>${options}</select>${remove}</div>${status}</div>`;
   }).join('');
-  updateTimeSlipClaimCodeControls();
+  updateTimeSlipClaimCodeControls();renderTimeSlipClaimOutcomePreview();
 }
-function collectTimeSlipClaimTypes(){
-  return normalizeTimeSlipClaimTypes(currentTimeSlipClaimRowValues().filter(Boolean));
+function collectTimeSlipClaimTypes(){return normalizeTimeSlipClaimTypes(currentTimeSlipClaimRowValues().filter(Boolean))}
+function collectTimeSlipClaimPayments(){
+  const rows=currentTimeSlipClaimRows(),types=collectTimeSlipClaimTypes();
+  return normalizeClaimPayments(Object.fromEntries(rows.filter(x=>types.includes(x.key)).map(x=>[x.key,x])),types);
 }
-function setTimeSlipClaimTypes(types){
-  renderTimeSlipClaimRows(normalizeTimeSlipClaimTypes(types));
+function setTimeSlipClaimTypes(types,payments={}){
+  const selected=normalizeTimeSlipClaimTypes(types),data=normalizeClaimPayments(payments,selected);
+  renderTimeSlipClaimRows(selected.map(key=>({key,...(data[key]||{})})));
 }
 function handleTimeSlipClaimSelectChange(){
-  const values=currentTimeSlipClaimRowValues();
-  const normalized=normalizeTimeSlipClaimTypes(values.filter(Boolean));
-  const hasBlank=values.some(v=>!v);
-  renderTimeSlipClaimRows(hasBlank&&normalized.length<values.length?[...normalized,'']:normalized);
+  const rows=currentTimeSlipClaimRows(),valid=normalizeTimeSlipClaimTypes(rows.map(x=>x.key));
+  const selected=rows.filter(x=>x.key&&valid.includes(x.key));
+  if(rows.some(x=>!x.key))selected.push({key:''});
+  renderTimeSlipClaimRows(selected.length?selected:[{key:''}]);
 }
 function addTimeSlipClaimCodeRow(){
-  const values=currentTimeSlipClaimRowValues();
-  if(values.some(v=>!v))return;
-  const selected=normalizeTimeSlipClaimTypes(values);
-  if(selected.length>=TIME_SLIP_CLAIM_TYPES.length)return;
-  renderTimeSlipClaimRows([...selected,'']);
+  const rows=currentTimeSlipClaimRows();if(rows.some(x=>!x.key)||collectTimeSlipClaimTypes().length>=TIME_SLIP_CLAIM_TYPES.length)return;
+  renderTimeSlipClaimRows([...rows,{key:''}]);
 }
-function removeTimeSlipClaimCodeRow(index){
-  const values=currentTimeSlipClaimRowValues();
-  values.splice(Number(index),1);
-  renderTimeSlipClaimRows(values.length?values:['']);
-}
+function removeTimeSlipClaimCodeRow(i){const rows=currentTimeSlipClaimRows();rows.splice(i,1);renderTimeSlipClaimRows(rows)}
 function updateTimeSlipClaimCodeControls(){
-  const values=currentTimeSlipClaimRowValues();
-  const selected=normalizeTimeSlipClaimTypes(values.filter(Boolean));
-  const add=document.getElementById('timeSlipAddClaimCode');
-  if(add){
-    add.style.display=(values.some(v=>!v)||selected.length>=TIME_SLIP_CLAIM_TYPES.length)?'none':'inline-flex';
-    add.textContent=selected.length?'+ Add another claim code':'+ Add claim code';
+  const rows=currentTimeSlipClaimRows(),selected=collectTimeSlipClaimTypes(),add=document.getElementById('timeSlipAddClaimCode');
+  if(add){add.style.display=rows.some(x=>!x.key)||selected.length>=TIME_SLIP_CLAIM_TYPES.length?'none':'inline-flex';add.textContent=selected.length?'+ Add another claim code':'+ Add claim code'}
+}
+function renderTimeSlipClaimOutcomePreview(){
+  const host=document.getElementById('timeSlipClaimOutcomePreview');if(!host)return;
+  const s={timeSlipClaimTypes:collectTimeSlipClaimTypes(),timeSlipClaimPayments:collectTimeSlipClaimPayments()},info=timeSlipClaimSummary(s);
+  host.textContent=info?`${info.paid} paid · ${info.denied} denied · ${info.partial} partially paid · ${info.unresolved} pending/unrecorded. Overall: ${info.status}.`:'No individual results recorded yet.';
+  renderTimeSlipDeadlinePreview();
+}
+function validateTimeSlipClaimPayments(){
+  for(const row of currentTimeSlipClaimRows()){
+    if(!row.key)continue;
+    for(const k of ['claimed','paid']){
+      if(row[k]==='')continue;
+      const n=Number(row[k]);if(!Number.isFinite(n)||n<0||Math.abs(n*100-Math.round(n*100))>0.000001){alert(`Enter a valid amount (up to two decimal places) for ${row.key} ${k}.`);return false}
+    }
+    const claimed=row.claimed===''?null:Number(row.claimed),paid=row.paid===''?null:Number(row.paid);
+    if(claimed!==null&&paid!==null&&paid>claimed){alert(`Claim ${row.key}: paid amount cannot exceed claimed amount.`);return false}
+    if(!row.status&&(claimed!==null||paid!==null||row.date)){alert(`Claim ${row.key}: choose a result before entering payment details.`);return false}
+    if(row.status==='Denied'&&paid!==null&&paid>0){alert(`Claim ${row.key}: choose Partially paid when money was received.`);return false}
+    if(row.status==='Pending'&&paid!==null&&paid>0){alert(`Claim ${row.key}: choose Partially paid when money was received.`);return false}
+    if(row.status==='Paid'&&paid!==null&&claimed!==null&&paid<claimed){alert(`Claim ${row.key}: choose Partially paid when less than the claimed amount was paid.`);return false}
+    if(row.status==='Partially Paid'&&paid!==null&&claimed!==null&&paid>=claimed){alert(`Claim ${row.key}: a partial payment must be less than the amount claimed.`);return false}
   }
+  return true;
 }
 function timeSlipClaimBadgeHTML(s){
   const keys=Array.isArray(s?.timeSlipClaimTypes)?s.timeSlipClaimTypes:[];
-  return keys.map(key=>TIME_SLIP_CLAIM_TYPES.find(x=>x.key===String(key))).filter(Boolean).map(meta=>`<span class="time-slip-code-badge" title="${escapeHTML(meta.title||meta.label)}">${escapeHTML(meta.card)}</span>`).join('');
+  const results=normalizeClaimPayments(s?.timeSlipClaimPayments,keys);
+  return keys.map(key=>{const meta=TIME_SLIP_CLAIM_TYPES.find(x=>x.key===key);if(!meta)return '';return `<span class="time-slip-code-badge" title="${escapeHTML(meta.title||meta.label)}">${escapeHTML(meta.card)}${results[key]?.status?` · ${escapeHTML(results[key].status)}`:''}</span>`}).join('');
 }
 function toggleTimeSlip(){
   const $=id=>document.getElementById(id);
@@ -7103,7 +7163,7 @@ function editShift(id){if(!billingRequireWriteAccess())return;
   setLocationUI(s.location||'');setShiftTypeUI(s.shiftType||'');$('legacyExtras').value=s.extras||'';$('legacyClaims').value=s.claims||'';
   $('notes').value=s.notes||'';$('engineerName').value=s.engineerName||'';$('engineerIBM').value=s.engineerIBM||'';$('classFlag').checked=!!s.classDay;$('conductorName').value=s.conductorName||'';$('brakemanName').value=s.brakemanName||'';
   $('specialShift').value=s.specialShift||'';$('specialCategory').value=s.specialCategory||'';$('vacationReliefPair').value=s.vacationReliefPair||'';
-  $('timeSlipFlag').checked=!!s.timeSlip;$('timeSlipWritten').value=s.timeSlipWritten||'';$('timeSlipSubmitted').value=s.timeSlipSubmitted||'';$('timeSlipConfirmedReceived').value=s.timeSlipConfirmedReceived||'';$('timeSlipLocation').value=s.timeSlipLocation||'';$('timeSlipStatus').value=s.timeSlipStatus||'Pending';$('timeSlipResolved').value=s.timeSlipResolved||'';$('timeSlipWageReminderDays').value=s.timeSlipWageReminderDays===null||s.timeSlipWageReminderDays===undefined?'':String(s.timeSlipWageReminderDays);setTimeSlipClaimTypes(s.timeSlipClaimTypes||[]);
+  $('timeSlipFlag').checked=!!s.timeSlip;$('timeSlipWritten').value=s.timeSlipWritten||'';$('timeSlipSubmitted').value=s.timeSlipSubmitted||'';$('timeSlipConfirmedReceived').value=s.timeSlipConfirmedReceived||'';$('timeSlipLocation').value=s.timeSlipLocation||'';$('timeSlipStatus').value=s.timeSlipStatus||'Pending';$('timeSlipResolved').value=s.timeSlipResolved||'';$('timeSlipWageReminderDays').value=s.timeSlipWageReminderDays===null||s.timeSlipWageReminderDays===undefined?'':String(s.timeSlipWageReminderDays);setTimeSlipClaimTypes(s.timeSlipClaimTypes||[],s.timeSlipClaimPayments||{});
   renderTimeSlipDeadlinePreview();
   $('holidayFlag').checked=!!s.holiday;$('holidayPayEligibleFlag').checked=s.holidayPayEligible!==false&&!!s.holiday;$('ssotFlag').checked=!!s.ssot;$('rdFlag').checked=!!s.rd;
   $('paysMealFlag').checked=!!s.paysMeal;$('mpteFlag').checked=!!s.mpte;$('freightMealFlag').checked=!!s.freightMeal;$('fuelClaimFlag').checked=!!s.fuelClaim;$('otCompletionFlag').checked=!!s.otCompletion;$('otCompletionTime').value=s.otCompletionTime||'';$('unscheduledOTFlag').checked=!!s.unscheduledOT;$('crewBookReleaseTime').value=s.crewBookReleaseTime||'';$('poneFlag').checked=!!s.pone;$('traineeCount').value=Math.min(2,Math.max(1,Number(s.traineeCount)||1));
@@ -7178,7 +7238,7 @@ function renderTimeSlipWageReminderHint(){
   else{const n=Math.max(1,Math.min(29,Math.round(Number(raw)||def)));hint.textContent=`This Time Slip will remind you ${n} day${n===1?'':'s'} before the 30-day window ends if it is still Pending and receipt has not been confirmed.`}
 }
 function timeSlipWageReminderInfoFor(s,todayISO=isoLocal(new Date())){
-  if(!s?.timeSlip||timeSlipDisplayStatus(s)!=='Pending'||!s?.date||s?.timeSlipConfirmedReceived)return null;
+  if(!s?.timeSlip||!timeSlipNeedsFollowUp(s)||!s?.date||s?.timeSlipConfirmedReceived)return null;
   const reminderDays=effectiveTimeSlipWageReminderDays(s);if(reminderDays<=0)return null;
   const due=timeSlipSubmissionDeadline(s);if(!due)return null;const days=daysBetweenISO(todayISO,due);if(days==null||days>reminderDays)return null;
   const level=days<0?'overdue':days<=1?'urgent':days<=3?'warning':'notice';
@@ -7203,10 +7263,11 @@ function renderTimeSlipWagePanel(){
   upgradeShift(s);const rows=[...s.timeSlipFollowUps].sort((a,b)=>String(b?.at||'').localeCompare(String(a?.at||'')));host.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px"><strong style="font-size:12px">Follow-Up History</strong><button class="btn small" type="button" onclick="openTimeSlipFollowUpModal()">+ Add Note</button></div>${rows.length?`<div class="time-slip-followup-list">${rows.map(r=>`<div class="time-slip-followup-entry"><div class="time-slip-followup-entry-head"><span>${escapeHTML(formatTimeSlipFollowUpDate(r.at))}</span><button class="btn small danger" type="button" onclick="deleteTimeSlipFollowUp('${escapeHTML(String(r.id||''))}')">Delete</button></div>${r.spokeWith?`<div class="time-slip-followup-entry-meta">Spoke with: ${escapeHTML(r.spokeWith)}</div>`:''}${r.note?`<div class="time-slip-followup-entry-note">${escapeHTML(r.note)}</div>`:''}</div>`).join('')}</div>`:'<div class="muted" style="font-size:11px;margin-top:8px">No Wage follow-up notes yet.</div>'}`;
 }
 function renderTimeSlipWageBanner(){
-  const el=document.getElementById('timeSlipWageBanner');if(!el)return;const items=shifts.filter(s=>s.timeSlip&&timeSlipDisplayStatus(s)==='Pending').map(s=>({s,info:timeSlipWageReminderInfoFor(s)})).filter(x=>x.info).sort((a,b)=>a.info.days-b.info.days||String(a.s.date||'').localeCompare(String(b.s.date||'')));
+  const el=document.getElementById('timeSlipWageBanner');if(!el)return;const items=shifts.filter(s=>s.timeSlip&&timeSlipNeedsFollowUp(s)).map(s=>({s,info:timeSlipWageReminderInfoFor(s)})).filter(x=>x.info).sort((a,b)=>a.info.days-b.info.days||String(a.s.date||'').localeCompare(String(b.s.date||'')));
   if(!items.length){el.className='time-slip-wage-banner';el.innerHTML='';return}const first=items[0],count=items.length,job=escapeHTML(first.s.assignment||'Time Slip');let body=`${job}: ${escapeHTML(first.info.message)}.`;if(count>1)body+=` ${count-1} other Pending Time Slip${count-1===1?' also needs':'s also need'} Wage follow-up.`;el.className=`time-slip-wage-banner show ${first.info.level}`;el.innerHTML=`<strong>Wage Examiners follow-up reminder</strong>${body}<div class="time-slip-wage-banner-actions"><a class="btn small primary" href="tel:${WAGE_EXAMINERS_TEL}">Call Wage Examiners</a><button class="btn small" type="button" onclick="showView('timeslips')">Open Time Slip Center</button></div>`;
 }
 function timeSlipDisplayStatus(s){
+  const detail=timeSlipClaimSummary(s);if(detail)return detail.status==='Pending'&&!s?.timeSlipSubmitted?'Needs Submission':detail.status;
   const status=s?.timeSlipStatus||'Pending';
   return status==='Pending'&&!s?.timeSlipSubmitted?'Needs Submission':status;
 }
@@ -7226,9 +7287,9 @@ function renderTimeSlipDeadlinePreview(){
   const box=document.getElementById('timeSlipDeadlineInfo'),hint=document.getElementById('timeSlipStatusHint');
   if(!box)return;
   const checked=!!document.getElementById('timeSlipFlag')?.checked;
-  const s={timeSlip:checked,date:document.getElementById('date')?.value||'',timeSlipSubmitted:document.getElementById('timeSlipSubmitted')?.value||'',timeSlipStatus:document.getElementById('timeSlipStatus')?.value||'Pending'};
+  const s={timeSlip:checked,date:document.getElementById('date')?.value||'',timeSlipSubmitted:document.getElementById('timeSlipSubmitted')?.value||'',timeSlipStatus:document.getElementById('timeSlipStatus')?.value||'Pending',timeSlipClaimTypes:collectTimeSlipClaimTypes(),timeSlipClaimPayments:collectTimeSlipClaimPayments()};
   const display=timeSlipDisplayStatus(s),info=timeSlipDeadlineInfoFor(s);
-  if(hint)hint.textContent=display==='Needs Submission'?'Current state: Needs Submission. Enter Date Submitted after you turn in the slip.':display==='Pending'?'Current state: Pending (submitted, awaiting Paid or Denied).':'';
+  if(hint)hint.textContent=timeSlipClaimSummary(s)?`Overall state: ${display} (calculated from claim results).`:(display==='Needs Submission'?'Current state: Needs Submission. Enter Date Submitted after you turn in the slip.':display==='Pending'?'Current state: Pending (submitted, awaiting Paid or Denied).':'');
   if(!checked||!info){box.style.display='none';box.className='time-slip-deadline-info field full';box.innerHTML='';return}
   const dueLabel=formatDateShort(info.due);
   box.className=`time-slip-deadline-info field full ${info.level}`;
@@ -7315,6 +7376,7 @@ async function renderTimeSlipPhotoSection(){
   }
 }
 function chooseTimeSlipPhoto(side){
+  if(EPL_CLAIM_R4_DEVICE_ONLY_TEST){alert('Photo changes are disabled in this testing build.');return}
   if(!billingRequireWriteAccess())return;
   if(side!=='front'&&side!=='back')return;
   const s=currentTimeSlipPhotoShift();
@@ -7352,6 +7414,7 @@ async function compressTimeSlipPhoto(file){
   }finally{URL.revokeObjectURL(url)}
 }
 async function uploadTimeSlipPhoto(side,file){
+  if(EPL_CLAIM_R4_DEVICE_ONLY_TEST){setTimeSlipPhotoStatus('Photo uploads disabled in this testing build.',true);return}
   const s=currentTimeSlipPhotoShift();if(!s){setTimeSlipPhotoStatus('Save the shift before adding a photo.',true);return}
   setTimeSlipPhotoStatus(`Preparing ${side} photo…`);
   try{
@@ -7377,6 +7440,7 @@ async function uploadTimeSlipPhoto(side,file){
   }catch(err){console.warn('Time Slip photo upload failed:',err);setTimeSlipPhotoStatus(err?.message||'Photo upload failed.',true);alert(`Time Slip photo could not be saved: ${err?.message||err}`)}
 }
 async function deleteTimeSlipPhoto(side){
+  if(EPL_CLAIM_R4_DEVICE_ONLY_TEST){alert('Photo deletion is disabled in this testing build.');return}
   if(!billingRequireWriteAccess())return;
   const s=currentTimeSlipPhotoShift(),meta=s?.timeSlipPhotos?.[side];if(!s||!meta?.path)return;
   if(!confirm(`Delete the ${side} Time Slip photo?`))return;
@@ -7408,6 +7472,7 @@ async function openTimeSlipPhoto(side){
 }
 function closeTimeSlipPhotoViewer(){const modal=document.getElementById('timeSlipPhotoViewerModal');if(modal)modal.classList.remove('open')}
 async function cloudDeleteTimeSlipPhotoFiles(shift){
+  if(EPL_CLAIM_R4_DEVICE_ONLY_TEST)return;
   const paths=['front','back'].map(side=>shift?.timeSlipPhotos?.[side]?.path).filter(Boolean);if(!paths.length)return;
   try{const client=getCloudClient();if(!client)return;const user=await cloudCurrentUser(client);if(!user||!accountGuardWorkspace(user))return;const {error}=await client.storage.from(TIME_SLIP_PHOTO_BUCKET).remove(paths);if(error)console.warn('Deleted shift photo cleanup failed:',error)}catch(err){console.warn('Deleted shift photo cleanup unavailable:',err)}
 }
@@ -9689,6 +9754,7 @@ async function cloudVersionAwareCompare(){
 }
 
 async function cloudRunVersionAwareSync(options={}){
+  if(EPL_CLAIM_R4_DEVICE_ONLY_TEST){setCloudTestStatus('R4 preview: automatic shift sync disabled; changes are device-only.');return}
   const automatic=!!options.automatic;
   const autoSource=options.source||'startup';
   const client=getCloudClient();
@@ -10492,6 +10558,7 @@ async function cloudResolveConflictUseCloud(shiftId){
 }
 
 async function cloudMirrorShift(shift){
+  if(EPL_CLAIM_R4_DEVICE_ONLY_TEST){setCloudTestStatus('R4: local shift save only; production cloud untouched.');return}
   const client=getCloudClient();if(!client)return;
   const user=await cloudCurrentUser(client);if(!user)return;
   if(!accountGuardWorkspace(user)){console.warn('Cloud mirror blocked: active local workspace does not match authenticated account.');setCloudTestStatus('Sync paused because the local account workspace does not match the signed-in account. Sign out and sign back in.');return}
@@ -10512,6 +10579,7 @@ async function cloudMirrorShift(shift){
   }
 }
 async function cloudTombstoneShift(shift){
+  if(EPL_CLAIM_R4_DEVICE_ONLY_TEST){setCloudTestStatus('R4: local shift deletion only; production cloud untouched.');return}
   const client=getCloudClient();if(!client)return;
   const user=await cloudCurrentUser(client);if(!user)return;
   if(!accountGuardWorkspace(user)){console.warn('Cloud tombstone blocked: active local workspace does not match authenticated account.');setCloudTestStatus('Sync paused because the local account workspace does not match the signed-in account. Sign out and sign back in.');return}
@@ -10651,6 +10719,7 @@ async function initCloudBridgeTest(){
 function saveShift(e){if(!billingRequireWriteAccess()){if(e?.preventDefault)e.preventDefault();return;}
   e.preventDefault();const s=formData();
   if(s.miscPenalty&&(!s.miscPenaltyDescription||!(s.miscPenaltyMinutes>0))){alert('For a Miscellaneous Penalty, enter the nature of the claim and a duration greater than 0:00.');document.getElementById(!s.miscPenaltyDescription?'miscPenaltyDescription':'miscPenaltyHours')?.focus();return}
+  if(s.timeSlip&&!validateTimeSlipClaimPayments())return;
   if(s.yardMove&&!s.twoClassesPullTime){alert('For a 2 Classes of Service claim, enter the time you were pulled so Engineer Pay Log can compare the 2 Classes payment with pull-related overtime.');document.getElementById('twoClassesPullTime')?.focus();return}
   if(isVacationSpecial(s.specialShift)){
     const year=Number(String(s.date||'').slice(0,4));
@@ -10676,7 +10745,7 @@ function collectWarnings(s){
   if(s.timeSlip){
     if(!s.timeSlipWritten)w.push('Time Slip is marked but Date Written is blank.');
     if(s.timeSlipSubmitted&&!s.timeSlipLocation)w.push('Time Slip has a Date Submitted but Location Submitted is blank.');
-    if((s.timeSlipStatus==='Paid'||s.timeSlipStatus==='Denied')&&!s.timeSlipResolved)w.push(`Time Slip is ${s.timeSlipStatus} but Date Paid / Denied is blank.`);
+    if(!timeSlipClaimSummary(s)&&(s.timeSlipStatus==='Paid'||s.timeSlipStatus==='Denied')&&!s.timeSlipResolved)w.push(`Time Slip is ${s.timeSlipStatus} but Date Paid / Denied is blank.`);
   }
   return w;
 }
@@ -10764,16 +10833,17 @@ function timeSlipCard(s){
   let deadlineLine='';
   if(info)deadlineLine=`<span class="time-slip-deadline-line ${info.level}">Due ${escapeHTML(formatDateShort(info.due))} • ${escapeHTML(info.message)}</span>`;
   const wageInfo=timeSlipWageReminderInfoFor(s);const wageLine=wageInfo?`<span class="time-slip-wage-line ${wageInfo.level}">☎ ${escapeHTML(wageInfo.message)}</span>`:'';
-  const claimBadges=timeSlipClaimBadgeHTML(s);
-  return `<div class="shift timeslip"><div class="shift-date">${dateLabel(s.date)}</div><div class="shift-main"><div class="shift-title">${escapeHTML(s.assignment||'Shift')} <span class="badge timeslip">${escapeHTML(status)}</span></div>${claimBadges?`<div class="time-slip-claim-badges">${claimBadges}</div>`:''}<div class="shift-sub">${firstLine}${secondBits.length?`<br>${secondBits.join(' • ')}`:''}${deadlineLine}${wageLine}</div></div><div><button class="btn small" onclick="editShift('${s.id}')">Edit</button></div></div>`;
+  const claimBadges=timeSlipClaimBadgeHTML(s),detail=timeSlipClaimSummary(s);
+  const breakdown=detail?`<div class="muted" style="font-size:10.5px;margin-top:4px">${detail.paid} paid · ${detail.denied} denied · ${detail.partial} partially paid · ${detail.unresolved} pending/unrecorded</div>`:'';
+  return `<div class="shift timeslip"><div class="shift-date">${dateLabel(s.date)}</div><div class="shift-main"><div class="shift-title">${escapeHTML(s.assignment||'Shift')} <span class="badge timeslip">${escapeHTML(status)}</span></div>${claimBadges?`<div class="time-slip-claim-badges">${claimBadges}</div>`:''}${breakdown}<div class="shift-sub">${firstLine}${secondBits.length?`<br>${secondBits.join(' • ')}`:''}${deadlineLine}${wageLine}</div></div><div><button class="btn small" onclick="editShift('${s.id}')">Edit</button></div></div>`;
 }
 function renderTimeSlipCenter(){
   const el=document.getElementById('timeSlipCenter');if(!el)return;
   const slips=shifts.filter(s=>s.timeSlip);
-  const groups=['Needs Submission','Pending','Paid','Denied'];
+  const groups=['Needs Submission','Pending','Partially Resolved','Paid','Denied'];
   const grouped=Object.fromEntries(groups.map(g=>[g,slips.filter(s=>timeSlipDisplayStatus(s)===g)]));
   grouped['Needs Submission'].sort((a,b)=>String(timeSlipSubmissionDeadline(a)||'9999').localeCompare(String(timeSlipSubmissionDeadline(b)||'9999'))||String(b.date||'').localeCompare(String(a.date||'')));
-  for(const g of ['Pending','Paid','Denied'])grouped[g].sort((a,b)=>(b.timeSlipSubmitted||b.timeSlipWritten||b.date||'').localeCompare(a.timeSlipSubmitted||a.timeSlipWritten||a.date||''));
+  for(const g of ['Pending','Partially Resolved','Paid','Denied'])grouped[g].sort((a,b)=>(b.timeSlipSubmitted||b.timeSlipWritten||b.date||'').localeCompare(a.timeSlipSubmitted||a.timeSlipWritten||a.date||''));
   const counts=Object.fromEntries(groups.map(g=>[g,grouped[g].length]));
   let out=`<div class="rate-note" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><strong>Wage Examiners Office</strong><br><span class="muted">${WAGE_EXAMINERS_PHONE_DISPLAY}</span></div><a class="btn primary small" href="tel:${WAGE_EXAMINERS_TEL}">☎ Call Wage Examiners</a></div><div class="timeslip-summary">${groups.map(g=>`<div class="statbox"><div class="num">${counts[g]}</div><div>${g}</div></div>`).join('')}</div>`;
   for(const g of groups){const list=grouped[g];out+=`<div class="timeslip-group"><h3>${g}</h3>${list.length?list.map(timeSlipCard).join(''):'<div class="empty">No '+g.toLowerCase()+' time slips.</div>'}</div>`}
@@ -10825,7 +10895,7 @@ function paycheckTreatmentForShift(s,c,includePending){
   const claimAmount=timeSlipClaimAmount(s,c),status=timeSlipDisplayStatus(s);
   if(!(claimAmount>0))return {estimatedTotal:enteredTotal,claimAmount:0,status,excludedClaim:0};
   if(status==='Denied')return {estimatedTotal:Math.max(0,enteredTotal-claimAmount),claimAmount,status,excludedClaim:claimAmount};
-  if(status==='Pending'||status==='Needs Submission'){
+  if(status==='Pending'||status==='Needs Submission'||status==='Partially Resolved'){
     return {estimatedTotal:includePending?enteredTotal:Math.max(0,enteredTotal-claimAmount),claimAmount,status,excludedClaim:includePending?0:claimAmount};
   }
   return {estimatedTotal:enteredTotal,claimAmount,status,excludedClaim:0};
@@ -10836,14 +10906,14 @@ function paycheckInfo(offset=0){
   const periodEnd=addDaysDate(payday,-9),periodStart=addDaysDate(periodEnd,-6),startISO=isoFromDate(periodStart),endISO=isoFromDate(periodEnd);
   const items=shifts.map(s=>({s,c:calculate(s)})).filter(x=>x.c&&!x.c.rateMissing&&x.s.date>=startISO&&x.s.date<=endISO).map(x=>Object.assign(x,paycheckTreatmentForShift(x.s,x.c,includePending)));
   const total=items.reduce((a,x)=>a+x.estimatedTotal,0),regular=items.reduce((a,x)=>a+(Number(x.c.regular)||0),0),actual=items.reduce((a,x)=>a+(Number(x.c.actual)||0),0);
-  const pendingClaimAmount=items.filter(x=>x.status==='Pending'||x.status==='Needs Submission').reduce((a,x)=>a+x.claimAmount,0);
+  const pendingClaimAmount=items.filter(x=>x.status==='Pending'||x.status==='Needs Submission'||x.status==='Partially Resolved').reduce((a,x)=>a+x.claimAmount,0);
   const deniedClaimAmount=items.filter(x=>x.status==='Denied').reduce((a,x)=>a+x.claimAmount,0);
   return {payday,periodStart,periodEnd,items,total,actual,extras:Math.max(0,total-regular),includePending,pendingClaimAmount,deniedClaimAmount};
 }
 function pendingEstimateNote(info){
   const pending=Number(info?.pendingClaimAmount)||0,denied=Number(info?.deniedClaimAmount)||0;
   let text='';
-  if(pending>0)text=info.includePending?`Includes ${money(pending)} in unresolved Time Slip claims. Pending claims are not guaranteed pay.`:`Excludes ${money(pending)} in unresolved Time Slip claims.`;
+  if(pending>0)text=info.includePending?`Includes ${money(pending)} in unresolved or mixed Time Slip claims. This is an estimate, not verified received pay.`:`Excludes ${money(pending)} in unresolved or mixed Time Slip claims.`;
   else text='No unresolved Time Slip claim amount is recorded in this pay period.';
   if(denied>0)text+=` ${money(denied)} in denied claims is excluded.`;
   return text;
@@ -10854,7 +10924,7 @@ function renderPaycheck(){
   const toggle=document.getElementById('paycheckIncludePendingSlips');if(toggle)toggle.checked=info.includePending;
   set('paycheckPendingSlipsNote',pendingEstimateNote(info));
   set('paycheckNavLabel',label);set('paycheckDateLabel',`Paycheck • ${label}`);set('paycheckAmount',money(info.total));set('paycheckRange',`Pay period: ${range}`);set('paycheckShiftCount',String(info.items.length));set('paycheckHours',fmtMinutes(info.actual));set('paycheckExtras',money(info.extras));
-  const list=document.getElementById('paycheckShiftList');if(list)list.innerHTML=info.items.length?info.items.sort((a,b)=>b.s.date.localeCompare(a.s.date)).map(x=>shiftHTML(x.s,{payOverride:x.estimatedTotal,payNote:(x.status==='Pending'||x.status==='Needs Submission')&&x.claimAmount>0?(info.includePending?`Includes ${money(x.claimAmount)} pending claim`:`Excludes ${money(x.claimAmount)} pending claim`):(x.status==='Denied'&&x.claimAmount>0?`Excludes ${money(x.claimAmount)} denied claim`:'')})).join(''):'<div class="empty">No shifts saved for this pay period.</div>';
+  const list=document.getElementById('paycheckShiftList');if(list)list.innerHTML=info.items.length?info.items.sort((a,b)=>b.s.date.localeCompare(a.s.date)).map(x=>shiftHTML(x.s,{payOverride:x.estimatedTotal,payNote:(x.status==='Pending'||x.status==='Needs Submission'||x.status==='Partially Resolved')&&x.claimAmount>0?(info.includePending?`Includes ${money(x.claimAmount)} pending/mixed claim`:`Excludes ${money(x.claimAmount)} pending/mixed claim`):(x.status==='Denied'&&x.claimAmount>0?`Excludes ${money(x.claimAmount)} denied claim`:'')})).join(''):'<div class="empty">No shifts saved for this pay period.</div>';
 }
 function changePaycheckWeek(delta){paycheckWeekOffset+=delta;renderPaycheck()}
 function openPaychecks(){paycheckWeekOffset=0;showView('paychecks');renderPaycheck()}
@@ -11069,7 +11139,7 @@ function renderDashboard(){
   const showNet=netEstimatorEnabled()&&netRate!=null;
   if(netBlock)netBlock.style.display=showNet?'block':'none';
   if(netAmount&&showNet)netAmount.textContent=money(pi.total*netRate);
-  const p=document.getElementById('dashPendingSlips');if(p)p.textContent=String(shifts.filter(s=>s.timeSlip&&['Needs Submission','Pending'].includes(timeSlipDisplayStatus(s))).length);
+  const p=document.getElementById('dashPendingSlips');if(p)p.textContent=String(shifts.filter(s=>s.timeSlip&&(timeSlipDisplayStatus(s)==='Needs Submission'||timeSlipNeedsFollowUp(s))).length);
   renderTimeSlipDeadlineBanner();renderTimeSlipWageBanner();if(accountStartupResolved){void renderDashboardCommunityNotes();void bidLifecycleLoad(false)}
   const f=document.getElementById('dashSavedJobs');if(f)f.textContent=String(savedJobs.length);updateBackupUI();if(accountStartupResolved)void retirementWatchLoad(false);
 }
@@ -14847,7 +14917,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 window.addEventListener('pageshow',()=>trimAssistantRefreshLiveIfVisible());
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.2-typed-time-test-r3-20261031').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=10.2-typed-time-test-r3-1-20261031').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
@@ -14952,7 +15022,7 @@ function prepareWelcomeForMigratedUser(){
         <button type="button" class="shift-time-choice" data-mode="PM" aria-pressed="false" onclick="chooseTypedShiftTimeMode('PM')">PM</button>
         <button type="button" class="shift-time-choice" data-mode="24h" aria-pressed="false" onclick="chooseTypedShiftTimeMode('24h')">24-hour</button>
       </div>
-      <div class="typed-shift-hint">Enter <strong>630</strong> for 6:30, then tap AM or PM. For railroad time, enter <strong>1830</strong> and choose 24-hour. Leading zero and colon are optional.</div>
+      <div class="typed-shift-hint"><strong>630</strong> = 6:30 · <strong>1830</strong> = 18:30 (24-hour)</div>
       <div id="typedShiftTimeError" class="typed-shift-error" role="alert" aria-live="polite"></div>
     </div>
     <div class="modal-foot" style="display:flex;gap:8px"><button type="button" class="btn" style="flex:1" onclick="closeTypedShiftTime()">Cancel</button><button type="button" class="btn primary" style="flex:2" onclick="applyTypedShiftTime()">Use Time</button></div>
