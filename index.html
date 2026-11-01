@@ -2382,6 +2382,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <label class="trim-check"><input type="checkbox" value="6" onchange="bidSheetApplyFilters()"> Sat</label>
           <label class="trim-check"><input type="checkbox" value="7" onchange="bidSheetApplyFilters()"> Sun</label>
         </div>
+        <div id="bidFatigueFilterGroup">
         <div class="trim-filter-title">Fatigue type <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— GO 203 published assignment-day classification</span></div>
         <div class="bid-fatigue-choices">
           <label for="bidFatigueDay">Assignment day<select id="bidFatigueDay" onchange="bidSheetApplyFilters()"><option value="0">Monday</option><option value="1">Tuesday</option><option value="2">Wednesday</option><option value="3">Thursday</option><option value="4">Friday</option><option value="5">Saturday</option><option value="6">Sunday</option></select></label>
@@ -2392,6 +2393,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <button class="btn small" type="button" id="bidFatiguePreviewButton" onclick="bidSheetFatigueTogglePreview()" aria-expanded="false">Preview GO 203 examples (read only)</button>
           <div class="bid-fatigue-samples" id="bidFatigueSamples" style="display:none" aria-live="polite"></div>
         </div>
+        </div><!-- /bidFatigueFilterGroup -->
         <div class="trim-filter-title">Extra List IPMA <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— any selected IPMA matches</span></div>
         <div class="trim-check-grid" id="bidIpmaChecks">
           <label class="trim-check"><input type="checkbox" value="12:01 AM" onchange="bidSheetApplyFilters()"> 12:01 AM</label>
@@ -3105,6 +3107,14 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <div class="mini" style="margin-top:7px">This preview saves the display choice on this device; cross-device preference sync will be added separately.</div>
         </div>
 
+        <div class="settings-pref-section" id="bidFatigueDisplaySettingsCard">
+          <div class="settings-row settings-toggle-row borderless-row">
+            <div><strong>Show Fatigue Filters in Bid Sheet Assistant</strong><small>Show or hide the GO 203 Assignment Day and Type 1 / Type 2 filters. Independent of the Dashboard / History badge setting. Hiding filters clears the selected fatigue filter.</small></div>
+            <label class="switch-label" aria-label="Show fatigue filters in Bid Sheet Assistant"><input id="bidFatigueDisplayToggle" type="checkbox" onchange="setBidFatigueFiltersDisplay(this.checked)" checked><span class="switch-ui" aria-hidden="true"></span></label>
+          </div>
+          <div class="mini" style="margin-top:7px">This test saves the Bid Sheet display preference on this device only.</div>
+        </div>
+
         <div class="settings-pref-section" id="timeSlipFollowUpSettingsCard">
           <div class="settings-row settings-row-control borderless-row">
             <div><strong>Time Slip Wage Follow-Up</strong><small>If a submitted Time Slip is still Pending, remind you to call Wage Examiners before the 30-day window ends.</small></div>
@@ -3774,6 +3784,7 @@ const NET_ESTIMATOR_ENABLED_KEY='engineerPayLogNetEstimatorEnabled';
 const NET_PAY_HISTORY_KEY='engineerPayLogNetPayHistory';
 const HISTORY_VIEW_KEY='engineerPayLogHistoryView';
 const FATIGUE_BADGE_DISPLAY_KEY='engineerPayLogShowFatigueBadges_v1';
+const BID_FATIGUE_FILTER_DISPLAY_KEY='engineerPayLogShowBidFatigueFilters_v1';
 const CREW_BOOK_ASSIST_KEY='engineerPayLogCrewBookAssist';
 const CREW_BOOK_ASSIST_SEEN_KEY='engineerPayLogCrewBookAssistSeen';
 const CREW_BOOK_ASSIST_PREF_KEY='engineerPayLogCrewBookAssistPreferenceV1';
@@ -14837,11 +14848,43 @@ function bidSheetFatigueDayType(assignment,effective,day){
 function bidSheetFatigueMatches(assignment,effective,day,type){
   return !type||bidSheetFatigueDayType(assignment,effective,day)===type;
 }
+// Presentation preference only. Does not affect official fatigue data, History,
+// manual engineer overrides, or the Hours of Service informational message.
+// Independent of the Shift Card badge preference; defaults ON for discovery.
+let bidFatigueFilterDisplayFallback=null;
+function bidFatigueFiltersVisible(){
+  if(bidFatigueFilterDisplayFallback!==null)return bidFatigueFilterDisplayFallback;
+  try{return localStorage.getItem(BID_FATIGUE_FILTER_DISPLAY_KEY)!=='0'}catch{return true}
+}
+function syncBidFatigueDisplaySetting(){
+  const show=bidFatigueFiltersVisible();
+  const toggle=document.getElementById('bidFatigueDisplayToggle');
+  if(toggle)toggle.checked=show;
+  const group=document.getElementById('bidFatigueFilterGroup');
+  if(group)group.style.display=show?'':'none';
+}
+function setBidFatigueFiltersDisplay(enabled){
+  const show=!!enabled;
+  bidFatigueFilterDisplayFallback=show;
+  try{localStorage.setItem(BID_FATIGUE_FILTER_DISPLAY_KEY,show?'1':'0')}catch{}
+  // Always reset even on re-enabling; a hidden Type filter must never
+  // silently exclude advertised assignments when this preference changes.
+  const day=document.getElementById('bidFatigueDay');
+  const type=document.getElementById('bidFatigueType');
+  if(day)day.value='0';
+  if(type)type.value='';
+  bidSheetFatiguePreviewOpen=false;
+  syncBidFatigueDisplaySetting();
+  bidSheetApplyFilters();
+}
 function bidSheetFatigueTogglePreview(){
+  if(!bidFatigueFiltersVisible())return;
   bidSheetFatiguePreviewOpen=!bidSheetFatiguePreviewOpen;
   bidSheetFatigueRenderContext();
 }
 function bidSheetFatigueRenderContext(){
+  syncBidFatigueDisplaySetting();
+  if(!bidFatigueFiltersVisible())return;
   const active=bidSheetFatigueFilterActive(),status=document.getElementById('bidFatigueStatus'),area=document.getElementById('bidFatiguePreviewArea'),samples=document.getElementById('bidFatigueSamples'),button=document.getElementById('bidFatiguePreviewButton');
   const day=Number(document.getElementById('bidFatigueDay')?.value||0),type=String(document.getElementById('bidFatigueType')?.value||'');
   const names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
@@ -14864,7 +14907,9 @@ function bidSheetApplyFilters(){
   const rows=bidSheetState.rows||[],numbered=!!document.getElementById('bidTypeNumbered')?.checked,extra=!!document.getElementById('bidTypeExtra')?.checked,yard=!!document.getElementById('bidTypeYard')?.checked,terminal=String(document.getElementById('bidSheetTerminal')?.value||''),search=String(document.getElementById('bidSheetSearch')?.value||'').trim().toUpperCase();
   const relief=trimDevCheckedValues('bidReliefChecks').map(Number),ipmas=trimDevCheckedValues('bidIpmaChecks'),effective=bidSheetState.snapshot?.effective_date||isoLocal(new Date());
   const fatigueDay=Number(document.getElementById('bidFatigueDay')?.value||0),fatigueType=String(document.getElementById('bidFatigueType')?.value||'');
-  const fatigueActive=bidSheetFatigueFilterActive();
+  // Never apply a hidden fatigue filter, including when form values are
+  // retained by the browser after a reload or the Bid Sheet is refreshed.
+  const fatigueActive=bidFatigueFiltersVisible()&&bidSheetFatigueFilterActive();
   bidSheetFatigueRenderContext();
   let shown=rows.filter(r=>{const kind=bidSheetKind(r.assignment);return kind==='numbered'?numbered:kind==='extra_list'?extra:yard});
   if(fatigueActive&&fatigueType)shown=shown.filter(r=>bidSheetFatigueMatches(r.assignment,effective,fatigueDay,fatigueType));
@@ -15409,8 +15454,8 @@ function trimDevClearFilters(){
 
 // ---- End developer roster PDF importer ----
 
-function renderAll(){developerApplyEnvironmentVisibility();crewOpsRender();void refreshRosterTraineeSafeguard();renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();trimDevUpdateModeAvailability();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();syncFatigueBadgeDisplaySetting();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI();void pushRenderSettings();void pushRenderDashboardPrompt()}
-function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){trimDevUpdateModeAvailability();void renderDashboardCommunityNotes();void bidLifecycleLoad(false);void pushRenderDashboardPrompt();setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='futurepick')renderFutureGeneralPickFoundation();if(v==='trim')void trimDevLoad(false);if(v==='bid')void bidSheetLoad(false);if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();syncFatigueBadgeDisplaySetting();updateInstallSettingsVisibility();developerRenderTestState();crewOpsRender();void rosterCheckAdmin();void refreshRosterTraineeSafeguard()}renderMyJobUI()}
+function renderAll(){developerApplyEnvironmentVisibility();crewOpsRender();void refreshRosterTraineeSafeguard();renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();trimDevUpdateModeAvailability();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();syncFatigueBadgeDisplaySetting();syncBidFatigueDisplaySetting();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI();void pushRenderSettings();void pushRenderDashboardPrompt()}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){trimDevUpdateModeAvailability();void renderDashboardCommunityNotes();void bidLifecycleLoad(false);void pushRenderDashboardPrompt();setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='futurepick')renderFutureGeneralPickFoundation();if(v==='trim')void trimDevLoad(false);if(v==='bid')void bidSheetLoad(false);if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();syncFatigueBadgeDisplaySetting();syncBidFatigueDisplaySetting();updateInstallSettingsVisibility();developerRenderTestState();crewOpsRender();void rosterCheckAdmin();void refreshRosterTraineeSafeguard()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
   return shifts.filter(s=>[
