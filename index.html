@@ -3086,6 +3086,14 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           </div>
         </div>
 
+        <div class="settings-pref-section" id="fatigueBadgeDisplaySettingsCard">
+          <div class="settings-row settings-toggle-row borderless-row">
+            <div><strong>Show Fatigue Types on Shift Cards</strong><small>Display published or engineer-recorded Type 1 / Type 2 badges on Dashboard Recent Shifts and Shift History. Does not affect saved classifications or Hours of Service notices.</small></div>
+            <label class="switch-label" aria-label="Show fatigue types on Dashboard and History"><input id="fatigueBadgeDisplayToggle" type="checkbox" onchange="setFatigueBadgeDisplay(this.checked)" checked><span class="switch-ui" aria-hidden="true"></span></label>
+          </div>
+          <div class="mini" style="margin-top:7px">This preview saves the display choice on this device; cross-device preference sync will be added separately.</div>
+        </div>
+
         <div class="settings-pref-section" id="timeSlipFollowUpSettingsCard">
           <div class="settings-row settings-row-control borderless-row">
             <div><strong>Time Slip Wage Follow-Up</strong><small>If a submitted Time Slip is still Pending, remind you to call Wage Examiners before the 30-day window ends.</small></div>
@@ -3754,6 +3762,7 @@ const APPEARANCE_KEY='engineerPayLogAppearanceMode';
 const NET_ESTIMATOR_ENABLED_KEY='engineerPayLogNetEstimatorEnabled';
 const NET_PAY_HISTORY_KEY='engineerPayLogNetPayHistory';
 const HISTORY_VIEW_KEY='engineerPayLogHistoryView';
+const FATIGUE_BADGE_DISPLAY_KEY='engineerPayLogShowFatigueBadges_v1';
 const CREW_BOOK_ASSIST_KEY='engineerPayLogCrewBookAssist';
 const CREW_BOOK_ASSIST_SEEN_KEY='engineerPayLogCrewBookAssistSeen';
 const CREW_BOOK_ASSIST_PREF_KEY='engineerPayLogCrewBookAssistPreferenceV1';
@@ -11692,6 +11701,26 @@ function go203FatigueForShift(s){
 }
 // End GO 203 published fatigue classifications.
 
+// Presentation only: never changes the GO 203 classification or SI 100-R notice.
+// Default ON for discovery; R4.13 GitHub testing stores this preference locally.
+let fatigueBadgeDisplayFallback=null;
+function fatigueBadgesVisible(){
+  if(fatigueBadgeDisplayFallback!==null)return fatigueBadgeDisplayFallback;
+  try{return localStorage.getItem(FATIGUE_BADGE_DISPLAY_KEY)!=='0'}catch{return true}
+}
+function syncFatigueBadgeDisplaySetting(){
+  const el=document.getElementById('fatigueBadgeDisplayToggle');
+  if(el)el.checked=fatigueBadgesVisible();
+}
+function setFatigueBadgeDisplay(enabled){
+  const show=!!enabled;
+  fatigueBadgeDisplayFallback=show;
+  try{localStorage.setItem(FATIGUE_BADGE_DISPLAY_KEY,show?'1':'0')}catch{}
+  syncFatigueBadgeDisplaySetting();
+  renderDashboard();
+  renderHistory();
+}
+
 function shiftHTML(s,options={}){
   const c=calculate(s),parts=historyDateParts(s.date);
   let tags=[];
@@ -11780,7 +11809,7 @@ function renderDashboard(){
   const now=new Date(),ym=`${now.getFullYear()}-${pad(now.getMonth()+1)}`,month=valid.filter(x=>x.s.date.startsWith(ym));
   monthTotal.textContent=money(month.reduce((a,x)=>a+x.c.total,0));monthCount.textContent=`${month.length} paid shift${month.length===1?'':'s'}`;
   const currentYear=String(new Date().getFullYear()),yr=valid.filter(x=>x.s.date.startsWith(currentYear+'-'));const yearLabel=document.getElementById('yearTotalLabel');if(yearLabel)yearLabel.textContent=currentYear;yearTotal.textContent=money(yr.reduce((a,x)=>a+x.c.total,0));yearHours.textContent=`${fmtMinutes(yr.reduce((a,x)=>a+x.c.actual,0))} actual hours`;
-  const mh=document.getElementById('monthHours');if(mh)mh.textContent=fmtMinutes(month.reduce((a,x)=>a+(x.c.actual||0),0));recentShifts.innerHTML=valid.length?valid.slice(0,5).map(x=>shiftHTML(x.s)).join(''):'<div class="empty">No shifts saved yet.</div>';
+  const mh=document.getElementById('monthHours');if(mh)mh.textContent=fmtMinutes(month.reduce((a,x)=>a+(x.c.actual||0),0));recentShifts.innerHTML=valid.length?valid.slice(0,5).map(x=>shiftHTML(x.s,{showFatigue:fatigueBadgesVisible()})).join(''):'<div class="empty">No shifts saved yet.</div>';
   const pi=paycheckInfo(0),amount=document.getElementById('dashPaycheckAmount'),dates=document.getElementById('dashPaycheckDates');
   const pendingToggle=document.getElementById('dashIncludePendingSlips'),pendingNote=document.getElementById('dashPendingSlipEstimateNote');if(pendingToggle)pendingToggle.checked=pi.includePending;if(pendingNote)pendingNote.textContent=pendingEstimateNote(pi);
   if(amount)amount.textContent=money(pi.total);if(dates)dates.textContent=`${pi.periodStart.toLocaleDateString('en-US',{month:'short',day:'numeric'})}–${pi.periodEnd.toLocaleDateString('en-US',{month:'short',day:'numeric'})} • pays ${pi.payday.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;
@@ -11821,7 +11850,7 @@ function renderHistory(){
       out+=`<div class="history-month-head"><div class="history-month-name">${monthLabel}</div><div class="history-month-total">${money(monthTotals[key]||0)}</div></div>`;
       lastKey=key;
     }
-    out+=shiftHTML(s,{showFatigue:true});
+    out+=shiftHTML(s,{showFatigue:fatigueBadgesVisible()});
   }
   historyList.innerHTML=out;
 }
@@ -15320,8 +15349,8 @@ function trimDevClearFilters(){
 
 // ---- End developer roster PDF importer ----
 
-function renderAll(){developerApplyEnvironmentVisibility();crewOpsRender();void refreshRosterTraineeSafeguard();renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();trimDevUpdateModeAvailability();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI();void pushRenderSettings();void pushRenderDashboardPrompt()}
-function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){trimDevUpdateModeAvailability();void renderDashboardCommunityNotes();void bidLifecycleLoad(false);void pushRenderDashboardPrompt();setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='futurepick')renderFutureGeneralPickFoundation();if(v==='trim')void trimDevLoad(false);if(v==='bid')void bidSheetLoad(false);if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility();developerRenderTestState();crewOpsRender();void rosterCheckAdmin();void refreshRosterTraineeSafeguard()}renderMyJobUI()}
+function renderAll(){developerApplyEnvironmentVisibility();crewOpsRender();void refreshRosterTraineeSafeguard();renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();trimDevUpdateModeAvailability();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();syncFatigueBadgeDisplaySetting();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI();void pushRenderSettings();void pushRenderDashboardPrompt()}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){trimDevUpdateModeAvailability();void renderDashboardCommunityNotes();void bidLifecycleLoad(false);void pushRenderDashboardPrompt();setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='futurepick')renderFutureGeneralPickFoundation();if(v==='trim')void trimDevLoad(false);if(v==='bid')void bidSheetLoad(false);if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();syncFatigueBadgeDisplaySetting();updateInstallSettingsVisibility();developerRenderTestState();crewOpsRender();void rosterCheckAdmin();void refreshRosterTraineeSafeguard()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
   return shifts.filter(s=>[
