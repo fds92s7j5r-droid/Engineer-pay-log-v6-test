@@ -4123,8 +4123,10 @@ function timeSlipDenialDollarBreakdown(s,c,key,claimed,denied,manualRate="",clai
   // Two Classes and Commingle basic-day payments are fixed entitlements, not automatically
   // prorated minute-by-minute; don't represent a partial denial as a proved dollar value.
   else if(key==='09'&&c.twoClassesDecision==='overtime')rateType='overtime';
-  else if(key==='11-misc'&&s.miscPenalty)rateType=c.miscPenaltyRate==='overtime'?'overtime':'straight';
   else if(key==='13')rateType='night';
+  // When a claim explicitly links a blue Calculated Pay component,
+  // its OWN rate controls the denial calculation. The same shift may
+  // have a straight-time Misc Penalty and a different Time on Time item.
   if(!rateType&&est&&['04','11-misc'].includes(key))rateType=est.rateKind;
   if(!rateType&&manualRate&&!est)rateType=manualRate;
   if(!rateType)return null;
@@ -4179,12 +4181,17 @@ function estimatedTimeSlipClaimFor(s,c,key,claimSource='auto'){
     if(claimSource==='manual')return null;
     let source=claimSource;
     if(source==='auto'&&key==='11-misc'){
-      // The blue pay calculation may contain either item, or both.
-      // Use it automatically only when there's exactly one matching source.
+      // Code 11 Miscellaneous has a direct matching Miscellaneous Penalty
+      // line. Prefer it even when Time on Time is ALSO on the shift.
+      // Only use Time on Time when there is no Miscellaneous Penalty.
       const a2=!!(s.a2&&c.a2mins>0&&c.a2>0);
       const misc=!!(s.miscPenalty&&c.miscPenaltyMinutes>0&&c.miscPenaltyPay>0);
-      source=a2!==misc?(a2?'a2':'misc'):'';
+      source=misc?'misc':a2?'a2':'';
     }
+    // Code 04 Outside Assignment is not necessarily Time on Time.
+    // Require a one-tap, explicit association rather than silently importing
+    // an unrelated payment into a time slip.
+
     const matched=timeSlipCalculatedPaySource(s,c,source);
     if(matched)return {...matched,amount:Math.round(matched.amount*100)/100};
     return null;
@@ -4272,7 +4279,10 @@ function refreshTimeSlipClaimEstimates(){
       const old=sourceSelect.value||'auto';
       const availA2=!!(s.a2&&c.a2mins>0&&c.a2>0),availMisc=!!(s.miscPenalty&&c.miscPenaltyMinutes>0&&c.miscPenaltyPay>0);
       sourceWrap.style.display=availA2||availMisc?'block':'none';
-      const options=[['auto','Match automatically (if unambiguous)'],...(availA2||old==='a2'?[['a2','Use Time on Time · Calculated pay']]:[]),...(availMisc||old==='misc'?[['misc','Use Misc. Penalty · Calculated pay']]:[]),['manual','Enter claimed time manually']];
+      const a2Label=availA2?`Time on Time · ${fmtMinutes(c.a2mins)} · ${money(c.a2)}`:'Time on Time · unavailable';
+      const miscLabel=availMisc?`Miscellaneous Penalty · ${fmtMinutes(c.miscPenaltyMinutes)} ${c.miscPenaltyRate==='overtime'?'OT':'ST'} · ${money(c.miscPenaltyPay)}`:'Miscellaneous Penalty · unavailable';
+      const autoLabel=key==='11-misc'&&availMisc?'Auto: use matching Miscellaneous Penalty':key==='11-misc'&&availA2?'Auto: use Time on Time':key==='04'?'Choose matching Calculated Pay source':'Match automatically';
+      const options=[['auto',autoLabel],...(availA2||old==='a2'?[['a2',a2Label]]:[]),...(availMisc||old==='misc'?[['misc',miscLabel]]:[]),['manual','Enter claimed time manually']];
       sourceSelect.innerHTML=options.map(([v,l])=>`<option value="${v}"${v===old?' selected':''}${(v==='a2'&&!availA2)||(v==='misc'&&!availMisc)?' disabled':''}>${escapeHTML(l)}</option>`).join('');
       if((old==='a2'&&!availA2)||(old==='misc'&&!availMisc))sourceSelect.value='manual';
     }
@@ -4282,7 +4292,18 @@ function refreshTimeSlipClaimEstimates(){
     const claimedRate=row.querySelector('[data-claim-rate]')?.value||'';
     const manualEst=!est?timeSlipManualDurationEstimate(s,c,durationInput?.value||'',claimedRate):null;
     const effective=est||manualEst;
-    info.textContent=est?`EPL calculated claim: ${money(est.amount)} · ${est.detail}`:manualEst?`Time-based claim: ${money(manualEst.amount)} · ${manualEst.detail}`:(key==='13'?'Automatic additional night differential requires an active, date-matched Crew Book assignment and qualifying extra night minutes. You can still enter the claimed time manually.':key==='05'?'No additional overtime could be verified from this shift and its Crew Book schedule. You can still enter the claimed time manually.':'No matching calculated pay for this claim. Enter claimed time and choose its rate; EPL can estimate the dollars.');
+    const availableOptions=[];
+    if(s.a2&&c.a2mins>0&&c.a2>0)availableOptions.push({key:'a2',title:'Time on Time',amount:c.a2,mins:c.a2mins,rate:'ST'});
+    if(s.miscPenalty&&c.miscPenaltyMinutes>0&&c.miscPenaltyPay>0)availableOptions.push({key:'misc',title:'Miscellaneous Penalty',amount:c.miscPenaltyPay,mins:c.miscPenaltyMinutes,rate:c.miscPenaltyRate==='overtime'?'OT':'ST'});
+    const suggestions=row.querySelector('[data-claim-source-suggestions]');
+    // Make the missed matches visible in the claim card without making the
+    // engineer open a select menu just to discover that Calculated Pay exists.
+    if(suggestions){
+      const offer=key==='04'&&claimSource==='auto'&&!est?availableOptions:[];
+      suggestions.style.display=offer.length?'flex':'none';
+      suggestions.innerHTML=offer.map(x=>`<button type="button" class="btn small" onclick="selectTimeSlipCalculatedPaySource(this,'${x.key}')">Use ${escapeHTML(x.title)} · ${fmtMinutes(x.mins)} ${x.rate} · ${money(x.amount)}</button>`).join('');
+    }
+    info.textContent=est?`EPL calculated claim: ${money(est.amount)} · ${fmtMinutes(est.minutes)} ${est.rateKind==='overtime'?'OT':est.rateKind==='night'?'night diff.':'ST'} · ${est.detail}`:manualEst?`Time-based claim: ${money(manualEst.amount)} · ${manualEst.detail}`:key==='04'&&availableOptions.length?'Calculated Pay has matching candidates. Select the correct item below; Outside Assignment is not automatically the same as Time on Time.':(key==='13'?'Automatic additional night differential requires an active, date-matched Crew Book assignment and qualifying extra night minutes. You can still enter the claimed time manually.':key==='05'?'No additional overtime could be verified from this shift and its Crew Book schedule. You can still enter the claimed time manually.':'No matching calculated pay for this claim. Enter claimed time and choose its rate; EPL can estimate the dollars.');
     const durationArea=row.querySelector('[data-claim-duration-area]');
     const deniedWrap=row.querySelector('[data-claim-denied-wrap]');
     const rateWrap=row.querySelector('[data-claim-rate-wrap]');
@@ -4385,6 +4406,14 @@ function refreshTimeSlipClaimDenialPreviews(){
     preview.textContent=`Claimed ${fmtMinutes(breakdown.claimedMinutes)} · Denied ${fmtMinutes(breakdown.deniedMinutes)} · Approved ${fmtMinutes(breakdown.approvedMinutes)}`+
       (dollars?` · Denied value ${money(dollars.deniedDollars)} · Expected paid ${money(dollars.approvedDollars)} (${dollars.source})`:' · Dollar adjustment needs review for this claim code.');
   }
+}
+function selectTimeSlipCalculatedPaySource(button,source){
+  if(!['a2','misc'].includes(source))return;
+  const entry=button?.closest('[data-claim-entry]');
+  const choice=entry?.querySelector('[data-claim-source]');
+  if(!choice||![...choice.options].some(x=>x.value===source&&!x.disabled))return;
+  choice.value=source;
+  handleTimeSlipClaimSourceOrRateChange();
 }
 function handleTimeSlipClaimSourceOrRateChange(){
   refreshTimeSlipClaimEstimates();refreshTimeSlipClaimDenialPreviews();renderTimeSlipClaimOutcomePreview();
@@ -7356,7 +7385,7 @@ function renderTimeSlipClaimRows(values){
     const key=String(row.key||''),others=new Set(rows.filter((r,j)=>j!==i&&r.key).map(r=>r.key));
     const options=TIME_SLIP_CLAIM_TYPES.map(meta=>claimTypeOptionHTML(meta,key,others)).join('');
     const remove=rows.length>1?`<button type="button" class="btn small" onclick="removeTimeSlipClaimCodeRow(${i})">Remove</button>`:'';
-    const status=key?`<div class="claim-status"><strong>Result</strong><select data-claim-status onchange="handleTimeSlipClaimResultChange()">${[['','Not recorded'],['Pending','Pending'],['Paid','Paid'],['Denied','Denied'],['Partially Denied','Partially denied (minutes)'],...(row.status==='Partially Paid'?[['Partially Paid','Previously saved: partially paid (review)']]:[])].map(([val,label])=>`<option value="${val}"${val===(row.status||'')?' selected':''}>${label}</option>`).join('')}</select></div><div data-claim-source-wrap style="display:none"><label>Claim amount source<select data-claim-source onchange="handleTimeSlipClaimSourceOrRateChange()"><option value="auto"${(!row.claimSource||row.claimSource==='auto')?' selected':''}>Match automatically</option><option value="a2"${row.claimSource==='a2'?' selected':''}>Time on Time · Calculated pay</option><option value="misc"${row.claimSource==='misc'?' selected':''}>Miscellaneous Penalty · Calculated pay</option><option value="manual"${row.claimSource==='manual'?' selected':''}>Enter claimed time manually</option></select></label></div><div data-timeslip-calculated-estimate class="time-slip-calculated-estimate"></div><div data-claim-duration-area class="claim-duration-area" style="display:${row.status==='Partially Denied'?'block':'none'}"><strong data-claim-duration-title>Time denied on Wage Examiners letter</strong><div class="claim-duration-grid"><label>Time claimed (H:MM)<input data-claim-claimed-time type="text" inputmode="decimal" autocomplete="off" placeholder="4:27 or 427" oninput="handleTimeSlipClaimDurationChange(this)" value="${escapeHTML(row.claimedTime??'')}"></label><label data-claim-denied-wrap>Time denied (H:MM)<input data-claim-denied-time type="text" inputmode="decimal" autocomplete="off" placeholder="0:07 or 7" oninput="handleTimeSlipClaimDurationChange(this)" value="${escapeHTML(row.deniedTime??'')}"></label></div><div data-claim-rate-wrap style="display:none"><label>Pay rate for uncalculated time<select data-claim-rate onchange="handleTimeSlipClaimSourceOrRateChange()"><option value=""${!row.claimedRate?' selected':''}>Choose rate</option><option value="straight"${row.claimedRate==='straight'?' selected':''}>Straight time</option><option value="overtime"${row.claimedRate==='overtime'?' selected':''}>Overtime</option><option value="night"${row.claimedRate==='night'?' selected':''}>Night differential</option></select></label></div><div data-claim-duration-preview class="claim-duration-preview"></div><div class="claim-duration-hint" data-claim-duration-hint>When EPL has no matching calculated pay, enter your claimed hours and minutes and choose the appropriate rate. For a partial denial, also enter the denied minutes.</div></div><details><summary>Dollar amounts &amp; date (optional)</summary><div class="claim-amounts"><label>Calculated / claimed ($) · editable<input data-claim-claimed oninput="markTimeSlipMoneyManual(this)" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${escapeHTML(row.claimed??'')}"></label><label>Actually paid ($)<input data-claim-paid data-epl-inferred="${row.paidInferred?'1':''}" oninput="markTimeSlipMoneyManual(this)" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${escapeHTML(row.paid??'')}"></label></div><div data-claim-paid-source class="claim-duration-hint" aria-live="polite"></div><label style="margin-top:8px">Date resolved<input data-claim-date type="date" value="${escapeHTML(row.date??'')}"></label></details>`:'';
+    const status=key?`<div class="claim-status"><strong>Result</strong><select data-claim-status onchange="handleTimeSlipClaimResultChange()">${[['','Not recorded'],['Pending','Pending'],['Paid','Paid'],['Denied','Denied'],['Partially Denied','Partially denied (minutes)'],...(row.status==='Partially Paid'?[['Partially Paid','Previously saved: partially paid (review)']]:[])].map(([val,label])=>`<option value="${val}"${val===(row.status||'')?' selected':''}>${label}</option>`).join('')}</select></div><div data-claim-source-wrap style="display:none"><label>Claim amount source<select data-claim-source onchange="handleTimeSlipClaimSourceOrRateChange()"><option value="auto"${(!row.claimSource||row.claimSource==='auto')?' selected':''}>Match automatically</option><option value="a2"${row.claimSource==='a2'?' selected':''}>Time on Time · Calculated pay</option><option value="misc"${row.claimSource==='misc'?' selected':''}>Miscellaneous Penalty · Calculated pay</option><option value="manual"${row.claimSource==='manual'?' selected':''}>Enter claimed time manually</option></select></label></div><div data-timeslip-calculated-estimate class="time-slip-calculated-estimate"></div><div data-claim-source-suggestions class="claim-source-suggestions" style="display:none;gap:8px;flex-wrap:wrap;margin:8px 0"></div><div data-claim-duration-area class="claim-duration-area" style="display:${row.status==='Partially Denied'?'block':'none'}"><strong data-claim-duration-title>Time denied on Wage Examiners letter</strong><div class="claim-duration-grid"><label>Time claimed (H:MM)<input data-claim-claimed-time type="text" inputmode="decimal" autocomplete="off" placeholder="4:27 or 427" oninput="handleTimeSlipClaimDurationChange(this)" value="${escapeHTML(row.claimedTime??'')}"></label><label data-claim-denied-wrap>Time denied (H:MM)<input data-claim-denied-time type="text" inputmode="decimal" autocomplete="off" placeholder="0:07 or 7" oninput="handleTimeSlipClaimDurationChange(this)" value="${escapeHTML(row.deniedTime??'')}"></label></div><div data-claim-rate-wrap style="display:none"><label>Pay rate for uncalculated time<select data-claim-rate onchange="handleTimeSlipClaimSourceOrRateChange()"><option value=""${!row.claimedRate?' selected':''}>Choose rate</option><option value="straight"${row.claimedRate==='straight'?' selected':''}>Straight time</option><option value="overtime"${row.claimedRate==='overtime'?' selected':''}>Overtime</option><option value="night"${row.claimedRate==='night'?' selected':''}>Night differential</option></select></label></div><div data-claim-duration-preview class="claim-duration-preview"></div><div class="claim-duration-hint" data-claim-duration-hint>When EPL has no matching calculated pay, enter your claimed hours and minutes and choose the appropriate rate. For a partial denial, also enter the denied minutes.</div></div><details><summary>Dollar amounts &amp; date (optional)</summary><div class="claim-amounts"><label>Calculated / claimed ($) · editable<input data-claim-claimed oninput="markTimeSlipMoneyManual(this)" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${escapeHTML(row.claimed??'')}"></label><label>Actually paid ($)<input data-claim-paid data-epl-inferred="${row.paidInferred?'1':''}" oninput="markTimeSlipMoneyManual(this)" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${escapeHTML(row.paid??'')}"></label></div><div data-claim-paid-source class="claim-duration-hint" aria-live="polite"></div><label style="margin-top:8px">Date resolved<input data-claim-date type="date" value="${escapeHTML(row.date??'')}"></label></details>`:'';
     return `<div class="time-slip-claim-entry" data-claim-entry><div class="claim-head"><select data-timeslip-claim-select data-original-code="${escapeHTML(key)}" onchange="handleTimeSlipClaimSelectChange()"><option value="">Select claim type / code…</option>${options}</select>${remove}</div>${status}</div>`;
   }).join('');
   // Rehydrate inferred amounts on reopening so a changed denial recalculates them.
