@@ -1572,6 +1572,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .bid-sheet-status-pill{display:inline-flex;margin-top:8px;padding:5px 8px;border-radius:999px;font-size:8.5px;font-weight:900;letter-spacing:.02em}.bid-sheet-status-pill.open{background:#e8f7ef;color:#176742}.bid-sheet-status-pill.upcoming{background:#edf4ff;color:#214e7c}.bid-sheet-status-pill.closed{background:#f1f3f6;color:#657286}.bid-sheet-status-pill.results{background:#efe8fb;color:#5b3a88}.bid-sheet-status-pill.effective{background:#fff1c9;color:#795b00}.bid-sheet-status-pill.past{background:#eef1f5;color:#657286}
     .bid-sheet-filters{display:none;margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.bid-sheet-filters.show{display:block}
     .bid-sheet-results{display:none;margin-top:12px}.bid-sheet-results.show{display:block}
+    .bid-fatigue-choices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:9px 0 0}.bid-fatigue-choices label{display:block;color:var(--text);font-weight:750;font-size:11px}.bid-fatigue-choices select{width:100%;box-sizing:border-box;margin-top:5px;min-height:41px}.bid-fatigue-source{margin-top:9px;color:var(--muted);font-size:10px;line-height:1.45}.bid-fatigue-samples{margin-top:9px;padding:10px;border:1px dashed var(--line);border-radius:11px}.bid-fatigue-samples .bid-fatigue-preview-item{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:11px}.bid-fatigue-samples .bid-fatigue-preview-item:last-child{border-bottom:0}.bid-fatigue-samples strong{color:var(--brand)}
     .bid-sheet-search-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px}.bid-sheet-search-row .field{margin:0}
     .bid-sheet-source{margin-top:8px;color:var(--muted);font-size:8.5px;line-height:1.45}
     .bid-sheet-card-terminal{font-weight:850;color:#4a5d73}.bid-sheet-unmatched{margin-top:8px;padding:8px 9px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);font-size:8.5px;line-height:1.4}
@@ -2380,6 +2381,16 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <label class="trim-check"><input type="checkbox" value="5" onchange="bidSheetApplyFilters()"> Fri</label>
           <label class="trim-check"><input type="checkbox" value="6" onchange="bidSheetApplyFilters()"> Sat</label>
           <label class="trim-check"><input type="checkbox" value="7" onchange="bidSheetApplyFilters()"> Sun</label>
+        </div>
+        <div class="trim-filter-title">Fatigue type <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— GO 203 published assignment-day classification</span></div>
+        <div class="bid-fatigue-choices">
+          <label for="bidFatigueDay">Assignment day<select id="bidFatigueDay" onchange="bidSheetApplyFilters()"><option value="0">Monday</option><option value="1">Tuesday</option><option value="2">Wednesday</option><option value="3">Thursday</option><option value="4">Friday</option><option value="5">Saturday</option><option value="6">Sunday</option></select></label>
+          <label for="bidFatigueType">Fatigue type<select id="bidFatigueType" onchange="bidSheetApplyFilters()"><option value="">All types</option><option value="1">Type 1</option><option value="2">Type 2</option></select></label>
+        </div>
+        <div class="bid-fatigue-source" id="bidFatigueStatus" role="status" aria-live="polite">Fatigue filters use the official GO 203 Rev. 1 table (F-1 through F-12).</div>
+        <div id="bidFatiguePreviewArea" style="display:none;margin-top:8px">
+          <button class="btn small" type="button" id="bidFatiguePreviewButton" onclick="bidSheetFatigueTogglePreview()" aria-expanded="false">Preview GO 203 examples (read only)</button>
+          <div class="bid-fatigue-samples" id="bidFatigueSamples" style="display:none" aria-live="polite"></div>
         </div>
         <div class="trim-filter-title">Extra List IPMA <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— any selected IPMA matches</span></div>
         <div class="trim-check-grid" id="bidIpmaChecks">
@@ -14804,10 +14815,59 @@ function bidSheetOpenDetails(assignment){
   if(isYardCrewKey(key)||isYardReliefKey(key)){bidSheetOpenQuickLookup(key,date);return}
   const hit=crewBookLookupJobV8(key,date),modal=document.getElementById('jobCompareOfficialModal'),body=document.getElementById('jobCompareOfficialBody'),title=document.getElementById('jobCompareOfficialTitle'),sub=document.getElementById('jobCompareOfficialSubtitle');if(!modal||!body)return;if(title)title.textContent=`Job ${key} • Official Assignment`;if(sub)sub.textContent=`Bid sheet effective ${bidSheetDateLabel(date)}`;body.innerHTML=crewBookOfficialViewerBodyHTML(key,date,hit);modal.classList.add('open');
 }
+// The verified GO 203 fatigue chart is effective November 9, 2026; never
+// apply its assignments to a GO 202 effective-date bulletin. A read-only sample
+// preview is available for testing the controls before the first GO 203 bid.
+let bidSheetFatiguePreviewOpen=false;
+const BID_FATIGUE_SAMPLE_JOBS=Object.freeze(['7','13','39','48','113']);
+function bidSheetFatigueFilterActive(snapshot=bidSheetState.snapshot){
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(snapshot?.effective_date||''))&&snapshot.effective_date>=GO203_FATIGUE_EFFECTIVE;
+}
+function bidSheetFatigueDate(effective,day){
+  const d=new Date(String(effective)+'T12:00:00');
+  if(Number.isNaN(d.getTime()))return '';
+  const mondayOffset=(8-d.getDay())%7;
+  d.setDate(d.getDate()+mondayOffset+Number(day));
+  return isoLocal(d);
+}
+function bidSheetFatigueDayType(assignment,effective,day){
+  const f=go203FatigueForAssignment(assignment,bidSheetFatigueDate(effective,day));
+  return f?.type||'';
+}
+function bidSheetFatigueMatches(assignment,effective,day,type){
+  return !type||bidSheetFatigueDayType(assignment,effective,day)===type;
+}
+function bidSheetFatigueTogglePreview(){
+  bidSheetFatiguePreviewOpen=!bidSheetFatiguePreviewOpen;
+  bidSheetFatigueRenderContext();
+}
+function bidSheetFatigueRenderContext(){
+  const active=bidSheetFatigueFilterActive(),status=document.getElementById('bidFatigueStatus'),area=document.getElementById('bidFatiguePreviewArea'),samples=document.getElementById('bidFatigueSamples'),button=document.getElementById('bidFatiguePreviewButton');
+  const day=Number(document.getElementById('bidFatigueDay')?.value||0),type=String(document.getElementById('bidFatigueType')?.value||'');
+  const names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  if(status)status.textContent=active
+    ?`Filtering advertised GO 203 jobs by ${names[day]} classification from Passenger Crew Book Rev. 1, F-1–F-12. Relief days and jobs without published day classifications do not match a selected Type. No Hours of Service determination.`
+    :`The current bid sheet is not effective under GO 203. Filters will not change these advertised GO 202 results. GO 203 examples below are for read-only testing only.`;
+  if(area)area.style.display=active?'none':'';
+  if(button){button.setAttribute('aria-expanded',String(bidSheetFatiguePreviewOpen&&!active));button.textContent=bidSheetFatiguePreviewOpen&&!active?'Hide GO 203 examples':'Preview GO 203 examples (read only)'}
+  if(samples){
+    samples.style.display=bidSheetFatiguePreviewOpen&&!active?'':'none';
+    if(bidSheetFatiguePreviewOpen&&!active){
+      const iso=bidSheetFatigueDate(GO203_FATIGUE_EFFECTIVE,day);
+      const rows=BID_FATIGUE_SAMPLE_JOBS.map(job=>({job,f:go203FatigueForAssignment(job,iso)}));
+      const shown=rows.filter(x=>!type||x.f?.type===type);
+      samples.innerHTML=`<strong>GO 203 examples · ${names[day]} ${escapeHTML(iso)} · ${type?'Type '+type:'All types'}</strong><div class="bid-fatigue-source">Sample assignments only, NOT current bid advertisements. No Staging or My Bid Sheet actions.</div>`+(shown.length?shown.map(x=>`<div class="bid-fatigue-preview-item"><span>Job ${escapeHTML(x.job)}</span><strong>${x.f?'Type '+x.f.type:'Relief / not classified'}</strong></div>`).join(''):'<div class="bid-fatigue-source">No sample assignments match this day and type.</div>');
+    }
+  }
+}
 function bidSheetApplyFilters(){
   const rows=bidSheetState.rows||[],numbered=!!document.getElementById('bidTypeNumbered')?.checked,extra=!!document.getElementById('bidTypeExtra')?.checked,yard=!!document.getElementById('bidTypeYard')?.checked,terminal=String(document.getElementById('bidSheetTerminal')?.value||''),search=String(document.getElementById('bidSheetSearch')?.value||'').trim().toUpperCase();
   const relief=trimDevCheckedValues('bidReliefChecks').map(Number),ipmas=trimDevCheckedValues('bidIpmaChecks'),effective=bidSheetState.snapshot?.effective_date||isoLocal(new Date());
+  const fatigueDay=Number(document.getElementById('bidFatigueDay')?.value||0),fatigueType=String(document.getElementById('bidFatigueType')?.value||'');
+  const fatigueActive=bidSheetFatigueFilterActive();
+  bidSheetFatigueRenderContext();
   let shown=rows.filter(r=>{const kind=bidSheetKind(r.assignment);return kind==='numbered'?numbered:kind==='extra_list'?extra:yard});
+  if(fatigueActive&&fatigueType)shown=shown.filter(r=>bidSheetFatigueMatches(r.assignment,effective,fatigueDay,fatigueType));
   if(relief.length)shown=shown.filter(r=>{const key=normalizeCrewBookKey(r.assignment),days=bidSheetRestDays(r,key,effective);return relief.every(day=>days.includes(day))});
   if(ipmas.length)shown=shown.filter(r=>bidSheetKind(r.assignment)!=='extra_list'||ipmas.includes(trimDevIpma({assignment:r.assignment,assignment_type:'extra_list'})));
   if(terminal)shown=shown.filter(r=>bidSheetKind(r.assignment)==='extra_list'||String(r.terminal||'')===terminal);
@@ -14815,7 +14875,7 @@ function bidSheetApplyFilters(){
   const count=document.getElementById('bidSheetResultCount'),list=document.getElementById('bidSheetResultList');if(count)count.textContent=`${shown.length} assignment${shown.length===1?'':'s'} • bulletin order`;if(!list)return;if(!shown.length){list.innerHTML='<div class="trim-dev-empty">No advertised assignments match these filters.</div>';return}
   list.innerHTML=shown.map(r=>{
     const key=normalizeCrewBookKey(r.assignment),kind=bidSheetKind(r.assignment),extraJob=kind==='extra_list',relief=extraJob?null:jobCompareReliefCrewDefinition(key,effective),hit=extraJob?null:crewBookLookupJobV8(key,effective),known=!!relief||!!hit||extraJob,stats=extraJob?null:bidSheetWeekStats(r,key,effective);
-    const chips=[`Terminal: ${r.terminal||'—'}`];if(extraJob){chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);const ipma=trimDevIpma({assignment:r.assignment,assignment_type:'extra_list'});if(ipma)chips.push(`IPMA: ${ipma}`)}else{chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);if(stats)chips.push(`Weekly OT: ${fmtMinutes(stats.overtime)}`);if(stats){const pct=payScaleForDate(effective),mealValue=pct?otPay(stats.meals*20,pct):null;chips.push(`Paid meals: ${stats.meals}${mealValue!=null?` • est. ${money(mealValue)}`:''}`)}}
+    const chips=[`Terminal: ${r.terminal||'—'}`];if(fatigueActive&&fatigueType){const f=bidSheetFatigueDayType(r.assignment,effective,fatigueDay);if(f)chips.push(`Fatigue ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][fatigueDay]}: Type ${f}`)}if(extraJob){chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);const ipma=trimDevIpma({assignment:r.assignment,assignment_type:'extra_list'});if(ipma)chips.push(`IPMA: ${ipma}`)}else{chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);if(stats)chips.push(`Weekly OT: ${fmtMinutes(stats.overtime)}`);if(stats){const pct=payScaleForDate(effective),mealValue=pct?otPay(stats.meals*20,pct):null;chips.push(`Paid meals: ${stats.meals}${mealValue!=null?` • est. ${money(mealValue)}`:''}`)}}
     const chipHTML=chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}${c.startsWith('Weekly OT:')?' trim-ot':''}">${escapeHTML(c)}</span>`).join('');let detail='';
     if(relief){const coverage=trimDevReliefCoverageText(relief);if(coverage)detail=`<div class="trim-result-detail"><strong>Covers:</strong> ${escapeHTML(coverage)}</div>`;detail+=bidSheetScheduleHTML(stats)}else if(stats)detail=bidSheetScheduleHTML(stats);else if(!known)detail='<div class="bid-sheet-unmatched">This assignment is listed on the official bid sheet, but structured Crew Book details are not currently available in Engineer Pay Log.</div>';
     const typeLabel=extraJob?'Guaranteed Extra List':relief?'Relief Crew':kind==='numbered'?'Passenger Crew Book assignment':'Yard / other assignment',clickable=!extraJob&&known;
@@ -14828,7 +14888,7 @@ function bidSheetApplyFilters(){
   }).join('');
 }
 function bidSheetClearFilters(){
-  for(const id of ['bidTypeNumbered','bidTypeExtra','bidTypeYard']){const el=document.getElementById(id);if(el)el.checked=true}for(const id of ['bidReliefChecks','bidIpmaChecks'])document.querySelectorAll(`#${id} input[type="checkbox"]`).forEach(x=>x.checked=false);const search=document.getElementById('bidSheetSearch');if(search)search.value='';const terminal=document.getElementById('bidSheetTerminal');if(terminal)terminal.value='';bidSheetApplyFilters();
+  for(const id of ['bidTypeNumbered','bidTypeExtra','bidTypeYard']){const el=document.getElementById(id);if(el)el.checked=true}for(const id of ['bidReliefChecks','bidIpmaChecks'])document.querySelectorAll(`#${id} input[type="checkbox"]`).forEach(x=>x.checked=false);const fatigueDay=document.getElementById('bidFatigueDay'),fatigueType=document.getElementById('bidFatigueType');if(fatigueDay)fatigueDay.value='0';if(fatigueType)fatigueType.value='';const search=document.getElementById('bidSheetSearch');if(search)search.value='';const terminal=document.getElementById('bidSheetTerminal');if(terminal)terminal.value='';bidSheetApplyFilters();
 }
 
 // ---- Bid Sheet Staging Area (isolated, device-only GitHub test) ----
