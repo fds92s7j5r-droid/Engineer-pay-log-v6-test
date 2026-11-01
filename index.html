@@ -3471,6 +3471,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <div class="fatigue-review-card">
             <div class="fatigue-review-heading"><div><strong id="fatiguePublishedLabel">Published fatigue: —</strong><div class="muted" id="fatiguePublishedSource" style="font-size:11px;margin-top:3px"></div></div>
               <button id="fatigueOverrideButton" class="btn small" type="button" onclick="toggleFatigueOverrideEditor()">Override for this shift</button></div>
+            <div id="fatigueReleaseComparison" class="muted" style="font-size:11px;margin-top:8px;display:none"></div>
             <div id="fatigueOverridePanel" style="display:none;margin-top:12px">
               <label for="fatigueOverrideSelect">Record fatigue type for this shift</label>
               <select id="fatigueOverrideSelect" onchange="refreshFatigueEditor()">
@@ -4529,6 +4530,8 @@ function upgradeShift(s){
   if(s.fatigueTypeOverrideDate===undefined)s.fatigueTypeOverrideDate='';
   if(s.fatigueTypeOverrideAssignment===undefined)s.fatigueTypeOverrideAssignment='';
   if(s.fatigueTypeOverrideNote===undefined)s.fatigueTypeOverrideNote='';
+  if(s.fatigueTypeOverridePublishedRelease===undefined)s.fatigueTypeOverridePublishedRelease='';
+  if(s.fatigueTypeOverrideReferenceSource===undefined)s.fatigueTypeOverrideReferenceSource='';
   if(s.vacationGross===undefined)s.vacationGross=0;
   if(s.vacationReliefPair===undefined)s.vacationReliefPair='';
   if(s.vacationEndDate===undefined)s.vacationEndDate=s.specialShift==='Vacation Week'?addDaysISO(s.date,6):'';
@@ -7059,6 +7062,13 @@ function formData(){
   const mph=Math.max(0,Number($('miscPenaltyHours').value)||0),mpm=Math.min(59,Math.max(0,Number($('miscPenaltyMinutes').value)||0));
   const miscRate=document.querySelector('input[name="miscPenaltyRate"]:checked')?.value||'straight';
   const fatigueSnapshot=go203FatigueForAssignment($('assignment').value,$('date').value);
+  const fatigueReview=fatigueReleaseReview({
+    assignment:$('assignment').value,date:$('date').value,start:$('start').value,end:$('end').value,
+    fatigueTypeOverridePublishedRelease:$('fatigueShiftField').dataset.fatigueReferenceRelease||'',
+    fatigueTypeOverrideAssignment:$('fatigueShiftField').dataset.fatigueReferenceJob||'',
+    fatigueTypeOverrideDate:$('fatigueShiftField').dataset.fatigueReferenceDate||''
+  });
+  const fatigueManual=fatigueSnapshot&&fatigueReview?.changed&&$('fatigueShiftField').dataset.fatigueKey===`${fatigueSnapshot.job}|${fatigueSnapshot.date}`&&['1','2'].includes($('fatigueOverrideSelect').value)&&$('fatigueOverrideSelect').value!==fatigueSnapshot.type;
   return {
     id:$('editId').value||createUniqueId(),
     date:$('date').value,start:$('start').value,end:$('end').value,
@@ -7066,9 +7076,11 @@ function formData(){
     ratePct:(()=>{const id=$('editId').value,old=shifts.find(x=>x.id===id);return old&&old.date===$('date').value&&old.ratePct?old.ratePct:payScaleForDate($('date').value)})(),
     fatigueType:fatigueSnapshot?.type||'',fatigueTypeSource:fatigueSnapshot?.source||'',
     fatigueTypeDate:fatigueSnapshot?.date||'',fatigueTypeAssignment:fatigueSnapshot?.job||'',
-    fatigueTypeOverride:(()=>{const v=$('fatigueOverrideSelect').value;return fatigueSnapshot&&v!==fatigueSnapshot.type&&(v==='1'||v==='2')&&$('fatigueShiftField').dataset.fatigueKey===`${fatigueSnapshot.job}|${fatigueSnapshot.date}`?v:''})(),
-    fatigueTypeOverrideAssignment:fatigueSnapshot?.job||'',fatigueTypeOverrideDate:fatigueSnapshot?.date||'',
-    fatigueTypeOverrideNote:$('fatigueOverrideNote').value.trim().slice(0,300), 
+    fatigueTypeOverride:fatigueManual?$('fatigueOverrideSelect').value:'',
+    fatigueTypeOverrideAssignment:fatigueManual?fatigueSnapshot.job:'',fatigueTypeOverrideDate:fatigueManual?fatigueSnapshot.date:'',
+    fatigueTypeOverridePublishedRelease:fatigueManual?fatigueReview.reference.end:'',
+    fatigueTypeOverrideReferenceSource:fatigueManual?fatigueReview.reference.source:'',
+    fatigueTypeOverrideNote:fatigueManual?$('fatigueOverrideNote').value.trim().slice(0,300):'', 
     assignment:$('assignment').value.trim(),location:$('location').value.trim(),shiftType:$('shiftType').value,
     specialShift:$('shiftRuleMode').value==='trainee'?($('classFlag').checked?'':$('specialShift').value):$('specialShift').value,specialCategory:$('shiftRuleMode').value==='trainee'?'':$('specialCategory').value,
     vacationGross:isVacationSpecial($('specialShift').value)?Math.max(0,Number($('vacationGrossInput').value)||0):0,
@@ -11489,10 +11501,54 @@ function go203FatigueForAssignment(assignment, date){
   if(type!=='1'&&type!=='2')return null; // R/blank never become Type 1 or 2.
   return {type,weeklyType:row[0],job,date:iso,page:'F-'+row[2],source:GO203_FATIGUE_SOURCE};
 }
-// A descriptive historical record only. Never calculates Type 1/2 rest-day eligibility.
+// Descriptive historical data only: never determines fatigue conversion or legal rest.
+// Crucially, never compare GO203 fatigue against the GO202 Crew Book resolver.
+function fatiguePublishedReleaseForAssignment(assignment,date){
+  const f=go203FatigueForAssignment(assignment,date);
+  if(!f)return null;
+  const valid=x=>/^\d{2}:\d{2}$/.test(String(x||''))&&Number.isFinite(parseClock(x));
+  try{
+    const rev=crewBookPassengerRevision(date);
+    // The live date-aware passenger resolver can be used only if it identifies GO203.
+    if(String(rev?.go)==='203'){
+      const r=jobCompareResolveForDay(f.job,date);
+      if(r?.state==='active'&&valid(r.schedule?.end))
+        return {end:r.schedule.end,source:'GO 203 active Crew Book'};
+    }
+  }catch(_){/* GO203 not activated or resolver unavailable */}
+  try{
+    // Before cutover, use only the certified/structured GO203 preview for its
+    // exact calendar date, not a similar weekday in another week.
+    const active=futureRevisionActiveDataset();
+    if(String(active?.data?.meta?.go)!=='203'||String(active?.data?.meta?.effective)!=='2026-11-09')return null;
+    const dt=new Date(date+'T12:00:00'),days=['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+    const daily=active.pickWeek?.regular?.[f.job]?.days?.[days[dt.getDay()]];
+    if(daily?.date===date&&daily?.schedule?.status==='resolved'&&valid(daily.schedule.end))
+      return {end:daily.schedule.end,source:'GO 203 published preview'};
+  }catch(_){/* No verified GO203 reference */}
+  return null;
+}
+function fatigueReleaseReview(s){
+  const f=go203FatigueForAssignment(s?.assignment,s?.date);
+  if(!f||!/^\d{2}:\d{2}$/.test(String(s?.start||''))||!/^\d{2}:\d{2}$/.test(String(s?.end||'')))return null;
+  let reference=fatiguePublishedReleaseForAssignment(f.job,f.date);
+  // A saved engineer override retains its reviewed printed-release snapshot.
+  // Do not use snapshots on different jobs/dates or unverified legacy entries.
+  if(s?.fatigueTypeOverridePublishedRelease&&s.fatigueTypeOverrideAssignment===f.job&&s.fatigueTypeOverrideDate===f.date&&/^\d{2}:\d{2}$/.test(s.fatigueTypeOverridePublishedRelease)){
+    reference={end:s.fatigueTypeOverridePublishedRelease,source:s.fatigueTypeOverrideReferenceSource||'GO 203 reviewed release'};
+  }
+  if(!reference)return null;
+  const start=parseClock(s.start),actual=parseClock(s.end),book=parseClock(reference.end);
+  if(![start,actual,book].every(Number.isFinite))return null;
+  // Normalize after midnight relative to the recorded assignment start.
+  const elapsed=end=>end<start?end+1440-start:end-start;
+  const delta=elapsed(actual)-elapsed(book);
+  return {changed:delta!==0,delta,reference,actual:s.end,publishedType:f.type};
+}
 function resetFatigueEditor(){
   const root=document.getElementById('fatigueShiftField');if(!root)return;
   root.dataset.fatigueKey='';root.dataset.expanded='0';
+  root.dataset.fatigueReferenceRelease='';root.dataset.fatigueReferenceJob='';root.dataset.fatigueReferenceDate='';
   document.getElementById('fatigueOverrideSelect').value='';
   document.getElementById('fatigueOverrideNote').value='';
 }
@@ -11500,6 +11556,11 @@ function loadFatigueEditorForShift(s){
   resetFatigueEditor();
   const f=go203FatigueForShift(s),root=document.getElementById('fatigueShiftField');if(!f||!root)return;
   root.dataset.fatigueKey=`${f.job}|${f.date}`;
+  if(s.fatigueTypeOverridePublishedRelease&&s.fatigueTypeOverrideAssignment===f.job&&s.fatigueTypeOverrideDate===f.date){
+    root.dataset.fatigueReferenceRelease=s.fatigueTypeOverridePublishedRelease;
+    root.dataset.fatigueReferenceJob=f.job;
+    root.dataset.fatigueReferenceDate=f.date;
+  }
   if(f.manual){
     document.getElementById('fatigueOverrideSelect').value=f.type;
     document.getElementById('fatigueOverrideNote').value=String(s.fatigueTypeOverrideNote||'').slice(0,300);
@@ -11508,6 +11569,9 @@ function loadFatigueEditorForShift(s){
 }
 function toggleFatigueOverrideEditor(){
   const root=document.getElementById('fatigueShiftField');if(!root||root.style.display==='none')return;
+  const f=fatigueReleaseReview({assignment:document.getElementById('assignment').value,date:document.getElementById('date').value,start:document.getElementById('start').value,end:document.getElementById('end').value,
+    fatigueTypeOverridePublishedRelease:root.dataset.fatigueReferenceRelease,fatigueTypeOverrideAssignment:root.dataset.fatigueReferenceJob,fatigueTypeOverrideDate:root.dataset.fatigueReferenceDate});
+  if(!f?.changed)return;
   root.dataset.expanded=root.dataset.expanded==='1'?'0':'1';
   refreshFatigueEditor();
 }
@@ -11518,12 +11582,10 @@ function restorePublishedFatigue(){
   root.dataset.expanded='0';
   refreshFatigueEditor();
 }
-function fatigueAfterMidnightNotice(assignment,date,start,end){
+function fatigueAfterMidnightNotice(assignment,date,start,end,reference=null){
   const f=go203FatigueForAssignment(assignment,date);
-  if(!f||f.type!=='1'||!/^\d{2}:\d{2}$/.test(start||'')||!/^\d{2}:\d{2}$/.test(end||''))return false;
+  if(!f||f.type!=='1'||!reference?.changed)return false;
   const a=parseClock(start),b=parseClock(end);
-  // Date-only entries cannot establish which duty was covered. This is a prompt
-  // to review an apparent overnight finish, not a fatigue reclassification.
   return Number.isFinite(a)&&Number.isFinite(b)&&a>=240&&a<1440&&b>=0&&b<720&&b<a;
 }
 function refreshFatigueEditor(){
@@ -11539,19 +11601,41 @@ function refreshFatigueEditor(){
     document.getElementById('fatigueOverrideSelect').value='';
     document.getElementById('fatigueOverrideNote').value='';
     root.dataset.fatigueKey=key;root.dataset.expanded='0';
+    root.dataset.fatigueReferenceRelease='';root.dataset.fatigueReferenceJob='';root.dataset.fatigueReferenceDate='';
   }
   if(!available)return;
-  const select=document.getElementById('fatigueOverrideSelect'),v=select.value;
-  const manual=(v==='1'||v==='2')&&v!==f.type;
+  const review=fatigueReleaseReview({assignment,date,start,end,
+    fatigueTypeOverridePublishedRelease:root.dataset.fatigueReferenceRelease,
+    fatigueTypeOverrideAssignment:root.dataset.fatigueReferenceJob,
+    fatigueTypeOverrideDate:root.dataset.fatigueReferenceDate});
+  const eligible=!!review?.changed;
+  const select=document.getElementById('fatigueOverrideSelect');
+  if(!eligible){
+    select.value='';document.getElementById('fatigueOverrideNote').value='';
+    root.dataset.expanded='0';
+  }
+  const v=select.value,manual=eligible&&(v==='1'||v==='2')&&v!==f.type;
   document.getElementById('fatiguePublishedLabel').textContent=`Published fatigue: Type ${f.type}`;
   document.getElementById('fatiguePublishedSource').textContent=`GO 203 Rev. 1 • ${f.page} • Assignment ${f.job} • ${f.date}`;
+  const button=document.getElementById('fatigueOverrideButton');
+  button.style.display=eligible?'inline-flex':'none';
+  button.textContent=root.dataset.expanded==='1'?'Hide override':'Override for this shift';
+  document.getElementById('fatigueOverridePanel').style.display=eligible&&root.dataset.expanded==='1'?'block':'none';
   document.getElementById('fatigueRecordedLabel').textContent=manual?`Recorded for this shift: Type ${v} (engineer override)`:'';
-  document.getElementById('fatigueOverrideButton').textContent=root.dataset.expanded==='1'?'Hide override':'Override for this shift';
-  document.getElementById('fatigueOverridePanel').style.display=root.dataset.expanded==='1'?'block':'none';
+  const comparison=document.getElementById('fatigueReleaseComparison');
+  comparison.style.display=eligible?'block':'none';
+  if(eligible){
+    const fmt=t=>{const [h,m]=t.split(':').map(Number),hr=h%12||12;return `${hr}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`};
+    comparison.textContent=`GO 203 release ${fmt(review.reference.end)} • Recorded release ${fmt(end)} • ${review.delta>0?'Later':'Earlier'} by ${fmtMinutes(Math.abs(review.delta))}`;
+  }else comparison.textContent='';
   const warn=document.getElementById('fatigueOvernightNotice');
-  const overnight=fatigueAfterMidnightNotice(assignment,date,start,end);
-  warn.style.display=overnight?'block':'none';
-  if(overnight)warn.innerHTML='<strong>Hours of Service — Review</strong><div style="margin-top:4px">This published Type 1 shift appears to finish after midnight. SI 100-R requires notification to Crew Management for an inadvertently late Type 1 finish, except when deadheading back to the initial terminal. Your rest requirements may change. EPL does not determine your fatigue type or eligibility; confirm with Crew Management.</div>';
+  warn.style.display=eligible?'block':'none';
+  if(eligible){
+    const overnight=fatigueAfterMidnightNotice(assignment,date,start,end,review);
+    warn.innerHTML=overnight
+      ?'<strong>Hours of Service — Review</strong><div style="margin-top:4px">This published Type 1 assignment has a changed release time that appears to finish after midnight. Under SI 100-R, an inadvertently late Type 1 finish requires immediate notification to Crew Management, except when deadheading back to the initial terminal. Rest requirements may change; EPL does not decide fatigue type or rest eligibility.</div>'
+      :'<strong>Release-time change — Review</strong><div style="margin-top:4px">The recorded release differs from GO 203. Only the engineer can record a different fatigue type after determining it is appropriate. Check with Crew Management as needed; EPL does not reclassify the assignment or determine rest eligibility.</div>';
+  }
 }
 function go203FatigueForShift(s){
   if(!s||s.specialShift||s.classDay||s.traineeMode||isSecretUnpaidSickShift(s))return null;
@@ -11560,7 +11644,8 @@ function go203FatigueForShift(s){
   const published={...current,publishedType:current.type,manual:false};
   // Only a shift-specific, user-entered choice may override the railroad's published type.
   // Changing a job or date invalidates that override; GO203 never reclassifies automatically.
-  if((s.fatigueTypeOverride==='1'||s.fatigueTypeOverride==='2')&&s.fatigueTypeOverrideAssignment===current.job&&s.fatigueTypeOverrideDate===current.date&&s.fatigueTypeOverride!==current.type){
+  const hasCandidateOverride=(s.fatigueTypeOverride==='1'||s.fatigueTypeOverride==='2')&&s.fatigueTypeOverrideAssignment===current.job&&s.fatigueTypeOverrideDate===current.date&&s.fatigueTypeOverride!==current.type;
+  if(hasCandidateOverride&&fatigueReleaseReview(s)?.changed){
     return {...published,type:s.fatigueTypeOverride,manual:true,overrideNote:String(s.fatigueTypeOverrideNote||'')};
   }
   return published;
