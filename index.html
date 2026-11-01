@@ -2385,7 +2385,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         <div id="bidFatigueFilterGroup">
         <div class="trim-filter-title">Fatigue type <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— GO 203 published assignment-day classification</span></div>
         <div class="bid-fatigue-choices">
-          <label for="bidFatigueDay">Assignment day<select id="bidFatigueDay" onchange="bidSheetApplyFilters()"><option value="0">Monday</option><option value="1">Tuesday</option><option value="2">Wednesday</option><option value="3">Thursday</option><option value="4">Friday</option><option value="5">Saturday</option><option value="6">Sunday</option></select></label>
+          <label for="bidFatigueDay">Assignment day<select id="bidFatigueDay" onchange="bidSheetApplyFilters()"><option value="">All days</option><option value="0">Monday</option><option value="1">Tuesday</option><option value="2">Wednesday</option><option value="3">Thursday</option><option value="4">Friday</option><option value="5">Saturday</option><option value="6">Sunday</option></select></label>
           <label for="bidFatigueType">Fatigue type<select id="bidFatigueType" onchange="bidSheetApplyFilters()"><option value="">All types</option><option value="1">Type 1</option><option value="2">Type 2</option></select></label>
         </div>
         <div class="bid-fatigue-source" id="bidFatigueStatus" role="status" aria-live="polite">Fatigue filters use the official GO 203 Rev. 1 table (F-1 through F-12).</div>
@@ -14846,7 +14846,11 @@ function bidSheetFatigueDayType(assignment,effective,day){
   return f?.type||'';
 }
 function bidSheetFatigueMatches(assignment,effective,day,type){
-  return !type||bidSheetFatigueDayType(assignment,effective,day)===type;
+  if(!type)return true;
+  // All days + a selected Type means at least one *worked* day has that
+  // classification. A selected weekday always uses only its published type.
+  if(day===null||day===''||day===undefined)return [0,1,2,3,4,5,6].some(d=>bidSheetFatigueDayType(assignment,effective,d)===type);
+  return bidSheetFatigueDayType(assignment,effective,day)===type;
 }
 // Presentation preference only. Does not affect official fatigue data, History,
 // manual engineer overrides, or the Hours of Service informational message.
@@ -14855,6 +14859,16 @@ let bidFatigueFilterDisplayFallback=null;
 function bidFatigueFiltersVisible(){
   if(bidFatigueFilterDisplayFallback!==null)return bidFatigueFilterDisplayFallback;
   try{return localStorage.getItem(BID_FATIGUE_FILTER_DISPLAY_KEY)!=='0'}catch{return true}
+}
+// Fresh sessions never inherit a stale fatigue filter from the browser.
+// Keep current selections during later re-renders in the same session.
+let bidFatigueInitialDefaultsApplied=false;
+function bidSheetInitializeFatigueDefaults(){
+  if(bidFatigueInitialDefaultsApplied)return;
+  bidFatigueInitialDefaultsApplied=true;
+  const day=document.getElementById('bidFatigueDay'),type=document.getElementById('bidFatigueType');
+  if(day)day.value='';
+  if(type)type.value='';
 }
 function syncBidFatigueDisplaySetting(){
   const show=bidFatigueFiltersVisible();
@@ -14871,7 +14885,7 @@ function setBidFatigueFiltersDisplay(enabled){
   // silently exclude advertised assignments when this preference changes.
   const day=document.getElementById('bidFatigueDay');
   const type=document.getElementById('bidFatigueType');
-  if(day)day.value='0';
+  if(day)day.value='';
   if(type)type.value='';
   bidSheetFatiguePreviewOpen=false;
   syncBidFatigueDisplaySetting();
@@ -14886,27 +14900,40 @@ function bidSheetFatigueRenderContext(){
   syncBidFatigueDisplaySetting();
   if(!bidFatigueFiltersVisible())return;
   const active=bidSheetFatigueFilterActive(),status=document.getElementById('bidFatigueStatus'),area=document.getElementById('bidFatiguePreviewArea'),samples=document.getElementById('bidFatigueSamples'),button=document.getElementById('bidFatiguePreviewButton');
-  const day=Number(document.getElementById('bidFatigueDay')?.value||0),type=String(document.getElementById('bidFatigueType')?.value||'');
+  const dayValue=String(document.getElementById('bidFatigueDay')?.value??'');
+  const day=dayValue===''?null:Number(dayValue),type=String(document.getElementById('bidFatigueType')?.value||'');
   const names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const dayLabel=day===null?'All days':names[day];
+  const filterDescription=!type?'No fatigue-based job filtering is active. All published fatigue types and relief days remain visible.'
+    :day===null?`Type ${type} on at least one working day (jobs may be another type on other days).`
+    :`Type ${type} on ${names[day]} only. Published relief days and unclassified jobs do not match.`;
   if(status)status.textContent=active
-    ?`Filtering advertised GO 203 jobs by ${names[day]} classification from Passenger Crew Book Rev. 1, F-1–F-12. Relief days and jobs without published day classifications do not match a selected Type. No Hours of Service determination.`
-    :`The current bid sheet is not effective under GO 203. Filters will not change these advertised GO 202 results. GO 203 examples below are for read-only testing only.`;
+    ?`${filterDescription} GO 203 Passenger Crew Book Rev. 1, F-1–F-12; informational only.`
+    :`The current bid sheet is not effective under GO 203. Filters will not change these advertised GO 202 results. GO 203 examples below are for read-only testing only. ${filterDescription}`;
   if(area)area.style.display=active?'none':'';
   if(button){button.setAttribute('aria-expanded',String(bidSheetFatiguePreviewOpen&&!active));button.textContent=bidSheetFatiguePreviewOpen&&!active?'Hide GO 203 examples':'Preview GO 203 examples (read only)'}
   if(samples){
     samples.style.display=bidSheetFatiguePreviewOpen&&!active?'':'none';
     if(bidSheetFatiguePreviewOpen&&!active){
-      const iso=bidSheetFatigueDate(GO203_FATIGUE_EFFECTIVE,day);
-      const rows=BID_FATIGUE_SAMPLE_JOBS.map(job=>({job,f:go203FatigueForAssignment(job,iso)}));
-      const shown=rows.filter(x=>!type||x.f?.type===type);
-      samples.innerHTML=`<strong>GO 203 examples · ${names[day]} ${escapeHTML(iso)} · ${type?'Type '+type:'All types'}</strong><div class="bid-fatigue-source">Sample assignments only, NOT current bid advertisements. No Staging or My Bid Sheet actions.</div>`+(shown.length?shown.map(x=>`<div class="bid-fatigue-preview-item"><span>Job ${escapeHTML(x.job)}</span><strong>${x.f?'Type '+x.f.type:'Relief / not classified'}</strong></div>`).join(''):'<div class="bid-fatigue-source">No sample assignments match this day and type.</div>');
+      const rows=BID_FATIGUE_SAMPLE_JOBS.map(job=>{
+        const daily=[0,1,2,3,4,5,6].map(d=>go203FatigueForAssignment(job,bidSheetFatigueDate(GO203_FATIGUE_EFFECTIVE,d))?.type||'');
+        const f=day===null?null:go203FatigueForAssignment(job,bidSheetFatigueDate(GO203_FATIGUE_EFFECTIVE,day));
+        const matches=!type||(day===null?daily.includes(type):f?.type===type);
+        const details=day===null
+          ?['1','2'].map(t=>{const days=daily.map((x,i)=>x===t?names[i]:null).filter(Boolean);return days.length?`Type ${t}: ${days.join(', ')}`:''}).filter(Boolean).join(' • ')||'Relief / not classified'
+          :f?'Type '+f.type:'Relief / not classified';
+        return {job,matches,details};
+      });
+      const shown=rows.filter(x=>x.matches);
+      samples.innerHTML=`<strong>GO 203 examples · ${dayLabel} · ${type?'Type '+type:'All types'}</strong><div class="bid-fatigue-source">Sample assignments only, NOT current bid advertisements. No Staging or My Bid Sheet actions.${day===null&&type?' A job matches if at least one working day has the selected type.':''}</div>`+(shown.length?shown.map(x=>`<div class="bid-fatigue-preview-item"><span>Job ${escapeHTML(x.job)}</span><strong>${escapeHTML(x.details)}</strong></div>`).join(''):'<div class="bid-fatigue-source">No sample assignments match this day and type.</div>');
     }
   }
 }
 function bidSheetApplyFilters(){
   const rows=bidSheetState.rows||[],numbered=!!document.getElementById('bidTypeNumbered')?.checked,extra=!!document.getElementById('bidTypeExtra')?.checked,yard=!!document.getElementById('bidTypeYard')?.checked,terminal=String(document.getElementById('bidSheetTerminal')?.value||''),search=String(document.getElementById('bidSheetSearch')?.value||'').trim().toUpperCase();
   const relief=trimDevCheckedValues('bidReliefChecks').map(Number),ipmas=trimDevCheckedValues('bidIpmaChecks'),effective=bidSheetState.snapshot?.effective_date||isoLocal(new Date());
-  const fatigueDay=Number(document.getElementById('bidFatigueDay')?.value||0),fatigueType=String(document.getElementById('bidFatigueType')?.value||'');
+  const fatigueDayRaw=String(document.getElementById('bidFatigueDay')?.value??'');
+  const fatigueDay=fatigueDayRaw===''?null:Number(fatigueDayRaw),fatigueType=String(document.getElementById('bidFatigueType')?.value||'');
   // Never apply a hidden fatigue filter, including when form values are
   // retained by the browser after a reload or the Bid Sheet is refreshed.
   const fatigueActive=bidFatigueFiltersVisible()&&bidSheetFatigueFilterActive();
@@ -14920,7 +14947,7 @@ function bidSheetApplyFilters(){
   const count=document.getElementById('bidSheetResultCount'),list=document.getElementById('bidSheetResultList');if(count)count.textContent=`${shown.length} assignment${shown.length===1?'':'s'} • bulletin order`;if(!list)return;if(!shown.length){list.innerHTML='<div class="trim-dev-empty">No advertised assignments match these filters.</div>';return}
   list.innerHTML=shown.map(r=>{
     const key=normalizeCrewBookKey(r.assignment),kind=bidSheetKind(r.assignment),extraJob=kind==='extra_list',relief=extraJob?null:jobCompareReliefCrewDefinition(key,effective),hit=extraJob?null:crewBookLookupJobV8(key,effective),known=!!relief||!!hit||extraJob,stats=extraJob?null:bidSheetWeekStats(r,key,effective);
-    const chips=[`Terminal: ${r.terminal||'—'}`];if(fatigueActive&&fatigueType){const f=bidSheetFatigueDayType(r.assignment,effective,fatigueDay);if(f)chips.push(`Fatigue ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][fatigueDay]}: Type ${f}`)}if(extraJob){chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);const ipma=trimDevIpma({assignment:r.assignment,assignment_type:'extra_list'});if(ipma)chips.push(`IPMA: ${ipma}`)}else{chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);if(stats)chips.push(`Weekly OT: ${fmtMinutes(stats.overtime)}`);if(stats){const pct=payScaleForDate(effective),mealValue=pct?otPay(stats.meals*20,pct):null;chips.push(`Paid meals: ${stats.meals}${mealValue!=null?` • est. ${money(mealValue)}`:''}`)}}
+    const chips=[`Terminal: ${r.terminal||'—'}`];if(fatigueActive&&fatigueType){if(fatigueDay===null)chips.push(`Fatigue: Type ${fatigueType} on ≥1 working day`);else{const f=bidSheetFatigueDayType(r.assignment,effective,fatigueDay);if(f)chips.push(`Fatigue ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][fatigueDay]}: Type ${f}`)}}if(extraJob){chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);const ipma=trimDevIpma({assignment:r.assignment,assignment_type:'extra_list'});if(ipma)chips.push(`IPMA: ${ipma}`)}else{chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);if(stats)chips.push(`Weekly OT: ${fmtMinutes(stats.overtime)}`);if(stats){const pct=payScaleForDate(effective),mealValue=pct?otPay(stats.meals*20,pct):null;chips.push(`Paid meals: ${stats.meals}${mealValue!=null?` • est. ${money(mealValue)}`:''}`)}}
     const chipHTML=chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}${c.startsWith('Weekly OT:')?' trim-ot':''}">${escapeHTML(c)}</span>`).join('');let detail='';
     if(relief){const coverage=trimDevReliefCoverageText(relief);if(coverage)detail=`<div class="trim-result-detail"><strong>Covers:</strong> ${escapeHTML(coverage)}</div>`;detail+=bidSheetScheduleHTML(stats)}else if(stats)detail=bidSheetScheduleHTML(stats);else if(!known)detail='<div class="bid-sheet-unmatched">This assignment is listed on the official bid sheet, but structured Crew Book details are not currently available in Engineer Pay Log.</div>';
     const typeLabel=extraJob?'Guaranteed Extra List':relief?'Relief Crew':kind==='numbered'?'Passenger Crew Book assignment':'Yard / other assignment',clickable=!extraJob&&known;
@@ -14933,7 +14960,7 @@ function bidSheetApplyFilters(){
   }).join('');
 }
 function bidSheetClearFilters(){
-  for(const id of ['bidTypeNumbered','bidTypeExtra','bidTypeYard']){const el=document.getElementById(id);if(el)el.checked=true}for(const id of ['bidReliefChecks','bidIpmaChecks'])document.querySelectorAll(`#${id} input[type="checkbox"]`).forEach(x=>x.checked=false);const fatigueDay=document.getElementById('bidFatigueDay'),fatigueType=document.getElementById('bidFatigueType');if(fatigueDay)fatigueDay.value='0';if(fatigueType)fatigueType.value='';const search=document.getElementById('bidSheetSearch');if(search)search.value='';const terminal=document.getElementById('bidSheetTerminal');if(terminal)terminal.value='';bidSheetApplyFilters();
+  for(const id of ['bidTypeNumbered','bidTypeExtra','bidTypeYard']){const el=document.getElementById(id);if(el)el.checked=true}for(const id of ['bidReliefChecks','bidIpmaChecks'])document.querySelectorAll(`#${id} input[type="checkbox"]`).forEach(x=>x.checked=false);const fatigueDay=document.getElementById('bidFatigueDay'),fatigueType=document.getElementById('bidFatigueType');if(fatigueDay)fatigueDay.value='';if(fatigueType)fatigueType.value='';const search=document.getElementById('bidSheetSearch');if(search)search.value='';const terminal=document.getElementById('bidSheetTerminal');if(terminal)terminal.value='';bidSheetApplyFilters();
 }
 
 // ---- Bid Sheet Staging Area (isolated, device-only GitHub test) ----
@@ -15454,7 +15481,7 @@ function trimDevClearFilters(){
 
 // ---- End developer roster PDF importer ----
 
-function renderAll(){developerApplyEnvironmentVisibility();crewOpsRender();void refreshRosterTraineeSafeguard();renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();trimDevUpdateModeAvailability();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();syncFatigueBadgeDisplaySetting();syncBidFatigueDisplaySetting();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI();void pushRenderSettings();void pushRenderDashboardPrompt()}
+function renderAll(){developerApplyEnvironmentVisibility();crewOpsRender();void refreshRosterTraineeSafeguard();renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();trimDevUpdateModeAvailability();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();syncFatigueBadgeDisplaySetting();bidSheetInitializeFatigueDefaults();syncBidFatigueDisplaySetting();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI();void pushRenderSettings();void pushRenderDashboardPrompt()}
 function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){trimDevUpdateModeAvailability();void renderDashboardCommunityNotes();void bidLifecycleLoad(false);void pushRenderDashboardPrompt();setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='futurepick')renderFutureGeneralPickFoundation();if(v==='trim')void trimDevLoad(false);if(v==='bid')void bidSheetLoad(false);if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();syncFatigueBadgeDisplaySetting();syncBidFatigueDisplaySetting();updateInstallSettingsVisibility();developerRenderTestState();crewOpsRender();void rosterCheckAdmin();void refreshRosterTraineeSafeguard()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
