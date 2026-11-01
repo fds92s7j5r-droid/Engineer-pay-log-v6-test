@@ -4200,7 +4200,14 @@ function estimatedTimeSlipClaimFor(s,c,key){
       }
       break;
     case '11-commingle':
-      if(s.commingle){dollars=Number(c.comminglePay)||0;detail='Commingle pay';minutes=480;rateKind='straight';}
+      // Code 11 Commingle is a fixed basic-day entitlement: 8:00 straight time.
+      // Selecting the claim should preview its value even if the separate
+      // Commingle earnings checkbox was not marked. Do NOT add this preview
+      // to the shift's calculated gross or assume Wage Examiners paid it.
+      if(!s.traineeMode){
+        dollars=s.commingle&&(Number(c.comminglePay)||0)>0?Number(c.comminglePay):straightPay(480,c.ratePct);
+        detail='8:00 straight-time Commingle claim';minutes=480;rateKind='straight';
+      }
       break;
     case '11-misc':
       if(s.miscPenalty){dollars=Number(c.miscPenaltyPay)||0;detail='Calculated miscellaneous penalty';minutes=c.miscPenaltyMinutes;rateKind=c.miscPenaltyRate==='overtime'?'overtime':'straight';}
