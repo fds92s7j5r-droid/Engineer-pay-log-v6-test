@@ -3471,6 +3471,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <div class="fatigue-review-card">
             <div class="fatigue-review-heading"><div><strong id="fatiguePublishedLabel">Published fatigue: —</strong><div class="muted" id="fatiguePublishedSource" style="font-size:11px;margin-top:3px"></div></div>
               <button id="fatigueOverrideButton" class="btn small" type="button" onclick="toggleFatigueOverrideEditor()">Override for this shift</button></div>
+            <div id="fatigueReferenceStatus" class="muted" style="font-size:11px;margin-top:8px;display:none" role="status" aria-live="polite"></div>
             <div id="fatigueReleaseComparison" class="muted" style="font-size:11px;margin-top:8px;display:none"></div>
             <div id="fatigueOverridePanel" style="display:none;margin-top:12px">
               <label for="fatigueOverrideSelect">Record fatigue type for this shift</label>
@@ -11528,6 +11529,30 @@ function fatiguePublishedReleaseForAssignment(assignment,date){
   }catch(_){/* No verified GO203 reference */}
   return null;
 }
+// Only the certified, user-accessible GO203 preview may supply a scheduled release
+// before production cutover. Shift editing now loads that read-only preview on demand.
+// No GO202 or bundled draft schedule is a permissible fallback.
+let fatigueGo203LoadAttempted=false;
+let fatigueGo203LoadPromise=null;
+function fatigueLoadGo203ForShift(){
+  if(fatigueGo203LoadPromise||fatigueGo203LoadAttempted)return;
+  fatigueGo203LoadAttempted=true;
+  const load=async()=>{
+    try{
+      await futureRevisionLoadCloud(false); // existing authenticated read-only preview loader
+    }catch(err){console.warn('GO 203 fatigue release lookup failed:',err)}
+    finally{
+      fatigueGo203LoadPromise=null;
+      if(document.getElementById('shiftModal')?.classList.contains('open'))refreshFatigueEditor();
+    }
+  };
+  fatigueGo203LoadPromise=load();
+}
+function fatigueRetryGo203Source(){
+  fatigueGo203LoadAttempted=false;
+  fatigueLoadGo203ForShift();
+  refreshFatigueEditor();
+}
 function fatigueReleaseReview(s){
   const f=go203FatigueForAssignment(s?.assignment,s?.date);
   if(!f||!/^\d{2}:\d{2}$/.test(String(s?.start||''))||!/^\d{2}:\d{2}$/.test(String(s?.end||'')))return null;
@@ -11604,6 +11629,11 @@ function refreshFatigueEditor(){
     root.dataset.fatigueReferenceRelease='';root.dataset.fatigueReferenceJob='';root.dataset.fatigueReferenceDate='';
   }
   if(!available)return;
+  // A customer can enter a future dated shift without ever opening General Pick.
+  // Request the certified future-book preview once rather than silently locking
+  // the override indefinitely. The reference is still verified before use.
+  let reference=fatiguePublishedReleaseForAssignment(f.job,f.date);
+  if(!reference&&!fatigueGo203LoadAttempted)fatigueLoadGo203ForShift();
   const review=fatigueReleaseReview({assignment,date,start,end,
     fatigueTypeOverridePublishedRelease:root.dataset.fatigueReferenceRelease,
     fatigueTypeOverrideAssignment:root.dataset.fatigueReferenceJob,
@@ -11622,6 +11652,16 @@ function refreshFatigueEditor(){
   button.textContent=root.dataset.expanded==='1'?'Hide override':'Override for this shift';
   document.getElementById('fatigueOverridePanel').style.display=eligible&&root.dataset.expanded==='1'?'block':'none';
   document.getElementById('fatigueRecordedLabel').textContent=manual?`Recorded for this shift: Type ${v} (engineer override)`:'';
+  const status=document.getElementById('fatigueReferenceStatus');
+  if(status){
+    const missing=!!(start&&end&&!review&&!reference);
+    const pending=!!fatigueGo203LoadPromise;
+    status.style.display=missing?'block':'none';
+    if(missing){
+      status.innerHTML=pending?'Checking verified GO 203 scheduled release…':
+        'The GO 203 scheduled release could not be verified. The published fatigue type remains in effect, and manual override is unavailable. <button class="btn small" style="margin-top:6px" type="button" onclick="fatigueRetryGo203Source()">Retry GO 203 lookup</button>';
+    }else status.textContent='';
+  }
   const comparison=document.getElementById('fatigueReleaseComparison');
   comparison.style.display=eligible?'block':'none';
   if(eligible){
