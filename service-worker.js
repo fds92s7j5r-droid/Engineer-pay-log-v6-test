@@ -1,4 +1,4 @@
-const CACHE_NAME='engineer-pay-log-v10-2-go203-cutover-readiness-rc3-20261101';
+const CACHE_NAME='engineer-pay-log-v10-2-go203-cutover-readiness-rc4-20261101';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./GO203_ROAD_YARD_DRAFT_NOV9_2026.pdf'];
 
 self.addEventListener('install',e=>e.waitUntil(
@@ -35,10 +35,16 @@ self.addEventListener('fetch',e=>{
     );
     return;
   }
+  // Ignore failed cached responses (including old 404s), and never cache a new failure.
+  // Use only the current version's cache so stale resources cannot survive a cache bump.
   e.respondWith(
-    caches.match(e.request).then(cached=>cached||fetch(e.request).then(r=>{
-      const copy=r.clone();caches.open(CACHE_NAME).then(c=>c.put(e.request,copy));return r;
-    }))
+    caches.open(CACHE_NAME).then(async cache=>{
+      const cached=await cache.match(e.request);
+      if(cached&&cached.ok)return cached;
+      const response=await fetch(e.request);
+      if(response.ok)await cache.put(e.request,response.clone());
+      return response;
+    })
   );
 });
 
