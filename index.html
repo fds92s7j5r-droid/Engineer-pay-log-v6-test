@@ -103,6 +103,13 @@
     .subhead{font-size:12px;font-weight:800;color:#445066;margin:4px 0 8px}
     .calc{background:linear-gradient(145deg,#10233f,#173b63);color:#fff;border:0}.calc .section-title h2{color:#fff}.calc-row{display:flex;justify-content:space-between;gap:20px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.12)}.calc-row:last-child{border-bottom:0}.calc-row span:first-child{color:#c9d6e5}.calc-row strong{font-variant-numeric:tabular-nums}.calc-total{font-size:21px;padding-top:13px;margin-top:4px;border-top:1px solid rgba(255,255,255,.28)}
     .badge{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:800;background:#eef3f8;color:#405168}.badge.ot{background:#fff1d6;color:#8a5a00}.badge.holiday{background:#f3e8ff;color:#6f2da8}.badge.penalty{background:#e8f5ee;color:#17633b}.badge.timeslip{background:#fff0a8;color:#6f5700;border:1px solid #e2c348}
+.fatigue-review-card{border:1px solid var(--line,#d6e0ec);background:var(--surface,#f8fafc);border-radius:14px;padding:12px}
+.fatigue-review-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.fatigue-review-card label{display:block;font-weight:700;font-size:12px;margin:0 0 6px}
+.fatigue-review-card textarea{width:100%;box-sizing:border-box}
+.fatigue-informational-warning{border:1px solid #dfc36f;background:#fff7d6;color:#59460b;border-radius:10px;padding:10px;font-size:12px;line-height:1.45}
+html[data-theme="dark"] .fatigue-informational-warning{background:#413615;color:#ffe9a9;border-color:#826d37}
+.badge.fatigue{background:#e8edf5;color:#244467;border:1px solid #c9d7e7}
     .shift.timeslip{background:#fff9d8;border-color:#ddc04b;box-shadow:inset 4px 0 0 #ddc04b}
     .time-slip-check{background:#fff1a6!important;border-color:#dcc044!important;color:#5f4a00;font-weight:850}
     .time-slip-panel{display:none;margin-top:10px;padding:14px;border:1px solid #d9bb39;border-radius:14px;background:#fff8cf}
@@ -498,6 +505,7 @@
     }
     html[data-theme="dark"] .badge.penalty{background:#173d2d!important;color:#a7e7c2!important}
     html[data-theme="dark"] .badge.ot{background:#4a3515!important;color:#ffd77e!important}
+    html[data-theme="dark"] .badge.fatigue{background:#2b405b!important;color:#d4e4f6!important;border-color:#4b688c!important}
     html[data-theme="dark"] .badge.holiday{background:#3b2850!important;color:#dfbdff!important}
     html[data-theme="dark"] .badge.timeslip{background:#4a3c15!important;color:#ffe582!important;border-color:#79652b!important}
     html[data-theme="dark"] .time-slip-claim-option{background:#17263a!important;border-color:#344960!important}
@@ -3459,6 +3467,26 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         <div class="field"><label>Start time</label><input id="start" type="time" required onchange="calculatePreview()"></div>
         <div class="field"><label>Actual release time</label><input id="end" type="time" required onchange="calculatePreview()"></div>
         <div class="field full"><label>Total Time on Duty</label><div class="readonly-info"><strong id="timeOnDutyDisplay">—</strong><div class="muted" style="margin-top:2px">Calculated automatically from start and actual release time</div></div></div>
+        <div id="fatigueShiftField" class="field full" style="display:none">
+          <div class="fatigue-review-card">
+            <div class="fatigue-review-heading"><div><strong id="fatiguePublishedLabel">Published fatigue: —</strong><div class="muted" id="fatiguePublishedSource" style="font-size:11px;margin-top:3px"></div></div>
+              <button id="fatigueOverrideButton" class="btn small" type="button" onclick="toggleFatigueOverrideEditor()">Override for this shift</button></div>
+            <div id="fatigueOverridePanel" style="display:none;margin-top:12px">
+              <label for="fatigueOverrideSelect">Record fatigue type for this shift</label>
+              <select id="fatigueOverrideSelect" onchange="refreshFatigueEditor()">
+                <option value="">Use published classification</option>
+                <option value="1">Type 1 — engineer override</option>
+                <option value="2">Type 2 — engineer override</option>
+              </select>
+              <label for="fatigueOverrideNote" style="margin-top:10px">Reason / Crew Management guidance (optional)</label>
+              <textarea id="fatigueOverrideNote" rows="2" maxlength="300" placeholder="Optional historical note"></textarea>
+              <div class="muted" style="font-size:11px;margin-top:8px">This records your determination for this shift only. EPL never changes fatigue type automatically or decides rest eligibility.</div>
+              <button class="btn small" style="margin-top:8px" type="button" onclick="restorePublishedFatigue()">Restore published type</button>
+            </div>
+            <div id="fatigueRecordedLabel" style="margin-top:8px;font-weight:700;font-size:12px"></div>
+            <div id="fatigueOvernightNotice" class="fatigue-informational-warning" style="display:none;margin-top:10px" role="note"></div>
+          </div>
+        </div>
         <div id="shiftCommunityPanel" class="field full shift-community-panel"></div>
         <div id="unscheduledOTField" class="field full">
           <label class="check"><input id="unscheduledOTFlag" type="checkbox" onchange="toggleUnscheduledOT();calculatePreview()"> Unscheduled Overtime</label>
@@ -4497,6 +4525,10 @@ function upgradeShift(s){
   if(s.classDay===undefined)s.classDay=false;
   if(s.engineerName===undefined)s.engineerName='';
   if(s.engineerIBM===undefined)s.engineerIBM='';
+  if(s.fatigueTypeOverride===undefined)s.fatigueTypeOverride='';
+  if(s.fatigueTypeOverrideDate===undefined)s.fatigueTypeOverrideDate='';
+  if(s.fatigueTypeOverrideAssignment===undefined)s.fatigueTypeOverrideAssignment='';
+  if(s.fatigueTypeOverrideNote===undefined)s.fatigueTypeOverrideNote='';
   if(s.vacationGross===undefined)s.vacationGross=0;
   if(s.vacationReliefPair===undefined)s.vacationReliefPair='';
   if(s.vacationEndDate===undefined)s.vacationEndDate=s.specialShift==='Vacation Week'?addDaysISO(s.date,6):'';
@@ -7026,11 +7058,17 @@ function formData(){
   const rrh=Math.max(0,Number($('runaroundHours').value)||0),rrm=Math.min(59,Math.max(0,Number($('runaroundMinutes').value)||0));
   const mph=Math.max(0,Number($('miscPenaltyHours').value)||0),mpm=Math.min(59,Math.max(0,Number($('miscPenaltyMinutes').value)||0));
   const miscRate=document.querySelector('input[name="miscPenaltyRate"]:checked')?.value||'straight';
+  const fatigueSnapshot=go203FatigueForAssignment($('assignment').value,$('date').value);
   return {
     id:$('editId').value||createUniqueId(),
     date:$('date').value,start:$('start').value,end:$('end').value,
     traineeMode:$('shiftRuleMode').value==='trainee',classDay:$('shiftRuleMode').value==='trainee'&&$('classFlag').checked,
     ratePct:(()=>{const id=$('editId').value,old=shifts.find(x=>x.id===id);return old&&old.date===$('date').value&&old.ratePct?old.ratePct:payScaleForDate($('date').value)})(),
+    fatigueType:fatigueSnapshot?.type||'',fatigueTypeSource:fatigueSnapshot?.source||'',
+    fatigueTypeDate:fatigueSnapshot?.date||'',fatigueTypeAssignment:fatigueSnapshot?.job||'',
+    fatigueTypeOverride:(()=>{const v=$('fatigueOverrideSelect').value;return fatigueSnapshot&&v!==fatigueSnapshot.type&&(v==='1'||v==='2')&&$('fatigueShiftField').dataset.fatigueKey===`${fatigueSnapshot.job}|${fatigueSnapshot.date}`?v:''})(),
+    fatigueTypeOverrideAssignment:fatigueSnapshot?.job||'',fatigueTypeOverrideDate:fatigueSnapshot?.date||'',
+    fatigueTypeOverrideNote:$('fatigueOverrideNote').value.trim().slice(0,300), 
     assignment:$('assignment').value.trim(),location:$('location').value.trim(),shiftType:$('shiftType').value,
     specialShift:$('shiftRuleMode').value==='trainee'?($('classFlag').checked?'':$('specialShift').value):$('specialShift').value,specialCategory:$('shiftRuleMode').value==='trainee'?'':$('specialCategory').value,
     vacationGross:isVacationSpecial($('specialShift').value)?Math.max(0,Number($('vacationGrossInput').value)||0):0,
@@ -7101,6 +7139,7 @@ function handleShiftDateChange(){
   updateHolidayPayEligibilityUI();toggleSpecialShift();renderTimeSlipDeadlinePreview();calculatePreview();
 }
 function calculatePreview(){
+  refreshFatigueEditor();
   const $=id=>document.getElementById(id),s=formData(),holidayBox=$('holidayFlag');
   communityRefreshShiftPanelFromForm();
   updateShiftCrewBookAssignmentButton();
@@ -7524,7 +7563,7 @@ function toggleMiscPenalty(){
 function newShift(){if(!billingRequireWriteAccess())return;
   const $=id=>document.getElementById(id);
   $('shiftForm').reset();setLocationUI('');setShiftTypeUI('');$('editId').value='';$('shiftRuleMode').value=isTraineeMode()?'trainee':'engineer';$('legacyExtras').value='';$('legacyClaims').value='';
-  $('formTitle').textContent='Add shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';
+  $('formTitle').textContent='Add shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';resetFatigueEditor();
   $('date').value=new Date().toISOString().slice(0,10);$('holidayFlag').checked=isContractHoliday($('date').value);$('holidayPayEligibleFlag').checked=$('holidayFlag').checked;
   $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipConfirmedReceived').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';$('timeSlipWageReminderDays').value='';setTimeSlipClaimTypes([]);
   renderTimeSlipDeadlinePreview();
@@ -7540,7 +7579,7 @@ function newShift(){if(!billingRequireWriteAccess())return;
 function editShift(id){if(!billingRequireWriteAccess())return;
   const $=id=>document.getElementById(id);
   const s=shifts.find(x=>x.id===id);if(!s)return;upgradeShift(s);
-  $('editId').value=s.id;$('shiftRuleMode').value=s.traineeMode?'trainee':'engineer';applyEntryMode();$('date').value=s.date;$('start').value=s.start;$('end').value=s.end;$('assignment').value=s.assignment||'';
+  $('editId').value=s.id;$('shiftRuleMode').value=s.traineeMode?'trainee':'engineer';applyEntryMode();$('date').value=s.date;$('start').value=s.start;$('end').value=s.end;$('assignment').value=s.assignment||'';loadFatigueEditorForShift(s);
   setLocationUI(s.location||'');setShiftTypeUI(s.shiftType||'');$('legacyExtras').value=s.extras||'';$('legacyClaims').value=s.claims||'';
   $('notes').value=s.notes||'';$('engineerName').value=s.engineerName||'';$('engineerIBM').value=s.engineerIBM||'';$('classFlag').checked=!!s.classDay;$('conductorName').value=s.conductorName||'';$('brakemanName').value=s.brakemanName||'';
   $('specialShift').value=s.specialShift||'';$('specialCategory').value=s.specialCategory||'';$('vacationReliefPair').value=s.vacationReliefPair||'';
@@ -7562,7 +7601,7 @@ function duplicateShift(id){if(!billingRequireWriteAccess())return;
   const s=shifts.find(x=>x.id===id);if(!s)return;
   upgradeShift(s);
   $('shiftForm').reset();setLocationUI('');setShiftTypeUI('');$('editId').value='';$('shiftRuleMode').value=s.traineeMode?'trainee':'engineer';$('legacyExtras').value='';$('legacyClaims').value='';
-  $('formTitle').textContent='Duplicate shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';
+  $('formTitle').textContent='Duplicate shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';resetFatigueEditor();
 
   $('date').value=new Date().toISOString().slice(0,10);
   $('start').value=s.start||'';$('end').value=s.end||'';
@@ -11428,6 +11467,106 @@ function historyDateParts(dateStr){
     day:d.getDate()
   };
 }
+
+// GO 203 Revision 1 Passenger Crew Book, fatigue classification pages F-1 through F-12.
+// Each value: [railroad weekly type, Monday-through-Sunday daily codes, source F page].
+// Daily codes are 1, 2, R (published relief day), or - (blank, not classified).
+// This lookup is descriptive only: it NEVER calculates rest-day eligibility or HOS compliance.
+const GO203_FATIGUE_EFFECTIVE = '2026-11-09';
+const GO203_FATIGUE_SOURCE = 'GO203 Passenger Rev1';
+const GO203_PASSENGER_FATIGUE = Object.freeze({"1":["2","2RR2222",1],"10":["1","1RR1111",1],"100":["2","1RR1112",2],"1000":["1","111RR11",11],"1002":["1","11111RR",11],"1003":["1","RR11111",11],"1004":["1","R11111R",11],"1005":["1","111RR11",11],"1006":["1","11111RR",11],"1007":["1","1RR1111",11],"1008":["1","111RR11",11],"1009":["2","RR11121",11],"101":["1","11111RR",2],"1010":["1","111RR11",11],"1011":["1","11111RR",11],"1012":["1","11111RR",11],"1013":["1","11RR111",11],"1014":["1","RR11111",11],"1015":["1","1RR1111",11],"1016":["1","RR11111",11],"1017":["2","11RR122",11],"1018":["2","111RR22",11],"102":["2","RR11122",2],"1020":["1","111RR11",11],"1021":["2","11RR121",11],"1022":["1","1RR1111",11],"1023":["1","11RR111",11],"1024":["2","RR22122",11],"1025":["2","111RR21",11],"1026":["1","RR11111",11],"1027":["1","11111RR",11],"1028":["1","1RR1111",11],"1029":["2","R22111R",11],"103":["2","1RR1122",2],"1030":["1","111RR11",11],"1031":["1","RR11111",11],"1032":["1","1111RR1",11],"1033":["2","R11112R",11],"1034":["1","R11111R",11],"1035":["1","RR11111",11],"1036":["1","R11111R",11],"1037":["2","RR11122",11],"1038":["2","111RR22",11],"1039":["1","R11111R",11],"104":["2","2222RR2",2],"1040":["1","RR11111",11],"1041":["1","1111RR1",12],"1043":["1","R11111R",12],"1044":["1","111RR11",12],"105":["2","22RR222",2],"106":["2","2RR2222",2],"107":["2","RR22222",2],"108":["2","2RR2222",2],"109":["2","RR22222",2],"11":["1","1111RR1",1],"110":["2","RR22222",2],"111":["2","RR22222",2],"112":["2","RR22222",2],"113":["2","RR22222",2],"12":["2","22222RR",1],"125":["2","222RR22",2],"126":["2","22222RR",2],"127":["2","22222RR",2],"128":["2","22222RR",2],"129":["2","22222RR",2],"13":["2","11RR122",1],"130":["2","22222RR",2],"131":["1","11111RR",3],"132":["1","11111RR",3],"133":["1","11111RR",3],"134":["1","11111RR",3],"135":["1","11111RR",3],"136":["1","11111RR",3],"137":["1","11111RR",3],"138":["1","11111RR",3],"139":["1","11111RR",3],"14":["1","1111RR1",1],"140":["2","222RR22",3],"141":["1","11111RR",3],"142":["2","22222RR",3],"15":["1","111RR11",1],"150":["2","RR22222",3],"151":["2","RR22222",3],"152":["2","2RR2222",3],"153":["2","22222RR",3],"154":["2","22222RR",3],"155":["2","22222RR",3],"156":["2","22222RR",3],"157":["1","1RR1111",3],"158":["1","11111RR",3],"159":["1","11111RR",3],"16":["2","22222RR",1],"160":["1","11111RR",3],"161":["1","11111RR",3],"162":["2","R22222R",3],"163":["2","22222RR",3],"164":["2","22222RR",3],"165":["2","222RR22",3],"17":["1","11111RR",1],"175":["2","22222RR",3],"176":["2","RR22222",3],"177":["2","22222RR",3],"178":["2","RR11122",3],"179":["1","11111RR",3],"18":["2","RR22222",1],"180":["1","11111RR",3],"181":["1","R11111R",3],"182":["1","R11111R",3],"183":["1","111RR11",3],"184":["1","111RR11",3],"185":["1","1RR1111",3],"186":["2","22RR222",3],"187":["2","11112RR",3],"188":["2","22222RR",3],"19":["2","22222RR",1],"190":["2","22222RR",3],"191":["2","2222RR2",3],"192":["2","22222RR",3],"193":["2","22222RR",3],"194":["1","11RR111",4],"195":["1","RR11111",4],"196":["1","111RR11",4],"197":["1","11111RR",4],"198":["1","1111RR1",4],"199":["1","1111RR1",4],"2":["2","2222RR2",1],"20":["2","RR22222",1],"200":["2","22RR122",4],"201":["2","2RR2222",4],"202":["2","RR22122",4],"203":["2","22RR222",4],"204":["2","2222RR2",4],"22":["1","11111RR",1],"227":["2","2222RR2",4],"228":["1","11111RR",4],"229":["1","11111RR",4],"23":["1","11111RR",1],"230":["1","11111RR",4],"231":["1","11111RR",4],"232":["2","RR22222",4],"233":["2","RR11122",4],"238":["1","1111RR1",4],"239":["1","11111RR",4],"24":["1","R11111R",1],"240":["2","RR22222",4],"242":["2","22222RR",4],"243":["2","22222RR",4],"244":["2","22222RR",4],"245":["1","11111RR",4],"246":["1","11111RR",4],"247":["1","11111RR",4],"248":["1","1111RR1",4],"249":["1","1111RR1",4],"25":["1","11111RR",1],"250":["1","11111RR",4],"251":["1","11111RR",4],"252":["1","11111RR",4],"253":["1","11111RR",4],"254":["1","11RR111",4],"255":["1","11111RR",4],"256":["1","1111RR1",4],"257":["1","11111RR",4],"258":["1","1RR1111",4],"259":["1","1RR1111",4],"26":["2","R22222R",1],"260":["1","11111RR",4],"261":["1","1RR1111",4],"262":["1","11111RR",4],"263":["1","11111RR",4],"264":["1","11111RR",4],"265":["1","11111RR",4],"266":["1","11111RR",4],"267":["1","11111RR",5],"268":["1","1111RR1",5],"269":["2","R22222R",5],"27":["2","22RR211",1],"270":["2","22222RR",5],"271":["2","22222RR",5],"272":["1","11111RR",5],"273":["2","RR22222",5],"274":["2","2RR2222",5],"275":["2","RR22222",5],"285":["1","11111RR",5],"286":["1","11111RR",5],"287":["1","11111RR",5],"288":["1","1111RR1",5],"289":["1","1RR1111",5],"29":["2","22222RR",1],"290":["1","11111RR",5],"291":["1","11111RR",5],"292":["1","11111RR",5],"293":["2","222RR22",5],"294":["2","2RR2122",5],"297":["2","2RR2222",5],"298":["1","11111RR",5],"299":["1","RR11111",5],"3":["2","22222RR",1],"30":["1","R11111R",1],"300":["1","11111RR",5],"301":["2","2RR2222",5],"305":["2","2222RR2",5],"306":["2","RR22211",5],"307":["1","111RR11",5],"308":["1","RR11111",5],"309":["1","R11111R",5],"31":["1","11111RR",1],"310":["1","11111RR",5],"311":["2","RR22222",5],"312":["2","22222RR",5],"315":["2","2222RR2",5],"316":["2","222RR22",5],"317":["2","22222RR",5],"318":["1","11111RR",5],"319":["1","11111RR",5],"32":["1","11111RR",1],"320":["1","11111RR",5],"321":["1","RR11111",5],"322":["1","11111RR",5],"323":["1","11111RR",5],"324":["1","11111RR",5],"325":["1","11111RR",5],"326":["2","1111RR2",5],"327":["2","R22222R",5],"328":["2","22222RR",5],"329":["2","RR22222",6],"33":["1","RR11111",1],"332":["2","2222RR2",6],"333":["2","22222RR",6],"334":["2","22222RR",6],"335":["1","11111RR",6],"336":["1","11111RR",6],"337":["1","11111RR",6],"338":["1","11111RR",6],"339":["1","11RR111",6],"34":["1","11111RR",1],"340":["1","111RR11",6],"341":["1","1RR1111",6],"342":["1","R11111R",6],"343":["1","11RR111",6],"344":["1","11111RR",6],"345":["1","11111RR",6],"346":["1","11111RR",6],"347":["1","1111RR1",6],"348":["1","11111RR",6],"349":["1","11111RR",6],"35":["1","11111RR",1],"350":["1","11111RR",6],"351":["1","11111RR",6],"352":["2","22222RR",6],"353":["1","R11111R",6],"354":["2","222RR22",6],"355":["2","RR22222",6],"356":["2","RR22222",6],"357":["2","2RR2222",6],"358":["2","22222RR",6],"36":["1","11111RR",1],"361":["1","----1--",6],"362":["2","----2--",6],"363":["2","----2--",6],"365":["2","-----2-",6],"366":["2","-----2-",6],"367":["1","------1",6],"368":["2","-----2-",6],"37":["1","1RR1111",1],"38":["1","11RR111",1],"39":["2","111RR22",1],"4":["2","R22222R",1],"40":["2","22222RR",1],"401":["2","RR21122",6],"402":["1","11111RR",6],"403":["2","11RR211",6],"404":["2","222RR22",6],"405":["2","2RR2212",6],"406":["2","2RR1112",6],"407":["1","1111RR1",6],"41":["2","R22222R",1],"420":["2","22RR222",6],"421":["2","11RR222",6],"422":["1","11RR111",6],"423":["2","2222RR2",6],"424":["2","RR22222",7],"425":["2","22RR111",7],"426":["1","R11111R",7],"427":["2","22RR111",7],"428":["2","222RR11",7],"430":["2","22RR122",7],"431":["2","22RR222",7],"432":["2","R22222R",7],"433":["2","22RR122",7],"435":["1","111RR11",7],"436":["2","22RR222",7],"437":["1","11RR111",7],"439":["1","1RR1111",7],"442":["2","22222RR",7],"443":["1","111RR11",7],"444":["2","1111RR2",7],"446":["2","2222RR1",7],"448":["2","2222RR2",7],"449":["2","RR22122",7],"45":["2","22222RR",1],"450":["1","1111RR1",7],"451":["2","222RR11",7],"456":["2","22RR222",7],"457":["2","22RR111",7],"458":["1","RR11111",7],"459":["1","RR11111",7],"46":["1","11111RR",1],"460":["2","RR12212",7],"461":["2","2RR2222",7],"462":["1","111RR11",7],"463":["2","2221RR2",7],"465":["1","RR11111",7],"466":["2","22RR111",7],"467":["1","RR11111",7],"468":["2","22RR112",7],"469":["2","R22111R",7],"47":["1","1111RR1",1],"470":["2","RR22222",7],"471":["2","12RR111",7],"472":["2","222RR11",7],"473":["1","1111RR1",7],"474":["2","11RR222",7],"475":["2","2222RR1",7],"476":["2","RR11122",7],"48":["2","222RR11",1],"49":["1","1111RR1",1],"5":["2","22222RR",1],"50":["1","11111RR",1],"501":["1","1RR1111",7],"502":["1","11RR111",7],"503":["1","1RR1111",7],"504":["1","RR11111",7],"506":["1","1RR1111",7],"507":["1","1111RR1",8],"508":["1","11111RR",8],"509":["1","11111RR",8],"51":["1","11111RR",1],"510":["1","11111RR",8],"511":["1","1111RR1",8],"512":["1","11111RR",8],"513":["1","11111RR",8],"514":["1","11111RR",8],"515":["1","11111RR",8],"516":["1","1RR1111",8],"517":["1","11111RR",8],"518":["2","22222RR",8],"519":["1","1RR1111",8],"52":["1","11111RR",2],"520":["2","1RR1122",8],"521":["1","11111RR",8],"522":["1","R11111R",8],"523":["2","11RR122",8],"524":["1","11RR111",8],"525":["1","11111RR",8],"526":["1","11111RR",8],"527":["1","1RR1111",8],"528":["1","111RR11",8],"53":["1","11111RR",2],"54":["2","2RR2222",2],"55":["2","22222RR",2],"550":["1","11RR111",8],"552":["2","111RR22",8],"554":["2","1111RR2",8],"555":["2","1111RR2",8],"556":["1","11111RR",8],"557":["1","1111RR1",8],"558":["1","1RR1111",8],"559":["1","R11111R",8],"560":["1","111RR11",8],"564":["2","2RR2222",8],"565":["2","22RR211",8],"566":["2","RR11122",8],"6":["2","22222RR",1],"600":["1","111RR11",8],"601":["1","11111RR",8],"602":["1","11111RR",8],"619":["1","1RR1111",8],"620":["2","111RR22",8],"621":["1","R11111R",8],"622":["1","11111RR",8],"623":["1","11111RR",8],"624":["1","11111RR",8],"625":["1","1111RR1",8],"626":["1","111RR11",8],"627":["1","11RR111",8],"628":["1","11RR111",9],"629":["1","1RR1111",9],"63":["2","-----2-",2],"630":["1","111RR11",9],"631":["1","1RR1111",9],"632":["1","11RR111",9],"633":["1","1RR1111",9],"634":["1","11111RR",9],"635":["1","1111RR1",9],"636":["1","R11111R",9],"637":["1","R11111R",9],"638":["2","2RR2211",9],"639":["1","1111RR1",9],"640":["2","11RR122",9],"641":["1","RR11111",9],"660":["1","11111RR",9],"661":["2","22222RR",9],"663":["1","1RR1111",9],"665":["1","11111RR",9],"666":["1","1111RR1",9],"667":["1","11RR111",9],"668":["1","11RR111",9],"669":["1","RR11111",9],"670":["1","R11111R",9],"671":["1","1111RR1",9],"672":["1","RR11111",9],"673":["2","111RR22",9],"690":["1","111RR11",9],"7":["1","1RR1111",1],"700":["2","22222RR",9],"701":["1","11111RR",9],"703":["1","11111RR",9],"705":["1","R11111R",9],"706":["1","111RR11",9],"707":["1","11111RR",9],"709":["1","1RR1111",9],"71":["2","----2--",2],"710":["1","RR11111",9],"711":["1","11RR111",9],"712":["1","RR11111",9],"713":["1","RR11111",9],"714":["1","RR11111",9],"716":["1","111RR11",9],"717":["1","1111RR1",9],"718":["1","111RR11",9],"719":["2","1111RR2",9],"73":["2","----2--",2],"731":["1","R11111R",9],"732":["1","R11111R",9],"735":["1","11111RR",9],"74":["2","-2222--",2],"750":["1","11111RR",10],"751":["1","11111RR",10],"752":["1","11111RR",10],"753":["1","1RR1111",10],"754":["1","11111RR",10],"755":["1","1RR1111",10],"756":["1","R11111R",10],"757":["1","11111RR",10],"758":["1","R11111R",10],"760":["2","RR11122",10],"770":["1","11111RR",10],"771":["1","11111RR",10],"772":["1","11111RR",10],"773":["1","11111RR",10],"774":["1","R11111R",10],"775":["1","11111RR",10],"776":["1","1111RR1",10],"777":["1","R11111R",10],"778":["1","11RR111",10],"779":["1","11111RR",10],"790":["1","11111RR",10],"791":["1","R11111R",10],"8":["1","RR11111",1],"800":["2","22222RR",10],"801":["1","11111RR",10],"803":["1","11111RR",10],"804":["1","11111RR",10],"806":["1","11111RR",10],"807":["1","11RR111",10],"808":["1","111RR11",10],"809":["1","1111RR1",10],"810":["1","RR11111",10],"811":["1","111RR11",10],"812":["1","1111RR1",10],"813":["1","11111RR",10],"814":["1","11111RR",10],"815":["1","11RR111",10],"817":["2","1111RR2",10],"82":["2","RR22222",2],"83":["2","2RR2222",2],"831":["1","RR11111",10],"832":["1","11RR111",10],"833":["2","1111RR2",10],"84":["2","22222RR",2],"85":["2","222RR22",2],"86":["2","22222RR",2],"87":["2","2RR2222",2],"88":["2","RR22222",2],"89":["2","22222RR",2],"9":["1","11RR111",1],"90":["2","22222RR",2],"91":["2","22222RR",2],"92":["2","22222RR",2],"920":["1","11111--",10],"921":["1","11111--",10],"922":["1","11111--",10],"923":["1","11111--",10],"924":["1","11111--",10],"925":["1","11111--",10],"926":["1","11111--",11],"927":["1","11111--",11],"928":["1","11111--",11],"929":["1","11111--",11],"93":["1","11111RR",2],"930":["1","11111--",11],"931":["1","11111--",11],"932":["1","11111--",11],"94":["1","111RR11",2],"95":["1","1111RR1",2],"96":["1","111RR11",2],"97":["1","11111RR",2],"98":["1","111RR11",2],"99":["1","1RR1111",2]});
+function go203FatigueForAssignment(assignment, date){
+  const iso=String(date||'').trim();
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(iso)||iso<GO203_FATIGUE_EFFECTIVE)return null;
+  const job=String(assignment||'').trim().replace(/^0+(?=\d)/,'');
+  if(!/^\d{1,4}$/.test(job))return null;
+  const row=GO203_PASSENGER_FATIGUE[job];
+  if(!row)return null;
+  const dt=new Date(iso+'T12:00:00');
+  if(Number.isNaN(dt.getTime())||dt.getFullYear()!==Number(iso.slice(0,4))||dt.getMonth()+1!==Number(iso.slice(5,7))||dt.getDate()!==Number(iso.slice(8,10)))return null;
+  const day=(dt.getDay()+6)%7; // ISO weekdays: Monday=0 ... Sunday=6.
+  const type=row[1].charAt(day);
+  if(type!=='1'&&type!=='2')return null; // R/blank never become Type 1 or 2.
+  return {type,weeklyType:row[0],job,date:iso,page:'F-'+row[2],source:GO203_FATIGUE_SOURCE};
+}
+// A descriptive historical record only. Never calculates Type 1/2 rest-day eligibility.
+function resetFatigueEditor(){
+  const root=document.getElementById('fatigueShiftField');if(!root)return;
+  root.dataset.fatigueKey='';root.dataset.expanded='0';
+  document.getElementById('fatigueOverrideSelect').value='';
+  document.getElementById('fatigueOverrideNote').value='';
+}
+function loadFatigueEditorForShift(s){
+  resetFatigueEditor();
+  const f=go203FatigueForShift(s),root=document.getElementById('fatigueShiftField');if(!f||!root)return;
+  root.dataset.fatigueKey=`${f.job}|${f.date}`;
+  if(f.manual){
+    document.getElementById('fatigueOverrideSelect').value=f.type;
+    document.getElementById('fatigueOverrideNote').value=String(s.fatigueTypeOverrideNote||'').slice(0,300);
+    root.dataset.expanded='1';
+  }
+}
+function toggleFatigueOverrideEditor(){
+  const root=document.getElementById('fatigueShiftField');if(!root||root.style.display==='none')return;
+  root.dataset.expanded=root.dataset.expanded==='1'?'0':'1';
+  refreshFatigueEditor();
+}
+function restorePublishedFatigue(){
+  const root=document.getElementById('fatigueShiftField');if(!root)return;
+  document.getElementById('fatigueOverrideSelect').value='';
+  document.getElementById('fatigueOverrideNote').value='';
+  root.dataset.expanded='0';
+  refreshFatigueEditor();
+}
+function fatigueAfterMidnightNotice(assignment,date,start,end){
+  const f=go203FatigueForAssignment(assignment,date);
+  if(!f||f.type!=='1'||!/^\d{2}:\d{2}$/.test(start||'')||!/^\d{2}:\d{2}$/.test(end||''))return false;
+  const a=parseClock(start),b=parseClock(end);
+  // Date-only entries cannot establish which duty was covered. This is a prompt
+  // to review an apparent overnight finish, not a fatigue reclassification.
+  return Number.isFinite(a)&&Number.isFinite(b)&&a>=240&&a<1440&&b>=0&&b<720&&b<a;
+}
+function refreshFatigueEditor(){
+  const root=document.getElementById('fatigueShiftField');if(!root)return;
+  const assignment=document.getElementById('assignment').value,date=document.getElementById('date').value,
+    start=document.getElementById('start').value,end=document.getElementById('end').value,
+    f=go203FatigueForAssignment(assignment,date),special=document.getElementById('specialShift').value,
+    trainee=document.getElementById('shiftRuleMode').value==='trainee';
+  const available=!!f&&!special&&!trainee;
+  root.style.display=available?'block':'none';
+  const key=available?`${f.job}|${f.date}`:'';
+  if(root.dataset.fatigueKey!==key){
+    document.getElementById('fatigueOverrideSelect').value='';
+    document.getElementById('fatigueOverrideNote').value='';
+    root.dataset.fatigueKey=key;root.dataset.expanded='0';
+  }
+  if(!available)return;
+  const select=document.getElementById('fatigueOverrideSelect'),v=select.value;
+  const manual=(v==='1'||v==='2')&&v!==f.type;
+  document.getElementById('fatiguePublishedLabel').textContent=`Published fatigue: Type ${f.type}`;
+  document.getElementById('fatiguePublishedSource').textContent=`GO 203 Rev. 1 • ${f.page} • Assignment ${f.job} • ${f.date}`;
+  document.getElementById('fatigueRecordedLabel').textContent=manual?`Recorded for this shift: Type ${v} (engineer override)`:'';
+  document.getElementById('fatigueOverrideButton').textContent=root.dataset.expanded==='1'?'Hide override':'Override for this shift';
+  document.getElementById('fatigueOverridePanel').style.display=root.dataset.expanded==='1'?'block':'none';
+  const warn=document.getElementById('fatigueOvernightNotice');
+  const overnight=fatigueAfterMidnightNotice(assignment,date,start,end);
+  warn.style.display=overnight?'block':'none';
+  if(overnight)warn.innerHTML='<strong>Hours of Service — Review</strong><div style="margin-top:4px">This published Type 1 shift appears to finish after midnight. SI 100-R requires notification to Crew Management for an inadvertently late Type 1 finish, except when deadheading back to the initial terminal. Your rest requirements may change. EPL does not determine your fatigue type or eligibility; confirm with Crew Management.</div>';
+}
+function go203FatigueForShift(s){
+  if(!s||s.specialShift||s.classDay||s.traineeMode||isSecretUnpaidSickShift(s))return null;
+  const current=go203FatigueForAssignment(s.assignment,s.date);
+  if(!current)return null;
+  const published={...current,publishedType:current.type,manual:false};
+  // Only a shift-specific, user-entered choice may override the railroad's published type.
+  // Changing a job or date invalidates that override; GO203 never reclassifies automatically.
+  if((s.fatigueTypeOverride==='1'||s.fatigueTypeOverride==='2')&&s.fatigueTypeOverrideAssignment===current.job&&s.fatigueTypeOverrideDate===current.date&&s.fatigueTypeOverride!==current.type){
+    return {...published,type:s.fatigueTypeOverride,manual:true,overrideNote:String(s.fatigueTypeOverrideNote||'')};
+  }
+  return published;
+}
+// End GO 203 published fatigue classifications.
+
 function shiftHTML(s,options={}){
   const c=calculate(s),parts=historyDateParts(s.date);
   let tags=[];
@@ -11437,6 +11576,10 @@ function shiftHTML(s,options={}){
   if(s.holiday)tags.push('<span class="badge holiday">Holiday</span>');
   if(s.mpte||s.freightMeal||s.fuelClaim||s.otCompletion||s.unscheduledOT||s.pone||s.noCo||s.cert||s.commingle||s.yardMove||s.sheridanMove||s.terminalNotCrewBook||s.runaround||s.a2||s.miscPenalty)tags.push('<span class="badge penalty">Extra</span>');
   if(s.timeSlip)tags.push(`<span class="badge timeslip">${escapeHTML(timeSlipDisplayStatus(s))}</span>`);
+  if(options.showFatigue){
+    const f=go203FatigueForShift(s);
+    if(f)tags.push(`<span class="badge fatigue" title="GO 203 Rev 1 • ${escapeHTML(f.page)} • Published Type ${f.publishedType}; weekly Type ${f.weeklyType}${f.manual?'; engineer manually recorded Type '+f.type:''}">Type ${f.type}${f.manual?' · Manual':''}</span>`);
+  }
 
   const vacationWeek=s.specialShift==='Vacation Week',unpaidSick=isSecretUnpaidSickShift(s);
   const title=escapeHTML(s.classDay?'Class':(s.specialShift||s.assignment||'Shift'));
@@ -11455,7 +11598,7 @@ function shiftHTML(s,options={}){
     <div class="history-accent" aria-hidden="true"></div>
     <div class="history-row-main">
       <div class="history-row-title"><span class="history-row-title-text">${title}</span>${tags.join(' ')}</div>
-      <div class="history-row-sub">${detail}</div>
+      <div class="history-row-sub">${detail}${options.showFatigue&&go203FatigueForShift(s)?.manual?`<div class="muted" style="margin-top:3px;font-size:11px">Published Type ${go203FatigueForShift(s).publishedType} • Engineer-recorded Type ${go203FatigueForShift(s).type}${go203FatigueForShift(s).overrideNote?` • ${escapeHTML(go203FatigueForShift(s).overrideNote)}`:''}</div>`:''}</div>
     </div>
     <div class="history-row-right">
       <div class="history-row-pay">${c&&!c.rateMissing?money(Number.isFinite(Number(options.payOverride))?Number(options.payOverride):c.total):'—'}</div>
@@ -11534,7 +11677,7 @@ function renderHistory(){
     s.unscheduledOT?`Unscheduled OT ${fmtMinutes(calculateUnscheduledOTMinutes(s.start,s.crewBookReleaseTime,s.end)||0)}`:'',
     s.pone?'Trainee':'',s.noCo?'Operating Without a Conductor':'',s.cert?'Yard Certification':'',s.commingle?'Commingle':'',
     s.yardMove?'2 Classes of Service':'',s.sheridanMove?'Sheridan Shop House Move':'',s.terminalNotCrewBook?'Terminal Not In Crew Book':'',
-    s.runaround?'Runaround Claim':'',s.a2?'Time on Time':'',s.miscPenalty?`Miscellaneous Penalty ${s.miscPenaltyDescription||''}`:'',s.timeSlip?'Time Slip':'',s.timeSlipStatus||''
+    s.runaround?'Runaround Claim':'',s.a2?'Time on Time':'',s.miscPenalty?`Miscellaneous Penalty ${s.miscPenaltyDescription||''}`:'',s.timeSlip?'Time Slip':'',s.timeSlipStatus||'',(go203FatigueForShift(s)?`Type ${go203FatigueForShift(s).type}`:'')
   ].join(' ').toLowerCase().includes(q)).sort((a,b)=>b.date.localeCompare(a.date));
 
   if(!list.length){historyList.innerHTML='<div class="empty" style="margin-top:14px">No matching shifts.</div>';return}
@@ -11553,7 +11696,7 @@ function renderHistory(){
       out+=`<div class="history-month-head"><div class="history-month-name">${monthLabel}</div><div class="history-month-total">${money(monthTotals[key]||0)}</div></div>`;
       lastKey=key;
     }
-    out+=shiftHTML(s);
+    out+=shiftHTML(s,{showFatigue:true});
   }
   historyList.innerHTML=out;
 }
