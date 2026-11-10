@@ -1,0 +1,1 @@
+TEST 1C DIAGNOSTIC ONLY. Upload index.html and service-worker.js to GitHub test PWA, never Cloudflare. Open Trim Assistant and report the four cumulative millisecond values shown beneath roster summary. Repeat twice (first load and second load). No Crew Book refresh logic or image loading behavior has been altered. Existing Test 1A/1B checks should continue to pass.
