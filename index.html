@@ -103,6 +103,13 @@
     .subhead{font-size:12px;font-weight:800;color:#445066;margin:4px 0 8px}
     .calc{background:linear-gradient(145deg,#10233f,#173b63);color:#fff;border:0}.calc .section-title h2{color:#fff}.calc-row{display:flex;justify-content:space-between;gap:20px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.12)}.calc-row:last-child{border-bottom:0}.calc-row span:first-child{color:#c9d6e5}.calc-row strong{font-variant-numeric:tabular-nums}.calc-total{font-size:21px;padding-top:13px;margin-top:4px;border-top:1px solid rgba(255,255,255,.28)}
     .badge{display:inline-flex;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:800;background:#eef3f8;color:#405168}.badge.ot{background:#fff1d6;color:#8a5a00}.badge.holiday{background:#f3e8ff;color:#6f2da8}.badge.penalty{background:#e8f5ee;color:#17633b}.badge.timeslip{background:#fff0a8;color:#6f5700;border:1px solid #e2c348}
+.fatigue-review-card{border:1px solid var(--line,#d6e0ec);background:var(--surface,#f8fafc);border-radius:14px;padding:12px}
+.fatigue-review-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.fatigue-review-card label{display:block;font-weight:700;font-size:12px;margin:0 0 6px}
+.fatigue-review-card textarea{width:100%;box-sizing:border-box}
+.fatigue-informational-warning{border:1px solid #dfc36f;background:#fff7d6;color:#59460b;border-radius:10px;padding:10px;font-size:12px;line-height:1.45}
+html[data-theme="dark"] .fatigue-informational-warning{background:#413615;color:#ffe9a9;border-color:#826d37}
+.badge.fatigue{background:#e8edf5;color:#244467;border:1px solid #c9d7e7}
     .shift.timeslip{background:#fff9d8;border-color:#ddc04b;box-shadow:inset 4px 0 0 #ddc04b}
     .time-slip-check{background:#fff1a6!important;border-color:#dcc044!important;color:#5f4a00;font-weight:850}
     .time-slip-panel{display:none;margin-top:10px;padding:14px;border:1px solid #d9bb39;border-radius:14px;background:#fff8cf}
@@ -163,7 +170,7 @@
     .warning-panel{display:none;margin-top:12px;padding:12px 14px;border-radius:14px;border:1px solid #e2c05c;background:#fff8d8;color:#654f00;font-size:12px;line-height:1.5}.warning-panel.show{display:block}.warning-panel strong{display:block;margin-bottom:4px}
     .backup-reminder{display:none;margin-bottom:14px;padding:12px 14px;border-radius:14px;background:#fff8d8;border:1px solid #e4c65f;color:#685300;font-size:12px;line-height:1.45}.backup-reminder.show{display:block}.mode-banner{padding:10px 12px;border-radius:12px;background:#eaf2fb;border:1px solid #9bbce0;color:#12345b;font-size:12px;font-weight:800;margin-top:10px}.readonly-info{padding:11px 12px;border-radius:12px;background:#f3f6f9;border:1px solid #d8e0e8;color:#263342}.readonly-info strong{font-size:15px;color:#12345b}.trainee-only{display:none}.trainee-mode .trainee-only{display:block}.hidden-by-mode{display:none!important}
     .saved-job{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #e7edf3}.saved-job:last-child{border-bottom:0}.saved-job-title{font-weight:850}.saved-job-sub{font-size:12px;color:var(--muted);margin-top:3px}
-    .timeslip-group{margin-top:18px}.timeslip-group h3{margin:0 0 8px;font-size:15px}.timeslip-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}.timeslip-summary .statbox{padding:12px;border-radius:14px;background:#fff9d8;border:1px solid #e3ca66}.timeslip-summary .num{font-size:24px;font-weight:900}
+    .timeslip-group{margin-top:18px}.timeslip-group h3{margin:0 0 8px;font-size:15px}.timeslip-summary{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}.timeslip-summary .statbox{padding:12px;border-radius:14px;background:#fff9d8;border:1px solid #e3ca66}.timeslip-summary .num{font-size:24px;font-weight:900}
     .shift.timeslip .shift-sub{white-space:normal;line-height:1.42}
     .time-slip-deadline-line{display:block;margin-top:4px;font-weight:800;color:#735d00}
     .time-slip-deadline-line.warning{color:#8a5a00}.time-slip-deadline-line.urgent,.time-slip-deadline-line.overdue{color:#a22922}
@@ -176,6 +183,24 @@
     .time-slip-claim-row{display:flex;align-items:center;gap:8px}
     .time-slip-claim-row select{flex:1;min-width:0}
     .time-slip-claim-row .btn{flex:0 0 auto}
+    .time-slip-claim-entry{padding:10px;border:1px solid var(--line);border-radius:12px;background:var(--card);display:grid;gap:9px}
+    .time-slip-claim-entry .claim-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+    .time-slip-claim-entry .claim-status{display:grid;grid-template-columns:75px minmax(0,1fr);gap:8px;align-items:center;font-size:12px}
+    .time-slip-claim-entry select{min-width:0;width:100%}
+    .time-slip-calculated-estimate{font-size:11px;line-height:1.45;color:var(--muted);background:var(--bg);border-radius:8px;padding:7px 9px}
+    .time-slip-claim-entry details{border-top:1px solid var(--line);padding-top:8px;color:var(--muted);font-size:12px}
+    .time-slip-claim-entry summary{cursor:pointer;font-weight:750;color:var(--ink)}
+    .time-slip-claim-entry .claim-amounts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+    .time-slip-claim-entry .claim-duration-area{margin-top:10px;padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--bg)}
+    .time-slip-claim-entry .claim-duration-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:6px 0}
+    .time-slip-claim-entry .claim-duration-grid label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:700}
+    .time-slip-claim-entry .claim-duration-grid input{min-width:0;width:100%;padding:10px;font-size:16px}
+    .time-slip-claim-entry .claim-duration-preview{font-size:12px;line-height:1.5;color:var(--accent);margin-top:7px;font-weight:600}
+    .time-slip-claim-entry .claim-duration-hint{color:var(--muted);font-size:11px;line-height:1.4;margin-top:4px}
+    @media(max-width:360px){.time-slip-claim-entry .claim-duration-grid{grid-template-columns:1fr}}
+    .time-slip-claim-entry label{display:grid;gap:4px;font-size:11px;font-weight:750}
+    .time-slip-claim-entry input{min-width:0;width:100%}
+    @media(max-width:780px){.timeslip-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
     .time-slip-claim-add{margin-top:8px}
     .time-slip-claim-code-note{font-size:10.5px;color:var(--muted);line-height:1.4;margin-top:8px}
     .time-slip-claim-badges{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
@@ -480,6 +505,7 @@
     }
     html[data-theme="dark"] .badge.penalty{background:#173d2d!important;color:#a7e7c2!important}
     html[data-theme="dark"] .badge.ot{background:#4a3515!important;color:#ffd77e!important}
+    html[data-theme="dark"] .badge.fatigue{background:#2b405b!important;color:#d4e4f6!important;border-color:#4b688c!important}
     html[data-theme="dark"] .badge.holiday{background:#3b2850!important;color:#dfbdff!important}
     html[data-theme="dark"] .badge.timeslip{background:#4a3c15!important;color:#ffe582!important;border-color:#79652b!important}
     html[data-theme="dark"] .time-slip-claim-option{background:#17263a!important;border-color:#344960!important}
@@ -749,6 +775,23 @@
     html[data-theme="dark"] .billing-readonly-banner{background:#2a2415;border-color:#6a592d;color:#f2dfaa}
     html[data-theme="dark"] .billing-test-badge{background:#14283a;border-color:#315f91;color:#b8d9ff}
 
+
+/* TEST R3: Optional typed time entry for the Add Shift flow. Native iOS wheels are preserved. */
+.shift-time-label-row{display:flex;align-items:center;justify-content:space-between;gap:5px;flex-wrap:wrap;margin:0 0 6px}
+.field .shift-time-label-row label{margin:0;min-width:0}
+.shift-time-type-button{display:inline-flex;align-items:center;justify-content:center;min-height:30px;padding:5px 9px;background:#edf3fc;border:1px solid #c8d7eb;border-radius:9px;color:#163f73;font-size:11px;font-weight:800;white-space:nowrap;cursor:pointer}
+.shift-time-type-button:focus-visible,.shift-time-choice:focus-visible{outline:3px solid #7ca6d2;outline-offset:2px}
+#typedShiftTimeModal{z-index:120;align-items:center;padding:10px}
+#typedShiftTimeModal .modal-card{width:min(430px,calc(100% - 12px));max-height:calc(100dvh - 24px);margin:8px auto calc(8px + env(safe-area-inset-bottom))}
+.typed-shift-input{font-size:21px!important;font-weight:750;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.typed-shift-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:13px 0}
+.shift-time-choice{background:#edf2f9;color:#173b63;border:1px solid #cbd7e8;border-radius:11px;font-size:13px;font-weight:800;min-height:47px;cursor:pointer}
+.shift-time-choice[aria-pressed="true"]{background:#143d6d;color:#fff;border-color:#143d6d}
+.typed-shift-hint{font-size:12px;line-height:1.45;color:#64748b}
+.typed-shift-error{color:#a12821;font-size:12px;font-weight:750;min-height:0;margin-top:8px}
+html[data-theme="dark"] .shift-time-type-button{background:#263c59;color:#e4efff;border-color:#49688d}
+html[data-theme="dark"] .shift-time-choice{background:#263c59;color:#e4efff;border-color:#49688d}
+html[data-theme="dark"] .shift-time-choice[aria-pressed="true"]{background:#5389cf;color:#07172b}
 </style>
   <script>
     try{
@@ -1529,6 +1572,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .bid-sheet-status-pill{display:inline-flex;margin-top:8px;padding:5px 8px;border-radius:999px;font-size:8.5px;font-weight:900;letter-spacing:.02em}.bid-sheet-status-pill.open{background:#e8f7ef;color:#176742}.bid-sheet-status-pill.upcoming{background:#edf4ff;color:#214e7c}.bid-sheet-status-pill.closed{background:#f1f3f6;color:#657286}.bid-sheet-status-pill.results{background:#efe8fb;color:#5b3a88}.bid-sheet-status-pill.effective{background:#fff1c9;color:#795b00}.bid-sheet-status-pill.past{background:#eef1f5;color:#657286}
     .bid-sheet-filters{display:none;margin-top:12px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--card)}.bid-sheet-filters.show{display:block}
     .bid-sheet-results{display:none;margin-top:12px}.bid-sheet-results.show{display:block}
+    .bid-fatigue-choices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:9px 0 0}.bid-fatigue-choices label{display:block;color:var(--text);font-weight:750;font-size:11px}.bid-fatigue-choices select{width:100%;box-sizing:border-box;margin-top:5px;min-height:41px}.bid-fatigue-source{margin-top:9px;color:var(--muted);font-size:10px;line-height:1.45}.bid-fatigue-samples{margin-top:9px;padding:10px;border:1px dashed var(--line);border-radius:11px}.bid-fatigue-samples .bid-fatigue-preview-item{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:11px}.bid-fatigue-samples .bid-fatigue-preview-item:last-child{border-bottom:0}.bid-fatigue-samples strong{color:var(--brand)}
     .bid-sheet-search-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:9px}.bid-sheet-search-row .field{margin:0}
     .bid-sheet-source{margin-top:8px;color:var(--muted);font-size:8.5px;line-height:1.45}
     .bid-sheet-card-terminal{font-weight:850;color:#4a5d73}.bid-sheet-unmatched{margin-top:8px;padding:8px 9px;border:1px dashed var(--line);border-radius:10px;color:var(--muted);font-size:8.5px;line-height:1.4}
@@ -1545,6 +1589,48 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .bid-call-ready-warning{padding:11px 12px;border:1px solid #e1c468;border-radius:12px;background:#fff8d9;color:#5d4b00;font-size:10px;line-height:1.5}.bid-call-ready-list{display:grid;gap:8px;margin:12px 0 0;padding:0;list-style:none;counter-reset:bid-ready}.bid-call-ready-item{counter-increment:bid-ready;display:grid;grid-template-columns:34px minmax(0,1fr);gap:9px;align-items:center;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg)}.bid-call-ready-item:before{content:counter(bid-ready);display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--brand);color:#fff;font-weight:900}.bid-call-ready-assignment{font-size:13px;font-weight:900;color:var(--ink)}.bid-call-ready-meta{margin-top:2px;color:var(--muted);font-size:9px}
     html[data-theme="dark"] .bid-sheet-summary{background:#241d33;border-color:#655080;color:#d8c9ed}html[data-theme="dark"] .bid-sheet-summary strong{color:#eee5fb}html[data-theme="dark"] .bid-sheet-status-pill.open{background:#123024;color:#99dfba}html[data-theme="dark"] .bid-sheet-status-pill.upcoming{background:#14283a;color:#b9d8f7}html[data-theme="dark"] .bid-sheet-status-pill.closed{background:#252b34;color:#b7c0cc}html[data-theme="dark"] .bid-sheet-status-pill.results{background:#302343;color:#d8c9ed}html[data-theme="dark"] .bid-sheet-status-pill.effective{background:#3d3210;color:#ffe58a}html[data-theme="dark"] .bid-sheet-status-pill.past{background:#252b34;color:#b7c0cc}html[data-theme="dark"] .bid-sheet-builder{background:#15273a;border-color:#365a7d}html[data-theme="dark"] .bid-draft-empty{background:#112235;border-color:#3b5874}html[data-theme="dark"] .bid-draft-sync.synced{background:#123024;color:#99dfba}html[data-theme="dark"] .bid-draft-sync.saving{background:#3d3210;color:#ffe58a}html[data-theme="dark"] .bid-draft-sync.local{background:#25364a;color:#c4d0dc}html[data-theme="dark"] .bid-draft-sync.error{background:#431e25;color:#ffb2bd}html[data-theme="dark"] .bid-sheet-card-actions .bid-add-choice.added{background:#123024;color:#99dfba}html[data-theme="dark"] .bid-call-ready-warning{background:#30280e;border-color:#806d25;color:#ffe8a1}
     @media(max-width:620px){.bid-sheet-search-row{grid-template-columns:1fr}.bid-sheet-builder-head{align-items:center}.bid-draft-choice{grid-template-columns:34px minmax(0,1fr)}.bid-draft-controls{grid-column:1 / -1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));justify-content:stretch}.bid-draft-controls .btn{font-size:9px}.bid-sheet-builder-actions{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}}
+
+    /* Bid Sheet Staging Area — isolated GitHub test build */
+    .bid-staging{display:none;margin:12px 0;padding:14px;border:1px solid #85aecf;border-radius:14px;background:#edf6fd}
+    .bid-staging.show{display:block}.bid-staging-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .bid-staging-head h3{margin:0;color:var(--brand);font-size:15px}.bid-staging-sub{font-size:10px;color:var(--muted);margin:3px 0 0;line-height:1.45}
+    .bid-sheet-card-actions .bid-stage-add{background:#e2f1fc;color:#175d8f;border-color:#a6c9e6;font-weight:850}.bid-sheet-card-actions .bid-stage-add.added{background:#e4f5ec;color:#176742}.bid-sheet-card-actions .bid-stage-add:disabled{opacity:.65}
+    .bid-staging-test{margin-top:10px;font-size:10px;line-height:1.5;color:var(--muted)}.bid-staging-list{display:grid;gap:9px;margin-top:12px}
+    .bid-staging-item{display:grid;grid-template-columns:34px 32px minmax(0,1fr);gap:9px;align-items:center;padding:11px;border:1px solid #b4cadc;border-radius:12px;background:var(--card)}
+    .bid-staging-item.drop-target{outline:2px dashed #3383bb;outline-offset:2px}
+    .bid-stage-grip{border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--ink);width:32px;height:40px;display:flex;align-items:center;justify-content:center;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;font-size:18px}
+    .bid-stage-grip:active{cursor:grabbing}.bid-stage-grip:focus-visible{outline:3px solid #4f9dd0;outline-offset:2px}
+    /* R2: concise, full-width in-card Crew Book schedule; closed cards stay easy to scan. */
+    .bid-stage-insights{grid-column:1/-1;min-width:0}
+    .bid-stage-pulse{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin:0 0 2px}
+    .bid-stage-chip{display:inline-flex;align-items:center;padding:3px 7px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:999px;font-size:9px;line-height:1.4;font-weight:700}
+    .bid-stage-chip.ot{color:var(--brand);font-weight:850}
+    .bid-stage-details{margin-top:4px;font-size:10px;color:var(--muted);border-top:1px solid var(--line);padding-top:3px}
+    .bid-stage-details summary{cursor:pointer;color:var(--brand);font-weight:850;min-height:33px;line-height:33px;font-size:11px;list-style-position:inside}
+    .bid-stage-details summary:focus-visible{outline:2px solid #3485bb;outline-offset:2px;border-radius:5px}
+    .bid-stage-details[open] summary{margin-bottom:4px}
+    .bid-stage-detail-body{padding:0 0 5px;line-height:1.5}
+    .bid-stage-schedules{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:5px}
+    .bid-stage-schedules .trim-result-schedule{margin:0;padding:8px 10px;min-width:0}
+    .bid-stage-schedules .trim-result-schedule span{font-size:9px}
+    .bid-stage-schedules .trim-result-schedule strong{font-size:11px}
+    .bid-stage-schedules .trim-result-schedule small{font-size:9px}
+    .bid-stage-coverage{padding:6px 0;color:var(--muted);font-size:10px;line-height:1.45}
+    .bid-stage-source{margin-top:6px;display:flex;align-items:center;justify-content:flex-start}
+    .bid-stage-source button{border:0;background:transparent;color:var(--brand);font:inherit;font-weight:850;font-size:10px;padding:5px 0;min-height:32px;cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+    .bid-stage-source button:focus-visible{outline:2px solid #3485bb;outline-offset:2px}
+    .bid-stage-empty-detail{padding:8px 10px;border:1px dashed var(--line);background:var(--bg);border-radius:9px;color:var(--muted);font-size:10px}
+    .bid-stage-control-row{grid-column:1/-1;display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+    .bid-stage-control-row .btn{font-size:10px;min-height:35px;padding:7px 11px}.bid-stage-control-row .btn:disabled{opacity:.4}
+    .bid-stage-transfer{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:10px;margin-top:12px}
+    .bid-stage-transfer label{display:block;font-size:10px;font-weight:800;color:var(--ink);margin-bottom:5px}.bid-stage-transfer select{width:100%;min-height:40px}
+    .bid-stage-transfer button{min-height:40px}.bid-stage-transfer button:disabled{opacity:.4}
+    .bid-staging .bid-draft-priority{font-size:12px}.bid-stage-note{margin-top:10px;font-size:10px;line-height:1.55;color:var(--muted)}
+    .bid-stage-inline-status{font-size:9px;min-width:100px;text-align:right;color:var(--muted)}
+    html[data-theme="dark"] .bid-sheet-card-actions .bid-stage-add{background:#143450;color:#afd7f2;border-color:#365a7d}html[data-theme="dark"] .bid-sheet-card-actions .bid-stage-add.added{background:#123024;color:#99dfba}
+    html[data-theme="dark"] .bid-staging{background:#14283a;border-color:#365a7d}
+    html[data-theme="dark"] .bid-staging-item{border-color:#375773}
+    @media(max-width:620px){.bid-staging-item{grid-template-columns:30px 30px minmax(0,1fr);gap:7px}.bid-stage-schedules{grid-template-columns:1fr}.bid-stage-transfer{grid-template-columns:1fr}.bid-stage-transfer button{width:100%}.bid-stage-control-row{justify-content:stretch}.bid-stage-control-row .btn{flex:1;min-width:0;padding:7px 5px}.bid-stage-inline-status{text-align:left}}
     .bid-lifecycle-alert{display:none;margin:0 0 14px;padding:14px 16px;border:1px solid #a9c6e3;border-radius:16px;background:#f4f9ff;box-shadow:var(--shadow)}.bid-lifecycle-alert.show{display:block}.bid-lifecycle-alert.open{border-color:#8ec9ac;background:#f3fbf7}.bid-lifecycle-alert.pending{border-color:#bdc8d5;background:#f7f9fb}.bid-lifecycle-alert.results{border-color:#c9b8e5;background:#faf7ff}.bid-lifecycle-kicker{font-size:8.5px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;color:#35618b}.bid-lifecycle-alert.open .bid-lifecycle-kicker{color:#26724e}.bid-lifecycle-alert.pending .bid-lifecycle-kicker{color:#667487}.bid-lifecycle-alert.results .bid-lifecycle-kicker{color:#674696}.bid-lifecycle-title{margin-top:3px;font-size:16px;font-weight:950;color:var(--ink)}.bid-lifecycle-copy{margin-top:5px;font-size:9.5px;line-height:1.45;color:var(--muted)}.bid-lifecycle-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.bid-lifecycle-test-box{margin-top:12px;padding:12px;border:1px dashed #9db9d5;border-radius:12px;background:#f7fbff}.bid-lifecycle-test-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.bid-lifecycle-test-status{margin-top:9px;font-size:8.5px;line-height:1.45;color:var(--muted)}
     .award-alert{display:none;margin:0 0 14px;padding:15px 16px;border:1px solid #d6b45b;border-radius:16px;background:#fff9e8;box-shadow:var(--shadow)}.award-alert.show{display:block}.award-alert-kicker{font-size:8.5px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;color:#8a6410}.award-alert-title{margin-top:3px;font-size:17px;font-weight:950;color:#3d2d09}.award-alert-meta{margin-top:4px;font-size:10px;font-weight:800;color:#70551b}.award-alert-warning{margin-top:10px;padding:10px 11px;border:1px solid #e5cf91;border-radius:11px;background:rgba(255,255,255,.62);font-size:10px;line-height:1.45;color:#4e4328}.award-alert-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}.award-alert-confirmed{display:inline-flex;align-items:center;margin-top:9px;padding:5px 8px;border-radius:999px;background:#e4f5ec;color:#176742;font-size:8.5px;font-weight:900}.award-alert .btn:disabled{opacity:.48}.award-admin-card{display:none}.award-admin-card.show{display:block}.award-admin-diff{margin-top:10px;padding:10px 11px;border:1px solid var(--line);border-radius:11px;background:var(--card);font-size:9.5px;line-height:1.5}
     html[data-theme="dark"] .bid-lifecycle-alert{background:#14283a;border-color:#365a7d}html[data-theme="dark"] .bid-lifecycle-alert.open{background:#123024;border-color:#2c6c4d}html[data-theme="dark"] .bid-lifecycle-alert.pending{background:#252b34;border-color:#4b5664}html[data-theme="dark"] .bid-lifecycle-alert.results{background:#241d33;border-color:#655080}html[data-theme="dark"] .bid-lifecycle-title{color:#eef4fb}html[data-theme="dark"] .bid-lifecycle-copy{color:#c0cad6}html[data-theme="dark"] .bid-lifecycle-test-box{background:#102234;border-color:#365a7d}
@@ -2254,6 +2340,19 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <div class="section-title"><h2>Bid Sheet Assistant</h2><button class="btn small" type="button" onclick="showView('dashboard')">Dashboard</button></div>
       <p class="trim-public-intro">Shows assignments from the latest published Engineer bid sheet and matches them to the verified Crew Book. Always confirm the closing time and submit your official choices through the railroad's normal bidding process.</p>
       <div class="bid-sheet-summary" id="bidSheetSummary"></div>
+      <section class="bid-staging" id="bidStagingArea" aria-labelledby="bidStagingTitle">
+        <div class="bid-staging-head">
+          <div><h3 id="bidStagingTitle">Staging Area <span id="bidStagingCount">(0)</span></h3><p class="bid-staging-sub">Shortlist assignments, compare them, and arrange priorities before deciding what belongs on My Bid Sheet.</p></div>
+          <span class="bid-stage-inline-status" id="bidStagingStatus" role="status" aria-live="polite">Device-only test</span>
+        </div>
+        <div class="bid-staging-test"><strong>GitHub test preview:</strong> Staging and My Bid Sheet changes are saved on this device only. This preview does not write either list to Supabase or sync these lists between devices.</div>
+        <div class="bid-staging-list" id="bidStagingList" role="list"></div>
+        <div class="bid-stage-transfer">
+          <div><label for="bidStagingTransferMode">Transfer to My Bid Sheet</label><select id="bidStagingTransferMode"><option value="append">Append after existing choices (skip duplicates)</option><option value="replace">Replace My Bid Sheet with staged order</option></select></div>
+          <button class="btn primary" type="button" id="bidStagingTransferButton" onclick="bidStagingTransfer()" disabled>Transfer Staged Jobs</button>
+        </div>
+        <div class="bid-stage-note" id="bidStagingLifecycleNote">Nothing is submitted to the railroad. Jobs stay in Staging after transfer, and My Bid Sheet stays separate.</div>
+      </section>
       <section class="bid-sheet-builder" id="bidSheetBuilder" aria-labelledby="bidSheetBuilderTitle">
         <div class="bid-sheet-builder-head">
           <div><h3 id="bidSheetBuilderTitle">My Bid Sheet</h3><div class="bid-sheet-builder-subtitle" id="bidSheetBuilderSubtitle">Your choices in call-in priority order</div></div>
@@ -2283,6 +2382,18 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <label class="trim-check"><input type="checkbox" value="6" onchange="bidSheetApplyFilters()"> Sat</label>
           <label class="trim-check"><input type="checkbox" value="7" onchange="bidSheetApplyFilters()"> Sun</label>
         </div>
+        <div id="bidFatigueFilterGroup">
+        <div class="trim-filter-title">Fatigue type <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— GO 203 published assignment-day classification</span></div>
+        <div class="bid-fatigue-choices">
+          <label for="bidFatigueDay">Assignment day<select id="bidFatigueDay" onchange="bidSheetApplyFilters()"><option value="">All days</option><option value="0">Monday</option><option value="1">Tuesday</option><option value="2">Wednesday</option><option value="3">Thursday</option><option value="4">Friday</option><option value="5">Saturday</option><option value="6">Sunday</option></select></label>
+          <label for="bidFatigueType">Fatigue type<select id="bidFatigueType" onchange="bidSheetApplyFilters()"><option value="">All types</option><option value="1">Type 1</option><option value="2">Type 2</option></select></label>
+        </div>
+        <div class="bid-fatigue-source" id="bidFatigueStatus" role="status" aria-live="polite">Fatigue filters use the official GO 203 Rev. 1 table (F-1 through F-12).</div>
+        <div id="bidFatiguePreviewArea" style="display:none;margin-top:8px">
+          <button class="btn small" type="button" id="bidFatiguePreviewButton" onclick="bidSheetFatigueTogglePreview()" aria-expanded="false">Preview GO 203 examples (read only)</button>
+          <div class="bid-fatigue-samples" id="bidFatigueSamples" style="display:none" aria-live="polite"></div>
+        </div>
+        </div><!-- /bidFatigueFilterGroup -->
         <div class="trim-filter-title">Extra List IPMA <span style="font-weight:500;text-transform:none;letter-spacing:0;color:var(--muted)">— any selected IPMA matches</span></div>
         <div class="trim-check-grid" id="bidIpmaChecks">
           <label class="trim-check"><input type="checkbox" value="12:01 AM" onchange="bidSheetApplyFilters()"> 12:01 AM</label>
@@ -2988,6 +3099,22 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           </div>
         </div>
 
+        <div class="settings-pref-section" id="fatigueBadgeDisplaySettingsCard">
+          <div class="settings-row settings-toggle-row borderless-row">
+            <div><strong>Show Fatigue Types on Shift Cards</strong><small>Display published or engineer-recorded Type 1 / Type 2 badges on Dashboard Recent Shifts and Shift History. Does not affect saved classifications or Hours of Service notices.</small></div>
+            <label class="switch-label" aria-label="Show fatigue types on Dashboard and History"><input id="fatigueBadgeDisplayToggle" type="checkbox" onchange="setFatigueBadgeDisplay(this.checked)" checked><span class="switch-ui" aria-hidden="true"></span></label>
+          </div>
+          <div class="mini" style="margin-top:7px">This preview saves the display choice on this device; cross-device preference sync will be added separately.</div>
+        </div>
+
+        <div class="settings-pref-section" id="bidFatigueDisplaySettingsCard">
+          <div class="settings-row settings-toggle-row borderless-row">
+            <div><strong>Show Fatigue Filters in Bid Sheet Assistant</strong><small>Show or hide the GO 203 Assignment Day and Type 1 / Type 2 filters. Independent of the Dashboard / History badge setting. Hiding filters clears the selected fatigue filter.</small></div>
+            <label class="switch-label" aria-label="Show fatigue filters in Bid Sheet Assistant"><input id="bidFatigueDisplayToggle" type="checkbox" onchange="setBidFatigueFiltersDisplay(this.checked)" checked><span class="switch-ui" aria-hidden="true"></span></label>
+          </div>
+          <div class="mini" style="margin-top:7px">This test saves the Bid Sheet display preference on this device only.</div>
+        </div>
+
         <div class="settings-pref-section" id="timeSlipFollowUpSettingsCard">
           <div class="settings-row settings-row-control borderless-row">
             <div><strong>Time Slip Wage Follow-Up</strong><small>If a submitted Time Slip is still Pending, remind you to call Wage Examiners before the 30-day window ends.</small></div>
@@ -3369,6 +3496,28 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         <div class="field"><label>Start time</label><input id="start" type="time" required onchange="calculatePreview()"></div>
         <div class="field"><label>Actual release time</label><input id="end" type="time" required onchange="calculatePreview()"></div>
         <div class="field full"><label>Total Time on Duty</label><div class="readonly-info"><strong id="timeOnDutyDisplay">—</strong><div class="muted" style="margin-top:2px">Calculated automatically from start and actual release time</div></div></div>
+        <div id="fatigueShiftField" class="field full" style="display:none">
+          <div class="fatigue-review-card">
+            <div class="fatigue-review-heading"><div><strong id="fatiguePublishedLabel">Published fatigue: —</strong><div class="muted" id="fatiguePublishedSource" style="font-size:11px;margin-top:3px"></div></div>
+              <button id="fatigueOverrideButton" class="btn small" type="button" onclick="toggleFatigueOverrideEditor()">Override for this shift</button></div>
+            <div id="fatigueReferenceStatus" class="muted" style="font-size:11px;margin-top:8px;display:none" role="status" aria-live="polite"></div>
+            <div id="fatigueReleaseComparison" class="muted" style="font-size:11px;margin-top:8px;display:none"></div>
+            <div id="fatigueOverridePanel" style="display:none;margin-top:12px">
+              <label for="fatigueOverrideSelect">Record fatigue type for this shift</label>
+              <select id="fatigueOverrideSelect" onchange="refreshFatigueEditor()">
+                <option value="">Use published classification</option>
+                <option value="1">Type 1 — engineer override</option>
+                <option value="2">Type 2 — engineer override</option>
+              </select>
+              <label for="fatigueOverrideNote" style="margin-top:10px">Reason / Crew Management guidance (optional)</label>
+              <textarea id="fatigueOverrideNote" rows="2" maxlength="300" placeholder="Optional historical note"></textarea>
+              <div class="muted" style="font-size:11px;margin-top:8px">This records your determination for this shift only. EPL never changes fatigue type automatically or decides rest eligibility.</div>
+              <button class="btn small" style="margin-top:8px" type="button" onclick="restorePublishedFatigue()">Restore published type</button>
+            </div>
+            <div id="fatigueRecordedLabel" style="margin-top:8px;font-weight:700;font-size:12px"></div>
+            <div id="fatigueOvernightNotice" class="fatigue-informational-warning" style="display:none;margin-top:10px" role="note"></div>
+          </div>
+        </div>
         <div id="shiftCommunityPanel" class="field full shift-community-panel"></div>
         <div id="unscheduledOTField" class="field full">
           <label class="check"><input id="unscheduledOTFlag" type="checkbox" onchange="toggleUnscheduledOT();calculatePreview()"> Unscheduled Overtime</label>
@@ -3468,13 +3617,15 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
               <div class="field full"><label>Date Submitted</label><input id="timeSlipSubmitted" type="date" onchange="handleTimeSlipSubmittedChange()"></div>
               <div class="field full"><label>Date Confirmed Received</label><input id="timeSlipConfirmedReceived" type="date" onchange="handleTimeSlipConfirmedReceivedChange()"><div class="time-slip-status-hint">Optional. Once Wage Examiners confirms the slip is on file, recording the date silences follow-up reminders while the slip remains Pending.</div></div>
               <div class="field full"><label>Location Submitted</label><input id="timeSlipLocation" placeholder="e.g. Jamaica"></div>
-              <div class="field full"><label>Status</label><select id="timeSlipStatus" onchange="handleTimeSlipStatusChange()"><option value="Pending">Pending</option><option value="Paid">Paid</option><option value="Denied">Denied</option></select><div id="timeSlipStatusHint" class="time-slip-status-hint"></div></div>
+              <div class="field full"><label>Overall status (fallback)</label><select id="timeSlipStatus" onchange="handleTimeSlipStatusChange()"><option value="Pending">Pending</option><option value="Paid">Paid</option><option value="Denied">Denied</option></select><div id="timeSlipStatusHint" class="time-slip-status-hint"></div></div>
               <div class="field full"><label>Date Paid / Denied</label><input id="timeSlipResolved" type="date"></div>
             </div>
             <div class="time-slip-claim-code-panel">
               <div class="subhead">Claim Type / Code</div>
-              <p class="time-slip-claim-code-lead">Add the exception claim code(s) that apply to this Time Slip. These labels are for personal tracking and do not change pay calculations.</p>
+              <p class="time-slip-claim-code-lead">EPL calculates supported claims. For a partial denial, enter the time denied from the letter.</p>
               <div id="timeSlipClaimCodeRows" class="time-slip-claim-rows"></div>
+              <div id="timeSlipClaimOutcomePreview" class="time-slip-status-hint" aria-live="polite"></div>
+              <div class="time-slip-status-hint"><strong>GitHub preview:</strong> Shift saves stay on this testing device; shift cloud sync is disabled.</div>
               <button id="timeSlipAddClaimCode" class="btn small time-slip-claim-add" type="button" onclick="addTimeSlipClaimCodeRow()">+ Add claim code</button>
             </div>
             <div class="time-slip-wage-panel">
@@ -3491,7 +3642,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
               <div id="timeSlipPhotoStatus" class="time-slip-photo-status"></div>
               <input id="timeSlipPhotoInput" type="file" accept="image/*" style="display:none" onchange="handleTimeSlipPhotoSelected(event)">
             </div>
-            <p class="notice" style="margin-bottom:0;color:#685400">Time Slip tracking is informational only and does not change the calculated earnings for this shift.</p>
+            <p class="notice" style="margin-bottom:0;color:#685400">Claim estimates reuse existing pay calculations. Individual payment results remain separate from this shift's calculated gross.</p>
           </div>
         </div>
         <div id="payFlagsField" class="field full"><label>Pay flags</label><div class="checks">
@@ -3617,7 +3768,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.719,2.578,0.03],[2.292,3.437,0.04],[2.864,4.296,0.05],[3.437,5.156,0.059],[4.01,6.015,0.069],[4.583,6.874,0.079],[5.156,7.733,0.089],[5.728,8.592,0.099],[6.301,9.451,0.109],[6.874,10.311,0.118],[7.447,11.17,0.128],[8.019,12.029,0.138],[8.592,12.888,0.148],[9.165,13.747,0.158],[9.738,14.606,0.167],[10.311,15.466,0.177],[10.883,16.325,0.187],[11.456,17.184,0.197],[12.029,18.043,0.207],[12.602,18.902,0.217],[13.174,19.761,0.226],[13.747,20.621,0.236],[14.32,21.48,0.246],[14.893,22.339,0.256],[15.466,23.198,0.266],[16.038,24.057,0.275],[16.611,24.916,0.285],[17.184,25.776,0.295],[17.757,26.635,0.305],[18.329,27.494,0.315],[18.902,28.353,0.325],[19.475,29.212,0.334],[20.048,30.071,0.344],[20.621,30.931,0.354],[21.193,31.79,0.364],[21.766,32.649,0.374],[22.339,33.508,0.383],[22.912,34.367,0.393],[23.485,35.227,0.403],[24.057,36.086,0.413],[24.63,36.945,0.423],[25.203,37.804,0.433],[25.776,38.663,0.442],[26.348,39.522,0.452],[26.921,40.382,0.462],[27.494,41.241,0.472],[28.067,42.1,0.482],[28.64,42.959,0.491],[29.212,43.818,0.501],[29.785,44.677,0.511],[30.358,45.537,0.521],[30.931,46.396,0.531],[31.503,47.255,0.541],[32.076,48.114,0.55],[32.649,48.973,0.56],[33.222,49.832,0.57],[33.795,50.692,0.58],[34.367,51.551,0.59]],"hour":[null,[34.367,51.55,0.589],[68.734,103.1,1.178],[103.1,154.651,1.768],[137.467,206.201,2.357],[171.834,257.751,2.946],[206.201,309.301,3.535],[240.568,360.852,4.124],[274.935,412.402,4.714]]},"80":{"minute":[null,[0.764,1.146,0.014],[1.528,2.292,0.027],[2.292,3.437,0.04],[3.055,4.583,0.053],[3.819,5.728,0.066],[4.583,6.874,0.079],[5.346,8.019,0.092],[6.11,9.165,0.105],[6.874,10.311,0.118],[7.638,11.456,0.131],[8.401,12.602,0.145],[9.165,13.747,0.158],[9.929,14.893,0.171],[10.692,16.038,0.184],[11.456,17.184,0.197],[12.22,18.329,0.21],[12.984,19.475,0.223],[13.747,20.621,0.236],[14.511,21.766,0.249],[15.275,22.912,0.262],[16.038,24.057,0.275],[16.802,25.203,0.289],[17.566,26.348,0.302],[18.329,27.494,0.315],[19.093,28.64,0.328],[19.857,29.785,0.341],[20.621,30.931,0.354],[21.384,32.076,0.367],[22.148,33.222,0.38],[22.912,34.367,0.393],[23.675,35.513,0.406],[24.439,36.658,0.419],[25.203,37.804,0.433],[25.967,38.95,0.446],[26.73,40.095,0.459],[27.494,41.241,0.472],[28.258,42.386,0.485],[29.021,43.532,0.498],[29.785,44.677,0.511],[30.549,45.823,0.524],[31.313,46.969,0.537],[32.076,48.114,0.55],[32.84,49.26,0.564],[33.604,50.405,0.577],[34.367,51.551,0.59],[35.131,52.696,0.603],[35.895,53.842,0.616],[36.658,54.987,0.629],[37.422,56.133,0.642],[38.186,57.279,0.655],[38.95,58.424,0.668],[39.713,59.57,0.681],[40.477,60.715,0.694],[41.241,61.861,0.708],[42.004,63.006,0.721],[42.768,64.152,0.734],[43.532,65.297,0.747],[44.296,66.443,0.76],[45.059,67.589,0.773],[45.823,68.734,0.786]],"hour":[null,[45.822,68.734,0.786],[91.645,137.467,1.571],[137.467,206.201,2.357],[183.29,274.935,3.142],[229.112,343.668,3.928],[274.935,412.402,4.714],[320.757,481.136,5.499],[366.579,549.869,6.285]]},"90":{"minute":[null,[0.86,1.289,0.015],[1.719,2.578,0.03],[2.578,3.867,0.045],[3.437,5.156,0.059],[4.296,6.444,0.074],[5.156,7.733,0.089],[6.015,9.022,0.104],[6.874,10.311,0.118],[7.733,11.599,0.133],[8.592,12.888,0.148],[9.451,14.177,0.163],[10.311,15.466,0.177],[11.17,16.754,0.192],[12.029,18.043,0.207],[12.888,19.332,0.221],[13.747,20.621,0.236],[14.606,21.909,0.251],[15.466,23.198,0.266],[16.325,24.487,0.28],[17.184,25.776,0.295],[18.043,27.064,0.31],[18.902,28.353,0.325],[19.761,29.642,0.339],[20.621,30.931,0.354],[21.48,32.219,0.369],[22.339,33.508,0.383],[23.198,34.797,0.398],[24.057,36.086,0.413],[24.916,37.374,0.428],[25.776,38.663,0.442],[26.635,39.952,0.457],[27.494,41.241,0.472],[28.353,42.529,0.487],[29.212,43.818,0.501],[30.071,45.107,0.516],[30.931,46.396,0.531],[31.79,47.684,0.546],[32.649,48.973,0.56],[33.508,50.262,0.575],[34.367,51.551,0.59],[35.227,52.84,0.604],[36.086,54.128,0.619],[36.945,55.417,0.634],[37.804,56.706,0.649],[38.663,57.995,0.663],[39.522,59.283,0.678],[40.382,60.572,0.693],[41.241,61.861,0.708],[42.1,63.15,0.722],[42.959,64.438,0.737],[43.818,65.727,0.752],[44.677,67.016,0.766],[45.537,68.305,0.781],[46.396,69.593,0.796],[47.255,70.882,0.811],[48.114,72.171,0.825],[48.973,73.46,0.84],[49.832,74.748,0.855],[50.692,76.037,0.87],[51.551,77.326,0.884]],"hour":[null,[51.55,77.325,0.884],[103.1,154.651,1.768],[154.651,231.976,2.651],[206.201,309.301,3.535],[257.751,386.627,4.419],[309.301,463.952,5.303],[360.852,541.278,6.187],[412.402,618.603,7.07]]},"100":{"minute":[null,[0.955,1.432,0.017],[1.91,2.864,0.033],[2.864,4.296,0.05],[3.819,5.728,0.066],[4.774,7.16,0.082],[5.728,8.592,0.099],[6.683,10.024,0.115],[7.638,11.456,0.131],[8.592,12.888,0.148],[9.547,14.32,0.164],[10.501,15.752,0.181],[11.456,17.184,0.197],[12.411,18.616,0.213],[13.365,20.048,0.23],[14.32,21.48,0.246],[15.275,22.912,0.262],[16.229,24.344,0.279],[17.184,25.776,0.295],[18.139,27.208,0.311],[19.093,28.64,0.328],[20.048,30.071,0.344],[21.002,31.503,0.361],[21.957,32.935,0.377],[22.912,34.367,0.393],[23.866,35.799,0.41],[24.821,37.231,0.426],[25.776,38.663,0.442],[26.73,40.095,0.459],[27.685,41.527,0.475],[28.64,42.959,0.491],[29.594,44.391,0.508],[30.549,45.823,0.524],[31.503,47.255,0.541],[32.458,48.687,0.557],[33.413,50.119,0.573],[34.367,51.551,0.59],[35.322,52.983,0.606],[36.277,54.415,0.622],[37.231,55.847,0.639],[38.186,57.279,0.655],[39.141,58.711,0.672],[40.095,60.142,0.688],[41.05,61.574,0.704],[42.004,63.006,0.721],[42.959,64.438,0.737],[43.914,65.87,0.753],[44.868,67.302,0.77],[45.823,68.734,0.786],[46.778,70.166,0.802],[47.732,71.598,0.819],[48.687,73.03,0.835],[49.641,74.462,0.852],[50.596,75.894,0.868],[51.551,77.326,0.884],[52.505,78.758,0.901],[53.46,80.19,0.917],[54.415,81.622,0.933],[55.369,83.054,0.95],[56.324,84.486,0.966],[57.279,85.918,0.982]],"hour":[null,[57.278,85.917,0.982],[114.556,171.834,1.964],[171.834,257.751,2.946],[229.112,343.668,3.928],[286.39,429.585,4.91],[343.668,515.502,5.892],[400.946,601.419,6.874],[458.224,687.337,7.856]]}};
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
-const APP_VERSION='10.2 · GO 203 image/trim hotfix';
+const APP_VERSION='11.0 TEST 1 · GO 203 RC1 base';
 const WHATS_NEW_VERSION='10.2-go203-revision1-20261014';
 const CONTACT_EMAIL='admin@engineerpaylog.com';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
@@ -3632,6 +3783,8 @@ const APPEARANCE_KEY='engineerPayLogAppearanceMode';
 const NET_ESTIMATOR_ENABLED_KEY='engineerPayLogNetEstimatorEnabled';
 const NET_PAY_HISTORY_KEY='engineerPayLogNetPayHistory';
 const HISTORY_VIEW_KEY='engineerPayLogHistoryView';
+const FATIGUE_BADGE_DISPLAY_KEY='engineerPayLogShowFatigueBadges_v1';
+const BID_FATIGUE_FILTER_DISPLAY_KEY='engineerPayLogShowBidFatigueFilters_v1';
 const CREW_BOOK_ASSIST_KEY='engineerPayLogCrewBookAssist';
 const CREW_BOOK_ASSIST_SEEN_KEY='engineerPayLogCrewBookAssistSeen';
 const CREW_BOOK_ASSIST_PREF_KEY='engineerPayLogCrewBookAssistPreferenceV1';
@@ -3969,6 +4122,389 @@ const TIME_SLIP_CLAIM_TYPES=[
   {key:'13',code:'13',card:'13 · Night Diff',label:'13 · Night differential above Crew Book earnings',title:'Night differential above the crew assignment book earnings'}
 ];
 const TIME_SLIP_CLAIM_TYPE_KEYS=new Set(TIME_SLIP_CLAIM_TYPES.map(x=>x.key));
+// GitHub R4: previews do not upload, sync, delete, or tombstone cloud shift rows.
+const EPL_CLAIM_R4_DEVICE_ONLY_TEST=true;
+const TIME_SLIP_OUTCOMES=new Set(['Pending','Paid','Denied','Partially Paid','Partially Denied']);
+// A Wage Examiners denial is stated as time, not necessarily dollars. The paid amount is a separate fact.
+function parseTimeSlipDuration(raw){
+  const v=String(raw??'').trim();if(!v)return null;
+  if(/^\d{1,3}:\d{1,2}$/.test(v)){
+    const [h,m]=v.split(':').map(Number);return h<=168&&m<60?h*60+m:null;
+  }
+  if(!/^\d{1,5}$/.test(v))return null;
+  if(v.length<=2)return Number(v); // '7' = seven minutes; '70' = seventy minutes.
+  const h=Number(v.slice(0,-2)),m=Number(v.slice(-2));return h<=168&&m<60?h*60+m:null;
+}
+function timeSlipDurationText(raw){
+  if(raw==null||String(raw).trim()==='')return '';
+  const n=parseTimeSlipDuration(raw);return n===null?'':fmtMinutes(n);
+}
+function timeSlipDurationBreakdown(claimed,denied){
+  const c=parseTimeSlipDuration(claimed),d=parseTimeSlipDuration(denied);
+  if(c===null||d===null||c<=0||d<=0||d>=c)return null;
+  return {claimedMinutes:c,deniedMinutes:d,approvedMinutes:c-d};
+}
+// R4.5: Use the verified date-specific Crew Book schedule as the comparison
+// baseline. Do not mistake all time after 8 hours, or all night work, for a
+// claim ABOVE the published Crew Book earnings. A missing/off assignment must
+// remain manual, never a guessed schedule.
+function timeSlipVerifiedCrewBookComparison(s){
+  if(!s?.date||!s?.assignment||!s?.start||!s?.end||s.traineeMode||s.specialShift)return null;
+  try{
+    const key=normalizeCrewBookKey(s.assignment);
+    if(!key)return null;
+    const resolved=jobCompareResolveForDay(key,s.date);
+    const schedule=resolved?.state==='active'?resolved.schedule:null;
+    if(!schedule?.start||!schedule?.end||!Number.isFinite(parseClock(schedule.start))||!Number.isFinite(parseClock(schedule.end)))return null;
+    const actualStart=parseClock(s.start),actualEnd=parseClock(s.end);
+    if(!Number.isFinite(actualStart)||!Number.isFinite(actualEnd))return null;
+    return {start:schedule.start,end:schedule.end,key,date:s.date};
+  }catch(_){return null}
+}
+function timeSlipExtraNightMinutes(s,book){
+  if(!s||!book)return null;
+  const actualStart=parseClock(s.start),actualEnd=parseClock(s.end);
+  const bookStart=parseClock(book.start),bookEnd=parseClock(book.end);
+  if([actualStart,actualEnd,bookStart,bookEnd].some(x=>!Number.isFinite(x)))return null;
+  // EPL already values night time as the overlap of 8 PM to 6 AM.
+  // Compare actual night time with the night time already scheduled and paid.
+  const actualNight=overlapNight(actualStart,actualEnd);
+  const scheduledNight=overlapNight(bookStart,bookEnd);
+  return {actualNight,scheduledNight,extraMinutes:Math.max(0,actualNight-scheduledNight)};
+}
+function timeSlipDenialDollarBreakdown(s,c,key,claimed,denied,manualRate="",claimSource="auto"){
+  const t=timeSlipDurationBreakdown(claimed,denied);
+  if(!t||!c||c.rateMissing||!c.ratePct)return null;
+  const est=estimatedTimeSlipClaimFor(s,c,key,claimSource);
+  let rateType='';
+  // Rates with unambiguous time-based values. Other claims require manual review.
+  if(key==='03'&&!(s.mpte&&s.freightMeal))rateType='overtime';
+  else if(key==='05'&&!(s.otCompletion&&s.unscheduledOT)&&!(s.unscheduledOT&&c.twoClassesDecision==='classes'))rateType='overtime';
+  else if(key==='08')rateType='straight';
+  // Two Classes and Commingle basic-day payments are fixed entitlements, not automatically
+  // prorated minute-by-minute; don't represent a partial denial as a proved dollar value.
+  else if(key==='09'&&c.twoClassesDecision==='overtime')rateType='overtime';
+  else if(key==='13')rateType='night';
+  // When a claim explicitly links a blue Calculated Pay component,
+  // its OWN rate controls the denial calculation. The same shift may
+  // have a straight-time Misc Penalty and a different Time on Time item.
+  if(!rateType&&est&&['04','11-misc'].includes(key))rateType=est.rateKind;
+  if(!rateType&&manualRate&&!est)rateType=manualRate;
+  if(!rateType)return null;
+  const pay=rateType==='overtime'?otPay:rateType==='night'?nightPay:straightPay;
+  // If EPL has a matching calculated claim, reuse its baseline; otherwise calculate
+  // from the engineer's explicitly entered time at the shift's applicable pay rate.
+  const autoMatches=est&&est.minutes===t.claimedMinutes&&est.rateKind===rateType;
+  const full=autoMatches?est.amount:Math.round(pay(key==='08'?Math.max(120,t.claimedMinutes):t.claimedMinutes,c.ratePct)*100)/100;
+  const approved=Math.round(pay(key==='08'?Math.max(120,t.approvedMinutes):t.approvedMinutes,c.ratePct)*100)/100;
+  const deniedDollars=Math.max(0,Math.round((full-approved)*100)/100);
+  return {claimedDollars:full,deniedDollars,approvedDollars:Math.max(0,Math.round((full-deniedDollars)*100)/100),rateType,source:autoMatches?'EPL shift calculation':'entered time + EPL rate table'};
+}
+
+function normalizeClaimPayments(raw,types){
+  const result={};if(!raw||typeof raw!=='object'||Array.isArray(raw))return result;
+  for(const code of Array.isArray(types)?types:[]){
+    if(!TIME_SLIP_CLAIM_TYPE_KEYS.has(code))continue;
+    const row=raw[code];if(!row||typeof row!=='object'||Array.isArray(row))continue;
+    const status=TIME_SLIP_OUTCOMES.has(row.status)?row.status:'';
+    const money=v=>v==null||String(v).trim()===''?'':(Number.isFinite(Number(v))&&Number(v)>=0?String(Math.round(Number(v)*100)/100):'');
+    const claimed=money(row.claimed),paid=money(row.paid),date=/^\d{4}-\d{2}-\d{2}$/.test(String(row.date||''))?String(row.date):'';
+    const claimedTime=timeSlipDurationText(row.claimedTime),deniedTime=timeSlipDurationText(row.deniedTime);
+    const claimedRate=['straight','overtime','night'].includes(row.claimedRate)?row.claimedRate:'';
+    const claimSource=['auto','a2','misc','manual'].includes(row.claimSource)?row.claimSource:'auto';
+    const paidInferred=status==='Partially Denied'&&paid!==''&&row.paidInferred===true;
+    if(status||claimed!==''||paid!==''||date||claimedTime||deniedTime){
+      result[code]={status,claimed,paid,date,claimedTime,deniedTime,claimedRate,claimSource};
+      if(paidInferred)result[code].paidInferred=true;
+    }
+  }
+  return result;
+}
+// R4.1: Read existing pay components; never infer extra Night Diff or Outside Assignment pay from total earnings.
+// These are estimated *claimed* dollars, not proof of what Wage Examiners actually paid.
+function timeSlipCalculatedPaySource(s,c,source){
+  if(source==='a2'&&s?.a2&&c?.a2mins>0&&(Number(c.a2)||0)>0)return {amount:Number(c.a2),minutes:c.a2mins,rateKind:'straight',detail:'Time on Time · Calculated pay'};
+  if(source==='misc'&&s?.miscPenalty&&c?.miscPenaltyMinutes>0&&(Number(c.miscPenaltyPay)||0)>0)return {amount:Number(c.miscPenaltyPay),minutes:c.miscPenaltyMinutes,rateKind:c.miscPenaltyRate==='overtime'?'overtime':'straight',detail:'Miscellaneous Penalty · Calculated pay'};
+  return null;
+}
+function timeSlipManualDurationEstimate(s,c,rawTime,claimedRate){
+  if(!c||c.rateMissing||!c.ratePct||!claimedRate)return null;
+  const minutes=parseTimeSlipDuration(rawTime);
+  if(minutes===null||minutes<=0)return null;
+  const rate=claimedRate==='overtime'?otPay:claimedRate==='night'?nightPay:claimedRate==='straight'?straightPay:null;
+  if(!rate)return null;
+  return {amount:Math.round(rate(minutes,c.ratePct)*100)/100,minutes,rateKind:claimedRate,detail:`${fmtMinutes(minutes)} claimed at EPL ${claimedRate==='overtime'?'overtime':claimedRate==='night'?'night differential':'straight-time'} rate (entered time)`};
+}
+function estimatedTimeSlipClaimFor(s,c,key,claimSource='auto'){
+  if(!s||!c||c.rateMissing||!Number.isFinite(c.total))return null;
+  let dollars=null,detail='',minutes=null,rateKind='';
+  if(['04','11-misc'].includes(key)){
+    if(claimSource==='manual')return null;
+    let source=claimSource;
+    if(source==='auto'&&key==='11-misc'){
+      // Code 11 Miscellaneous has a direct matching Miscellaneous Penalty
+      // line. Prefer it even when Time on Time is ALSO on the shift.
+      // Only use Time on Time when there is no Miscellaneous Penalty.
+      const a2=!!(s.a2&&c.a2mins>0&&c.a2>0);
+      const misc=!!(s.miscPenalty&&c.miscPenaltyMinutes>0&&c.miscPenaltyPay>0);
+      source=misc?'misc':a2?'a2':'';
+    }
+    // Code 04 Outside Assignment is not necessarily Time on Time.
+    // Require a one-tap, explicit association rather than silently importing
+    // an unrelated payment into a time slip.
+
+    const matched=timeSlipCalculatedPaySource(s,c,source);
+    if(matched)return {...matched,amount:Math.round(matched.amount*100)/100};
+    return null;
+  }
+  switch(String(key||'')){
+    case '03':
+      if(s.mpte||s.freightMeal){
+        dollars=(s.mpte?(Number(c.mptePay)||0):0)+(s.freightMeal?(Number(c.freightMealPay)||0):0);
+        detail=s.mpte&&s.freightMeal?'Meal + freight meal from EPL pay calculation':s.freightMeal?'40-minute freight meal from EPL pay calculation':'20-minute meal period from EPL pay calculation';
+        minutes=(s.mpte?20:0)+(s.freightMeal?40:0);
+      }else{
+        // Selecting claim 03 explicitly identifies a normal 20-minute meal period claim,
+        // even if the separate shift-earnings Meal Period box was not checked.
+        // This previews the claim; it does NOT add money to calculated shift gross.
+        dollars=otPay(20,c.ratePct);minutes=20;detail='20-minute meal period claim at EPL overtime rate';
+      }
+      rateKind=s.mpte&&s.freightMeal?'multi':'overtime';
+      break;
+    case '05':
+      // OT completion and unscheduled overtime can overlap. Never add both blindly.
+      if(s.otCompletion&&s.unscheduledOT)return null;
+      if(s.otCompletion){dollars=Number(c.otCompletionPay)||0;detail='Overtime upon completion';minutes=c.otCompletionMinutes;rateKind='overtime';}
+      else if(s.unscheduledOT&&c.twoClassesDecision!=='classes'){
+        const book=s.crewBookReleaseTime?null:timeSlipVerifiedCrewBookComparison(s);
+        const release=s.crewBookReleaseTime||book?.end||'';
+        const mins=release?calculateUnscheduledOTMinutes(s.start,release,s.end):null;
+        if(mins>0){dollars=otPay(mins,c.ratePct);detail=`${fmtMinutes(mins)} beyond later of ${book?'verified':'entered'} Crew Book release or 8 hours on duty`;minutes=mins;rateKind='overtime';}
+      }else if(!s.unscheduledOT){
+        // Selecting Code 05 is itself a request to evaluate OT above the Book.
+        // Use the date-aware published job instead of requiring the user to
+        // check Unscheduled Overtime or reenter a known Crew Book release time.
+        const book=timeSlipVerifiedCrewBookComparison(s);
+        const mins=book?calculateUnscheduledOTMinutes(s.start,book.end,s.end):null;
+        if(mins>0){dollars=otPay(mins,c.ratePct);detail=`${fmtMinutes(mins)} beyond later of verified Crew Book release or 8 hours on duty`;minutes=mins;rateKind='overtime';}
+      }
+      break;
+    case '08':
+      if(s.runaround){dollars=Number(c.runaroundPay)||0;detail='Runaround pay';minutes=(Number(c.runaroundBaseMinutes)||0)+(Number(c.runaroundDiffMinutes)||0);rateKind='straight';}
+      break;
+    case '09':
+      if(s.yardMove&&c.twoClassesComparisonAvailable){
+        if(c.twoClassesDecision==='classes'){dollars=Number(c.classesPay)||0;detail='2 Classes payment elected';minutes=480;rateKind='straight';}
+        else if(c.twoClassesDecision==='overtime'){dollars=Number(c.twoClassesPullRelatedOTPay)||0;detail='Pull-related overtime elected over 2 Classes';minutes=c.twoClassesPullRelatedOTMinutes;rateKind='overtime';}
+      }
+      break;
+    case '11-commingle':
+      // Code 11 Commingle is a fixed basic-day entitlement: 8:00 straight time.
+      // Selecting the claim should preview its value even if the separate
+      // Commingle earnings checkbox was not marked. Do NOT add this preview
+      // to the shift's calculated gross or assume Wage Examiners paid it.
+      if(!s.traineeMode){
+        dollars=s.commingle&&(Number(c.comminglePay)||0)>0?Number(c.comminglePay):straightPay(480,c.ratePct);
+        detail='8:00 straight-time Commingle claim';minutes=480;rateKind='straight';
+      }
+      break;
+    case '13': {
+      const book=timeSlipVerifiedCrewBookComparison(s);
+      const comparison=timeSlipExtraNightMinutes(s,book);
+      if(comparison?.extraMinutes>0){
+        minutes=comparison.extraMinutes;
+        dollars=nightPay(minutes,c.ratePct);
+        rateKind='night';
+        detail=`${fmtMinutes(comparison.actualNight)} actual night minus ${fmtMinutes(comparison.scheduledNight)} Crew Book night`;
+      }
+      break;
+    }
+    // 04: total job pay is NOT the amount above Crew Book.
+  }
+  if(dollars===null||!Number.isFinite(dollars)||dollars<=0)return null;
+  return {amount:Math.round(dollars*100)/100,detail,minutes,rateKind};
+}
+// Update only an empty claim amount or a value previously auto-filled by this session.
+// Any hand-entered value or saved claim amount remains untouched.
+function refreshTimeSlipClaimEstimates(){
+  const host=document.getElementById('timeSlipClaimCodeRows');if(!host)return;
+  let s,c;
+  try{s=formData();c=calculate(s);}catch{return;}
+  for(const row of host.querySelectorAll('[data-claim-entry]')){
+    const key=row.querySelector('[data-timeslip-claim-select]')?.value||'';
+    const info=row.querySelector('[data-timeslip-calculated-estimate]');
+    if(!info||!key)continue;
+    const sourceSelect=row.querySelector('[data-claim-source]');
+    const sourceWrap=row.querySelector('[data-claim-source-wrap]');
+    if(sourceWrap&&sourceSelect){
+      const old=sourceSelect.value||'auto';
+      const availA2=!!(s.a2&&c.a2mins>0&&c.a2>0),availMisc=!!(s.miscPenalty&&c.miscPenaltyMinutes>0&&c.miscPenaltyPay>0);
+      sourceWrap.style.display=availA2||availMisc?'block':'none';
+      const a2Label=availA2?`Time on Time · ${fmtMinutes(c.a2mins)} · ${money(c.a2)}`:'Time on Time · unavailable';
+      const miscLabel=availMisc?`Miscellaneous Penalty · ${fmtMinutes(c.miscPenaltyMinutes)} ${c.miscPenaltyRate==='overtime'?'OT':'ST'} · ${money(c.miscPenaltyPay)}`:'Miscellaneous Penalty · unavailable';
+      const autoLabel=key==='11-misc'&&availMisc?'Auto: use matching Miscellaneous Penalty':key==='11-misc'&&availA2?'Auto: use Time on Time':key==='04'?'Choose matching Calculated Pay source':'Match automatically';
+      const options=[['auto',autoLabel],...(availA2||old==='a2'?[['a2',a2Label]]:[]),...(availMisc||old==='misc'?[['misc',miscLabel]]:[]),['manual','Enter claimed time manually']];
+      sourceSelect.innerHTML=options.map(([v,l])=>`<option value="${v}"${v===old?' selected':''}${(v==='a2'&&!availA2)||(v==='misc'&&!availMisc)?' disabled':''}>${escapeHTML(l)}</option>`).join('');
+      if((old==='a2'&&!availA2)||(old==='misc'&&!availMisc))sourceSelect.value='manual';
+    }
+    const claimSource=sourceSelect?.value||'auto';
+    const est=estimatedTimeSlipClaimFor(s,c,key,claimSource);
+    const durationInput=row.querySelector('[data-claim-claimed-time]');
+    const claimedRate=row.querySelector('[data-claim-rate]')?.value||'';
+    const manualEst=!est?timeSlipManualDurationEstimate(s,c,durationInput?.value||'',claimedRate):null;
+    const effective=est||manualEst;
+    const availableOptions=[];
+    if(s.a2&&c.a2mins>0&&c.a2>0)availableOptions.push({key:'a2',title:'Time on Time',amount:c.a2,mins:c.a2mins,rate:'ST'});
+    if(s.miscPenalty&&c.miscPenaltyMinutes>0&&c.miscPenaltyPay>0)availableOptions.push({key:'misc',title:'Miscellaneous Penalty',amount:c.miscPenaltyPay,mins:c.miscPenaltyMinutes,rate:c.miscPenaltyRate==='overtime'?'OT':'ST'});
+    const suggestions=row.querySelector('[data-claim-source-suggestions]');
+    // Make the missed matches visible in the claim card without making the
+    // engineer open a select menu just to discover that Calculated Pay exists.
+    if(suggestions){
+      const offer=key==='04'&&claimSource==='auto'&&!est?availableOptions:[];
+      suggestions.style.display=offer.length?'flex':'none';
+      suggestions.innerHTML=offer.map(x=>`<button type="button" class="btn small" onclick="selectTimeSlipCalculatedPaySource(this,'${x.key}')">Use ${escapeHTML(x.title)} · ${fmtMinutes(x.mins)} ${x.rate} · ${money(x.amount)}</button>`).join('');
+    }
+    info.textContent=est?`EPL calculated claim: ${money(est.amount)} · ${fmtMinutes(est.minutes)} ${est.rateKind==='overtime'?'OT':est.rateKind==='night'?'night diff.':'ST'} · ${est.detail}`:manualEst?`Time-based claim: ${money(manualEst.amount)} · ${manualEst.detail}`:key==='04'&&availableOptions.length?'Calculated Pay has matching candidates. Select the correct item below; Outside Assignment is not automatically the same as Time on Time.':(key==='13'?'Automatic additional night differential requires an active, date-matched Crew Book assignment and qualifying extra night minutes. You can still enter the claimed time manually.':key==='05'?'No additional overtime could be verified from this shift and its Crew Book schedule. You can still enter the claimed time manually.':'No matching calculated pay for this claim. Enter claimed time and choose its rate; EPL can estimate the dollars.');
+    const durationArea=row.querySelector('[data-claim-duration-area]');
+    const deniedWrap=row.querySelector('[data-claim-denied-wrap]');
+    const rateWrap=row.querySelector('[data-claim-rate-wrap]');
+    const durationTitle=row.querySelector('[data-claim-duration-title]');
+    const partial=row.querySelector('[data-claim-status]')?.value==='Partially Denied';
+    if(durationArea)durationArea.style.display=partial||!est?'block':'none';
+    if(deniedWrap)deniedWrap.style.display=partial?'block':'none';
+    if(rateWrap)rateWrap.style.display=!est?'block':'none';
+    if(durationTitle)durationTitle.textContent=partial?'Time denied on Wage Examiners letter':'Claimed hours and minutes';
+    const claimed=row.querySelector('[data-claim-claimed]');
+    const paid=row.querySelector('[data-claim-paid]');
+    const status=row.querySelector('[data-claim-status]')?.value||'';
+    if(!claimed||!paid)continue;
+    if(effective&&status){
+      const durationMinutes=durationInput?.value.trim()?parseTimeSlipDuration(durationInput.value):null;
+      const minutesAgree=status!=='Partially Denied'||durationMinutes===null||durationMinutes===effective.minutes;
+      const wasAuto=claimed.dataset.eplAutoValue;
+      const canFill=claimed.value===''||(wasAuto!==undefined&&claimed.value===wasAuto);
+      if(canFill&&minutesAgree){claimed.value=String(effective.amount);claimed.dataset.eplAutoValue=claimed.value;}
+    }
+    if(!effective&&claimed.dataset.eplAutoValue!==undefined&&claimed.value===claimed.dataset.eplAutoValue){
+      claimed.value='';delete claimed.dataset.eplAutoValue;
+    }
+    const autoPaid=paid.dataset.eplAutoValue;
+    if(!effective&&status==='Paid'&&autoPaid!==undefined&&paid.value===autoPaid){paid.value='';delete paid.dataset.eplAutoValue;delete paid.dataset.eplInferred;}
+    if(status!=='Paid'&&status!=='Partially Denied'&&autoPaid!==undefined&&paid.value===autoPaid){
+      paid.value='';delete paid.dataset.eplAutoValue;delete paid.dataset.eplInferred;
+    }
+    // Changing Paid -> Partial Denial must not leave the old full-paid value behind.
+    if(status==='Partially Denied'&&autoPaid!==undefined&&paid.dataset.eplInferred!=='1'&&paid.value===autoPaid){
+      paid.value='';delete paid.dataset.eplAutoValue;
+    }
+    if(status==='Paid'&&claimed.value!==''){
+      const canFillPaid=paid.value===''||(autoPaid!==undefined&&paid.value===autoPaid);
+      if(canFillPaid){paid.value=claimed.value;paid.dataset.eplAutoValue=paid.value;delete paid.dataset.eplInferred;}
+    }
+    // A changed status must not silently change an explicit paid amount.
+  }
+}
+function refreshTimeSlipClaimDenialPreviews(){
+  const host=document.getElementById('timeSlipClaimCodeRows');if(!host)return;
+  let s,c;try{s=formData();c=calculate(s)}catch{}
+  for(const entry of host.querySelectorAll('[data-claim-entry]')){
+    const status=entry.querySelector('[data-claim-status]')?.value||'';
+    const area=entry.querySelector('[data-claim-duration-area]');
+    if(!area)continue;
+    area.style.display=status==='Partially Denied'?'block':'none';
+    if(status!=='Partially Denied')continue;
+    const claimed=entry.querySelector('[data-claim-claimed-time]'),denied=entry.querySelector('[data-claim-denied-time]');
+    const key=entry.querySelector('[data-timeslip-claim-select]')?.value||'';
+    const preview=entry.querySelector('[data-claim-duration-preview]');
+    if(!preview||!claimed||!denied)continue;
+    const source=entry.querySelector('[data-claim-source]')?.value||'auto';
+    const rate=entry.querySelector('[data-claim-rate]')?.value||'';
+    const est=s&&c?estimatedTimeSlipClaimFor(s,c,key,source):null;
+    if(est&&est.minutes>0&&(claimed.value.trim()===''||(claimed.dataset.eplAutoValue!==undefined&&claimed.dataset.eplAutoValue===claimed.value))){
+      claimed.value=fmtMinutes(est.minutes);claimed.dataset.eplAutoValue=claimed.value;
+    }
+    const breakdown=timeSlipDurationBreakdown(claimed.value,denied.value);
+    if(!breakdown){
+      const payment=entry.querySelector('[data-claim-paid]');
+      if(payment?.dataset.eplInferred==='1'&&payment.value===payment.dataset.eplAutoValue){
+        payment.value='';delete payment.dataset.eplAutoValue;delete payment.dataset.eplInferred;
+      }
+      const paidNote=entry.querySelector('[data-claim-paid-source]');
+      if(paidNote)paidNote.textContent='Enter valid claimed and denied times to estimate paid dollars.';
+      preview.textContent='Enter the claimed time and minutes denied (for example, 4:27 and 7).';continue;
+    }
+    const dollars=timeSlipDenialDollarBreakdown(s,c,key,claimed.value,denied.value,rate,source);
+    // Keep the claimed-dollar field aligned with an explicitly entered duration
+    // only when it is empty or was auto-filled. Never touch an engineer's manual amount.
+    const moneyField=entry.querySelector('[data-claim-claimed]');
+    if(moneyField){
+      const previousAuto=moneyField.dataset.eplAutoValue;
+      const canSync=moneyField.value===''||(previousAuto!==undefined&&previousAuto===moneyField.value);
+      if(dollars&&canSync){moneyField.value=String(dollars.claimedDollars);moneyField.dataset.eplAutoValue=moneyField.value;}
+      else if(!dollars&&previousAuto!==undefined&&moneyField.value===previousAuto){
+        moneyField.value='';delete moneyField.dataset.eplAutoValue;
+      }
+    }
+    // Derived payment is an inference from the partial denial, NOT payroll confirmation.
+    // Engineer-supplied paid values always win and are never overwritten.
+    const paidField=entry.querySelector('[data-claim-paid]');
+    const paidNote=entry.querySelector('[data-claim-paid-source]');
+    if(paidField){
+      const priorAuto=paidField.dataset.eplAutoValue;
+      const inferred=paidField.dataset.eplInferred==='1';
+      const canSync=paidField.value===''||(inferred&&priorAuto===paidField.value);
+      if(dollars&&canSync){
+        paidField.value=dollars.approvedDollars.toFixed(2);
+        paidField.dataset.eplAutoValue=paidField.value;
+        paidField.dataset.eplInferred='1';
+      }else if(!dollars&&inferred&&priorAuto===paidField.value){
+        paidField.value='';delete paidField.dataset.eplAutoValue;delete paidField.dataset.eplInferred;
+      }
+      if(paidNote)paidNote.textContent=paidField.dataset.eplInferred==='1'&&dollars
+        ?`Calculated from the denial: ${money(dollars.approvedDollars)} expected paid. Verify against payroll; you can edit this amount.`
+        :paidField.value!==''?'Manual payment amount — preserved.':'No reliable automatic payment amount for this claim.';
+    }
+    preview.textContent=`Claimed ${fmtMinutes(breakdown.claimedMinutes)} · Denied ${fmtMinutes(breakdown.deniedMinutes)} · Approved ${fmtMinutes(breakdown.approvedMinutes)}`+
+      (dollars?` · Denied value ${money(dollars.deniedDollars)} · Expected paid ${money(dollars.approvedDollars)} (${dollars.source})`:' · Dollar adjustment needs review for this claim code.');
+  }
+}
+function selectTimeSlipCalculatedPaySource(button,source){
+  if(!['a2','misc'].includes(source))return;
+  const entry=button?.closest('[data-claim-entry]');
+  const choice=entry?.querySelector('[data-claim-source]');
+  if(!choice||![...choice.options].some(x=>x.value===source&&!x.disabled))return;
+  choice.value=source;
+  handleTimeSlipClaimSourceOrRateChange();
+}
+function handleTimeSlipClaimSourceOrRateChange(){
+  refreshTimeSlipClaimEstimates();refreshTimeSlipClaimDenialPreviews();renderTimeSlipClaimOutcomePreview();
+}
+function handleTimeSlipClaimDurationChange(input){
+  if(input)delete input.dataset.eplAutoValue;
+  refreshTimeSlipClaimEstimates();refreshTimeSlipClaimDenialPreviews();renderTimeSlipClaimOutcomePreview();
+}
+function handleTimeSlipClaimResultChange(){
+  // Leaving the partial-denial outcome must not retain hidden denied minutes.
+  const host=document.getElementById('timeSlipClaimCodeRows');
+  for(const entry of host?.querySelectorAll('[data-claim-entry]')||[]){
+    if(entry.querySelector('[data-claim-status]')?.value==='Partially Denied')continue;
+    const denied=entry.querySelector('[data-claim-denied-time]');if(denied)denied.value='';
+  }
+  refreshTimeSlipClaimEstimates();refreshTimeSlipClaimDenialPreviews();renderTimeSlipClaimOutcomePreview();
+}
+function markTimeSlipMoneyManual(input){
+  if(input){delete input.dataset.eplAutoValue;delete input.dataset.eplInferred;}
+}
+function timeSlipClaimSummary(s){
+  const types=normalizeTimeSlipClaimTypes(s?.timeSlipClaimTypes),data=normalizeClaimPayments(s?.timeSlipClaimPayments,types);
+  const statuses=types.map(t=>data[t]?.status||'');if(!statuses.some(Boolean))return null; // old slips remain unchanged
+  const paid=statuses.filter(t=>t==='Paid').length,denied=statuses.filter(t=>t==='Denied').length;
+  const partial=statuses.filter(t=>t==='Partially Paid').length,partiallyDenied=statuses.filter(t=>t==='Partially Denied').length,unresolved=statuses.filter(t=>!t||t==='Pending').length;
+  const status=paid===types.length?'Paid':denied===types.length?'Denied':(!paid&&!denied&&!partial&&!partiallyDenied?'Pending':'Partially Resolved');
+  return {paid,denied,partial,partiallyDenied,unresolved,status,open:partial>0||unresolved>0};
+}
+function timeSlipNeedsFollowUp(s){if(!s?.timeSlipSubmitted)return false;const c=timeSlipClaimSummary(s);return c?c.open:timeSlipDisplayStatus(s)==='Pending'}
+
 
 function upgradeShift(s){
   const extras=s.extras||'', claims=s.claims||'';
@@ -4006,6 +4542,7 @@ function upgradeShift(s){
   if(s.timeSlipResolved===undefined)s.timeSlipResolved='';
   if(!Array.isArray(s.timeSlipClaimTypes))s.timeSlipClaimTypes=[];
   s.timeSlipClaimTypes=s.timeSlipClaimTypes.map(x=>String(x||'')).filter(x=>TIME_SLIP_CLAIM_TYPE_KEYS.has(x));
+  s.timeSlipClaimPayments=normalizeClaimPayments(s.timeSlipClaimPayments,s.timeSlipClaimTypes);
   if(!s.timeSlipPhotos||typeof s.timeSlipPhotos!=='object'||Array.isArray(s.timeSlipPhotos))s.timeSlipPhotos={};
   if(s.timeSlipWageReminderDays===undefined)s.timeSlipWageReminderDays=null;
   if(!Array.isArray(s.timeSlipFollowUps))s.timeSlipFollowUps=[];
@@ -4021,6 +4558,12 @@ function upgradeShift(s){
   if(s.classDay===undefined)s.classDay=false;
   if(s.engineerName===undefined)s.engineerName='';
   if(s.engineerIBM===undefined)s.engineerIBM='';
+  if(s.fatigueTypeOverride===undefined)s.fatigueTypeOverride='';
+  if(s.fatigueTypeOverrideDate===undefined)s.fatigueTypeOverrideDate='';
+  if(s.fatigueTypeOverrideAssignment===undefined)s.fatigueTypeOverrideAssignment='';
+  if(s.fatigueTypeOverrideNote===undefined)s.fatigueTypeOverrideNote='';
+  if(s.fatigueTypeOverridePublishedRelease===undefined)s.fatigueTypeOverridePublishedRelease='';
+  if(s.fatigueTypeOverrideReferenceSource===undefined)s.fatigueTypeOverrideReferenceSource='';
   if(s.vacationGross===undefined)s.vacationGross=0;
   if(s.vacationReliefPair===undefined)s.vacationReliefPair='';
   if(s.vacationEndDate===undefined)s.vacationEndDate=s.specialShift==='Vacation Week'?addDaysISO(s.date,6):'';
@@ -6579,11 +7122,26 @@ function formData(){
   const rrh=Math.max(0,Number($('runaroundHours').value)||0),rrm=Math.min(59,Math.max(0,Number($('runaroundMinutes').value)||0));
   const mph=Math.max(0,Number($('miscPenaltyHours').value)||0),mpm=Math.min(59,Math.max(0,Number($('miscPenaltyMinutes').value)||0));
   const miscRate=document.querySelector('input[name="miscPenaltyRate"]:checked')?.value||'straight';
+  const fatigueSnapshot=go203FatigueForAssignment($('assignment').value,$('date').value);
+  const fatigueReview=fatigueReleaseReview({
+    assignment:$('assignment').value,date:$('date').value,start:$('start').value,end:$('end').value,
+    fatigueTypeOverridePublishedRelease:$('fatigueShiftField').dataset.fatigueReferenceRelease||'',
+    fatigueTypeOverrideAssignment:$('fatigueShiftField').dataset.fatigueReferenceJob||'',
+    fatigueTypeOverrideDate:$('fatigueShiftField').dataset.fatigueReferenceDate||''
+  });
+  const fatigueManual=fatigueSnapshot&&fatigueReview?.changed&&$('fatigueShiftField').dataset.fatigueKey===`${fatigueSnapshot.job}|${fatigueSnapshot.date}`&&['1','2'].includes($('fatigueOverrideSelect').value)&&$('fatigueOverrideSelect').value!==fatigueSnapshot.type;
   return {
     id:$('editId').value||createUniqueId(),
     date:$('date').value,start:$('start').value,end:$('end').value,
     traineeMode:$('shiftRuleMode').value==='trainee',classDay:$('shiftRuleMode').value==='trainee'&&$('classFlag').checked,
     ratePct:(()=>{const id=$('editId').value,old=shifts.find(x=>x.id===id);return old&&old.date===$('date').value&&old.ratePct?old.ratePct:payScaleForDate($('date').value)})(),
+    fatigueType:fatigueSnapshot?.type||'',fatigueTypeSource:fatigueSnapshot?.source||'',
+    fatigueTypeDate:fatigueSnapshot?.date||'',fatigueTypeAssignment:fatigueSnapshot?.job||'',
+    fatigueTypeOverride:fatigueManual?$('fatigueOverrideSelect').value:'',
+    fatigueTypeOverrideAssignment:fatigueManual?fatigueSnapshot.job:'',fatigueTypeOverrideDate:fatigueManual?fatigueSnapshot.date:'',
+    fatigueTypeOverridePublishedRelease:fatigueManual?fatigueReview.reference.end:'',
+    fatigueTypeOverrideReferenceSource:fatigueManual?fatigueReview.reference.source:'',
+    fatigueTypeOverrideNote:fatigueManual?$('fatigueOverrideNote').value.trim().slice(0,300):'', 
     assignment:$('assignment').value.trim(),location:$('location').value.trim(),shiftType:$('shiftType').value,
     specialShift:$('shiftRuleMode').value==='trainee'?($('classFlag').checked?'':$('specialShift').value):$('specialShift').value,specialCategory:$('shiftRuleMode').value==='trainee'?'':$('specialCategory').value,
     vacationGross:isVacationSpecial($('specialShift').value)?Math.max(0,Number($('vacationGrossInput').value)||0):0,
@@ -6600,6 +7158,7 @@ function formData(){
     timeSlipStatus:$('timeSlipFlag').checked?($('timeSlipStatus').value||'Pending'):'Pending',
     timeSlipResolved:$('timeSlipFlag').checked?$('timeSlipResolved').value:'',
     timeSlipClaimTypes:$('timeSlipFlag').checked?collectTimeSlipClaimTypes():[],
+    timeSlipClaimPayments:$('timeSlipFlag').checked?collectTimeSlipClaimPayments():{},
     timeSlipWageReminderDays:$('timeSlipFlag').checked?parseTimeSlipWageReminderOverride($('timeSlipWageReminderDays').value):null,
     timeSlipFollowUps:(()=>{const old=shifts.find(x=>x.id===$('editId').value);return old&&Array.isArray(old.timeSlipFollowUps)?old.timeSlipFollowUps:[]})(),
     timeSlipPhotos:(()=>{const old=shifts.find(x=>x.id===$('editId').value);return old&&old.timeSlipPhotos&&typeof old.timeSlipPhotos==='object'?old.timeSlipPhotos:{}})(),
@@ -6653,6 +7212,7 @@ function handleShiftDateChange(){
   updateHolidayPayEligibilityUI();toggleSpecialShift();renderTimeSlipDeadlinePreview();calculatePreview();
 }
 function calculatePreview(){
+  refreshFatigueEditor();
   const $=id=>document.getElementById(id),s=formData(),holidayBox=$('holidayFlag');
   communityRefreshShiftPanelFromForm();
   updateShiftCrewBookAssignmentButton();
@@ -6698,7 +7258,7 @@ function calculatePreview(){
   }
   $('payTypeBadge').textContent=`${c.payType} • ${c.ratePct}%`;
   $('payTypeBadge').className='badge '+(c.fullOT?'ot':'')+(c.holiday?' holiday':'');
-  renderShiftWarnings(s);
+  refreshTimeSlipClaimEstimates();refreshTimeSlipClaimDenialPreviews();renderShiftWarnings(s);
 }
 
 function isTraineeMode(){return localStorage.getItem(TRAINEE_MODE_KEY)==='on'}
@@ -6916,61 +7476,97 @@ function normalizeTimeSlipClaimTypes(types){
   }
   return out;
 }
-function currentTimeSlipClaimRowValues(){
-  return [...document.querySelectorAll('[data-timeslip-claim-select]')].map(el=>String(el.value||''));
+function currentTimeSlipClaimRows(){
+  const host=document.getElementById('timeSlipClaimCodeRows');if(!host)return [];
+  return [...host.querySelectorAll('[data-claim-entry]')].map(entry=>{
+    const select=entry.querySelector('[data-timeslip-claim-select]'),key=String(select?.value||'');
+    const changed=key!==String(select?.dataset?.originalCode||'');
+    const get=attr=>changed?'':String(entry.querySelector(`[${attr}]`)?.value||'');
+    const paidInput=entry.querySelector('[data-claim-paid]');
+    return {key,status:get('data-claim-status'),claimed:get('data-claim-claimed'),paid:get('data-claim-paid'),date:get('data-claim-date'),claimedTime:get('data-claim-claimed-time'),deniedTime:get('data-claim-denied-time'),claimedRate:get('data-claim-rate'),claimSource:changed?'auto':String(entry.querySelector('[data-claim-source]')?.value||'auto'),paidInferred:!changed&&paidInput?.dataset.eplInferred==='1'};
+  });
 }
+function currentTimeSlipClaimRowValues(){return currentTimeSlipClaimRows().map(x=>x.key)}
 function claimTypeOptionHTML(meta,value,selectedElsewhere){
-  const duplicate=selectedElsewhere.has(meta.key);
-  return `<option value="${escapeHTML(meta.key)}"${meta.key===value?' selected':''}${duplicate&&meta.key!==value?' disabled':''}>${escapeHTML(meta.label)}</option>`;
+  return `<option value="${escapeHTML(meta.key)}"${meta.key===value?' selected':''}${selectedElsewhere.has(meta.key)&&meta.key!==value?' disabled':''}>${escapeHTML(meta.label)}</option>`;
 }
 function renderTimeSlipClaimRows(values){
-  const wrap=document.getElementById('timeSlipClaimCodeRows');if(!wrap)return;
-  let rows=Array.isArray(values)?values.map(x=>String(x||'')):[];
-  if(!rows.length)rows=[''];
-  wrap.innerHTML=rows.map((value,index)=>{
-    const selectedElsewhere=new Set(rows.filter((v,i)=>i!==index&&v));
-    const options=TIME_SLIP_CLAIM_TYPES.map(meta=>claimTypeOptionHTML(meta,value,selectedElsewhere)).join('');
-    const remove=rows.length>1?`<button class="btn small" type="button" onclick="removeTimeSlipClaimCodeRow(${index})">Remove</button>`:'';
-    return `<div class="time-slip-claim-row"><select data-timeslip-claim-select onchange="handleTimeSlipClaimSelectChange()"><option value="">Select claim type / code…</option>${options}</select>${remove}</div>`;
+  const host=document.getElementById('timeSlipClaimCodeRows');if(!host)return;
+  const rows=Array.isArray(values)&&values.length?values.map(v=>typeof v==='string'?{key:v}:{...v}):[{key:''}];
+  host.innerHTML=rows.map((row,i)=>{
+    const key=String(row.key||''),others=new Set(rows.filter((r,j)=>j!==i&&r.key).map(r=>r.key));
+    const options=TIME_SLIP_CLAIM_TYPES.map(meta=>claimTypeOptionHTML(meta,key,others)).join('');
+    const remove=rows.length>1?`<button type="button" class="btn small" onclick="removeTimeSlipClaimCodeRow(${i})">Remove</button>`:'';
+    const status=key?`<div class="claim-status"><strong>Result</strong><select data-claim-status onchange="handleTimeSlipClaimResultChange()">${[['','Not recorded'],['Pending','Pending'],['Paid','Paid'],['Denied','Denied'],['Partially Denied','Partially denied (minutes)'],...(row.status==='Partially Paid'?[['Partially Paid','Previously saved: partially paid (review)']]:[])].map(([val,label])=>`<option value="${val}"${val===(row.status||'')?' selected':''}>${label}</option>`).join('')}</select></div><div data-claim-source-wrap style="display:none"><label>Claim amount source<select data-claim-source onchange="handleTimeSlipClaimSourceOrRateChange()"><option value="auto"${(!row.claimSource||row.claimSource==='auto')?' selected':''}>Match automatically</option><option value="a2"${row.claimSource==='a2'?' selected':''}>Time on Time · Calculated pay</option><option value="misc"${row.claimSource==='misc'?' selected':''}>Miscellaneous Penalty · Calculated pay</option><option value="manual"${row.claimSource==='manual'?' selected':''}>Enter claimed time manually</option></select></label></div><div data-timeslip-calculated-estimate class="time-slip-calculated-estimate"></div><div data-claim-source-suggestions class="claim-source-suggestions" style="display:none;gap:8px;flex-wrap:wrap;margin:8px 0"></div><div data-claim-duration-area class="claim-duration-area" style="display:${row.status==='Partially Denied'?'block':'none'}"><strong data-claim-duration-title>Time denied on Wage Examiners letter</strong><div class="claim-duration-grid"><label>Time claimed (H:MM)<input data-claim-claimed-time type="text" inputmode="decimal" autocomplete="off" placeholder="4:27 or 427" oninput="handleTimeSlipClaimDurationChange(this)" value="${escapeHTML(row.claimedTime??'')}"></label><label data-claim-denied-wrap>Time denied (H:MM)<input data-claim-denied-time type="text" inputmode="decimal" autocomplete="off" placeholder="0:07 or 7" oninput="handleTimeSlipClaimDurationChange(this)" value="${escapeHTML(row.deniedTime??'')}"></label></div><div data-claim-rate-wrap style="display:none"><label>Pay rate for uncalculated time<select data-claim-rate onchange="handleTimeSlipClaimSourceOrRateChange()"><option value=""${!row.claimedRate?' selected':''}>Choose rate</option><option value="straight"${row.claimedRate==='straight'?' selected':''}>Straight time</option><option value="overtime"${row.claimedRate==='overtime'?' selected':''}>Overtime</option><option value="night"${row.claimedRate==='night'?' selected':''}>Night differential</option></select></label></div><div data-claim-duration-preview class="claim-duration-preview"></div><div class="claim-duration-hint" data-claim-duration-hint>When EPL has no matching calculated pay, enter your claimed hours and minutes and choose the appropriate rate. For a partial denial, also enter the denied minutes.</div></div><details><summary>Dollar amounts &amp; date (optional)</summary><div class="claim-amounts"><label>Calculated / claimed ($) · editable<input data-claim-claimed oninput="markTimeSlipMoneyManual(this)" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${escapeHTML(row.claimed??'')}"></label><label>Actually paid ($)<input data-claim-paid data-epl-inferred="${row.paidInferred?'1':''}" oninput="markTimeSlipMoneyManual(this)" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" value="${escapeHTML(row.paid??'')}"></label></div><div data-claim-paid-source class="claim-duration-hint" aria-live="polite"></div><label style="margin-top:8px">Date resolved<input data-claim-date type="date" value="${escapeHTML(row.date??'')}"></label></details>`:'';
+    return `<div class="time-slip-claim-entry" data-claim-entry><div class="claim-head"><select data-timeslip-claim-select data-original-code="${escapeHTML(key)}" onchange="handleTimeSlipClaimSelectChange()"><option value="">Select claim type / code…</option>${options}</select>${remove}</div>${status}</div>`;
   }).join('');
-  updateTimeSlipClaimCodeControls();
+  // Rehydrate inferred amounts on reopening so a changed denial recalculates them.
+  for(const entry of host.querySelectorAll('[data-claim-entry]')){
+    const paid=entry.querySelector('[data-claim-paid]');
+    if(paid?.dataset.eplInferred==='1'&&paid.value!=='')paid.dataset.eplAutoValue=paid.value;
+  }
+  updateTimeSlipClaimCodeControls();refreshTimeSlipClaimEstimates();refreshTimeSlipClaimDenialPreviews();renderTimeSlipClaimOutcomePreview();
 }
-function collectTimeSlipClaimTypes(){
-  return normalizeTimeSlipClaimTypes(currentTimeSlipClaimRowValues().filter(Boolean));
+function collectTimeSlipClaimTypes(){return normalizeTimeSlipClaimTypes(currentTimeSlipClaimRowValues().filter(Boolean))}
+function collectTimeSlipClaimPayments(){
+  const rows=currentTimeSlipClaimRows(),types=collectTimeSlipClaimTypes();
+  return normalizeClaimPayments(Object.fromEntries(rows.filter(x=>types.includes(x.key)).map(x=>[x.key,x])),types);
 }
-function setTimeSlipClaimTypes(types){
-  renderTimeSlipClaimRows(normalizeTimeSlipClaimTypes(types));
+function setTimeSlipClaimTypes(types,payments={}){
+  const selected=normalizeTimeSlipClaimTypes(types),data=normalizeClaimPayments(payments,selected);
+  renderTimeSlipClaimRows(selected.map(key=>({key,...(data[key]||{})})));
 }
 function handleTimeSlipClaimSelectChange(){
-  const values=currentTimeSlipClaimRowValues();
-  const normalized=normalizeTimeSlipClaimTypes(values.filter(Boolean));
-  const hasBlank=values.some(v=>!v);
-  renderTimeSlipClaimRows(hasBlank&&normalized.length<values.length?[...normalized,'']:normalized);
+  const rows=currentTimeSlipClaimRows(),valid=normalizeTimeSlipClaimTypes(rows.map(x=>x.key));
+  const selected=rows.filter(x=>x.key&&valid.includes(x.key));
+  if(rows.some(x=>!x.key))selected.push({key:''});
+  renderTimeSlipClaimRows(selected.length?selected:[{key:''}]);
 }
 function addTimeSlipClaimCodeRow(){
-  const values=currentTimeSlipClaimRowValues();
-  if(values.some(v=>!v))return;
-  const selected=normalizeTimeSlipClaimTypes(values);
-  if(selected.length>=TIME_SLIP_CLAIM_TYPES.length)return;
-  renderTimeSlipClaimRows([...selected,'']);
+  const rows=currentTimeSlipClaimRows();if(rows.some(x=>!x.key)||collectTimeSlipClaimTypes().length>=TIME_SLIP_CLAIM_TYPES.length)return;
+  renderTimeSlipClaimRows([...rows,{key:''}]);
 }
-function removeTimeSlipClaimCodeRow(index){
-  const values=currentTimeSlipClaimRowValues();
-  values.splice(Number(index),1);
-  renderTimeSlipClaimRows(values.length?values:['']);
-}
+function removeTimeSlipClaimCodeRow(i){const rows=currentTimeSlipClaimRows();rows.splice(i,1);renderTimeSlipClaimRows(rows)}
 function updateTimeSlipClaimCodeControls(){
-  const values=currentTimeSlipClaimRowValues();
-  const selected=normalizeTimeSlipClaimTypes(values.filter(Boolean));
-  const add=document.getElementById('timeSlipAddClaimCode');
-  if(add){
-    add.style.display=(values.some(v=>!v)||selected.length>=TIME_SLIP_CLAIM_TYPES.length)?'none':'inline-flex';
-    add.textContent=selected.length?'+ Add another claim code':'+ Add claim code';
+  const rows=currentTimeSlipClaimRows(),selected=collectTimeSlipClaimTypes(),add=document.getElementById('timeSlipAddClaimCode');
+  if(add){add.style.display=rows.some(x=>!x.key)||selected.length>=TIME_SLIP_CLAIM_TYPES.length?'none':'inline-flex';add.textContent=selected.length?'+ Add another claim code':'+ Add claim code'}
+}
+function renderTimeSlipClaimOutcomePreview(){
+  const host=document.getElementById('timeSlipClaimOutcomePreview');if(!host)return;
+  const s={timeSlipClaimTypes:collectTimeSlipClaimTypes(),timeSlipClaimPayments:collectTimeSlipClaimPayments()},info=timeSlipClaimSummary(s);
+  host.textContent=info?`${info.paid} paid · ${info.denied} denied · ${info.partiallyDenied} partially denied${info.partial?` · ${info.partial} legacy partially paid (review)`:''} · ${info.unresolved} pending/unrecorded. Overall: ${info.status}.`:'No individual results recorded yet.';
+  renderTimeSlipDeadlinePreview();
+}
+function validateTimeSlipClaimPayments(){
+  for(const row of currentTimeSlipClaimRows()){
+    if(!row.key)continue;
+    for(const k of ['claimed','paid']){
+      if(row[k]==='')continue;
+      const n=Number(row[k]);if(!Number.isFinite(n)||n<0||Math.abs(n*100-Math.round(n*100))>0.000001){alert(`Enter a valid amount (up to two decimal places) for ${row.key} ${k}.`);return false}
+    }
+    const claimed=row.claimed===''?null:Number(row.claimed),paid=row.paid===''?null:Number(row.paid);
+    if(claimed!==null&&paid!==null&&paid>claimed){alert(`Claim ${row.key}: paid amount cannot exceed claimed amount.`);return false}
+    if(!row.status&&(claimed!==null||paid!==null||row.date)){alert(`Claim ${row.key}: choose a result before entering payment details.`);return false}
+    if(row.status==='Denied'&&paid!==null&&paid>0){alert(`Claim ${row.key}: the paid amount conflicts with the selected result. If only some minutes were denied, choose Partially denied (minutes).`);return false}
+    if(row.status==='Pending'&&paid!==null&&paid>0){alert(`Claim ${row.key}: the paid amount conflicts with the selected result. If only some minutes were denied, choose Partially denied (minutes).`);return false}
+    if(row.status==='Paid'&&paid!==null&&claimed!==null&&paid<claimed){alert(`Claim ${row.key}: Paid means the full claim was paid. If minutes were denied, choose Partially denied (minutes).`);return false}
+    if(row.status==='Partially Paid'&&paid!==null&&claimed!==null&&paid>=claimed){alert(`Claim ${row.key}: a partial payment must be less than the amount claimed.`);return false}
+    const tClaimed=String(row.claimedTime||'').trim(),tDenied=String(row.deniedTime||'').trim();
+    if(tClaimed&&parseTimeSlipDuration(tClaimed)===null){alert(`Claim ${row.key}: enter claimed time as H:MM (for example, 4:27).`);return false}
+    if(tDenied&&parseTimeSlipDuration(tDenied)===null){alert(`Claim ${row.key}: enter denied time as H:MM (for example, 0:07).`);return false}
+    if(row.status==='Partially Denied'){
+      const d=timeSlipDurationBreakdown(tClaimed,tDenied);
+      if(!d){alert(`Claim ${row.key}: partial denial needs claimed time and a smaller, nonzero denied time.`);return false}
+      if(claimed!==null&&paid!==null&&paid>=claimed){alert(`Claim ${row.key}: actual payment cannot equal the full claim when time was denied.`);return false}
+    }else if(tDenied){alert(`Claim ${row.key}: use Partially denied (minutes) for a partial denial letter, or clear denied time.`);return false}
+    if(!row.status&&tDenied){alert(`Claim ${row.key}: choose a result before recording denied time.`);return false}
   }
+  return true;
 }
 function timeSlipClaimBadgeHTML(s){
   const keys=Array.isArray(s?.timeSlipClaimTypes)?s.timeSlipClaimTypes:[];
-  return keys.map(key=>TIME_SLIP_CLAIM_TYPES.find(x=>x.key===String(key))).filter(Boolean).map(meta=>`<span class="time-slip-code-badge" title="${escapeHTML(meta.title||meta.label)}">${escapeHTML(meta.card)}</span>`).join('');
+  const results=normalizeClaimPayments(s?.timeSlipClaimPayments,keys);
+  return keys.map(key=>{const meta=TIME_SLIP_CLAIM_TYPES.find(x=>x.key===key);if(!meta)return '';return `<span class="time-slip-code-badge" title="${escapeHTML(meta.title||meta.label)}">${escapeHTML(meta.card)}${results[key]?.status?` · ${escapeHTML(results[key].status)}${results[key].status==='Partially Denied'&&results[key].deniedTime?` (${escapeHTML(results[key].deniedTime)} denied)`:''}`:''}</span>`}).join('');
 }
 function toggleTimeSlip(){
   const $=id=>document.getElementById(id);
@@ -7040,7 +7636,7 @@ function toggleMiscPenalty(){
 function newShift(){if(!billingRequireWriteAccess())return;
   const $=id=>document.getElementById(id);
   $('shiftForm').reset();setLocationUI('');setShiftTypeUI('');$('editId').value='';$('shiftRuleMode').value=isTraineeMode()?'trainee':'engineer';$('legacyExtras').value='';$('legacyClaims').value='';
-  $('formTitle').textContent='Add shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';
+  $('formTitle').textContent='Add shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';resetFatigueEditor();
   $('date').value=new Date().toISOString().slice(0,10);$('holidayFlag').checked=isContractHoliday($('date').value);$('holidayPayEligibleFlag').checked=$('holidayFlag').checked;
   $('timeSlipFlag').checked=false;$('timeSlipWritten').value='';$('timeSlipSubmitted').value='';$('timeSlipConfirmedReceived').value='';$('timeSlipLocation').value='';$('timeSlipStatus').value='Pending';$('timeSlipResolved').value='';$('timeSlipWageReminderDays').value='';setTimeSlipClaimTypes([]);
   renderTimeSlipDeadlinePreview();
@@ -7056,11 +7652,11 @@ function newShift(){if(!billingRequireWriteAccess())return;
 function editShift(id){if(!billingRequireWriteAccess())return;
   const $=id=>document.getElementById(id);
   const s=shifts.find(x=>x.id===id);if(!s)return;upgradeShift(s);
-  $('editId').value=s.id;$('shiftRuleMode').value=s.traineeMode?'trainee':'engineer';applyEntryMode();$('date').value=s.date;$('start').value=s.start;$('end').value=s.end;$('assignment').value=s.assignment||'';
+  $('editId').value=s.id;$('shiftRuleMode').value=s.traineeMode?'trainee':'engineer';applyEntryMode();$('date').value=s.date;$('start').value=s.start;$('end').value=s.end;$('assignment').value=s.assignment||'';loadFatigueEditorForShift(s);
   setLocationUI(s.location||'');setShiftTypeUI(s.shiftType||'');$('legacyExtras').value=s.extras||'';$('legacyClaims').value=s.claims||'';
   $('notes').value=s.notes||'';$('engineerName').value=s.engineerName||'';$('engineerIBM').value=s.engineerIBM||'';$('classFlag').checked=!!s.classDay;$('conductorName').value=s.conductorName||'';$('brakemanName').value=s.brakemanName||'';
   $('specialShift').value=s.specialShift||'';$('specialCategory').value=s.specialCategory||'';$('vacationReliefPair').value=s.vacationReliefPair||'';
-  $('timeSlipFlag').checked=!!s.timeSlip;$('timeSlipWritten').value=s.timeSlipWritten||'';$('timeSlipSubmitted').value=s.timeSlipSubmitted||'';$('timeSlipConfirmedReceived').value=s.timeSlipConfirmedReceived||'';$('timeSlipLocation').value=s.timeSlipLocation||'';$('timeSlipStatus').value=s.timeSlipStatus||'Pending';$('timeSlipResolved').value=s.timeSlipResolved||'';$('timeSlipWageReminderDays').value=s.timeSlipWageReminderDays===null||s.timeSlipWageReminderDays===undefined?'':String(s.timeSlipWageReminderDays);setTimeSlipClaimTypes(s.timeSlipClaimTypes||[]);
+  $('timeSlipFlag').checked=!!s.timeSlip;$('timeSlipWritten').value=s.timeSlipWritten||'';$('timeSlipSubmitted').value=s.timeSlipSubmitted||'';$('timeSlipConfirmedReceived').value=s.timeSlipConfirmedReceived||'';$('timeSlipLocation').value=s.timeSlipLocation||'';$('timeSlipStatus').value=s.timeSlipStatus||'Pending';$('timeSlipResolved').value=s.timeSlipResolved||'';$('timeSlipWageReminderDays').value=s.timeSlipWageReminderDays===null||s.timeSlipWageReminderDays===undefined?'':String(s.timeSlipWageReminderDays);setTimeSlipClaimTypes(s.timeSlipClaimTypes||[],s.timeSlipClaimPayments||{});
   renderTimeSlipDeadlinePreview();
   $('holidayFlag').checked=!!s.holiday;$('holidayPayEligibleFlag').checked=s.holidayPayEligible!==false&&!!s.holiday;$('ssotFlag').checked=!!s.ssot;$('rdFlag').checked=!!s.rd;
   $('paysMealFlag').checked=!!s.paysMeal;$('mpteFlag').checked=!!s.mpte;$('freightMealFlag').checked=!!s.freightMeal;$('fuelClaimFlag').checked=!!s.fuelClaim;$('otCompletionFlag').checked=!!s.otCompletion;$('otCompletionTime').value=s.otCompletionTime||'';$('unscheduledOTFlag').checked=!!s.unscheduledOT;$('crewBookReleaseTime').value=s.crewBookReleaseTime||'';$('poneFlag').checked=!!s.pone;$('traineeCount').value=Math.min(2,Math.max(1,Number(s.traineeCount)||1));
@@ -7078,7 +7674,7 @@ function duplicateShift(id){if(!billingRequireWriteAccess())return;
   const s=shifts.find(x=>x.id===id);if(!s)return;
   upgradeShift(s);
   $('shiftForm').reset();setLocationUI('');setShiftTypeUI('');$('editId').value='';$('shiftRuleMode').value=s.traineeMode?'trainee':'engineer';$('legacyExtras').value='';$('legacyClaims').value='';
-  $('formTitle').textContent='Duplicate shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';
+  $('formTitle').textContent='Duplicate shift';$('deleteBtn').style.display='none';$('duplicateBtn').style.display='none';$('favoriteBtn').style.display='none';resetFatigueEditor();
 
   $('date').value=new Date().toISOString().slice(0,10);
   $('start').value=s.start||'';$('end').value=s.end||'';
@@ -7135,7 +7731,7 @@ function renderTimeSlipWageReminderHint(){
   else{const n=Math.max(1,Math.min(29,Math.round(Number(raw)||def)));hint.textContent=`This Time Slip will remind you ${n} day${n===1?'':'s'} before the 30-day window ends if it is still Pending and receipt has not been confirmed.`}
 }
 function timeSlipWageReminderInfoFor(s,todayISO=isoLocal(new Date())){
-  if(!s?.timeSlip||timeSlipDisplayStatus(s)!=='Pending'||!s?.date||s?.timeSlipConfirmedReceived)return null;
+  if(!s?.timeSlip||!timeSlipNeedsFollowUp(s)||!s?.date||s?.timeSlipConfirmedReceived)return null;
   const reminderDays=effectiveTimeSlipWageReminderDays(s);if(reminderDays<=0)return null;
   const due=timeSlipSubmissionDeadline(s);if(!due)return null;const days=daysBetweenISO(todayISO,due);if(days==null||days>reminderDays)return null;
   const level=days<0?'overdue':days<=1?'urgent':days<=3?'warning':'notice';
@@ -7160,10 +7756,11 @@ function renderTimeSlipWagePanel(){
   upgradeShift(s);const rows=[...s.timeSlipFollowUps].sort((a,b)=>String(b?.at||'').localeCompare(String(a?.at||'')));host.innerHTML=`<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:12px"><strong style="font-size:12px">Follow-Up History</strong><button class="btn small" type="button" onclick="openTimeSlipFollowUpModal()">+ Add Note</button></div>${rows.length?`<div class="time-slip-followup-list">${rows.map(r=>`<div class="time-slip-followup-entry"><div class="time-slip-followup-entry-head"><span>${escapeHTML(formatTimeSlipFollowUpDate(r.at))}</span><button class="btn small danger" type="button" onclick="deleteTimeSlipFollowUp('${escapeHTML(String(r.id||''))}')">Delete</button></div>${r.spokeWith?`<div class="time-slip-followup-entry-meta">Spoke with: ${escapeHTML(r.spokeWith)}</div>`:''}${r.note?`<div class="time-slip-followup-entry-note">${escapeHTML(r.note)}</div>`:''}</div>`).join('')}</div>`:'<div class="muted" style="font-size:11px;margin-top:8px">No Wage follow-up notes yet.</div>'}`;
 }
 function renderTimeSlipWageBanner(){
-  const el=document.getElementById('timeSlipWageBanner');if(!el)return;const items=shifts.filter(s=>s.timeSlip&&timeSlipDisplayStatus(s)==='Pending').map(s=>({s,info:timeSlipWageReminderInfoFor(s)})).filter(x=>x.info).sort((a,b)=>a.info.days-b.info.days||String(a.s.date||'').localeCompare(String(b.s.date||'')));
+  const el=document.getElementById('timeSlipWageBanner');if(!el)return;const items=shifts.filter(s=>s.timeSlip&&timeSlipNeedsFollowUp(s)).map(s=>({s,info:timeSlipWageReminderInfoFor(s)})).filter(x=>x.info).sort((a,b)=>a.info.days-b.info.days||String(a.s.date||'').localeCompare(String(b.s.date||'')));
   if(!items.length){el.className='time-slip-wage-banner';el.innerHTML='';return}const first=items[0],count=items.length,job=escapeHTML(first.s.assignment||'Time Slip');let body=`${job}: ${escapeHTML(first.info.message)}.`;if(count>1)body+=` ${count-1} other Pending Time Slip${count-1===1?' also needs':'s also need'} Wage follow-up.`;el.className=`time-slip-wage-banner show ${first.info.level}`;el.innerHTML=`<strong>Wage Examiners follow-up reminder</strong>${body}<div class="time-slip-wage-banner-actions"><a class="btn small primary" href="tel:${WAGE_EXAMINERS_TEL}">Call Wage Examiners</a><button class="btn small" type="button" onclick="showView('timeslips')">Open Time Slip Center</button></div>`;
 }
 function timeSlipDisplayStatus(s){
+  const detail=timeSlipClaimSummary(s);if(detail)return detail.status==='Pending'&&!s?.timeSlipSubmitted?'Needs Submission':detail.status;
   const status=s?.timeSlipStatus||'Pending';
   return status==='Pending'&&!s?.timeSlipSubmitted?'Needs Submission':status;
 }
@@ -7183,9 +7780,9 @@ function renderTimeSlipDeadlinePreview(){
   const box=document.getElementById('timeSlipDeadlineInfo'),hint=document.getElementById('timeSlipStatusHint');
   if(!box)return;
   const checked=!!document.getElementById('timeSlipFlag')?.checked;
-  const s={timeSlip:checked,date:document.getElementById('date')?.value||'',timeSlipSubmitted:document.getElementById('timeSlipSubmitted')?.value||'',timeSlipStatus:document.getElementById('timeSlipStatus')?.value||'Pending'};
+  const s={timeSlip:checked,date:document.getElementById('date')?.value||'',timeSlipSubmitted:document.getElementById('timeSlipSubmitted')?.value||'',timeSlipStatus:document.getElementById('timeSlipStatus')?.value||'Pending',timeSlipClaimTypes:collectTimeSlipClaimTypes(),timeSlipClaimPayments:collectTimeSlipClaimPayments()};
   const display=timeSlipDisplayStatus(s),info=timeSlipDeadlineInfoFor(s);
-  if(hint)hint.textContent=display==='Needs Submission'?'Current state: Needs Submission. Enter Date Submitted after you turn in the slip.':display==='Pending'?'Current state: Pending (submitted, awaiting Paid or Denied).':'';
+  if(hint)hint.textContent=timeSlipClaimSummary(s)?`Overall state: ${display} (calculated from claim results).`:(display==='Needs Submission'?'Current state: Needs Submission. Enter Date Submitted after you turn in the slip.':display==='Pending'?'Current state: Pending (submitted, awaiting Paid or Denied).':'');
   if(!checked||!info){box.style.display='none';box.className='time-slip-deadline-info field full';box.innerHTML='';return}
   const dueLabel=formatDateShort(info.due);
   box.className=`time-slip-deadline-info field full ${info.level}`;
@@ -7272,6 +7869,7 @@ async function renderTimeSlipPhotoSection(){
   }
 }
 function chooseTimeSlipPhoto(side){
+  if(EPL_CLAIM_R4_DEVICE_ONLY_TEST){alert('Photo changes are disabled in this testing build.');return}
   if(!billingRequireWriteAccess())return;
   if(side!=='front'&&side!=='back')return;
   const s=currentTimeSlipPhotoShift();
@@ -7309,6 +7907,7 @@ async function compressTimeSlipPhoto(file){
   }finally{URL.revokeObjectURL(url)}
 }
 async function uploadTimeSlipPhoto(side,file){
+  if(EPL_CLAIM_R4_DEVICE_ONLY_TEST){setTimeSlipPhotoStatus('Photo uploads disabled in this testing build.',true);return}
   const s=currentTimeSlipPhotoShift();if(!s){setTimeSlipPhotoStatus('Save the shift before adding a photo.',true);return}
   setTimeSlipPhotoStatus(`Preparing ${side} photo…`);
   try{
@@ -7334,6 +7933,7 @@ async function uploadTimeSlipPhoto(side,file){
   }catch(err){console.warn('Time Slip photo upload failed:',err);setTimeSlipPhotoStatus(err?.message||'Photo upload failed.',true);alert(`Time Slip photo could not be saved: ${err?.message||err}`)}
 }
 async function deleteTimeSlipPhoto(side){
+  if(EPL_CLAIM_R4_DEVICE_ONLY_TEST){alert('Photo deletion is disabled in this testing build.');return}
   if(!billingRequireWriteAccess())return;
   const s=currentTimeSlipPhotoShift(),meta=s?.timeSlipPhotos?.[side];if(!s||!meta?.path)return;
   if(!confirm(`Delete the ${side} Time Slip photo?`))return;
@@ -7365,6 +7965,7 @@ async function openTimeSlipPhoto(side){
 }
 function closeTimeSlipPhotoViewer(){const modal=document.getElementById('timeSlipPhotoViewerModal');if(modal)modal.classList.remove('open')}
 async function cloudDeleteTimeSlipPhotoFiles(shift){
+  if(EPL_CLAIM_R4_DEVICE_ONLY_TEST)return;
   const paths=['front','back'].map(side=>shift?.timeSlipPhotos?.[side]?.path).filter(Boolean);if(!paths.length)return;
   try{const client=getCloudClient();if(!client)return;const user=await cloudCurrentUser(client);if(!user||!accountGuardWorkspace(user))return;const {error}=await client.storage.from(TIME_SLIP_PHOTO_BUCKET).remove(paths);if(error)console.warn('Deleted shift photo cleanup failed:',error)}catch(err){console.warn('Deleted shift photo cleanup unavailable:',err)}
 }
@@ -7392,6 +7993,8 @@ const ACCOUNT_SCOPED_LOCAL_KEYS=[
   CREW_BOOK_ASSIST_PREF_KEY,
   TIME_SLIP_WAGE_DEFAULT_KEY,
   'epl_bid_sheet_drafts_v1',
+  'epl_bid_sheet_drafts_staging_test_v1',
+  'epl_bid_sheet_staging_v1',
   'epl_go203_general_pick_plan_v1',
   'epl_go203_general_pick_plan_local_updated_v1',
   'epl_go203_revision_plan_impact_v1',
@@ -8317,6 +8920,7 @@ function accountReloadWorkspaceMemory(){
 function accountRefreshWorkspaceUI(){
   accountReloadWorkspaceMemory();
   try{bidSheetDraftResetMemory()}catch{}
+  try{bidStagingResetMemory()}catch{}
   try{updateRateDisplays()}catch{}
   try{updateTraineeModeUI()}catch{}
   try{updateBackupUI()}catch{}
@@ -9643,6 +10247,7 @@ async function cloudVersionAwareCompare(){
 }
 
 async function cloudRunVersionAwareSync(options={}){
+  if(EPL_CLAIM_R4_DEVICE_ONLY_TEST){setCloudTestStatus('R4 preview: automatic shift sync disabled; changes are device-only.');return}
   const automatic=!!options.automatic;
   const autoSource=options.source||'startup';
   const client=getCloudClient();
@@ -10446,6 +11051,7 @@ async function cloudResolveConflictUseCloud(shiftId){
 }
 
 async function cloudMirrorShift(shift){
+  if(EPL_CLAIM_R4_DEVICE_ONLY_TEST){setCloudTestStatus('R4: local shift save only; production cloud untouched.');return}
   const client=getCloudClient();if(!client)return;
   const user=await cloudCurrentUser(client);if(!user)return;
   if(!accountGuardWorkspace(user)){console.warn('Cloud mirror blocked: active local workspace does not match authenticated account.');setCloudTestStatus('Sync paused because the local account workspace does not match the signed-in account. Sign out and sign back in.');return}
@@ -10466,6 +11072,7 @@ async function cloudMirrorShift(shift){
   }
 }
 async function cloudTombstoneShift(shift){
+  if(EPL_CLAIM_R4_DEVICE_ONLY_TEST){setCloudTestStatus('R4: local shift deletion only; production cloud untouched.');return}
   const client=getCloudClient();if(!client)return;
   const user=await cloudCurrentUser(client);if(!user)return;
   if(!accountGuardWorkspace(user)){console.warn('Cloud tombstone blocked: active local workspace does not match authenticated account.');setCloudTestStatus('Sync paused because the local account workspace does not match the signed-in account. Sign out and sign back in.');return}
@@ -10605,6 +11212,7 @@ async function initCloudBridgeTest(){
 function saveShift(e){if(!billingRequireWriteAccess()){if(e?.preventDefault)e.preventDefault();return;}
   e.preventDefault();const s=formData();
   if(s.miscPenalty&&(!s.miscPenaltyDescription||!(s.miscPenaltyMinutes>0))){alert('For a Miscellaneous Penalty, enter the nature of the claim and a duration greater than 0:00.');document.getElementById(!s.miscPenaltyDescription?'miscPenaltyDescription':'miscPenaltyHours')?.focus();return}
+  if(s.timeSlip&&!validateTimeSlipClaimPayments())return;
   if(s.yardMove&&!s.twoClassesPullTime){alert('For a 2 Classes of Service claim, enter the time you were pulled so Engineer Pay Log can compare the 2 Classes payment with pull-related overtime.');document.getElementById('twoClassesPullTime')?.focus();return}
   if(isVacationSpecial(s.specialShift)){
     const year=Number(String(s.date||'').slice(0,4));
@@ -10630,7 +11238,7 @@ function collectWarnings(s){
   if(s.timeSlip){
     if(!s.timeSlipWritten)w.push('Time Slip is marked but Date Written is blank.');
     if(s.timeSlipSubmitted&&!s.timeSlipLocation)w.push('Time Slip has a Date Submitted but Location Submitted is blank.');
-    if((s.timeSlipStatus==='Paid'||s.timeSlipStatus==='Denied')&&!s.timeSlipResolved)w.push(`Time Slip is ${s.timeSlipStatus} but Date Paid / Denied is blank.`);
+    if(!timeSlipClaimSummary(s)&&(s.timeSlipStatus==='Paid'||s.timeSlipStatus==='Denied')&&!s.timeSlipResolved)w.push(`Time Slip is ${s.timeSlipStatus} but Date Paid / Denied is blank.`);
   }
   return w;
 }
@@ -10718,16 +11326,17 @@ function timeSlipCard(s){
   let deadlineLine='';
   if(info)deadlineLine=`<span class="time-slip-deadline-line ${info.level}">Due ${escapeHTML(formatDateShort(info.due))} • ${escapeHTML(info.message)}</span>`;
   const wageInfo=timeSlipWageReminderInfoFor(s);const wageLine=wageInfo?`<span class="time-slip-wage-line ${wageInfo.level}">☎ ${escapeHTML(wageInfo.message)}</span>`:'';
-  const claimBadges=timeSlipClaimBadgeHTML(s);
-  return `<div class="shift timeslip"><div class="shift-date">${dateLabel(s.date)}</div><div class="shift-main"><div class="shift-title">${escapeHTML(s.assignment||'Shift')} <span class="badge timeslip">${escapeHTML(status)}</span></div>${claimBadges?`<div class="time-slip-claim-badges">${claimBadges}</div>`:''}<div class="shift-sub">${firstLine}${secondBits.length?`<br>${secondBits.join(' • ')}`:''}${deadlineLine}${wageLine}</div></div><div><button class="btn small" onclick="editShift('${s.id}')">Edit</button></div></div>`;
+  const claimBadges=timeSlipClaimBadgeHTML(s),detail=timeSlipClaimSummary(s);
+  const breakdown=detail?`<div class="muted" style="font-size:10.5px;margin-top:4px">${detail.paid} paid · ${detail.denied} denied · ${detail.partiallyDenied} partially denied${detail.partial?` · ${detail.partial} legacy partial payment (review)`:''} · ${detail.unresolved} pending/unrecorded</div>`:'';
+  return `<div class="shift timeslip"><div class="shift-date">${dateLabel(s.date)}</div><div class="shift-main"><div class="shift-title">${escapeHTML(s.assignment||'Shift')} <span class="badge timeslip">${escapeHTML(status)}</span></div>${claimBadges?`<div class="time-slip-claim-badges">${claimBadges}</div>`:''}${breakdown}<div class="shift-sub">${firstLine}${secondBits.length?`<br>${secondBits.join(' • ')}`:''}${deadlineLine}${wageLine}</div></div><div><button class="btn small" onclick="editShift('${s.id}')">Edit</button></div></div>`;
 }
 function renderTimeSlipCenter(){
   const el=document.getElementById('timeSlipCenter');if(!el)return;
   const slips=shifts.filter(s=>s.timeSlip);
-  const groups=['Needs Submission','Pending','Paid','Denied'];
+  const groups=['Needs Submission','Pending','Partially Resolved','Paid','Denied'];
   const grouped=Object.fromEntries(groups.map(g=>[g,slips.filter(s=>timeSlipDisplayStatus(s)===g)]));
   grouped['Needs Submission'].sort((a,b)=>String(timeSlipSubmissionDeadline(a)||'9999').localeCompare(String(timeSlipSubmissionDeadline(b)||'9999'))||String(b.date||'').localeCompare(String(a.date||'')));
-  for(const g of ['Pending','Paid','Denied'])grouped[g].sort((a,b)=>(b.timeSlipSubmitted||b.timeSlipWritten||b.date||'').localeCompare(a.timeSlipSubmitted||a.timeSlipWritten||a.date||''));
+  for(const g of ['Pending','Partially Resolved','Paid','Denied'])grouped[g].sort((a,b)=>(b.timeSlipSubmitted||b.timeSlipWritten||b.date||'').localeCompare(a.timeSlipSubmitted||a.timeSlipWritten||a.date||''));
   const counts=Object.fromEntries(groups.map(g=>[g,grouped[g].length]));
   let out=`<div class="rate-note" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><strong>Wage Examiners Office</strong><br><span class="muted">${WAGE_EXAMINERS_PHONE_DISPLAY}</span></div><a class="btn primary small" href="tel:${WAGE_EXAMINERS_TEL}">☎ Call Wage Examiners</a></div><div class="timeslip-summary">${groups.map(g=>`<div class="statbox"><div class="num">${counts[g]}</div><div>${g}</div></div>`).join('')}</div>`;
   for(const g of groups){const list=grouped[g];out+=`<div class="timeslip-group"><h3>${g}</h3>${list.length?list.map(timeSlipCard).join(''):'<div class="empty">No '+g.toLowerCase()+' time slips.</div>'}</div>`}
@@ -10779,7 +11388,7 @@ function paycheckTreatmentForShift(s,c,includePending){
   const claimAmount=timeSlipClaimAmount(s,c),status=timeSlipDisplayStatus(s);
   if(!(claimAmount>0))return {estimatedTotal:enteredTotal,claimAmount:0,status,excludedClaim:0};
   if(status==='Denied')return {estimatedTotal:Math.max(0,enteredTotal-claimAmount),claimAmount,status,excludedClaim:claimAmount};
-  if(status==='Pending'||status==='Needs Submission'){
+  if(status==='Pending'||status==='Needs Submission'||status==='Partially Resolved'){
     return {estimatedTotal:includePending?enteredTotal:Math.max(0,enteredTotal-claimAmount),claimAmount,status,excludedClaim:includePending?0:claimAmount};
   }
   return {estimatedTotal:enteredTotal,claimAmount,status,excludedClaim:0};
@@ -10790,14 +11399,14 @@ function paycheckInfo(offset=0){
   const periodEnd=addDaysDate(payday,-9),periodStart=addDaysDate(periodEnd,-6),startISO=isoFromDate(periodStart),endISO=isoFromDate(periodEnd);
   const items=shifts.map(s=>({s,c:calculate(s)})).filter(x=>x.c&&!x.c.rateMissing&&x.s.date>=startISO&&x.s.date<=endISO).map(x=>Object.assign(x,paycheckTreatmentForShift(x.s,x.c,includePending)));
   const total=items.reduce((a,x)=>a+x.estimatedTotal,0),regular=items.reduce((a,x)=>a+(Number(x.c.regular)||0),0),actual=items.reduce((a,x)=>a+(Number(x.c.actual)||0),0);
-  const pendingClaimAmount=items.filter(x=>x.status==='Pending'||x.status==='Needs Submission').reduce((a,x)=>a+x.claimAmount,0);
+  const pendingClaimAmount=items.filter(x=>x.status==='Pending'||x.status==='Needs Submission'||x.status==='Partially Resolved').reduce((a,x)=>a+x.claimAmount,0);
   const deniedClaimAmount=items.filter(x=>x.status==='Denied').reduce((a,x)=>a+x.claimAmount,0);
   return {payday,periodStart,periodEnd,items,total,actual,extras:Math.max(0,total-regular),includePending,pendingClaimAmount,deniedClaimAmount};
 }
 function pendingEstimateNote(info){
   const pending=Number(info?.pendingClaimAmount)||0,denied=Number(info?.deniedClaimAmount)||0;
   let text='';
-  if(pending>0)text=info.includePending?`Includes ${money(pending)} in unresolved Time Slip claims. Pending claims are not guaranteed pay.`:`Excludes ${money(pending)} in unresolved Time Slip claims.`;
+  if(pending>0)text=info.includePending?`Includes ${money(pending)} in unresolved or mixed Time Slip claims. This is an estimate, not verified received pay.`:`Excludes ${money(pending)} in unresolved or mixed Time Slip claims.`;
   else text='No unresolved Time Slip claim amount is recorded in this pay period.';
   if(denied>0)text+=` ${money(denied)} in denied claims is excluded.`;
   return text;
@@ -10808,7 +11417,7 @@ function renderPaycheck(){
   const toggle=document.getElementById('paycheckIncludePendingSlips');if(toggle)toggle.checked=info.includePending;
   set('paycheckPendingSlipsNote',pendingEstimateNote(info));
   set('paycheckNavLabel',label);set('paycheckDateLabel',`Paycheck • ${label}`);set('paycheckAmount',money(info.total));set('paycheckRange',`Pay period: ${range}`);set('paycheckShiftCount',String(info.items.length));set('paycheckHours',fmtMinutes(info.actual));set('paycheckExtras',money(info.extras));
-  const list=document.getElementById('paycheckShiftList');if(list)list.innerHTML=info.items.length?info.items.sort((a,b)=>b.s.date.localeCompare(a.s.date)).map(x=>shiftHTML(x.s,{payOverride:x.estimatedTotal,payNote:(x.status==='Pending'||x.status==='Needs Submission')&&x.claimAmount>0?(info.includePending?`Includes ${money(x.claimAmount)} pending claim`:`Excludes ${money(x.claimAmount)} pending claim`):(x.status==='Denied'&&x.claimAmount>0?`Excludes ${money(x.claimAmount)} denied claim`:'')})).join(''):'<div class="empty">No shifts saved for this pay period.</div>';
+  const list=document.getElementById('paycheckShiftList');if(list)list.innerHTML=info.items.length?info.items.sort((a,b)=>b.s.date.localeCompare(a.s.date)).map(x=>shiftHTML(x.s,{payOverride:x.estimatedTotal,payNote:(x.status==='Pending'||x.status==='Needs Submission'||x.status==='Partially Resolved')&&x.claimAmount>0?(info.includePending?`Includes ${money(x.claimAmount)} pending/mixed claim`:`Excludes ${money(x.claimAmount)} pending/mixed claim`):(x.status==='Denied'&&x.claimAmount>0?`Excludes ${money(x.claimAmount)} denied claim`:'')})).join(''):'<div class="empty">No shifts saved for this pay period.</div>';
 }
 function changePaycheckWeek(delta){paycheckWeekOffset+=delta;renderPaycheck()}
 function openPaychecks(){paycheckWeekOffset=0;showView('paychecks');renderPaycheck()}
@@ -10931,6 +11540,238 @@ function historyDateParts(dateStr){
     day:d.getDate()
   };
 }
+
+// GO 203 Revision 1 Passenger Crew Book, fatigue classification pages F-1 through F-12.
+// Each value: [railroad weekly type, Monday-through-Sunday daily codes, source F page].
+// Daily codes are 1, 2, R (published relief day), or - (blank, not classified).
+// This lookup is descriptive only: it NEVER calculates rest-day eligibility or HOS compliance.
+const GO203_FATIGUE_EFFECTIVE = '2026-11-09';
+const GO203_FATIGUE_SOURCE = 'GO203 Passenger Rev1';
+const GO203_PASSENGER_FATIGUE = Object.freeze({"1":["2","2RR2222",1],"10":["1","1RR1111",1],"100":["2","1RR1112",2],"1000":["1","111RR11",11],"1002":["1","11111RR",11],"1003":["1","RR11111",11],"1004":["1","R11111R",11],"1005":["1","111RR11",11],"1006":["1","11111RR",11],"1007":["1","1RR1111",11],"1008":["1","111RR11",11],"1009":["2","RR11121",11],"101":["1","11111RR",2],"1010":["1","111RR11",11],"1011":["1","11111RR",11],"1012":["1","11111RR",11],"1013":["1","11RR111",11],"1014":["1","RR11111",11],"1015":["1","1RR1111",11],"1016":["1","RR11111",11],"1017":["2","11RR122",11],"1018":["2","111RR22",11],"102":["2","RR11122",2],"1020":["1","111RR11",11],"1021":["2","11RR121",11],"1022":["1","1RR1111",11],"1023":["1","11RR111",11],"1024":["2","RR22122",11],"1025":["2","111RR21",11],"1026":["1","RR11111",11],"1027":["1","11111RR",11],"1028":["1","1RR1111",11],"1029":["2","R22111R",11],"103":["2","1RR1122",2],"1030":["1","111RR11",11],"1031":["1","RR11111",11],"1032":["1","1111RR1",11],"1033":["2","R11112R",11],"1034":["1","R11111R",11],"1035":["1","RR11111",11],"1036":["1","R11111R",11],"1037":["2","RR11122",11],"1038":["2","111RR22",11],"1039":["1","R11111R",11],"104":["2","2222RR2",2],"1040":["1","RR11111",11],"1041":["1","1111RR1",12],"1043":["1","R11111R",12],"1044":["1","111RR11",12],"105":["2","22RR222",2],"106":["2","2RR2222",2],"107":["2","RR22222",2],"108":["2","2RR2222",2],"109":["2","RR22222",2],"11":["1","1111RR1",1],"110":["2","RR22222",2],"111":["2","RR22222",2],"112":["2","RR22222",2],"113":["2","RR22222",2],"12":["2","22222RR",1],"125":["2","222RR22",2],"126":["2","22222RR",2],"127":["2","22222RR",2],"128":["2","22222RR",2],"129":["2","22222RR",2],"13":["2","11RR122",1],"130":["2","22222RR",2],"131":["1","11111RR",3],"132":["1","11111RR",3],"133":["1","11111RR",3],"134":["1","11111RR",3],"135":["1","11111RR",3],"136":["1","11111RR",3],"137":["1","11111RR",3],"138":["1","11111RR",3],"139":["1","11111RR",3],"14":["1","1111RR1",1],"140":["2","222RR22",3],"141":["1","11111RR",3],"142":["2","22222RR",3],"15":["1","111RR11",1],"150":["2","RR22222",3],"151":["2","RR22222",3],"152":["2","2RR2222",3],"153":["2","22222RR",3],"154":["2","22222RR",3],"155":["2","22222RR",3],"156":["2","22222RR",3],"157":["1","1RR1111",3],"158":["1","11111RR",3],"159":["1","11111RR",3],"16":["2","22222RR",1],"160":["1","11111RR",3],"161":["1","11111RR",3],"162":["2","R22222R",3],"163":["2","22222RR",3],"164":["2","22222RR",3],"165":["2","222RR22",3],"17":["1","11111RR",1],"175":["2","22222RR",3],"176":["2","RR22222",3],"177":["2","22222RR",3],"178":["2","RR11122",3],"179":["1","11111RR",3],"18":["2","RR22222",1],"180":["1","11111RR",3],"181":["1","R11111R",3],"182":["1","R11111R",3],"183":["1","111RR11",3],"184":["1","111RR11",3],"185":["1","1RR1111",3],"186":["2","22RR222",3],"187":["2","11112RR",3],"188":["2","22222RR",3],"19":["2","22222RR",1],"190":["2","22222RR",3],"191":["2","2222RR2",3],"192":["2","22222RR",3],"193":["2","22222RR",3],"194":["1","11RR111",4],"195":["1","RR11111",4],"196":["1","111RR11",4],"197":["1","11111RR",4],"198":["1","1111RR1",4],"199":["1","1111RR1",4],"2":["2","2222RR2",1],"20":["2","RR22222",1],"200":["2","22RR122",4],"201":["2","2RR2222",4],"202":["2","RR22122",4],"203":["2","22RR222",4],"204":["2","2222RR2",4],"22":["1","11111RR",1],"227":["2","2222RR2",4],"228":["1","11111RR",4],"229":["1","11111RR",4],"23":["1","11111RR",1],"230":["1","11111RR",4],"231":["1","11111RR",4],"232":["2","RR22222",4],"233":["2","RR11122",4],"238":["1","1111RR1",4],"239":["1","11111RR",4],"24":["1","R11111R",1],"240":["2","RR22222",4],"242":["2","22222RR",4],"243":["2","22222RR",4],"244":["2","22222RR",4],"245":["1","11111RR",4],"246":["1","11111RR",4],"247":["1","11111RR",4],"248":["1","1111RR1",4],"249":["1","1111RR1",4],"25":["1","11111RR",1],"250":["1","11111RR",4],"251":["1","11111RR",4],"252":["1","11111RR",4],"253":["1","11111RR",4],"254":["1","11RR111",4],"255":["1","11111RR",4],"256":["1","1111RR1",4],"257":["1","11111RR",4],"258":["1","1RR1111",4],"259":["1","1RR1111",4],"26":["2","R22222R",1],"260":["1","11111RR",4],"261":["1","1RR1111",4],"262":["1","11111RR",4],"263":["1","11111RR",4],"264":["1","11111RR",4],"265":["1","11111RR",4],"266":["1","11111RR",4],"267":["1","11111RR",5],"268":["1","1111RR1",5],"269":["2","R22222R",5],"27":["2","22RR211",1],"270":["2","22222RR",5],"271":["2","22222RR",5],"272":["1","11111RR",5],"273":["2","RR22222",5],"274":["2","2RR2222",5],"275":["2","RR22222",5],"285":["1","11111RR",5],"286":["1","11111RR",5],"287":["1","11111RR",5],"288":["1","1111RR1",5],"289":["1","1RR1111",5],"29":["2","22222RR",1],"290":["1","11111RR",5],"291":["1","11111RR",5],"292":["1","11111RR",5],"293":["2","222RR22",5],"294":["2","2RR2122",5],"297":["2","2RR2222",5],"298":["1","11111RR",5],"299":["1","RR11111",5],"3":["2","22222RR",1],"30":["1","R11111R",1],"300":["1","11111RR",5],"301":["2","2RR2222",5],"305":["2","2222RR2",5],"306":["2","RR22211",5],"307":["1","111RR11",5],"308":["1","RR11111",5],"309":["1","R11111R",5],"31":["1","11111RR",1],"310":["1","11111RR",5],"311":["2","RR22222",5],"312":["2","22222RR",5],"315":["2","2222RR2",5],"316":["2","222RR22",5],"317":["2","22222RR",5],"318":["1","11111RR",5],"319":["1","11111RR",5],"32":["1","11111RR",1],"320":["1","11111RR",5],"321":["1","RR11111",5],"322":["1","11111RR",5],"323":["1","11111RR",5],"324":["1","11111RR",5],"325":["1","11111RR",5],"326":["2","1111RR2",5],"327":["2","R22222R",5],"328":["2","22222RR",5],"329":["2","RR22222",6],"33":["1","RR11111",1],"332":["2","2222RR2",6],"333":["2","22222RR",6],"334":["2","22222RR",6],"335":["1","11111RR",6],"336":["1","11111RR",6],"337":["1","11111RR",6],"338":["1","11111RR",6],"339":["1","11RR111",6],"34":["1","11111RR",1],"340":["1","111RR11",6],"341":["1","1RR1111",6],"342":["1","R11111R",6],"343":["1","11RR111",6],"344":["1","11111RR",6],"345":["1","11111RR",6],"346":["1","11111RR",6],"347":["1","1111RR1",6],"348":["1","11111RR",6],"349":["1","11111RR",6],"35":["1","11111RR",1],"350":["1","11111RR",6],"351":["1","11111RR",6],"352":["2","22222RR",6],"353":["1","R11111R",6],"354":["2","222RR22",6],"355":["2","RR22222",6],"356":["2","RR22222",6],"357":["2","2RR2222",6],"358":["2","22222RR",6],"36":["1","11111RR",1],"361":["1","----1--",6],"362":["2","----2--",6],"363":["2","----2--",6],"365":["2","-----2-",6],"366":["2","-----2-",6],"367":["1","------1",6],"368":["2","-----2-",6],"37":["1","1RR1111",1],"38":["1","11RR111",1],"39":["2","111RR22",1],"4":["2","R22222R",1],"40":["2","22222RR",1],"401":["2","RR21122",6],"402":["1","11111RR",6],"403":["2","11RR211",6],"404":["2","222RR22",6],"405":["2","2RR2212",6],"406":["2","2RR1112",6],"407":["1","1111RR1",6],"41":["2","R22222R",1],"420":["2","22RR222",6],"421":["2","11RR222",6],"422":["1","11RR111",6],"423":["2","2222RR2",6],"424":["2","RR22222",7],"425":["2","22RR111",7],"426":["1","R11111R",7],"427":["2","22RR111",7],"428":["2","222RR11",7],"430":["2","22RR122",7],"431":["2","22RR222",7],"432":["2","R22222R",7],"433":["2","22RR122",7],"435":["1","111RR11",7],"436":["2","22RR222",7],"437":["1","11RR111",7],"439":["1","1RR1111",7],"442":["2","22222RR",7],"443":["1","111RR11",7],"444":["2","1111RR2",7],"446":["2","2222RR1",7],"448":["2","2222RR2",7],"449":["2","RR22122",7],"45":["2","22222RR",1],"450":["1","1111RR1",7],"451":["2","222RR11",7],"456":["2","22RR222",7],"457":["2","22RR111",7],"458":["1","RR11111",7],"459":["1","RR11111",7],"46":["1","11111RR",1],"460":["2","RR12212",7],"461":["2","2RR2222",7],"462":["1","111RR11",7],"463":["2","2221RR2",7],"465":["1","RR11111",7],"466":["2","22RR111",7],"467":["1","RR11111",7],"468":["2","22RR112",7],"469":["2","R22111R",7],"47":["1","1111RR1",1],"470":["2","RR22222",7],"471":["2","12RR111",7],"472":["2","222RR11",7],"473":["1","1111RR1",7],"474":["2","11RR222",7],"475":["2","2222RR1",7],"476":["2","RR11122",7],"48":["2","222RR11",1],"49":["1","1111RR1",1],"5":["2","22222RR",1],"50":["1","11111RR",1],"501":["1","1RR1111",7],"502":["1","11RR111",7],"503":["1","1RR1111",7],"504":["1","RR11111",7],"506":["1","1RR1111",7],"507":["1","1111RR1",8],"508":["1","11111RR",8],"509":["1","11111RR",8],"51":["1","11111RR",1],"510":["1","11111RR",8],"511":["1","1111RR1",8],"512":["1","11111RR",8],"513":["1","11111RR",8],"514":["1","11111RR",8],"515":["1","11111RR",8],"516":["1","1RR1111",8],"517":["1","11111RR",8],"518":["2","22222RR",8],"519":["1","1RR1111",8],"52":["1","11111RR",2],"520":["2","1RR1122",8],"521":["1","11111RR",8],"522":["1","R11111R",8],"523":["2","11RR122",8],"524":["1","11RR111",8],"525":["1","11111RR",8],"526":["1","11111RR",8],"527":["1","1RR1111",8],"528":["1","111RR11",8],"53":["1","11111RR",2],"54":["2","2RR2222",2],"55":["2","22222RR",2],"550":["1","11RR111",8],"552":["2","111RR22",8],"554":["2","1111RR2",8],"555":["2","1111RR2",8],"556":["1","11111RR",8],"557":["1","1111RR1",8],"558":["1","1RR1111",8],"559":["1","R11111R",8],"560":["1","111RR11",8],"564":["2","2RR2222",8],"565":["2","22RR211",8],"566":["2","RR11122",8],"6":["2","22222RR",1],"600":["1","111RR11",8],"601":["1","11111RR",8],"602":["1","11111RR",8],"619":["1","1RR1111",8],"620":["2","111RR22",8],"621":["1","R11111R",8],"622":["1","11111RR",8],"623":["1","11111RR",8],"624":["1","11111RR",8],"625":["1","1111RR1",8],"626":["1","111RR11",8],"627":["1","11RR111",8],"628":["1","11RR111",9],"629":["1","1RR1111",9],"63":["2","-----2-",2],"630":["1","111RR11",9],"631":["1","1RR1111",9],"632":["1","11RR111",9],"633":["1","1RR1111",9],"634":["1","11111RR",9],"635":["1","1111RR1",9],"636":["1","R11111R",9],"637":["1","R11111R",9],"638":["2","2RR2211",9],"639":["1","1111RR1",9],"640":["2","11RR122",9],"641":["1","RR11111",9],"660":["1","11111RR",9],"661":["2","22222RR",9],"663":["1","1RR1111",9],"665":["1","11111RR",9],"666":["1","1111RR1",9],"667":["1","11RR111",9],"668":["1","11RR111",9],"669":["1","RR11111",9],"670":["1","R11111R",9],"671":["1","1111RR1",9],"672":["1","RR11111",9],"673":["2","111RR22",9],"690":["1","111RR11",9],"7":["1","1RR1111",1],"700":["2","22222RR",9],"701":["1","11111RR",9],"703":["1","11111RR",9],"705":["1","R11111R",9],"706":["1","111RR11",9],"707":["1","11111RR",9],"709":["1","1RR1111",9],"71":["2","----2--",2],"710":["1","RR11111",9],"711":["1","11RR111",9],"712":["1","RR11111",9],"713":["1","RR11111",9],"714":["1","RR11111",9],"716":["1","111RR11",9],"717":["1","1111RR1",9],"718":["1","111RR11",9],"719":["2","1111RR2",9],"73":["2","----2--",2],"731":["1","R11111R",9],"732":["1","R11111R",9],"735":["1","11111RR",9],"74":["2","-2222--",2],"750":["1","11111RR",10],"751":["1","11111RR",10],"752":["1","11111RR",10],"753":["1","1RR1111",10],"754":["1","11111RR",10],"755":["1","1RR1111",10],"756":["1","R11111R",10],"757":["1","11111RR",10],"758":["1","R11111R",10],"760":["2","RR11122",10],"770":["1","11111RR",10],"771":["1","11111RR",10],"772":["1","11111RR",10],"773":["1","11111RR",10],"774":["1","R11111R",10],"775":["1","11111RR",10],"776":["1","1111RR1",10],"777":["1","R11111R",10],"778":["1","11RR111",10],"779":["1","11111RR",10],"790":["1","11111RR",10],"791":["1","R11111R",10],"8":["1","RR11111",1],"800":["2","22222RR",10],"801":["1","11111RR",10],"803":["1","11111RR",10],"804":["1","11111RR",10],"806":["1","11111RR",10],"807":["1","11RR111",10],"808":["1","111RR11",10],"809":["1","1111RR1",10],"810":["1","RR11111",10],"811":["1","111RR11",10],"812":["1","1111RR1",10],"813":["1","11111RR",10],"814":["1","11111RR",10],"815":["1","11RR111",10],"817":["2","1111RR2",10],"82":["2","RR22222",2],"83":["2","2RR2222",2],"831":["1","RR11111",10],"832":["1","11RR111",10],"833":["2","1111RR2",10],"84":["2","22222RR",2],"85":["2","222RR22",2],"86":["2","22222RR",2],"87":["2","2RR2222",2],"88":["2","RR22222",2],"89":["2","22222RR",2],"9":["1","11RR111",1],"90":["2","22222RR",2],"91":["2","22222RR",2],"92":["2","22222RR",2],"920":["1","11111--",10],"921":["1","11111--",10],"922":["1","11111--",10],"923":["1","11111--",10],"924":["1","11111--",10],"925":["1","11111--",10],"926":["1","11111--",11],"927":["1","11111--",11],"928":["1","11111--",11],"929":["1","11111--",11],"93":["1","11111RR",2],"930":["1","11111--",11],"931":["1","11111--",11],"932":["1","11111--",11],"94":["1","111RR11",2],"95":["1","1111RR1",2],"96":["1","111RR11",2],"97":["1","11111RR",2],"98":["1","111RR11",2],"99":["1","1RR1111",2]});
+function go203FatigueForAssignment(assignment, date){
+  const iso=String(date||'').trim();
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(iso)||iso<GO203_FATIGUE_EFFECTIVE)return null;
+  const job=String(assignment||'').trim().replace(/^0+(?=\d)/,'');
+  if(!/^\d{1,4}$/.test(job))return null;
+  const row=GO203_PASSENGER_FATIGUE[job];
+  if(!row)return null;
+  const dt=new Date(iso+'T12:00:00');
+  if(Number.isNaN(dt.getTime())||dt.getFullYear()!==Number(iso.slice(0,4))||dt.getMonth()+1!==Number(iso.slice(5,7))||dt.getDate()!==Number(iso.slice(8,10)))return null;
+  const day=(dt.getDay()+6)%7; // ISO weekdays: Monday=0 ... Sunday=6.
+  const type=row[1].charAt(day);
+  if(type!=='1'&&type!=='2')return null; // R/blank never become Type 1 or 2.
+  return {type,weeklyType:row[0],job,date:iso,page:'F-'+row[2],source:GO203_FATIGUE_SOURCE};
+}
+// Descriptive historical data only: never determines fatigue conversion or legal rest.
+// Crucially, never compare GO203 fatigue against the GO202 Crew Book resolver.
+function fatiguePublishedReleaseForAssignment(assignment,date){
+  const f=go203FatigueForAssignment(assignment,date);
+  if(!f)return null;
+  const valid=x=>/^\d{2}:\d{2}$/.test(String(x||''))&&Number.isFinite(parseClock(x));
+  try{
+    const rev=crewBookPassengerRevision(date);
+    // The live date-aware passenger resolver can be used only if it identifies GO203.
+    if(String(rev?.go)==='203'){
+      const r=jobCompareResolveForDay(f.job,date);
+      if(r?.state==='active'&&valid(r.schedule?.end))
+        return {end:r.schedule.end,source:'GO 203 active Crew Book'};
+    }
+  }catch(_){/* GO203 not activated or resolver unavailable */}
+  try{
+    // Before cutover, use only the certified/structured GO203 preview for its
+    // exact calendar date, not a similar weekday in another week.
+    const active=futureRevisionActiveDataset();
+    if(String(active?.data?.meta?.go)!=='203'||String(active?.data?.meta?.effective)!=='2026-11-09')return null;
+    const dt=new Date(date+'T12:00:00'),days=['sunday','monday','tuesday','wednesday','thursday','friday','saturday'];
+    const daily=active.pickWeek?.regular?.[f.job]?.days?.[days[dt.getDay()]];
+    if(daily?.date===date&&daily?.schedule?.status==='resolved'&&valid(daily.schedule.end))
+      return {end:daily.schedule.end,source:'GO 203 published preview'};
+  }catch(_){/* No verified GO203 reference */}
+  return null;
+}
+// Only the certified, user-accessible GO203 preview may supply a scheduled release
+// before production cutover. Shift editing now loads that read-only preview on demand.
+// No GO202 or bundled draft schedule is a permissible fallback.
+let fatigueGo203LoadAttempted=false;
+let fatigueGo203LoadPromise=null;
+function fatigueLoadGo203ForShift(){
+  if(fatigueGo203LoadPromise||fatigueGo203LoadAttempted)return;
+  fatigueGo203LoadAttempted=true;
+  const load=async()=>{
+    try{
+      await futureRevisionLoadCloud(false); // existing authenticated read-only preview loader
+    }catch(err){console.warn('GO 203 fatigue release lookup failed:',err)}
+    finally{
+      fatigueGo203LoadPromise=null;
+      if(document.getElementById('shiftModal')?.classList.contains('open'))refreshFatigueEditor();
+    }
+  };
+  fatigueGo203LoadPromise=load();
+}
+function fatigueRetryGo203Source(){
+  fatigueGo203LoadAttempted=false;
+  fatigueLoadGo203ForShift();
+  refreshFatigueEditor();
+}
+function fatigueReleaseReview(s){
+  const f=go203FatigueForAssignment(s?.assignment,s?.date);
+  if(!f||!/^\d{2}:\d{2}$/.test(String(s?.start||''))||!/^\d{2}:\d{2}$/.test(String(s?.end||'')))return null;
+  let reference=fatiguePublishedReleaseForAssignment(f.job,f.date);
+  // A saved engineer override retains its reviewed printed-release snapshot.
+  // Do not use snapshots on different jobs/dates or unverified legacy entries.
+  if(s?.fatigueTypeOverridePublishedRelease&&s.fatigueTypeOverrideAssignment===f.job&&s.fatigueTypeOverrideDate===f.date&&/^\d{2}:\d{2}$/.test(s.fatigueTypeOverridePublishedRelease)){
+    reference={end:s.fatigueTypeOverridePublishedRelease,source:s.fatigueTypeOverrideReferenceSource||'GO 203 reviewed release'};
+  }
+  if(!reference)return null;
+  const start=parseClock(s.start),actual=parseClock(s.end),book=parseClock(reference.end);
+  if(![start,actual,book].every(Number.isFinite))return null;
+  // Normalize after midnight relative to the recorded assignment start.
+  const elapsed=end=>end<start?end+1440-start:end-start;
+  const delta=elapsed(actual)-elapsed(book);
+  return {changed:delta!==0,delta,reference,actual:s.end,publishedType:f.type};
+}
+function resetFatigueEditor(){
+  const root=document.getElementById('fatigueShiftField');if(!root)return;
+  root.dataset.fatigueKey='';root.dataset.expanded='0';
+  root.dataset.fatigueReferenceRelease='';root.dataset.fatigueReferenceJob='';root.dataset.fatigueReferenceDate='';
+  document.getElementById('fatigueOverrideSelect').value='';
+  document.getElementById('fatigueOverrideNote').value='';
+}
+function loadFatigueEditorForShift(s){
+  resetFatigueEditor();
+  const f=go203FatigueForShift(s),root=document.getElementById('fatigueShiftField');if(!f||!root)return;
+  root.dataset.fatigueKey=`${f.job}|${f.date}`;
+  if(s.fatigueTypeOverridePublishedRelease&&s.fatigueTypeOverrideAssignment===f.job&&s.fatigueTypeOverrideDate===f.date){
+    root.dataset.fatigueReferenceRelease=s.fatigueTypeOverridePublishedRelease;
+    root.dataset.fatigueReferenceJob=f.job;
+    root.dataset.fatigueReferenceDate=f.date;
+  }
+  if(f.manual){
+    document.getElementById('fatigueOverrideSelect').value=f.type;
+    document.getElementById('fatigueOverrideNote').value=String(s.fatigueTypeOverrideNote||'').slice(0,300);
+    root.dataset.expanded='1';
+  }
+}
+function toggleFatigueOverrideEditor(){
+  const root=document.getElementById('fatigueShiftField');if(!root||root.style.display==='none')return;
+  const f=fatigueReleaseReview({assignment:document.getElementById('assignment').value,date:document.getElementById('date').value,start:document.getElementById('start').value,end:document.getElementById('end').value,
+    fatigueTypeOverridePublishedRelease:root.dataset.fatigueReferenceRelease,fatigueTypeOverrideAssignment:root.dataset.fatigueReferenceJob,fatigueTypeOverrideDate:root.dataset.fatigueReferenceDate});
+  if(!f?.changed)return;
+  root.dataset.expanded=root.dataset.expanded==='1'?'0':'1';
+  refreshFatigueEditor();
+}
+function restorePublishedFatigue(){
+  const root=document.getElementById('fatigueShiftField');if(!root)return;
+  document.getElementById('fatigueOverrideSelect').value='';
+  document.getElementById('fatigueOverrideNote').value='';
+  root.dataset.expanded='0';
+  refreshFatigueEditor();
+}
+function fatigueAfterMidnightNotice(assignment,date,start,end,reference=null){
+  const f=go203FatigueForAssignment(assignment,date);
+  if(!f||f.type!=='1'||!reference?.changed)return false;
+  const a=parseClock(start),b=parseClock(end);
+  return Number.isFinite(a)&&Number.isFinite(b)&&a>=240&&a<1440&&b>=0&&b<720&&b<a;
+}
+function refreshFatigueEditor(){
+  const root=document.getElementById('fatigueShiftField');if(!root)return;
+  const assignment=document.getElementById('assignment').value,date=document.getElementById('date').value,
+    start=document.getElementById('start').value,end=document.getElementById('end').value,
+    f=go203FatigueForAssignment(assignment,date),special=document.getElementById('specialShift').value,
+    trainee=document.getElementById('shiftRuleMode').value==='trainee';
+  const available=!!f&&!special&&!trainee;
+  root.style.display=available?'block':'none';
+  const key=available?`${f.job}|${f.date}`:'';
+  if(root.dataset.fatigueKey!==key){
+    document.getElementById('fatigueOverrideSelect').value='';
+    document.getElementById('fatigueOverrideNote').value='';
+    root.dataset.fatigueKey=key;root.dataset.expanded='0';
+    root.dataset.fatigueReferenceRelease='';root.dataset.fatigueReferenceJob='';root.dataset.fatigueReferenceDate='';
+  }
+  if(!available)return;
+  // A customer can enter a future dated shift without ever opening General Pick.
+  // Request the certified future-book preview once rather than silently locking
+  // the override indefinitely. The reference is still verified before use.
+  let reference=fatiguePublishedReleaseForAssignment(f.job,f.date);
+  if(!reference&&!fatigueGo203LoadAttempted)fatigueLoadGo203ForShift();
+  const review=fatigueReleaseReview({assignment,date,start,end,
+    fatigueTypeOverridePublishedRelease:root.dataset.fatigueReferenceRelease,
+    fatigueTypeOverrideAssignment:root.dataset.fatigueReferenceJob,
+    fatigueTypeOverrideDate:root.dataset.fatigueReferenceDate});
+  const eligible=!!review?.changed;
+  const select=document.getElementById('fatigueOverrideSelect');
+  if(!eligible){
+    select.value='';document.getElementById('fatigueOverrideNote').value='';
+    root.dataset.expanded='0';
+  }
+  const v=select.value,manual=eligible&&(v==='1'||v==='2')&&v!==f.type;
+  document.getElementById('fatiguePublishedLabel').textContent=`Published fatigue: Type ${f.type}`;
+  document.getElementById('fatiguePublishedSource').textContent=`GO 203 Rev. 1 • ${f.page} • Assignment ${f.job} • ${f.date}`;
+  const button=document.getElementById('fatigueOverrideButton');
+  button.style.display=eligible?'inline-flex':'none';
+  button.textContent=root.dataset.expanded==='1'?'Hide override':'Override for this shift';
+  document.getElementById('fatigueOverridePanel').style.display=eligible&&root.dataset.expanded==='1'?'block':'none';
+  document.getElementById('fatigueRecordedLabel').textContent=manual?`Recorded for this shift: Type ${v} (engineer override)`:'';
+  const status=document.getElementById('fatigueReferenceStatus');
+  if(status){
+    const missing=!!(start&&end&&!review&&!reference);
+    const pending=!!fatigueGo203LoadPromise;
+    status.style.display=missing?'block':'none';
+    if(missing){
+      status.innerHTML=pending?'Checking verified GO 203 scheduled release…':
+        'The GO 203 scheduled release could not be verified. The published fatigue type remains in effect, and manual override is unavailable. <button class="btn small" style="margin-top:6px" type="button" onclick="fatigueRetryGo203Source()">Retry GO 203 lookup</button>';
+    }else status.textContent='';
+  }
+  const comparison=document.getElementById('fatigueReleaseComparison');
+  comparison.style.display=eligible?'block':'none';
+  if(eligible){
+    const fmt=t=>{const [h,m]=t.split(':').map(Number),hr=h%12||12;return `${hr}:${String(m).padStart(2,'0')} ${h>=12?'PM':'AM'}`};
+    comparison.textContent=`GO 203 release ${fmt(review.reference.end)} • Recorded release ${fmt(end)} • ${review.delta>0?'Later':'Earlier'} by ${fmtMinutes(Math.abs(review.delta))}`;
+  }else comparison.textContent='';
+  const warn=document.getElementById('fatigueOvernightNotice');
+  warn.style.display=eligible?'block':'none';
+  if(eligible){
+    const overnight=fatigueAfterMidnightNotice(assignment,date,start,end,review);
+    warn.innerHTML=overnight
+      ?'<strong>Hours of Service — Review</strong><div style="margin-top:4px">This published Type 1 assignment has a changed release time that appears to finish after midnight. Under SI 100-R, an inadvertently late Type 1 finish requires immediate notification to Crew Management, except when deadheading back to the initial terminal. Rest requirements may change; EPL does not decide fatigue type or rest eligibility.</div>'
+      :'<strong>Release-time change — Review</strong><div style="margin-top:4px">The recorded release differs from GO 203. Only the engineer can record a different fatigue type after determining it is appropriate. Check with Crew Management as needed; EPL does not reclassify the assignment or determine rest eligibility.</div>';
+  }
+}
+function go203FatigueForShift(s){
+  if(!s||s.specialShift||s.classDay||s.traineeMode||isSecretUnpaidSickShift(s))return null;
+  const current=go203FatigueForAssignment(s.assignment,s.date);
+  if(!current)return null;
+  const published={...current,publishedType:current.type,manual:false};
+  // Only a shift-specific, user-entered choice may override the railroad's published type.
+  // Changing a job or date invalidates that override; GO203 never reclassifies automatically.
+  const hasCandidateOverride=(s.fatigueTypeOverride==='1'||s.fatigueTypeOverride==='2')&&s.fatigueTypeOverrideAssignment===current.job&&s.fatigueTypeOverrideDate===current.date&&s.fatigueTypeOverride!==current.type;
+  if(hasCandidateOverride&&fatigueReleaseReview(s)?.changed){
+    return {...published,type:s.fatigueTypeOverride,manual:true,overrideNote:String(s.fatigueTypeOverrideNote||'')};
+  }
+  return published;
+}
+// End GO 203 published fatigue classifications.
+
+// Presentation only: never changes the GO 203 classification or SI 100-R notice.
+// Default ON for discovery; R4.13 GitHub testing stores this preference locally.
+let fatigueBadgeDisplayFallback=null;
+function fatigueBadgesVisible(){
+  if(fatigueBadgeDisplayFallback!==null)return fatigueBadgeDisplayFallback;
+  try{return localStorage.getItem(FATIGUE_BADGE_DISPLAY_KEY)!=='0'}catch{return true}
+}
+function syncFatigueBadgeDisplaySetting(){
+  const el=document.getElementById('fatigueBadgeDisplayToggle');
+  if(el)el.checked=fatigueBadgesVisible();
+}
+function setFatigueBadgeDisplay(enabled){
+  const show=!!enabled;
+  fatigueBadgeDisplayFallback=show;
+  try{localStorage.setItem(FATIGUE_BADGE_DISPLAY_KEY,show?'1':'0')}catch{}
+  syncFatigueBadgeDisplaySetting();
+  renderDashboard();
+  renderHistory();
+}
+
 function shiftHTML(s,options={}){
   const c=calculate(s),parts=historyDateParts(s.date);
   let tags=[];
@@ -10940,6 +11781,10 @@ function shiftHTML(s,options={}){
   if(s.holiday)tags.push('<span class="badge holiday">Holiday</span>');
   if(s.mpte||s.freightMeal||s.fuelClaim||s.otCompletion||s.unscheduledOT||s.pone||s.noCo||s.cert||s.commingle||s.yardMove||s.sheridanMove||s.terminalNotCrewBook||s.runaround||s.a2||s.miscPenalty)tags.push('<span class="badge penalty">Extra</span>');
   if(s.timeSlip)tags.push(`<span class="badge timeslip">${escapeHTML(timeSlipDisplayStatus(s))}</span>`);
+  if(options.showFatigue){
+    const f=go203FatigueForShift(s);
+    if(f)tags.push(`<span class="badge fatigue" title="GO 203 Rev 1 • ${escapeHTML(f.page)} • Published Type ${f.publishedType}; weekly Type ${f.weeklyType}${f.manual?'; engineer manually recorded Type '+f.type:''}">Type ${f.type}${f.manual?' · Manual':''}</span>`);
+  }
 
   const vacationWeek=s.specialShift==='Vacation Week',unpaidSick=isSecretUnpaidSickShift(s);
   const title=escapeHTML(s.classDay?'Class':(s.specialShift||s.assignment||'Shift'));
@@ -10958,7 +11803,7 @@ function shiftHTML(s,options={}){
     <div class="history-accent" aria-hidden="true"></div>
     <div class="history-row-main">
       <div class="history-row-title"><span class="history-row-title-text">${title}</span>${tags.join(' ')}</div>
-      <div class="history-row-sub">${detail}</div>
+      <div class="history-row-sub">${detail}${options.showFatigue&&go203FatigueForShift(s)?.manual?`<div class="muted" style="margin-top:3px;font-size:11px">Published Type ${go203FatigueForShift(s).publishedType} • Engineer-recorded Type ${go203FatigueForShift(s).type}${go203FatigueForShift(s).overrideNote?` • ${escapeHTML(go203FatigueForShift(s).overrideNote)}`:''}</div>`:''}</div>
     </div>
     <div class="history-row-right">
       <div class="history-row-pay">${c&&!c.rateMissing?money(Number.isFinite(Number(options.payOverride))?Number(options.payOverride):c.total):'—'}</div>
@@ -11015,7 +11860,7 @@ function renderDashboard(){
   const now=new Date(),ym=`${now.getFullYear()}-${pad(now.getMonth()+1)}`,month=valid.filter(x=>x.s.date.startsWith(ym));
   monthTotal.textContent=money(month.reduce((a,x)=>a+x.c.total,0));monthCount.textContent=`${month.length} paid shift${month.length===1?'':'s'}`;
   const currentYear=String(new Date().getFullYear()),yr=valid.filter(x=>x.s.date.startsWith(currentYear+'-'));const yearLabel=document.getElementById('yearTotalLabel');if(yearLabel)yearLabel.textContent=currentYear;yearTotal.textContent=money(yr.reduce((a,x)=>a+x.c.total,0));yearHours.textContent=`${fmtMinutes(yr.reduce((a,x)=>a+x.c.actual,0))} actual hours`;
-  const mh=document.getElementById('monthHours');if(mh)mh.textContent=fmtMinutes(month.reduce((a,x)=>a+(x.c.actual||0),0));recentShifts.innerHTML=valid.length?valid.slice(0,5).map(x=>shiftHTML(x.s)).join(''):'<div class="empty">No shifts saved yet.</div>';
+  const mh=document.getElementById('monthHours');if(mh)mh.textContent=fmtMinutes(month.reduce((a,x)=>a+(x.c.actual||0),0));recentShifts.innerHTML=valid.length?valid.slice(0,5).map(x=>shiftHTML(x.s,{showFatigue:fatigueBadgesVisible()})).join(''):'<div class="empty">No shifts saved yet.</div>';
   const pi=paycheckInfo(0),amount=document.getElementById('dashPaycheckAmount'),dates=document.getElementById('dashPaycheckDates');
   const pendingToggle=document.getElementById('dashIncludePendingSlips'),pendingNote=document.getElementById('dashPendingSlipEstimateNote');if(pendingToggle)pendingToggle.checked=pi.includePending;if(pendingNote)pendingNote.textContent=pendingEstimateNote(pi);
   if(amount)amount.textContent=money(pi.total);if(dates)dates.textContent=`${pi.periodStart.toLocaleDateString('en-US',{month:'short',day:'numeric'})}–${pi.periodEnd.toLocaleDateString('en-US',{month:'short',day:'numeric'})} • pays ${pi.payday.toLocaleDateString('en-US',{month:'short',day:'numeric'})}`;
@@ -11023,7 +11868,7 @@ function renderDashboard(){
   const showNet=netEstimatorEnabled()&&netRate!=null;
   if(netBlock)netBlock.style.display=showNet?'block':'none';
   if(netAmount&&showNet)netAmount.textContent=money(pi.total*netRate);
-  const p=document.getElementById('dashPendingSlips');if(p)p.textContent=String(shifts.filter(s=>s.timeSlip&&['Needs Submission','Pending'].includes(timeSlipDisplayStatus(s))).length);
+  const p=document.getElementById('dashPendingSlips');if(p)p.textContent=String(shifts.filter(s=>s.timeSlip&&(timeSlipDisplayStatus(s)==='Needs Submission'||timeSlipNeedsFollowUp(s))).length);
   renderTimeSlipDeadlineBanner();renderTimeSlipWageBanner();if(accountStartupResolved){void renderDashboardCommunityNotes();void bidLifecycleLoad(false)}
   const f=document.getElementById('dashSavedJobs');if(f)f.textContent=String(savedJobs.length);updateBackupUI();if(accountStartupResolved)void retirementWatchLoad(false);
 }
@@ -11037,7 +11882,7 @@ function renderHistory(){
     s.unscheduledOT?`Unscheduled OT ${fmtMinutes(calculateUnscheduledOTMinutes(s.start,s.crewBookReleaseTime,s.end)||0)}`:'',
     s.pone?'Trainee':'',s.noCo?'Operating Without a Conductor':'',s.cert?'Yard Certification':'',s.commingle?'Commingle':'',
     s.yardMove?'2 Classes of Service':'',s.sheridanMove?'Sheridan Shop House Move':'',s.terminalNotCrewBook?'Terminal Not In Crew Book':'',
-    s.runaround?'Runaround Claim':'',s.a2?'Time on Time':'',s.miscPenalty?`Miscellaneous Penalty ${s.miscPenaltyDescription||''}`:'',s.timeSlip?'Time Slip':'',s.timeSlipStatus||''
+    s.runaround?'Runaround Claim':'',s.a2?'Time on Time':'',s.miscPenalty?`Miscellaneous Penalty ${s.miscPenaltyDescription||''}`:'',s.timeSlip?'Time Slip':'',s.timeSlipStatus||'',(go203FatigueForShift(s)?`Type ${go203FatigueForShift(s).type}`:'')
   ].join(' ').toLowerCase().includes(q)).sort((a,b)=>b.date.localeCompare(a.date));
 
   if(!list.length){historyList.innerHTML='<div class="empty" style="margin-top:14px">No matching shifts.</div>';return}
@@ -11056,7 +11901,7 @@ function renderHistory(){
       out+=`<div class="history-month-head"><div class="history-month-name">${monthLabel}</div><div class="history-month-total">${money(monthTotals[key]||0)}</div></div>`;
       lastKey=key;
     }
-    out+=shiftHTML(s);
+    out+=shiftHTML(s,{showFatigue:fatigueBadgesVisible()});
   }
   historyList.innerHTML=out;
 }
@@ -13538,7 +14383,8 @@ async function rosterPublishPreview(){
 // ---- Bid Sheet Assistant + developer PDF publisher ----
 const BID_SHEET_PARSER_VERSION='bid_sheet_pdf_v1';
 const BID_SHEET_CACHE_KEY='epl_bid_sheet_cache_v1';
-const BID_SHEET_DRAFT_CACHE_KEY='epl_bid_sheet_drafts_v1';
+const BID_STAGING_TEST_ISOLATED=true; // NEVER ship this build as production: Bid Sheet edits stay local.
+const BID_SHEET_DRAFT_CACHE_KEY=BID_STAGING_TEST_ISOLATED?'epl_bid_sheet_drafts_staging_test_v1':'epl_bid_sheet_drafts_v1';
 let bidSheetPreviewState=null;
 let bidSheetAdminState={latest:null};
 let bidSheetState={snapshot:null,rows:[],loaded:false,cached:false,error:null};
@@ -13583,7 +14429,7 @@ function bidLifecyclePhase(){
   if(s.effective_date&&today===s.effective_date)return {key:'effective',date:today,results:true};
   return {key:'off_cycle',date:today,results:true};
 }
-function bidSheetDraftEditable(){return ['upcoming','open'].includes(bidLifecyclePhase().key)}
+function bidSheetDraftEditable(){return ['upcoming','open'].includes(bidLifecyclePhase().key)&&billingCanWrite()}
 function bidSheetDraftLockedMessage(){
   const phase=bidLifecyclePhase();if(phase.key==='upcoming')return `Pre-bid planning is available now. Official bidding opens ${bidSheetDateLabel(bidSheetState.snapshot?.open_date)}.`;return `This bulletin closed ${bidSheetDateLabel(bidSheetState.snapshot?.close_date)}. Your saved list is preserved as a read-only personal reference.`;
 }
@@ -13678,6 +14524,7 @@ function bidSheetDraftTypeLabel(row){
 function bidSheetDraftSyncPresentation(){
   const state=bidSheetDraftState;
   if(!state.loaded)return {text:'Loading draft…',cls:'local'};
+  if(BID_STAGING_TEST_ISOLATED)return {text:'Test • device only',cls:'local',title:'GitHub staging preview does not read or write your cloud bid draft.'};
   if(state.saving)return {text:'Saving…',cls:'saving'};
   if(state.error)return {text:'Device saved • sync issue',cls:'error',title:state.error};
   if(state.dirty||navigator.onLine===false)return {text:'Saved on this device',cls:'local',title:'Will sync to your account when online.'};
@@ -13692,6 +14539,7 @@ function bidSheetDraftRender(){
   if(subtitle)subtitle.textContent=choices.length?(choices.length+' choice'+(choices.length===1?'':'s')+' in priority order'):'Your choices in priority order';
   const status=stateMatches?bidSheetDraftSyncPresentation():{text:'Loading draft…',cls:'local'};if(sync){sync.textContent=status.text;sync.className='bid-draft-sync '+status.cls;sync.title=status.title||''}
   if(callReady){callReady.disabled=!choices.length;callReady.textContent=preBid?'View Prepared Bid List':open?'Call-Ready List':'View Saved Bid List'}if(clear)clear.disabled=!choices.length||!editable;if(note)note.textContent=preBid?`Pre-bid planning is open now. Build and reorder your list before official bidding opens ${bidSheetDateLabel(bidSheetState.snapshot?.open_date)}. This saved list does not submit a bid.`:open?"This is a planning list only. Engineer Pay Log does not submit bids; call the Crew Dispatcher through the railroad's normal process.":bidSheetDraftLockedMessage();
+  bidStagingRender();
   if(!choices.length){const emptyText=preBid?'No choices yet. Add advertised assignments below and arrange them in your planned priority order. Your list will stay saved when bidding opens.':open?'No choices yet. Add advertised assignments below, then arrange them in the exact order you plan to call in.':bidSheetDraftLockedMessage();list.innerHTML=`<div class="bid-draft-empty">${escapeHTML(emptyText)}</div>`;bidLifecycleRender();return}
   list.innerHTML=choices.map((assignment,index)=>{
     const row=bidSheetDraftRow(assignment),terminal=row?.terminal||'Terminal not listed',type=bidSheetDraftTypeLabel(row),date=bidSheetState.snapshot?.effective_date||isoLocal(new Date()),key=normalizeCrewBookKey(assignment),extra=bidSheetKind(assignment)==='extra_list',relief=extra?null:jobCompareReliefCrewDefinition(key,date),hit=extra?null:crewBookLookupJobV8(key,date),canView=!extra&&(!!relief||!!hit),safeAssignment=escapeHTML(String(assignment));
@@ -13706,7 +14554,7 @@ async function bidSheetDraftLoad(snapshotId,force=false){
   const token=++bidSheetDraftLoadSequence,local=bidSheetDraftCacheRecord(snapshotId),choices=bidSheetDraftNormalizeChoices(local?.choices);
   bidSheetDraftState={snapshotId,userId,choices,loaded:true,dirty:!!local?.dirty,saving:false,synced:false,error:null,updatedAt:local?.updatedAt||null,revision:0};
   bidSheetDraftRender();bidSheetApplyFilters();
-  if(navigator.onLine===false)return;
+  if(BID_STAGING_TEST_ISOLATED||navigator.onLine===false)return;
   const client=getCloudClient();if(!client)return;
   const user=await cloudCurrentUser(client);if(token!==bidSheetDraftLoadSequence)return;
   if(!user||String(user.id)!==userId||!accountGuardWorkspace(user)){bidSheetDraftState.error='Account sync is unavailable. Your draft remains saved on this device.';bidSheetDraftRender();return}
@@ -13725,11 +14573,13 @@ async function bidSheetDraftLoad(snapshotId,force=false){
   bidSheetDraftRender();bidSheetApplyFilters();
 }
 function bidSheetDraftScheduleSave(delay=250){
+  if(BID_STAGING_TEST_ISOLATED){bidSheetDraftRender();return}
   if(bidSheetDraftSaveTimer)clearTimeout(bidSheetDraftSaveTimer);
   if(navigator.onLine===false){bidSheetDraftRender();return}
   bidSheetDraftSaveTimer=setTimeout(()=>{bidSheetDraftSaveTimer=null;void bidSheetDraftSaveCloud()},Math.max(0,Number(delay)||0));
 }
 async function bidSheetDraftSaveCloud(){
+  if(BID_STAGING_TEST_ISOLATED){bidSheetDraftRender();return}
   const state=bidSheetDraftState;if(!state.loaded||!state.dirty||!state.snapshotId||!state.userId||navigator.onLine===false){bidSheetDraftRender();return}
   if(bidSheetDraftSaveInFlight){bidSheetDraftScheduleSave(300);return}
   const snapshotId=state.snapshotId,userId=state.userId,choices=[...state.choices],revision=state.revision,saveToken=++bidSheetDraftSaveSequence;
@@ -13952,14 +14802,14 @@ async function bidSheetPublishPreview(){
 function bidSheetCacheSave(payload){try{localStorage.setItem(BID_SHEET_CACHE_KEY,JSON.stringify(payload))}catch{}}
 function bidSheetCacheLoad(){try{const raw=localStorage.getItem(BID_SHEET_CACHE_KEY);return raw?JSON.parse(raw):null}catch{return null}}
 async function bidSheetLoad(force=false){
-  if(bidSheetState.loaded&&!force&&!bidSheetState.error){bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);return}
+  if(bidSheetState.loaded&&!force&&!bidSheetState.error){bidStagingLoad(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);return}
   const summary=document.getElementById('bidSheetSummary');if(summary){summary.classList.add('show');summary.textContent='Loading the latest published bid sheet...'}
   const client=getCloudClient();
-  if(!client){const cached=bidSheetCacheLoad();bidSheetState={snapshot:cached?.snapshot||null,rows:cached?.rows||[],loaded:true,cached:!!cached,error:cached?null:'Cloud connection unavailable.'};bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);return}
+  if(!client){const cached=bidSheetCacheLoad();bidSheetState={snapshot:cached?.snapshot||null,rows:cached?.rows||[],loaded:true,cached:!!cached,error:cached?null:'Cloud connection unavailable.'};bidStagingLoad(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);return}
   try{
     const {data,error}=await client.rpc('bid_sheet_current_data');if(error)throw error;const payload=data||{snapshot:null,rows:[]};bidSheetCacheSave(payload);bidSheetState={snapshot:payload.snapshot||null,rows:Array.isArray(payload.rows)?payload.rows:[],loaded:true,cached:false,error:null};
   }catch(err){console.warn('Bid Sheet Assistant load failed:',err);const cached=bidSheetCacheLoad();bidSheetState={snapshot:cached?.snapshot||null,rows:cached?.rows||[],loaded:true,cached:!!cached,error:cached?null:(err?.message||String(err))}}
-  bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',force);
+  bidStagingLoad(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',force);
 }
 function openBidSheetAssistant(){
   if(crewToolsTraineeRestricted()){alert(isRosterTraineeSafeguard()?'Bid Sheet Assistant is not available while your current roster assignment is an Engineer Trainee (ET) assignment.':'Bid Sheet Assistant is not available while Engineer Trainee Mode is active.');return}
@@ -13979,10 +14829,10 @@ function bidSheetRender(){
   const summary=document.getElementById('bidSheetSummary'),filters=document.getElementById('bidSheetFilters'),results=document.getElementById('bidSheetResults'),snapshot=bidSheetState.snapshot,rows=bidSheetState.rows;
   if(!summary||!filters||!results)return;
   summary.classList.add('show');
-  if(!snapshot){summary.innerHTML=`<strong>No published bid sheet is available.</strong><br>${bidSheetState.error?'The Bid Sheet database setup may still be pending.':'Check again after the next bulletin is posted.'}`;filters.classList.remove('show');results.classList.remove('show');bidSheetDraftRender();return}
+  if(!snapshot){summary.innerHTML=`<strong>No published bid sheet is available.</strong><br>${bidSheetState.error?'The Bid Sheet database setup may still be pending.':'Check again after the next bulletin is posted.'}`;filters.classList.remove('show');results.classList.remove('show');bidStagingRender();bidSheetDraftRender();return}
   const status=bidSheetStatus(snapshot),cached=bidSheetState.cached?' • saved offline copy':'';
   summary.innerHTML=`<strong>${escapeHTML(snapshot.bulletin_name||snapshot.bulletin_id||'Engineer Bid Sheet')}</strong><br>${escapeHTML(snapshot.bulletin_id||'')} • ${Number(snapshot.row_count||rows.length)} advertised assignment${Number(snapshot.row_count||rows.length)===1?'':'s'}<br>Posted ${escapeHTML(bidSheetDateLabel(snapshot.posted_date))} • Effective ${escapeHTML(bidSheetDateLabel(snapshot.effective_date))}<br><span class="bid-sheet-status-pill ${status.key}">${escapeHTML(status.label)}</span><div class="bid-sheet-source">Published ${escapeHTML(rosterDateDisplay(snapshot.uploaded_at))}${escapeHTML(cached)}</div>`;
-  bidSheetDraftRender();bidSheetTerminalOptions(rows);filters.classList.add('show');results.classList.add('show');bidSheetApplyFilters();
+  bidStagingRender();bidSheetDraftRender();bidSheetTerminalOptions(rows);filters.classList.add('show');results.classList.add('show');bidSheetApplyFilters();
 }
 function bidSheetTerminalOptions(rows){
   const select=document.getElementById('bidSheetTerminal');if(!select)return;const prev=select.value,values=[...new Set((rows||[]).filter(r=>bidSheetKind(r.assignment)!=='extra_list').map(r=>String(r.terminal||'').trim()).filter(Boolean))].sort();
@@ -14018,10 +14868,120 @@ function bidSheetOpenDetails(assignment){
   if(isYardCrewKey(key)||isYardReliefKey(key)){bidSheetOpenQuickLookup(key,date);return}
   const hit=crewBookLookupJobV8(key,date),modal=document.getElementById('jobCompareOfficialModal'),body=document.getElementById('jobCompareOfficialBody'),title=document.getElementById('jobCompareOfficialTitle'),sub=document.getElementById('jobCompareOfficialSubtitle');if(!modal||!body)return;if(title)title.textContent=`Job ${key} • Official Assignment`;if(sub)sub.textContent=`Bid sheet effective ${bidSheetDateLabel(date)}`;body.innerHTML=crewBookOfficialViewerBodyHTML(key,date,hit);modal.classList.add('open');
 }
+// The verified GO 203 fatigue chart is effective November 9, 2026; never
+// apply its assignments to a GO 202 effective-date bulletin. A read-only sample
+// preview is available for testing the controls before the first GO 203 bid.
+let bidSheetFatiguePreviewOpen=false;
+const BID_FATIGUE_SAMPLE_JOBS=Object.freeze(['7','13','39','48','113']);
+function bidSheetFatigueFilterActive(snapshot=bidSheetState.snapshot){
+  return /^\d{4}-\d{2}-\d{2}$/.test(String(snapshot?.effective_date||''))&&snapshot.effective_date>=GO203_FATIGUE_EFFECTIVE;
+}
+function bidSheetFatigueDate(effective,day){
+  const d=new Date(String(effective)+'T12:00:00');
+  if(Number.isNaN(d.getTime()))return '';
+  const mondayOffset=(8-d.getDay())%7;
+  d.setDate(d.getDate()+mondayOffset+Number(day));
+  return isoLocal(d);
+}
+function bidSheetFatigueDayType(assignment,effective,day){
+  const f=go203FatigueForAssignment(assignment,bidSheetFatigueDate(effective,day));
+  return f?.type||'';
+}
+function bidSheetFatigueMatches(assignment,effective,day,type){
+  if(!type)return true;
+  // All days + a selected Type means at least one *worked* day has that
+  // classification. A selected weekday always uses only its published type.
+  if(day===null||day===''||day===undefined)return [0,1,2,3,4,5,6].some(d=>bidSheetFatigueDayType(assignment,effective,d)===type);
+  return bidSheetFatigueDayType(assignment,effective,day)===type;
+}
+// Presentation preference only. Does not affect official fatigue data, History,
+// manual engineer overrides, or the Hours of Service informational message.
+// Independent of the Shift Card badge preference; defaults ON for discovery.
+let bidFatigueFilterDisplayFallback=null;
+function bidFatigueFiltersVisible(){
+  if(bidFatigueFilterDisplayFallback!==null)return bidFatigueFilterDisplayFallback;
+  try{return localStorage.getItem(BID_FATIGUE_FILTER_DISPLAY_KEY)!=='0'}catch{return true}
+}
+// Fresh sessions never inherit a stale fatigue filter from the browser.
+// Keep current selections during later re-renders in the same session.
+let bidFatigueInitialDefaultsApplied=false;
+function bidSheetInitializeFatigueDefaults(){
+  if(bidFatigueInitialDefaultsApplied)return;
+  bidFatigueInitialDefaultsApplied=true;
+  const day=document.getElementById('bidFatigueDay'),type=document.getElementById('bidFatigueType');
+  if(day)day.value='';
+  if(type)type.value='';
+}
+function syncBidFatigueDisplaySetting(){
+  const show=bidFatigueFiltersVisible();
+  const toggle=document.getElementById('bidFatigueDisplayToggle');
+  if(toggle)toggle.checked=show;
+  const group=document.getElementById('bidFatigueFilterGroup');
+  if(group)group.style.display=show?'':'none';
+}
+function setBidFatigueFiltersDisplay(enabled){
+  const show=!!enabled;
+  bidFatigueFilterDisplayFallback=show;
+  try{localStorage.setItem(BID_FATIGUE_FILTER_DISPLAY_KEY,show?'1':'0')}catch{}
+  // Always reset even on re-enabling; a hidden Type filter must never
+  // silently exclude advertised assignments when this preference changes.
+  const day=document.getElementById('bidFatigueDay');
+  const type=document.getElementById('bidFatigueType');
+  if(day)day.value='';
+  if(type)type.value='';
+  bidSheetFatiguePreviewOpen=false;
+  syncBidFatigueDisplaySetting();
+  bidSheetApplyFilters();
+}
+function bidSheetFatigueTogglePreview(){
+  if(!bidFatigueFiltersVisible())return;
+  bidSheetFatiguePreviewOpen=!bidSheetFatiguePreviewOpen;
+  bidSheetFatigueRenderContext();
+}
+function bidSheetFatigueRenderContext(){
+  syncBidFatigueDisplaySetting();
+  if(!bidFatigueFiltersVisible())return;
+  const active=bidSheetFatigueFilterActive(),status=document.getElementById('bidFatigueStatus'),area=document.getElementById('bidFatiguePreviewArea'),samples=document.getElementById('bidFatigueSamples'),button=document.getElementById('bidFatiguePreviewButton');
+  const dayValue=String(document.getElementById('bidFatigueDay')?.value??'');
+  const day=dayValue===''?null:Number(dayValue),type=String(document.getElementById('bidFatigueType')?.value||'');
+  const names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const dayLabel=day===null?'All days':names[day];
+  const filterDescription=!type?'No fatigue-based job filtering is active. All published fatigue types and relief days remain visible.'
+    :day===null?`Type ${type} on at least one working day (jobs may be another type on other days).`
+    :`Type ${type} on ${names[day]} only. Published relief days and unclassified jobs do not match.`;
+  if(status)status.textContent=active
+    ?`${filterDescription} GO 203 Passenger Crew Book Rev. 1, F-1–F-12; informational only.`
+    :`The current bid sheet is not effective under GO 203. Filters will not change these advertised GO 202 results. GO 203 examples below are for read-only testing only. ${filterDescription}`;
+  if(area)area.style.display=active?'none':'';
+  if(button){button.setAttribute('aria-expanded',String(bidSheetFatiguePreviewOpen&&!active));button.textContent=bidSheetFatiguePreviewOpen&&!active?'Hide GO 203 examples':'Preview GO 203 examples (read only)'}
+  if(samples){
+    samples.style.display=bidSheetFatiguePreviewOpen&&!active?'':'none';
+    if(bidSheetFatiguePreviewOpen&&!active){
+      const rows=BID_FATIGUE_SAMPLE_JOBS.map(job=>{
+        const daily=[0,1,2,3,4,5,6].map(d=>go203FatigueForAssignment(job,bidSheetFatigueDate(GO203_FATIGUE_EFFECTIVE,d))?.type||'');
+        const f=day===null?null:go203FatigueForAssignment(job,bidSheetFatigueDate(GO203_FATIGUE_EFFECTIVE,day));
+        const matches=!type||(day===null?daily.includes(type):f?.type===type);
+        const details=day===null
+          ?['1','2'].map(t=>{const days=daily.map((x,i)=>x===t?names[i]:null).filter(Boolean);return days.length?`Type ${t}: ${days.join(', ')}`:''}).filter(Boolean).join(' • ')||'Relief / not classified'
+          :f?'Type '+f.type:'Relief / not classified';
+        return {job,matches,details};
+      });
+      const shown=rows.filter(x=>x.matches);
+      samples.innerHTML=`<strong>GO 203 examples · ${dayLabel} · ${type?'Type '+type:'All types'}</strong><div class="bid-fatigue-source">Sample assignments only, NOT current bid advertisements. No Staging or My Bid Sheet actions.${day===null&&type?' A job matches if at least one working day has the selected type.':''}</div>`+(shown.length?shown.map(x=>`<div class="bid-fatigue-preview-item"><span>Job ${escapeHTML(x.job)}</span><strong>${escapeHTML(x.details)}</strong></div>`).join(''):'<div class="bid-fatigue-source">No sample assignments match this day and type.</div>');
+    }
+  }
+}
 function bidSheetApplyFilters(){
   const rows=bidSheetState.rows||[],numbered=!!document.getElementById('bidTypeNumbered')?.checked,extra=!!document.getElementById('bidTypeExtra')?.checked,yard=!!document.getElementById('bidTypeYard')?.checked,terminal=String(document.getElementById('bidSheetTerminal')?.value||''),search=String(document.getElementById('bidSheetSearch')?.value||'').trim().toUpperCase();
   const relief=trimDevCheckedValues('bidReliefChecks').map(Number),ipmas=trimDevCheckedValues('bidIpmaChecks'),effective=bidSheetState.snapshot?.effective_date||isoLocal(new Date());
+  const fatigueDayRaw=String(document.getElementById('bidFatigueDay')?.value??'');
+  const fatigueDay=fatigueDayRaw===''?null:Number(fatigueDayRaw),fatigueType=String(document.getElementById('bidFatigueType')?.value||'');
+  // Never apply a hidden fatigue filter, including when form values are
+  // retained by the browser after a reload or the Bid Sheet is refreshed.
+  const fatigueActive=bidFatigueFiltersVisible()&&bidSheetFatigueFilterActive();
+  bidSheetFatigueRenderContext();
   let shown=rows.filter(r=>{const kind=bidSheetKind(r.assignment);return kind==='numbered'?numbered:kind==='extra_list'?extra:yard});
+  if(fatigueActive&&fatigueType)shown=shown.filter(r=>bidSheetFatigueMatches(r.assignment,effective,fatigueDay,fatigueType));
   if(relief.length)shown=shown.filter(r=>{const key=normalizeCrewBookKey(r.assignment),days=bidSheetRestDays(r,key,effective);return relief.every(day=>days.includes(day))});
   if(ipmas.length)shown=shown.filter(r=>bidSheetKind(r.assignment)!=='extra_list'||ipmas.includes(trimDevIpma({assignment:r.assignment,assignment_type:'extra_list'})));
   if(terminal)shown=shown.filter(r=>bidSheetKind(r.assignment)==='extra_list'||String(r.terminal||'')===terminal);
@@ -14029,19 +14989,161 @@ function bidSheetApplyFilters(){
   const count=document.getElementById('bidSheetResultCount'),list=document.getElementById('bidSheetResultList');if(count)count.textContent=`${shown.length} assignment${shown.length===1?'':'s'} • bulletin order`;if(!list)return;if(!shown.length){list.innerHTML='<div class="trim-dev-empty">No advertised assignments match these filters.</div>';return}
   list.innerHTML=shown.map(r=>{
     const key=normalizeCrewBookKey(r.assignment),kind=bidSheetKind(r.assignment),extraJob=kind==='extra_list',relief=extraJob?null:jobCompareReliefCrewDefinition(key,effective),hit=extraJob?null:crewBookLookupJobV8(key,effective),known=!!relief||!!hit||extraJob,stats=extraJob?null:bidSheetWeekStats(r,key,effective);
-    const chips=[`Terminal: ${r.terminal||'—'}`];if(extraJob){chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);const ipma=trimDevIpma({assignment:r.assignment,assignment_type:'extra_list'});if(ipma)chips.push(`IPMA: ${ipma}`)}else{chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);if(stats)chips.push(`Weekly OT: ${fmtMinutes(stats.overtime)}`);if(stats){const pct=payScaleForDate(effective),mealValue=pct?otPay(stats.meals*20,pct):null;chips.push(`Paid meals: ${stats.meals}${mealValue!=null?` • est. ${money(mealValue)}`:''}`)}}
+    const chips=[`Terminal: ${r.terminal||'—'}`];if(fatigueActive&&fatigueType){if(fatigueDay===null)chips.push(`Fatigue: Type ${fatigueType} on ≥1 working day`);else{const f=bidSheetFatigueDayType(r.assignment,effective,fatigueDay);if(f)chips.push(`Fatigue ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][fatigueDay]}: Type ${f}`)}}if(extraJob){chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);const ipma=trimDevIpma({assignment:r.assignment,assignment_type:'extra_list'});if(ipma)chips.push(`IPMA: ${ipma}`)}else{chips.push(`Relief: ${bidSheetRestLabel(r,key,effective)}`);if(stats)chips.push(`Weekly OT: ${fmtMinutes(stats.overtime)}`);if(stats){const pct=payScaleForDate(effective),mealValue=pct?otPay(stats.meals*20,pct):null;chips.push(`Paid meals: ${stats.meals}${mealValue!=null?` • est. ${money(mealValue)}`:''}`)}}
     const chipHTML=chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}${c.startsWith('Weekly OT:')?' trim-ot':''}">${escapeHTML(c)}</span>`).join('');let detail='';
     if(relief){const coverage=trimDevReliefCoverageText(relief);if(coverage)detail=`<div class="trim-result-detail"><strong>Covers:</strong> ${escapeHTML(coverage)}</div>`;detail+=bidSheetScheduleHTML(stats)}else if(stats)detail=bidSheetScheduleHTML(stats);else if(!known)detail='<div class="bid-sheet-unmatched">This assignment is listed on the official bid sheet, but structured Crew Book details are not currently available in Engineer Pay Log.</div>';
     const typeLabel=extraJob?'Guaranteed Extra List':relief?'Relief Crew':kind==='numbered'?'Passenger Crew Book assignment':'Yard / other assignment',clickable=!extraJob&&known;
     const editable=bidSheetDraftEditable(),draftReady=bidSheetDraftState.loaded&&bidSheetDraftState.snapshotId===String(bidSheetState.snapshot?.id||''),added=draftReady&&bidSheetDraftHas(r.assignment),safeAssignment=escapeHTML(String(r.assignment));
     const detailAction=clickable?'<button class="btn" type="button" data-bid-assignment="'+safeAssignment+'" onclick="bidSheetOpenDetails(this.dataset.bidAssignment)">'+escapeHTML(isYardCrewKey(key)||isYardReliefKey(key)?'Open Crew Book Details':'View Official Assignment')+'</button>':'';
+    const stagingReady=bidStagingState.loaded&&bidStagingState.snapshotId===String(bidSheetState.snapshot?.id||'')&&bidStagingState.userId===String(activeWorkspaceUserId||''),staged=stagingReady&&bidStagingHas(r.assignment);
+    const stagingAction='<button class="btn bid-stage-add'+(staged?' added':'')+'" type="button" data-bid-assignment="'+safeAssignment+'" onclick="bidStagingAdd(this.dataset.bidAssignment)"'+(!stagingReady||staged||!bidSheetDraftEditable()?' disabled':'')+'>'+(stagingReady?(staged?'✓ Staged':bidSheetDraftEditable()?'Add to Staging':'Bid Closed / Read-Only'):'Loading Staging…')+'</button>';
     const phase=bidLifecyclePhase(),preBid=phase.key==='upcoming';const addAction='<button class="btn bid-add-choice'+(added?' added':'')+'" type="button" data-bid-assignment="'+safeAssignment+'" onclick="bidSheetDraftAdd(this.dataset.bidAssignment)"'+(!draftReady||added||!editable?' disabled':'')+'>'+(draftReady?(added?'✓ Added':editable?(preBid?'Add to Planned Bid List':'Add to My Bid Sheet'):'Bid Closed'):'Loading Draft…')+'</button>';
-    return '<div class="trim-result trim-static"><div class="trim-result-top"><div><div class="trim-result-job">'+escapeHTML(r.assignment)+'</div><div class="trim-result-type">'+escapeHTML(typeLabel)+'</div></div><div class="trim-result-rank bid-sheet-card-terminal">'+escapeHTML(r.terminal||'')+'</div></div><div class="trim-result-meta">'+chipHTML+'</div>'+detail+'<div class="trim-result-actions bid-sheet-card-actions">'+detailAction+addAction+'</div></div>';
+    return '<div class="trim-result trim-static"><div class="trim-result-top"><div><div class="trim-result-job">'+escapeHTML(r.assignment)+'</div><div class="trim-result-type">'+escapeHTML(typeLabel)+'</div></div><div class="trim-result-rank bid-sheet-card-terminal">'+escapeHTML(r.terminal||'')+'</div></div><div class="trim-result-meta">'+chipHTML+'</div>'+detail+'<div class="trim-result-actions bid-sheet-card-actions">'+detailAction+stagingAction+addAction+'</div></div>';
   }).join('');
 }
 function bidSheetClearFilters(){
-  for(const id of ['bidTypeNumbered','bidTypeExtra','bidTypeYard']){const el=document.getElementById(id);if(el)el.checked=true}for(const id of ['bidReliefChecks','bidIpmaChecks'])document.querySelectorAll(`#${id} input[type="checkbox"]`).forEach(x=>x.checked=false);const search=document.getElementById('bidSheetSearch');if(search)search.value='';const terminal=document.getElementById('bidSheetTerminal');if(terminal)terminal.value='';bidSheetApplyFilters();
+  for(const id of ['bidTypeNumbered','bidTypeExtra','bidTypeYard']){const el=document.getElementById(id);if(el)el.checked=true}for(const id of ['bidReliefChecks','bidIpmaChecks'])document.querySelectorAll(`#${id} input[type="checkbox"]`).forEach(x=>x.checked=false);const fatigueDay=document.getElementById('bidFatigueDay'),fatigueType=document.getElementById('bidFatigueType');if(fatigueDay)fatigueDay.value='';if(fatigueType)fatigueType.value='';const search=document.getElementById('bidSheetSearch');if(search)search.value='';const terminal=document.getElementById('bidSheetTerminal');if(terminal)terminal.value='';bidSheetApplyFilters();
 }
+
+// ---- Bid Sheet Staging Area (isolated, device-only GitHub test) ----
+const BID_STAGING_CACHE_KEY='epl_bid_sheet_staging_v1';
+let bidStagingState={snapshotId:'',userId:'',choices:[],loaded:false,updatedAt:null};
+let bidStagingDrag=null;
+function bidStagingResetMemory(){bidStagingState={snapshotId:'',userId:'',choices:[],loaded:false,updatedAt:null};bidStagingDrag=null}
+function bidStagingCacheMap(){
+  try{const x=JSON.parse(localStorage.getItem(BID_STAGING_CACHE_KEY)||'{}');return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}catch{return {}}
+}
+function bidStagingLoad(snapshotId){
+  const userId=String(activeWorkspaceUserId||'');snapshotId=String(snapshotId||'');
+  if(!userId||!snapshotId){bidStagingResetMemory();bidStagingRender();return}
+  if(bidStagingState.loaded&&bidStagingState.userId===userId&&bidStagingState.snapshotId===snapshotId){bidStagingRender();return}
+  const record=bidStagingCacheMap()[snapshotId];
+  bidStagingState={snapshotId,userId,choices:bidSheetDraftNormalizeChoices(record?.choices),loaded:true,updatedAt:record?.updatedAt||null};
+  bidStagingRender();
+}
+function bidStagingReady(){return bidStagingState.loaded&&bidStagingState.snapshotId===String(bidSheetState.snapshot?.id||'')&&bidStagingState.userId===String(activeWorkspaceUserId||'')}
+function bidStagingCanEdit(){return bidStagingReady()&&bidSheetDraftEditable()}
+function bidStagingHas(assignment){return bidStagingState.choices.some(a=>String(a).toUpperCase()===String(assignment||'').toUpperCase())}
+function bidStagingPersist(){
+  if(!bidStagingReady())return;
+  try{
+    const cache=bidStagingCacheMap();cache[bidStagingState.snapshotId]={choices:[...bidStagingState.choices],updatedAt:new Date().toISOString()};
+    localStorage.setItem(BID_STAGING_CACHE_KEY,JSON.stringify(cache));
+    bidStagingState.updatedAt=cache[bidStagingState.snapshotId].updatedAt;
+    accountSaveWorkspace(bidStagingState.userId);
+  }catch(error){console.warn('Staging save on device failed:',error);alert('Could not save staging on this device. Check browser storage before closing this page.')}
+}
+function bidStagingChanged(){bidStagingState.choices=bidSheetDraftNormalizeChoices(bidStagingState.choices);bidStagingPersist();bidStagingRender();bidSheetApplyFilters()}
+function bidStagingAdd(assignment){
+  if(!billingRequireWriteAccess())return;
+  if(!bidStagingCanEdit()){alert(bidSheetDraftLockedMessage());return}
+  const row=bidSheetDraftRow(assignment);if(!row||bidStagingHas(row.assignment))return;
+  if(bidStagingState.choices.length>=200){alert('Staging has reached the 200-job limit.');return}
+  const panel=document.getElementById('bidStagingArea'),h=Number(panel?.offsetHeight)||0,y=Math.max(0,Number(window.scrollY)||0);
+  bidStagingState.choices.push(String(row.assignment));bidStagingChanged();
+  if(h)requestAnimationFrame(()=>{const delta=(Number(panel?.offsetHeight)||0)-h;if(delta)window.scrollTo({top:Math.max(0,y+delta),behavior:'auto'})});
+}
+function bidStagingMove(from,direction){
+  if(!billingRequireWriteAccess())return;if(!bidStagingCanEdit())return;
+  from=Number(from);const to=from+Number(direction),choices=bidStagingState.choices;
+  if(!Number.isInteger(from)||!Number.isInteger(to)||from<0||to<0||from>=choices.length||to>=choices.length)return;
+  [choices[from],choices[to]]=[choices[to],choices[from]];bidStagingChanged();
+}
+function bidStagingReorder(from,to){
+  if(!bidStagingCanEdit())return;
+  const choices=bidStagingState.choices;from=Number(from);to=Number(to);
+  if(!Number.isInteger(from)||!Number.isInteger(to)||from<0||to<0||from>=choices.length||to>=choices.length||from===to)return;
+  choices.splice(to,0,choices.splice(from,1)[0]);bidStagingChanged();
+}
+function bidStagingRemove(index){
+  if(!billingRequireWriteAccess())return;if(!bidStagingCanEdit())return;
+  index=Number(index);if(!Number.isInteger(index)||index<0||index>=bidStagingState.choices.length)return;
+  const assignment=bidStagingState.choices[index];
+  if(!confirm(`Remove Job ${assignment} from Staging?\n\nYour My Bid Sheet will not be changed.`))return;
+  bidStagingState.choices.splice(index,1);bidStagingChanged();
+}
+function bidStagingInlineDetailsHTML(row,key,date,extra,relief,canView,safeAssignment){
+  // Reuse the exact Crew Book resolver, schedule grouping and published pay/meal
+  // logic already used by Bid Sheet advertised-job cards. No new payroll rules.
+  const stats=extra?null:bidSheetWeekStats(row,key,date);
+  const ipma=extra?trimDevIpma({assignment:row?.assignment,assignment_type:'extra_list'}):'';
+  const pulse=[];
+  if(stats){
+    pulse.push('<span class="bid-stage-chip ot">Weekly OT: '+escapeHTML(fmtMinutes(stats.overtime))+'</span>');
+    const ratePct=stats.meals?payScaleForDate(date):null,mealEstimate=ratePct?otPay(stats.meals*20,ratePct):null;
+    pulse.push('<span class="bid-stage-chip">Paid meals: '+escapeHTML(String(stats.meals))+(mealEstimate!=null?' · est. '+escapeHTML(money(mealEstimate)):'')+'</span>');
+  }else if(extra&&ipma)pulse.push('<span class="bid-stage-chip">IPMA: '+escapeHTML(ipma)+'</span>');
+  const coverage=relief?trimDevReliefCoverageText(relief):'';
+  const coverageHTML=coverage?'<div class="bid-stage-coverage"><strong>Covers:</strong> '+escapeHTML(coverage)+'</div>':'';
+  const schedules=stats?.groups?.length?'<div class="bid-stage-schedules">'+stats.groups.map(group=>trimDevScheduleCard(`${trimDevDayGroupLabel(group.days)}${group.covered?' • Job '+group.covered:''}`,group.schedule)).join('')+'</div>':'';
+  const fallback=extra?'Extra List assignments do not have a published daily operating schedule in the Crew Book. Your relief days and IPMA are shown above.':'A structured daily schedule is not available for this assignment in the currently selected Crew Book.';
+  const scheduleHTML=schedules||'<div class="bid-stage-empty-detail">'+escapeHTML(fallback)+'</div>';
+  const official=canView?'<div class="bid-stage-source"><button type="button" data-bid-assignment="'+safeAssignment+'" onclick="bidSheetOpenDetails(this.dataset.bidAssignment)">View original Crew Book assignment ›</button></div>':'';
+  return {pulse:pulse.length?'<div class="bid-stage-pulse">'+pulse.join('')+'</div>':'',body:coverageHTML+scheduleHTML+official};
+}
+function bidStagingRender(){
+  const panel=document.getElementById('bidStagingArea'),list=document.getElementById('bidStagingList');if(!panel||!list)return;
+  const snapshot=bidSheetState.snapshot,ready=bidStagingReady(),choices=ready?bidStagingState.choices:[],editable=bidStagingCanEdit();
+  // Keep each expanded card expanded when sorting, transferring or refreshing.
+  const expanded=new Set([...list.querySelectorAll('.bid-stage-details[open][data-stage-assignment]')].map(el=>String(el.dataset.stageAssignment||'').toUpperCase()));
+  panel.classList.toggle('show',!!snapshot);if(!snapshot)return;
+  const count=document.getElementById('bidStagingCount'),status=document.getElementById('bidStagingStatus'),transfer=document.getElementById('bidStagingTransferButton'),note=document.getElementById('bidStagingLifecycleNote');
+  if(count)count.textContent=`(${choices.length})`;
+  if(status)status.textContent=ready?'Device-only test':'Loading staging…';
+  if(transfer)transfer.disabled=!ready||!editable||!choices.length||!bidSheetDraftState.loaded||bidSheetDraftState.snapshotId!==String(snapshot.id);
+  if(note)note.textContent=!editable?(billingIsReadOnly()?'Read-only account: staging remains visible, but editing and transfer are disabled.':bidSheetDraftLockedMessage()):'Drag the dotted handle to reorder on phones or computers; ↑ / ↓ also work. Transferring keeps Staging intact and never submits an official bid.';
+  if(!ready){list.innerHTML='<div class="bid-draft-empty">Loading staging for this account and bulletin…</div>';return}
+  if(!choices.length){list.innerHTML='<div class="bid-draft-empty">Your shortlist is empty. Find a job in the advertised assignments below and tap “Add to Staging.”</div>';return}
+  const date=snapshot?.effective_date||isoLocal(new Date());
+  list.innerHTML=choices.map((assignment,i)=>{
+    const row=bidSheetDraftRow(assignment),key=normalizeCrewBookKey(assignment),kind=bidSheetKind(assignment),extra=kind==='extra_list',relief=extra?null:jobCompareReliefCrewDefinition(key,date),hit=extra?null:crewBookLookupJobV8(key,date),canView=!extra&&(!!relief||!!hit),safe=escapeHTML(assignment),rest=bidSheetRestLabel(row,key,date),type=relief?'Relief Crew':bidSheetDraftTypeLabel(row);
+    const info=bidStagingInlineDetailsHTML(row,key,date,extra,relief,canView,safe);
+    const open=expanded.has(String(assignment).toUpperCase())?' open':'';
+    const details='<details class="bid-stage-details" data-stage-assignment="'+safe+'"'+open+'><summary>Workdays, hours &amp; Crew Book details</summary><div class="bid-stage-detail-body">'+info.body+'</div></details>';
+    return '<div class="bid-staging-item" data-stage-index="'+i+'" role="listitem"><div class="bid-draft-priority" aria-label="Staging priority '+(i+1)+'">'+(i+1)+'</div><button class="bid-stage-grip" type="button" data-stage-grip="'+i+'" aria-label="Drag Job '+safe+' to reorder"'+(!editable?' disabled':'')+'>⠿</button><div class="bid-draft-info"><div class="bid-draft-assignment">'+safe+'</div><div class="bid-draft-meta">'+escapeHTML(type)+' • '+escapeHTML(row?.terminal||'Terminal not listed')+' • Relief '+escapeHTML(rest)+'</div></div><div class="bid-stage-insights">'+info.pulse+details+'</div><div class="bid-stage-control-row"><button class="btn" type="button" onclick="bidStagingMove('+i+',-1)" aria-label="Move Job '+safe+' up"'+(!editable||i===0?' disabled':'')+'>↑ Up</button><button class="btn" type="button" onclick="bidStagingMove('+i+',1)" aria-label="Move Job '+safe+' down"'+(!editable||i===choices.length-1?' disabled':'')+'>↓ Down</button><button class="btn danger" type="button" onclick="bidStagingRemove('+i+')" aria-label="Remove Job '+safe+' from staging"'+(!editable?' disabled':'')+'>Remove</button></div></div>';
+  }).join('');
+}
+function bidStagingTransfer(){
+  if(!billingRequireWriteAccess())return;
+  if(!bidStagingCanEdit()||!bidSheetDraftState.loaded||bidSheetDraftState.snapshotId!==bidStagingState.snapshotId||bidSheetDraftState.userId!==bidStagingState.userId){alert('Both lists must be ready for the same account and bulletin before transferring.');return}
+  const staged=[...bidStagingState.choices],original=[...bidSheetDraftState.choices];if(!staged.length)return;
+  const mode=document.getElementById('bidStagingTransferMode')?.value==='replace'?'replace':'append';
+  const keys=new Set(original.map(x=>x.toUpperCase())),fresh=staged.filter(x=>!keys.has(x.toUpperCase()));
+  const next=mode==='replace'?staged:[...original,...fresh];
+  if(next.length>200){alert('The transfer would exceed the 200-choice My Bid Sheet limit. Remove some existing choices first.');return}
+  if(mode==='append'&&!fresh.length){alert('Every staged job is already on My Bid Sheet. No changes made.');return}
+  const prompt=mode==='replace'?`REPLACE My Bid Sheet with these ${staged.length} staged choices in the shown order?\n\nThis will remove ${original.length} existing choice(s) from My Bid Sheet. Staging stays unchanged.\n\nThis cannot be undone automatically.`:`Append ${fresh.length} new staged job(s) after your ${original.length} existing My Bid Sheet choice(s)?\n\n${staged.length-fresh.length} duplicate(s) will be skipped. Staging stays unchanged.`;
+  if(!confirm(prompt))return;
+  bidSheetDraftState.choices=next;bidSheetDraftChanged();bidStagingRender();
+  alert(mode==='replace'?`My Bid Sheet now contains the ${next.length} staged choices in order (device-only test).`:`Added ${fresh.length} job(s) to My Bid Sheet. ${staged.length-fresh.length} duplicate(s) skipped (device-only test).`);
+}
+function bidStagingPointerDown(event){
+  const grip=event.target.closest?.('[data-stage-grip]');if(!grip||event.button!==0||!bidStagingCanEdit())return;
+  const from=Number(grip.dataset.stageGrip);if(!Number.isInteger(from))return;
+  bidStagingDrag={pointerId:event.pointerId,grip,from,to:from};grip.setPointerCapture?.(event.pointerId);event.preventDefault();
+}
+function bidStagingPointerMove(event){
+  if(!bidStagingDrag||event.pointerId!==bidStagingDrag.pointerId)return;
+  const item=document.elementFromPoint(event.clientX,event.clientY)?.closest?.('[data-stage-index]');
+  if(item&&document.getElementById('bidStagingList')?.contains(item))bidStagingDrag.to=Number(item.dataset.stageIndex);
+  document.querySelectorAll('#bidStagingList .drop-target').forEach(x=>x.classList.remove('drop-target'));
+  document.querySelector(`#bidStagingList [data-stage-index="${bidStagingDrag.to}"]`)?.classList.add('drop-target');
+  event.preventDefault();
+}
+function bidStagingPointerEnd(event,cancel=false){
+  if(!bidStagingDrag||event.pointerId!==bidStagingDrag.pointerId)return;
+  const drag=bidStagingDrag;bidStagingDrag=null;
+  document.querySelectorAll('#bidStagingList .drop-target').forEach(x=>x.classList.remove('drop-target'));
+  if(!cancel&&drag.from!==drag.to)bidStagingReorder(drag.from,drag.to);
+}
+function bidStagingBindDrag(){
+  const list=document.getElementById('bidStagingList');if(!list||list.dataset.pointerBound)return;
+  list.dataset.pointerBound='1';list.addEventListener('pointerdown',bidStagingPointerDown);list.addEventListener('pointermove',bidStagingPointerMove);
+  list.addEventListener('pointerup',event=>bidStagingPointerEnd(event));list.addEventListener('pointercancel',event=>bidStagingPointerEnd(event,true));
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bidStagingBindDrag,{once:true});else bidStagingBindDrag();
+// ---- End Bid Sheet Staging Area ----
+
 // ---- End Bid Sheet Assistant ----
 
 // ---- Piece 4: private Bulletin Awards importer + signed-in award match ----
@@ -14668,7 +15770,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 window.addEventListener('pageshow',()=>trimAssistantRefreshLiveIfVisible());
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=10.2-go202-rev12-job52-hotfix-20261025').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=11-test1-rc1-r416-20261110').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
@@ -14762,5 +15864,109 @@ function prepareWelcomeForMigratedUser(){
 })();
 </script>
 
+<!-- TEST R3: This overlay is additive; wheel inputs and existing pay calculations are unchanged. -->
+<div id="typedShiftTimeModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="typedShiftTimeTitle" onclick="if(event.target===this)closeTypedShiftTime()">
+  <div class="modal-card">
+    <div class="modal-head"><h2 id="typedShiftTimeTitle" style="margin:0;font-size:19px">Type a time</h2></div>
+    <div class="modal-body">
+      <div class="field full"><label for="typedShiftTimeInput">Time</label><input id="typedShiftTimeInput" class="typed-shift-input" type="text" inputmode="numeric" enterkeyhint="done" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="e.g. 630 or 1845" maxlength="5"></div>
+      <div class="typed-shift-choices" role="group" aria-label="Time format">
+        <button type="button" class="shift-time-choice" data-mode="AM" aria-pressed="false" onclick="chooseTypedShiftTimeMode('AM')">AM</button>
+        <button type="button" class="shift-time-choice" data-mode="PM" aria-pressed="false" onclick="chooseTypedShiftTimeMode('PM')">PM</button>
+        <button type="button" class="shift-time-choice" data-mode="24h" aria-pressed="false" onclick="chooseTypedShiftTimeMode('24h')">24-hour</button>
+      </div>
+      <div class="typed-shift-hint"><strong>630</strong> = 6:30 · <strong>1830</strong> = 18:30 (24-hour)</div>
+      <div id="typedShiftTimeError" class="typed-shift-error" role="alert" aria-live="polite"></div>
+    </div>
+    <div class="modal-foot" style="display:flex;gap:8px"><button type="button" class="btn" style="flex:1" onclick="closeTypedShiftTime()">Cancel</button><button type="button" class="btn primary" style="flex:2" onclick="applyTypedShiftTime()">Use Time</button></div>
+  </div>
+</div>
+
+<script id="typed-shift-time-r3">
+/* Test-only typed time entry: no persistence, billing, Crew Book, or Staging Area changes. */
+(function(){
+  'use strict';
+  const FIELD_IDS=['start','end','crewBookReleaseTime','otCompletionTime','twoClassesPullTime','twoClassesPromptTime'];
+  let targetInput=null,triggerButton=null,mode='';
+  function el(id){return document.getElementById(id)}
+  function error(msg){const node=el('typedShiftTimeError');if(node)node.textContent=msg||''}
+  function modeButtons(){document.querySelectorAll('#typedShiftTimeModal .shift-time-choice').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.mode===mode)))}
+  window.chooseTypedShiftTimeMode=function(next){mode=['AM','PM','24h'].includes(next)?next:'';modeButtons();error('')};
+  function existingTime(value){
+    const m=String(value||'').match(/^([01]\d|2[0-3]):([0-5]\d)$/);
+    if(!m)return {text:'',period:''};
+    const h=Number(m[1]);return {text:String(h%12||12)+m[2],period:h<12?'AM':'PM'};
+  }
+  // Pure function exposed solely for local regression testing; never alters saved shifts.
+  function parseTypedShiftTime(value, selectedMode){
+    const raw=String(value||'').trim();
+    if(!raw)return {error:'Enter a time before saving.'};
+    if(!/^\d{1,2}(?::[0-9]{2})?$/.test(raw)&&!/^\d{3,4}$/.test(raw))return {error:'Use 630, 6:30, or 1830. Minutes need two digits.'};
+    let hour,min;
+    if(raw.includes(':')){const parts=raw.split(':');hour=Number(parts[0]);min=Number(parts[1]);}
+    else if(raw.length<=2){hour=Number(raw);min=0;}
+    else{hour=Number(raw.slice(0,-2));min=Number(raw.slice(-2));}
+    if(!Number.isInteger(hour)||!Number.isInteger(min)||min>59)return {error:'Minutes must be between 00 and 59.'};
+    if(!['AM','PM','24h'].includes(selectedMode))return {error:'Choose AM, PM, or 24-hour to avoid an incorrect time.'};
+    if(selectedMode==='24h'){
+      if(hour>23)return {error:'For 24-hour time, hours must be 00 through 23.'};
+    }else{
+      if(hour<1||hour>12)return {error:'For AM/PM, enter an hour from 1 through 12.'};
+      hour=hour%12+(selectedMode==='PM'?12:0);
+    }
+    return {value:String(hour).padStart(2,'0')+':'+String(min).padStart(2,'0')};
+  }
+  window.__eplTestParseTypedShiftTimeR3=parseTypedShiftTime;
+  window.openTypedShiftTime=function(id,button){
+    const input=el(id),modal=el('typedShiftTimeModal');
+    if(!FIELD_IDS.includes(id)||!input||!modal||input.disabled||input.readOnly)return;
+    targetInput=input;triggerButton=button||null;
+    const parsed=existingTime(input.value);
+    el('typedShiftTimeInput').value=parsed.text;
+    mode=parsed.period;modeButtons();error('');
+    const label=input.closest('.field')?.querySelector('label')?.textContent.trim()||'Time';
+    el('typedShiftTimeTitle').textContent='Type '+label.toLowerCase();
+    modal.classList.add('open');
+    // iOS requires the explicit tap before it shows the keyboard reliably; field also remains tappable.
+    el('typedShiftTimeInput').focus();
+  };
+  window.closeTypedShiftTime=function(){
+    el('typedShiftTimeModal')?.classList.remove('open');
+    targetInput=null;mode='';error('');
+    try{triggerButton?.focus({preventScroll:true})}catch{}
+    triggerButton=null;
+  };
+  window.applyTypedShiftTime=function(){
+    const parsed=parseTypedShiftTime(el('typedShiftTimeInput')?.value,mode);
+    if(parsed.error){error(parsed.error);return false}
+    if(!targetInput||!targetInput.isConnected||targetInput.disabled||targetInput.readOnly){error('The original time field is no longer available. Close and try again.');return false}
+    const previous=targetInput.value;
+    targetInput.value=parsed.value;
+    if(targetInput.value!==parsed.value){targetInput.value=previous;error('Could not apply that time. Please use the wheel.');return false}
+    targetInput.dispatchEvent(new Event('input',{bubbles:true}));
+    targetInput.dispatchEvent(new Event('change',{bubbles:true}));
+    closeTypedShiftTime();
+    return true;
+  };
+  function addButtons(){
+    FIELD_IDS.forEach(id=>{
+      const input=el(id),field=input?.closest('.field');if(!input||!field||field.querySelector('.shift-time-type-button'))return;
+      const label=Array.from(field.children).find(node=>node.tagName==='LABEL');if(!label)return;
+      label.htmlFor=id;
+      const row=document.createElement('div');row.className='shift-time-label-row';
+      label.before(row);row.appendChild(label);
+      const button=document.createElement('button');button.type='button';button.className='shift-time-type-button';button.textContent='⌨ Type';
+      button.setAttribute('aria-label','Type '+label.textContent.trim().toLowerCase()+' using keyboard');
+      button.addEventListener('click',()=>openTypedShiftTime(id,button));row.appendChild(button);
+    });
+    el('typedShiftTimeInput')?.addEventListener('input',()=>error(''));
+    el('typedShiftTimeInput')?.addEventListener('keydown',event=>{
+      if(event.key==='Enter'){event.preventDefault();applyTypedShiftTime()}
+      if(event.key==='Escape'){event.preventDefault();closeTypedShiftTime()}
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addButtons,{once:true});else addButtons();
+})();
+</script>
 </body>
 </html>
