@@ -1,5 +1,4 @@
-EPL V11.0 TEST 2B — Context-aware Back to Trim Assistant
-Based on Test 2A. Upload index.html and service-worker.js to GitHub test.
-From Trim Assistant, select two eligible jobs and open Compare selected: a Back to Trim Assistant button should appear. Tap it: return without reloading the roster or resetting filters, selected jobs or rendered cards. Scroll restoration is best effort.
-Open Job Comparison normally from Dashboard/nav: the return button must not appear. Navigate away from a Trim-origin comparison and later open normally: no return button.
-Test normal comparison functionality, job swipe, OT, meals, official images, and Trim progressive rendering. All existing Test 1G fatigue behavior retained.
+EPL V11 Test 2C — Comparison Fatigue
+Upload index.html and service-worker.js to GitHub test.
+Adds published GO203 Type 1/2 to comparison card header and weekly schedule rows only for active resolved assignments. For relief crews uses the covered job, not relief crew ID. Applies Test 1G relief-day weekly fallback; no badges for blank entries, off days, holiday, or GO202. Respects existing fatigue display toggle. Does not change pay or comparison navigation.
+Check: normal Job Comparison and Trim-launched comparison; Job 99 Nov 9 Type 1; Job 113 Nov 9 Type 2 when a schedule exists; historical GO202 no badge; blank days no badge; toggle off/on (re-run comparison); swipe and pay calculations unchanged.

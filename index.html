@@ -1772,6 +1772,11 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     html[data-theme="dark"] .crewops-banner,html[data-theme="dark"] .crewops-summary.warn,html[data-theme="dark"] .crewops-warning{background:#2c2615;border-color:#6b5b27;color:#f2dfaa}html[data-theme="dark"] .crewops-summary.good{background:#123326;border-color:#286b4b}html[data-theme="dark"] .crewops-pill.cert{background:#123326;border-color:#286b4b;color:#a8e4c5}html[data-theme="dark"] .crewops-diff{background:#241d33;border-color:#655080;color:#d9c8ef}
     @media(max-width:620px){.crewops-status-grid{grid-template-columns:1fr}.crewops-meta-grid,.crewops-compare,.crewops-editor-grid{grid-template-columns:1fr}.crewops-add-row{grid-template-columns:1fr 1fr}.crewops-add-row .btn{grid-column:1/-1}.quick-lookup-earnings{grid-template-columns:1fr}.quick-lookup-earning+ .quick-lookup-earning{border-left:0;border-top:1px solid var(--line)}}
 </style>
+<style id="job-compare-fatigue-2c">
+.job-compare-fatigue-row{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-top:8px;font-size:12px;color:var(--muted,#64748b)}
+.job-compare-fatigue{display:inline-block;border:1px solid currentColor;border-radius:999px;padding:2px 8px;font-weight:700;color:inherit;font-size:11px}
+.job-compare-fatigue-row small{font-size:10px}
+</style>
 </head>
 <body>
 <div id="accountGate" class="account-gate" aria-live="polite">
@@ -6484,6 +6489,20 @@ function jobCompareResolveForDay(key,date){
   if(hit.job?.status==='abolished')return {hit,schedule:null,state:'abolished'};
   return {hit,schedule:hit.schedule||null,state:hit.schedule?'active':'off'};
 }
+// Fatigue classification in comparison uses the same published GO 203 lookup
+// and display preference as Dashboard/History. Only active assignments are labeled.
+function jobCompareFatigueForResolved(key,date,resolved){
+  if(!fatigueBadgesVisible()||!resolved?.schedule)return null;
+  const hit=resolved.hit;
+  if(!hit||hit.source==='holiday')return null;
+  const actualJob=hit.reliefCrew?hit.coveredKey:key;
+  return go203FatigueForAssignment(actualJob,date);
+}
+function jobCompareFatigueBadge(f){
+  if(!f)return '';
+  const title=`GO 203 ${f.page} • Job ${f.job}${f.reliefFallback?' • published weekly type (regular owner relief day)':''}`;
+  return `<span class="job-compare-fatigue" title="${escapeHTML(title)}">Type ${escapeHTML(f.type)}</span>`;
+}
 function jobCompareWeekRows(key,anchorDate){
   const base=new Date(anchorDate+'T12:00:00'),mon=new Date(base);mon.setDate(base.getDate()-((base.getDay()+6)%7));
   let rows='';
@@ -6499,8 +6518,9 @@ function jobCompareWeekRows(key,anchorDate){
     else if(hit?.source==='holiday'){
       if(hit.state==='off')main='Off / To Be Assigned'; else if(hit.state==='none')main='No published holiday assignment'; else main='Holiday assignment unavailable';
     }
+    const fatigue=jobCompareFatigueForResolved(key,date,resolved);
     const pay=x?jobComparePayForSchedule(key,date,x):null,payText=pay?.rateMissing?'Rate —':pay?money(pay.total):'—';
-    rows+=`<div class="job-compare-week-row${date===anchorDate?' selected':''}"><div class="job-compare-week-day">${escapeHTML(day.slice(0,3).toUpperCase())}</div><div class="job-compare-week-main"><strong>${escapeHTML(main)}</strong><span>${escapeHTML(sub||date)}</span></div><div class="job-compare-week-pay">${escapeHTML(payText)}</div></div>`;
+    rows+=`<div class="job-compare-week-row${date===anchorDate?' selected':''}"><div class="job-compare-week-day">${escapeHTML(day.slice(0,3).toUpperCase())}</div><div class="job-compare-week-main"><strong>${escapeHTML(main)}</strong><span>${escapeHTML(sub||date)}${fatigue?` • ${escapeHTML(`Type ${fatigue.type}`)}`:''}</span></div><div class="job-compare-week-pay">${escapeHTML(payText)}</div></div>`;
   }
   return rows;
 }
@@ -6530,8 +6550,9 @@ function jobCompareCardHTML(key,date){
   const payScenario=JOB_COMPARE_PAY_MODE==='relief'?'relief-day scenario — entire assignment at overtime':(ownerReliefDay?'regular-pay scenario — regular owner is off this day':'regular-pay scenario');
   const paySub=pay?.rateMissing?'A hire date is needed to determine your pay scale.':pay?`${pay.ratePct}% rate • ${payScenario}${hit?.source==='holiday'?' • holiday rules applied':''}${x.paysMeal?' • meal allowance included':''}`:(hit.reliefCrew?'Relief crew is off on this date.':'No active schedule to price for this date.');
   const source=jobCompareSourceLabel(hit),weekKey=hit.source==='holiday'&&hit.h?hit.h:reliefKey,official=crewBookOfficialComparisonLaunchHTML(key,date,hit);
+  const fatigue=jobCompareFatigueForResolved(key,date,resolved);
   return `<article class="job-compare-card">
-    <div class="job-compare-card-head"><div class="job-compare-card-titleline"><div class="job-compare-job">${escapeHTML(displayKey)}</div><div class="job-compare-source">${escapeHTML(source)}</div></div><div class="job-compare-terminal">${escapeHTML(terminal)}</div><div class="job-compare-date-state">${escapeHTML(dateState)}</div></div>
+    <div class="job-compare-card-head"><div class="job-compare-card-titleline"><div class="job-compare-job">${escapeHTML(displayKey)}</div><div class="job-compare-source">${escapeHTML(source)}</div></div><div class="job-compare-terminal">${escapeHTML(terminal)}</div><div class="job-compare-date-state">${escapeHTML(dateState)}</div>${fatigue?`<div class="job-compare-fatigue-row">Published fatigue: ${jobCompareFatigueBadge(fatigue)}${fatigue.reliefFallback?' <small>(weekly type on regular owner relief day)</small>':''}</div>`:''}</div>
     <div class="job-compare-money"><div class="label">Estimated Earnings If Worked</div><div class="amount">${escapeHTML(payText)}</div><div class="sub">${escapeHTML(paySub)}</div></div>
     <div class="job-compare-facts"><div class="job-compare-fact"><div class="label">Report</div><div class="value">${x?escapeHTML(jobCompareTimeLabel(x.start)):'—'}</div></div><div class="job-compare-fact"><div class="label">Release</div><div class="value">${x?escapeHTML(jobCompareTimeLabel(x.end)):'—'}</div></div><div class="job-compare-fact"><div class="label">Duration</div><div class="value">${x?escapeHTML(fmtMinutes(duration)):'—'}</div></div><div class="job-compare-fact"><div class="label">Meal</div><div class="value">${x?(x.paysMeal?'Pays Meal':'No'):'—'}</div></div></div>
     <div class="job-compare-relief"><strong>${escapeHTML(reliefLabel)}</strong><span>${escapeHTML(reliefText)}</span></div>
