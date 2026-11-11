@@ -3495,13 +3495,13 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     <form id="shiftForm" onsubmit="saveShift(event)">
       <input type="hidden" id="editId"><input type="hidden" id="shiftRuleMode" value="engineer">
       <div class="form-grid">
-        <div class="field full"><label id="dateFieldLabel">Date</label><input id="date" type="date" required onchange="handleShiftDateChange();communityRefreshShiftPanelFromForm()"></div>
+        <div class="field full"><label id="dateFieldLabel">Date</label><input id="date" type="date" required onchange="handleShiftDateChange();prefillUnscheduledOTCrewBookRelease();communityRefreshShiftPanelFromForm()"></div>
         <div id="classToggleWrap" class="field full trainee-only"><label class="check"><input id="classFlag" type="checkbox" onchange="toggleClassDay();calculatePreview()"> Class</label></div>
         <div id="myJobEntryControl" class="field full my-job-entry">
           <button class="btn small" type="button" onclick="applyMyJob()">Use My Job</button>
           <span id="myJobEntryLabel" class="my-job-label"></span>
         </div>
-        <div id="assignmentField" class="field full"><label>Assignment</label><input id="assignment" placeholder="e.g. 194" oninput="handleSecretUnpaidSick();calculatePreview();communityRefreshShiftPanelFromForm()"></div>
+        <div id="assignmentField" class="field full"><label>Assignment</label><input id="assignment" placeholder="e.g. 194" oninput="handleSecretUnpaidSick();prefillUnscheduledOTCrewBookRelease();calculatePreview();communityRefreshShiftPanelFromForm()"></div>
         <div id="locationField" class="field full"><label>Location</label><div id="terminalSelectWrap" class="terminal-select-wrap"><span id="terminalFieldDot" class="terminal-field-dot" aria-hidden="true"></span><select id="locationSelect" onchange="terminalSelectionChanged()" class="terminal-select" data-terminal-select="true"></select></div><div id="otherLocationWrap" style="display:none;margin-top:8px"><input id="locationOther" placeholder="Enter terminal / location" oninput="syncLocationValue()"></div><input id="location" type="hidden"></div>
         <div class="field"><label>Start time</label><input id="start" type="time" required onchange="calculatePreview()"></div>
         <div class="field"><label>Actual release time</label><input id="end" type="time" required onchange="calculatePreview()"></div>
@@ -7341,9 +7341,30 @@ function unscheduledOTMinutes(){
 function updateUnscheduledOTPreview(){
   const el=document.getElementById('unscheduledOTPreview');if(!el)return;const m=unscheduledOTMinutes();el.textContent=m==null?'—':fmtMinutes(m);
 }
+// Test 3A: prefill only the *scheduled Crew Book baseline*, never actual release.
+// Reuse the GO/date-aware comparison resolver; do not infer a time for an
+// inactive, unknown, abolished or unresolved assignment.
+function prefillUnscheduledOTCrewBookRelease(){
+  const field=document.getElementById('crewBookReleaseTime');
+  if(!field||field.value||!document.getElementById('unscheduledOTFlag')?.checked)return false;
+  const date=document.getElementById('date')?.value;
+  const raw=document.getElementById('assignment')?.value?.trim();
+  if(!date||!raw)return false;
+  try{
+    const key=normalizeCrewBookKey(raw);
+    if(!key)return false;
+    const resolved=jobCompareResolveForDay(key,date);
+    const schedule=resolved?.state==='active'?resolved.schedule:null;
+    if(!schedule?.start||!schedule?.end||!Number.isFinite(parseClock(schedule.end)))return false;
+    field.value=schedule.end;
+    return true;
+  }catch(_){return false;}
+}
 function toggleUnscheduledOT(){
   const on=!!document.getElementById('unscheduledOTFlag')?.checked,fields=document.getElementById('unscheduledOTFields');if(fields)fields.style.display=on?'block':'none';
-  if(!on){const t=document.getElementById('crewBookReleaseTime');if(t)t.value=''}updateUnscheduledOTPreview();
+  if(!on){const t=document.getElementById('crewBookReleaseTime');if(t)t.value=''}
+  else prefillUnscheduledOTCrewBookRelease();
+  updateUnscheduledOTPreview();
 }
 function applyEntryMode(){
   const trainee=document.getElementById('shiftRuleMode').value==='trainee',classDay=trainee&&document.getElementById('classFlag').checked,holidayOff=document.getElementById('specialShift').value==='Holiday - Not Worked',simpleDay=classDay||holidayOff;
