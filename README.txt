@@ -1,1 +1,2 @@
-EPL V11 Test 2C2: comparison fatigue fixes. Upload index.html and service-worker.js to GitHub Pages test repository. Retains Test 2B and 2C functionality. Test GO203 Job 99 on 2026-11-09, relief coverage, toggle, and historical GO202.
+EPL V11.0 Test 2D — Quick Job Lookup fatigue classification and global toggle wording.
+Upload index.html and service-worker.js to GitHub testing. Based on accepted Test 2C2.
