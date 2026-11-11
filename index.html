@@ -110,6 +110,7 @@
 .fatigue-informational-warning{border:1px solid #dfc36f;background:#fff7d6;color:#59460b;border-radius:10px;padding:10px;font-size:12px;line-height:1.45}
 html[data-theme="dark"] .fatigue-informational-warning{background:#413615;color:#ffe9a9;border-color:#826d37}
 .badge.fatigue{background:#e8edf5;color:#244467;border:1px solid #c9d7e7}
+.calendar-fatigue-type{display:inline-block;margin-left:5px;padding:1px 4px;border-radius:4px;background:rgba(255,255,255,.25);font-size:10px;font-weight:800;white-space:nowrap}
     .shift.timeslip{background:#fff9d8;border-color:#ddc04b;box-shadow:inset 4px 0 0 #ddc04b}
     .time-slip-check{background:#fff1a6!important;border-color:#dcc044!important;color:#5f4a00;font-weight:850}
     .time-slip-panel{display:none;margin-top:10px;padding:14px;border:1px solid #d9bb39;border-radius:14px;background:#fff8cf}
@@ -3981,7 +3982,9 @@ function renderHistoryCalendar(){
     const shown=entries.slice(0,3).map(s=>{
       const terminal=terminalForValue(s.location),color=(s.specialShift||isSecretUnpaidSickShift(s))?specialCalendarColor(s):(terminal?terminal.color:'#4D5357');
       const specialLike=!!s.specialShift||isSecretUnpaidSickShift(s),cls=(s.specialShift==='Vacation Week'?' vacation':(isSecretUnpaidSickShift(s)?' unpaid':''))+(specialLike?' special-event':'');
-      return `<button class="calendar-event${cls}" type="button" style="background:${color}" onclick="editShift('${s.id}')" title="${escapeHTML(calendarEventLabel(s))}">${escapeHTML(calendarEventLabel(s))}</button>`;
+      const fatigue=fatigueBadgesVisible()?go203FatigueForShift(s):null;
+      const fatigueText=fatigue?` · Type ${fatigue.type}${fatigue.manual?' (Manual)':''}`:'';
+      return `<button class="calendar-event${cls}" type="button" style="background:${color}" onclick="editShift('${s.id}')" title="${escapeHTML(calendarEventLabel(s)+fatigueText)}">${escapeHTML(calendarEventLabel(s))}${fatigue?`<span class="calendar-fatigue-type" aria-label="Fatigue Type ${fatigue.type}${fatigue.manual?', manually recorded':''}">T${fatigue.type}${fatigue.manual?'*':''}</span>`:''}</button>`;
     }).join('');
     const canAdd=!outside&&entries.length===0;
     const addAttrs=canAdd?` onclick="addShiftForCalendarDate('${ds}')" role="button" tabindex="0"`:'';
@@ -11680,7 +11683,11 @@ function refreshFatigueEditor(){
     f=go203FatigueForAssignment(assignment,date),special=document.getElementById('specialShift').value,
     trainee=document.getElementById('shiftRuleMode').value==='trainee';
   const available=!!f&&!special&&!trainee;
-  root.style.display=available?'block':'none';
+  const numericJob=String(assignment||'').trim().replace(/^0+(?=\d)/,'');
+  const publishedRow=GO203_PASSENGER_FATIGUE[numericJob];
+  const eligibleContext=!special&&!trainee&&/^\d{4}-\d{2}-\d{2}$/.test(date)&&date>=GO203_FATIGUE_EFFECTIVE&&/^\d{1,4}$/.test(numericJob);
+  const informativeNoType=eligibleContext&&!f;
+  root.style.display=(available||informativeNoType)?'block':'none';
   const key=available?`${f.job}|${f.date}`:'';
   if(root.dataset.fatigueKey!==key){
     document.getElementById('fatigueOverrideSelect').value='';
@@ -11688,7 +11695,22 @@ function refreshFatigueEditor(){
     root.dataset.fatigueKey=key;root.dataset.expanded='0';
     root.dataset.fatigueReferenceRelease='';root.dataset.fatigueReferenceJob='';root.dataset.fatigueReferenceDate='';
   }
-  if(!available)return;
+  if(!available){
+    if(informativeNoType){
+      document.getElementById('fatiguePublishedLabel').textContent='Published fatigue: Not assigned for this day';
+      document.getElementById('fatiguePublishedSource').textContent=publishedRow
+        ?`GO 203 Rev. 1 • Assignment ${numericJob} • ${date} • No Type 1 / Type 2 on this assignment day (relief or unclassified)`
+        :`No GO 203 passenger fatigue entry found for assignment ${numericJob} on ${date}.`;
+      document.getElementById('fatigueOverrideButton').style.display='none';
+      document.getElementById('fatigueOverridePanel').style.display='none';
+      document.getElementById('fatigueReferenceStatus').style.display='none';
+      document.getElementById('fatigueReleaseComparison').style.display='none';
+      document.getElementById('fatigueOvernightNotice').style.display='none';
+      document.getElementById('fatigueRecordedLabel').textContent='';
+    }
+    return;
+  }
+  document.getElementById('fatigueOverrideButton').style.display='';
   // A customer can enter a future dated shift without ever opening General Pick.
   // Request the certified future-book preview once rather than silently locking
   // the override indefinitely. The reference is still verified before use.
@@ -11770,6 +11792,7 @@ function setFatigueBadgeDisplay(enabled){
   syncFatigueBadgeDisplaySetting();
   renderDashboard();
   renderHistory();
+  if(getHistoryView()==='calendar')renderHistoryCalendar();
 }
 
 function shiftHTML(s,options={}){

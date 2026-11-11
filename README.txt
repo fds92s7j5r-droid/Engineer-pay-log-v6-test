@@ -1,1 +1,5 @@
-EPL V11 Test 1E: progressive rendering experiment. GitHub test only. Retains Test 1D schedule cache, uses batches of 8 cards and yields between batches. Filters restart rendering, with cancellation of stale batches. Diagnostic line above cards reports progress and total render time. Verify all 75 cards eventually appear, filters work mid-render, OT/meals/relief unchanged, and image opens on tap. This improves responsiveness but does NOT eliminate total calculation work. Compare time until first card and time until all cards rendered.
+EPL V11.0 TEST 1F — Fatigue Display Visibility
+
+Based on accepted Test 1E. Upload index.html and service-worker.js to GitHub test repo.
+Changes: calendar mode shows Type badges when toggle ON; Add/Edit Shift explains no published Type on nonclassified/relief days; toggle rerenders calendar. No fatigue classification, pay, override, or trim algorithms changed.
+Test: choose GO203 valid assignment/day (e.g. Job 99 on Monday 2026-11-09) and a nonclassified day (e.g. Job 113 on Monday 2026-11-09), verify Dashboard/History List/History Calendar and Add/Edit Shift, toggle OFF/ON. Verify GO202 historical shifts have no GO203 badge.
