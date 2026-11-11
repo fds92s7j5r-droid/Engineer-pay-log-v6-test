@@ -2018,6 +2018,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
   <section id="comparisonView" class="view">
     <div class="card">
       <div class="section-title"><h2>Job Comparison</h2><button class="btn small" type="button" onclick="showView('dashboard')">Dashboard</button></div>
+      <div id="jobCompareTrimReturn" hidden style="margin:0 0 12px"><button class="btn small" type="button" onclick="trimCompareBackToTrim()">← Back to Trim Assistant</button></div>
       <p class="job-compare-intro">Enter two or more Crew Book assignments. The selected date automatically chooses the correct Crew Book revision and day-specific schedule. Swipe across the result cards to compare jobs quickly on a phone. Open the official assignment view on any card to inspect the printed train movements.</p>
       <div class="job-compare-controls">
         <div class="field full"><label>Jobs to Compare</label><div id="jobCompareJobRows" class="job-compare-job-rows"></div><button class="btn small job-compare-add-job" type="button" onclick="addJobCompareRow()">+ Add another job</button></div>
@@ -15546,6 +15547,23 @@ function trimDevOpenCrewBook(assignment){
 
 // Test 2A: Trim Assistant selection feeds the existing swipeable Job Comparison.
 const trimCompareSelected=new Map();
+// The return affordance belongs only to comparisons launched from Trim Assistant.
+let trimCompareOpeningFromTrim=false;
+let trimCompareLaunchPending=false;
+let trimCompareSkipNextTrimReload=false;
+let trimCompareSavedScrollY=0;
+function trimCompareSyncReturnButton(){
+  const back=document.getElementById('jobCompareTrimReturn');
+  if(back)back.hidden=!trimCompareOpeningFromTrim;
+}
+function trimCompareBackToTrim(){
+  trimCompareSkipNextTrimReload=true;
+  trimCompareOpeningFromTrim=false;
+  trimCompareSyncReturnButton();
+  showView('trim');
+  requestAnimationFrame(()=>window.scrollTo(0,trimCompareSavedScrollY));
+}
+
 function trimCompareKey(value){return normalizeCrewBookKey(value)}
 function trimCompareEligible(row){return row?.assignment_type!=='extra_list' && !!trimCompareKey(row?.assignment)}
 function trimCompareUpdate(){
@@ -15568,7 +15586,9 @@ function trimCompareToggle(key){
 function trimCompareClear(){trimCompareSelected.clear();trimCompareUpdate()}
 function trimCompareOpen(){
   const keys=[...trimCompareSelected.keys()];if(keys.length<2)return;
-  showView('comparison');initJobComparison();
+  trimCompareSavedScrollY=window.scrollY;
+  trimCompareOpeningFromTrim=true;trimCompareLaunchPending=true;
+  showView('comparison');trimCompareLaunchPending=false;trimCompareSyncReturnButton();initJobComparison();
   const date=document.getElementById('jobCompareDate');if(date)date.value=trimDevCrewBookDate();
   const host=document.getElementById('jobCompareJobRows');if(host){host.innerHTML='';keys.forEach(key=>addJobCompareRow(key,false))}
   updateJobCompareRowControls();runJobComparison(true);
@@ -15641,7 +15661,7 @@ function trimDevClearFilters(){
 // ---- End developer roster PDF importer ----
 
 function renderAll(){developerApplyEnvironmentVisibility();crewOpsRender();void refreshRosterTraineeSafeguard();renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();trimDevUpdateModeAvailability();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI();void pushRenderSettings();void pushRenderDashboardPrompt()}
-function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){trimDevUpdateModeAvailability();void renderDashboardCommunityNotes();void bidLifecycleLoad(false);void pushRenderDashboardPrompt();setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison')initJobComparison();if(v==='lookup')initQuickJobLookup();if(v==='futurepick')renderFutureGeneralPickFoundation();if(v==='trim')void trimDevLoad(false);if(v==='bid')void bidSheetLoad(false);if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility();developerRenderTestState();crewOpsRender();void rosterCheckAdmin();void refreshRosterTraineeSafeguard()}renderMyJobUI()}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){trimDevUpdateModeAvailability();void renderDashboardCommunityNotes();void bidLifecycleLoad(false);void pushRenderDashboardPrompt();setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison'){if(!trimCompareLaunchPending)trimCompareOpeningFromTrim=false;trimCompareSyncReturnButton();initJobComparison();}else if(trimCompareOpeningFromTrim){trimCompareOpeningFromTrim=false;trimCompareSyncReturnButton();}if(v==='lookup')initQuickJobLookup();if(v==='futurepick')renderFutureGeneralPickFoundation();if(v==='trim'){if(trimCompareSkipNextTrimReload)trimCompareSkipNextTrimReload=false;else void trimDevLoad(false);}if(v==='bid')void bidSheetLoad(false);if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility();developerRenderTestState();crewOpsRender();void rosterCheckAdmin();void refreshRosterTraineeSafeguard()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
   return shifts.filter(s=>[

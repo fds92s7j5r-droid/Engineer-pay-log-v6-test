@@ -1,4 +1,5 @@
-EPL V11.0 Test 2A — Trim Assistant Add to Comparison
-Based on accepted Test 1G. Upload index.html and service-worker.js to GitHub test.
-Trim cards for regular passenger and yard/relief assignments now have Add to Comparison. Selection persists across Trim filters and progressive card rendering; selection is deduplicated by normalized job key. Clear selection and Compare selected (2+ jobs) are in the Trim results toolbar. Compare selected opens existing swipeable Job Comparison and populates selected jobs with Trim Crew Book week date. Existing Crew Book image click on passenger card remains. Extra List positions are intentionally excluded because current Job Comparison is for published Crew Book jobs/relief crews.
-Acceptance: add two jobs, dedupe/remove, filter while selected, open swipe comparison, swipe and inspect schedule/OT/meals, return to Trim with selection intact, Crew Book image opens, extra list has no unsupported Compare action, Test 1G fatigue and Test 1E progressive rendering still work.
+EPL V11.0 TEST 2B — Context-aware Back to Trim Assistant
+Based on Test 2A. Upload index.html and service-worker.js to GitHub test.
+From Trim Assistant, select two eligible jobs and open Compare selected: a Back to Trim Assistant button should appear. Tap it: return without reloading the roster or resetting filters, selected jobs or rendered cards. Scroll restoration is best effort.
+Open Job Comparison normally from Dashboard/nav: the return button must not appear. Navigate away from a Trim-origin comparison and later open normally: no return button.
+Test normal comparison functionality, job swipe, OT, meals, official images, and Trim progressive rendering. All existing Test 1G fatigue behavior retained.
