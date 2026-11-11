@@ -1,4 +1,4 @@
-const CACHE_NAME='epl-v11-test2c-comparison-fatigue-20261111';
+const CACHE_NAME='epl-v11-test2c2-fatigue-fix-20261111';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./GO203_ROAD_YARD_DRAFT_NOV9_2026.pdf'];
 
 self.addEventListener('install',e=>e.waitUntil(

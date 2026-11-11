@@ -6489,14 +6489,20 @@ function jobCompareResolveForDay(key,date){
   if(hit.job?.status==='abolished')return {hit,schedule:null,state:'abolished'};
   return {hit,schedule:hit.schedule||null,state:hit.schedule?'active':'off'};
 }
-// Fatigue classification in comparison uses the same published GO 203 lookup
-// and display preference as Dashboard/History. Only active assignments are labeled.
+// Fatigue belongs to the published assignment, not the regular owner or
+// presence of a resolved active schedule. GO/date restrictions are enforced
+// by the shared GO 203 fatigue lookup (Test 1G).
 function jobCompareFatigueForResolved(key,date,resolved){
-  if(!fatigueBadgesVisible()||!resolved?.schedule)return null;
-  const hit=resolved.hit;
-  if(!hit||hit.source==='holiday')return null;
-  const actualJob=hit.reliefCrew?hit.coveredKey:key;
-  return go203FatigueForAssignment(actualJob,date);
+  if(!fatigueBadgesVisible())return null;
+  const hit=resolved?.hit;
+  if(hit?.source==='holiday'||hit?.source==='yard'||hit?.source==='yard-relief')return null;
+  if(hit?.reliefCrew){
+    if(!hit.coveredKey)return null;
+    return go203FatigueForAssignment(hit.coveredKey,date);
+  }
+  // Direct assignment lookup must not depend on the comparison schedule
+  // resolver, which can mark a regular owner's relief day as off.
+  return go203FatigueForAssignment(key,date);
 }
 function jobCompareFatigueBadge(f){
   if(!f)return '';
@@ -11824,6 +11830,14 @@ function setFatigueBadgeDisplay(enabled){
   renderDashboard();
   renderHistory();
   if(getHistoryView()==='calendar')renderHistoryCalendar();
+  // Refresh existing comparison cards without resetting selections or swiping.
+  if(document.getElementById('jobCompareResults')?.querySelector('.job-compare-strip')){
+    const strip=document.querySelector('#jobCompareResults .job-compare-strip');
+    const active=strip?.scrollLeft||0;
+    runJobComparison(false);
+    const updated=document.querySelector('#jobCompareResults .job-compare-strip');
+    if(updated)updated.scrollLeft=active;
+  }
 }
 
 function shiftHTML(s,options={}){
