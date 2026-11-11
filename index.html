@@ -15362,7 +15362,7 @@ async function trimDevLoad(showStatus=true){
   if(summary){
     const d=document.createElement('div');
     d.style.cssText='margin-top:7px;font-size:10px;line-height:1.5;opacity:.85';
-    d.textContent='Test 1C diagnostic (ms): Crew Book '+(perfMarks.crewBookProductionLoad??'—')+' · Admin '+(perfMarks.rosterCheckAdmin??'—')+' · Roster '+(perfMarks.trimPublicData??'—')+' · Total '+(perfMarks.renderComplete??'—')+'. Times are cumulative from opening Trim Assistant.';
+    d.textContent='Test 1E data-ready (ms): Crew Book '+(perfMarks.crewBookProductionLoad??'—')+' · Admin '+(perfMarks.rosterCheckAdmin??'—')+' · Roster '+(perfMarks.trimPublicData??'—')+' · Total '+(perfMarks.renderComplete??'—')+'. Times are cumulative from opening Trim Assistant.';
     summary.appendChild(d);
   }
 }
@@ -15512,7 +15512,9 @@ function trimDevOpenCrewBook(assignment){
   const hit=crewBookLookupJobV8(key,trimDevCrewBookDate());if(title)title.textContent=`Job ${key} • Official Assignment`;if(sub){const trimRevision=crewBookPassengerRevision(trimDevCrewBookDate());sub.textContent=`${crewBookRevisionLabel(trimRevision)} • Effective ${trimRevision.productionEffective||'2026-09-08'}`;}body.innerHTML=crewBookOfficialViewerBodyHTML(key,trimDevCrewBookDate(),hit);modal.classList.add('open');
 }
 
+let trimDevRenderGeneration=0;
 function trimDevApplyFilters(){
+  const generation=++trimDevRenderGeneration;
   if(!trimDevState.rows.length||!trimDevState.rank)return;
   const regularOn=!!document.getElementById('trimTypeRegular')?.checked,extraOn=!!document.getElementById('trimTypeEx1')?.checked,otherOn=!!document.getElementById('trimTypeOther')?.checked;
   const relief=trimDevCheckedValues('trimReliefChecks').map(Number),ipmas=trimDevCheckedValues('trimIpmaChecks'),terminal=String(document.getElementById('trimTerminal')?.value||'');
@@ -15526,7 +15528,13 @@ function trimDevApplyFilters(){
   trimDevResolutionCache=new Map();
   const trimRenderStart=performance.now();
   let trimCardCount=0;
-  list.innerHTML=rows.map(r=>{
+  list.innerHTML='';
+  const batchSize=8;
+  let cursor=0;
+  const renderBatch=()=>{
+    if(generation!==trimDevRenderGeneration || !list.isConnected)return;
+    const chunk=rows.slice(cursor,cursor+batchSize);
+    const html=chunk.map(r=>{
     trimCardCount++;
     const extra=r.assignment_type==='extra_list',other=r.assignment_type==='other',ipma=trimDevIpma(r),meta=extra?null:trimDevRegularCrewBookMeta(r),reliefInfo=meta?.relief||null,job=meta?.job||null;
     const chips=[`Relief: ${trimDevRestLabel(r)}`];if(!extra){chips.push(trimDevWeeklyOtLabel(r));chips.push(trimDevWeeklyMealLabel(r))}if(!extra&&r.terminal)chips.push(`Terminal: ${r.terminal}`);if(extra&&ipma)chips.push(`IPMA: ${ipma}`);
@@ -15540,11 +15548,21 @@ function trimDevApplyFilters(){
     if(extra||other)return `<div class="trim-result trim-static"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chipHTML}</div>${other&&detail?detail:''}</div>`;
     const hint=reliefInfo?'Tap to view every covered job assignment':'Tap to view the official Crew Book assignment';
     return `<div class="trim-result" role="button" tabindex="0" data-trim-assignment="${escapeHTML(String(r.assignment))}" onclick="trimDevOpenCrewBook(this.dataset.trimAssignment)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();trimDevOpenCrewBook(this.dataset.trimAssignment)}"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chipHTML}</div>${detail}<div class="trim-result-hint">${escapeHTML(hint)}</div></div>`;
-  }).join('');
-  const trimRenderMs=Math.round(performance.now()-trimRenderStart);
-  console.info('[EPL Trim diagnostic] card creation + DOM insertion',trimRenderMs+'ms',trimCardCount+'cards');
+    }).join('');
+    list.insertAdjacentHTML('beforeend',html);
+    cursor+=chunk.length;
+    const elapsed=Math.round(performance.now()-trimRenderStart);
+    const diag=document.getElementById('trimProfilerCardTiming');
+    if(diag)diag.textContent='Test 1E: '+cursor+'/'+rows.length+' cards rendered · '+elapsed+' ms elapsed · '+trimDevResolutionCache.size+' unique day resolutions';
+    if(cursor<rows.length)setTimeout(renderBatch,0);
+    else {
+      console.info('[EPL Trim diagnostic] progressive render completed',elapsed+'ms',cursor+'cards');
+      if(diag)diag.textContent='Test 1E complete: '+cursor+' cards · '+elapsed+' ms total rendering · '+trimDevResolutionCache.size+' unique day resolutions';
+    }
+  };
   const existing=document.getElementById('trimProfilerCardTiming');if(existing)existing.remove();
-  const diag=document.createElement('div');diag.id='trimProfilerCardTiming';diag.style.cssText='font-size:11px;margin:8px 0;padding:8px;border:1px dashed currentColor';diag.textContent='Test 1D: '+trimCardCount+' cards; card creation + DOM insertion '+trimRenderMs+' ms; unique day resolutions '+trimDevResolutionCache.size+'. See Crew Book / Admin / Roster / Total above.';list.parentElement?.insertBefore(diag,list);
+  const diag=document.createElement('div');diag.id='trimProfilerCardTiming';diag.style.cssText='font-size:11px;margin:8px 0;padding:8px;border:1px dashed currentColor';diag.textContent='Test 1E: Preparing '+rows.length+' cards…';list.parentElement?.insertBefore(diag,list);
+  setTimeout(renderBatch,0);
 }
 function trimDevClearFilters(){
   const reg=document.getElementById('trimTypeRegular'),ex=document.getElementById('trimTypeEx1'),other=document.getElementById('trimTypeOther');if(reg)reg.checked=true;if(ex)ex.checked=true;if(other)other.checked=true;
