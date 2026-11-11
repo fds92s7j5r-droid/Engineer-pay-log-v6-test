@@ -15367,6 +15367,17 @@ async function trimDevLoad(showStatus=true){
   }
 }
 function trimDevCheckedValues(containerId){return [...document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)].map(x=>x.value)}
+// Test 1D: share identical GO/date schedule resolutions within one filter render.
+// Reset for each render so Crew Book revisions, date changes, and roster changes cannot
+// leave stale computed results in subsequent searches.
+let trimDevResolutionCache=new Map();
+function trimDevResolveForDayCached(key,date){
+  const cacheKey=String(key)+'|'+String(date);
+  if(trimDevResolutionCache.has(cacheKey))return trimDevResolutionCache.get(cacheKey);
+  const resolved=jobCompareResolveForDay(key,date);
+  trimDevResolutionCache.set(cacheKey,resolved);
+  return resolved;
+}
 function trimDevRegularCrewBookMeta(row){
   try{
     if(row.assignment_type!=='regular'&&row.assignment_type!=='other')return null;const key=String(row.assignment||'').trim(),rev=crewBookPassengerRevision(trimDevCrewBookDate()),relief=jobCompareReliefCrewDefinition(key,trimDevCrewBookDate());
@@ -15394,7 +15405,7 @@ function trimDevRegularScheduleGroups(row){
   const restDays=new Set(trimDevRestDays(row)),monday=new Date(`${trimDevWeekStart()}T12:00:00`),groups=[],bySignature=new Map();
   for(let i=0;i<7;i++){
     if(restDays.has(i+1))continue;
-    const d=new Date(monday);d.setDate(monday.getDate()+i);const date=isoLocal(d),resolved=jobCompareResolveForDay(key,date),schedule=resolved?.schedule||null;
+    const d=new Date(monday);d.setDate(monday.getDate()+i);const date=isoLocal(d),resolved=trimDevResolveForDayCached(key,date),schedule=resolved?.schedule||null;
     const signature=schedule?.start&&schedule?.end?`${schedule.start}|${schedule.end}|${schedule.paysMeal?'1':'0'}`:`off|${resolved?.state||'off'}`;
     let group=bySignature.get(signature);if(!group){group={days:[],schedule};bySignature.set(signature,group);groups.push(group)}group.days.push(i+1);
   }
@@ -15446,7 +15457,7 @@ function trimDevWeeklyOtMinutes(row){
     // A regular job owner does not work their two published relief days.
     if(!reliefInfo&&restDays.has(i+1))continue;
     const d=new Date(monday);d.setDate(monday.getDate()+i);const date=isoLocal(d);
-    const resolved=jobCompareResolveForDay(key,date),schedule=resolved?.schedule;
+    const resolved=trimDevResolveForDayCached(key,date),schedule=resolved?.schedule;
     if(!schedule?.start||!schedule?.end)continue;
     found=true;total+=Math.max(0,jobCompareDuration(schedule.start,schedule.end)-480);
   }
@@ -15463,7 +15474,7 @@ function trimDevWeeklyMealCount(row){
   let meals=0,found=false;const monday=new Date(`${trimDevWeekStart()}T12:00:00`);
   for(let i=0;i<7;i++){
     if(!reliefInfo&&restDays.has(i+1))continue;
-    const d=new Date(monday);d.setDate(monday.getDate()+i);const resolved=jobCompareResolveForDay(key,isoLocal(d)),schedule=resolved?.schedule;
+    const d=new Date(monday);d.setDate(monday.getDate()+i);const resolved=trimDevResolveForDayCached(key,isoLocal(d)),schedule=resolved?.schedule;
     if(!schedule?.start||!schedule?.end)continue;
     found=true;if(schedule.paysMeal)meals++;
   }
@@ -15512,6 +15523,7 @@ function trimDevApplyFilters(){
   if(terminal)rows=rows.filter(r=>r.assignment_type==='extra_list'||String(r.terminal||'')===terminal);
   const count=document.getElementById('trimDevResultCount'),list=document.getElementById('trimDevResultList');if(count)count.textContent=`${rows.length} match${rows.length===1?'':'es'} • sorted by seniority`;
   if(!list)return;if(!rows.length){list.innerHTML='<div class="trim-dev-empty">No ownable assignments match these filters.</div>';return}
+  trimDevResolutionCache=new Map();
   const trimRenderStart=performance.now();
   let trimCardCount=0;
   list.innerHTML=rows.map(r=>{
@@ -15532,7 +15544,7 @@ function trimDevApplyFilters(){
   const trimRenderMs=Math.round(performance.now()-trimRenderStart);
   console.info('[EPL Trim diagnostic] card creation + DOM insertion',trimRenderMs+'ms',trimCardCount+'cards');
   const existing=document.getElementById('trimProfilerCardTiming');if(existing)existing.remove();
-  const diag=document.createElement('div');diag.id='trimProfilerCardTiming';diag.style.cssText='font-size:11px;margin:8px 0;padding:8px;border:1px dashed currentColor';diag.textContent='Test 1C2: '+trimCardCount+' cards; card creation + DOM insertion '+trimRenderMs+' ms. See Crew Book / Admin / Roster / Total above.';list.parentElement?.insertBefore(diag,list);
+  const diag=document.createElement('div');diag.id='trimProfilerCardTiming';diag.style.cssText='font-size:11px;margin:8px 0;padding:8px;border:1px dashed currentColor';diag.textContent='Test 1D: '+trimCardCount+' cards; card creation + DOM insertion '+trimRenderMs+' ms; unique day resolutions '+trimDevResolutionCache.size+'. See Crew Book / Admin / Roster / Total above.';list.parentElement?.insertBefore(diag,list);
 }
 function trimDevClearFilters(){
   const reg=document.getElementById('trimTypeRegular'),ex=document.getElementById('trimTypeEx1'),other=document.getElementById('trimTypeOther');if(reg)reg.checked=true;if(ex)ex.checked=true;if(other)other.checked=true;
