@@ -1,1 +1,1 @@
-GitHub TEST ONLY. Upload index.html and service-worker.js. Open Trim Assistant and report first and second load cumulative times, plus Test 1C2 card count and card creation+DOM time. No production changes. No business logic changed.
+Corrected Test 1C2 profiler. Upload both files to GitHub TEST only. No production changes. Open Trim Assistant and report Test 1C2 card count and rendering milliseconds, plus cumulative Test 1C timings. This fixes misplaced instrumentation in the earlier Test 1C2 build.
