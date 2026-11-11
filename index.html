@@ -11546,7 +11546,7 @@ function historyDateParts(dateStr){
 
 // GO 203 Revision 1 Passenger Crew Book, fatigue classification pages F-1 through F-12.
 // Each value: [railroad weekly type, Monday-through-Sunday daily codes, source F page].
-// Daily codes are 1, 2, R (published relief day), or - (blank, not classified).
+// Daily codes are 1, 2, R (regular owner's relief day), or - (blank, not classified). R uses the published weekly type for worked assignments; blanks remain unclassified.
 // This lookup is descriptive only: it NEVER calculates rest-day eligibility or HOS compliance.
 const GO203_FATIGUE_EFFECTIVE = '2026-11-09';
 const GO203_FATIGUE_SOURCE = 'GO203 Passenger Rev1';
@@ -11561,9 +11561,15 @@ function go203FatigueForAssignment(assignment, date){
   const dt=new Date(iso+'T12:00:00');
   if(Number.isNaN(dt.getTime())||dt.getFullYear()!==Number(iso.slice(0,4))||dt.getMonth()+1!==Number(iso.slice(5,7))||dt.getDate()!==Number(iso.slice(8,10)))return null;
   const day=(dt.getDay()+6)%7; // ISO weekdays: Monday=0 ... Sunday=6.
-  const type=row[1].charAt(day);
-  if(type!=='1'&&type!=='2')return null; // R/blank never become Type 1 or 2.
-  return {type,weeklyType:row[0],job,date:iso,page:'F-'+row[2],source:GO203_FATIGUE_SOURCE};
+  const dailyCode=row[1].charAt(day);
+  // A relief code describes the regular owner's day off, not the fatigue
+  // classification of this assignment when another engineer works it.
+  // Use the published weekly classification only for R; never fill blanks.
+  const reliefFallback=dailyCode==='R';
+  const type=(dailyCode==='1'||dailyCode==='2')?dailyCode
+    :(reliefFallback&&(row[0]==='1'||row[0]==='2')?row[0]:null);
+  if(!type)return null;
+  return {type,weeklyType:row[0],dailyCode,reliefFallback,job,date:iso,page:'F-'+row[2],source:GO203_FATIGUE_SOURCE};
 }
 // Descriptive historical data only: never determines fatigue conversion or legal rest.
 // Crucially, never compare GO203 fatigue against the GO202 Crew Book resolver.
@@ -11699,7 +11705,7 @@ function refreshFatigueEditor(){
     if(informativeNoType){
       document.getElementById('fatiguePublishedLabel').textContent='Published fatigue: Not assigned for this day';
       document.getElementById('fatiguePublishedSource').textContent=publishedRow
-        ?`GO 203 Rev. 1 • Assignment ${numericJob} • ${date} • No Type 1 / Type 2 on this assignment day (relief or unclassified)`
+        ?`GO 203 Rev. 1 • Assignment ${numericJob} • ${date} • No published Type 1 / Type 2 for this assignment day`
         :`No GO 203 passenger fatigue entry found for assignment ${numericJob} on ${date}.`;
       document.getElementById('fatigueOverrideButton').style.display='none';
       document.getElementById('fatigueOverridePanel').style.display='none';
@@ -11728,7 +11734,7 @@ function refreshFatigueEditor(){
   }
   const v=select.value,manual=eligible&&(v==='1'||v==='2')&&v!==f.type;
   document.getElementById('fatiguePublishedLabel').textContent=`Published fatigue: Type ${f.type}`;
-  document.getElementById('fatiguePublishedSource').textContent=`GO 203 Rev. 1 • ${f.page} • Assignment ${f.job} • ${f.date}`;
+  document.getElementById('fatiguePublishedSource').textContent=`GO 203 Rev. 1 • ${f.page} • Assignment ${f.job} • ${f.date}${f.reliefFallback?' • Weekly type used (regular owner relief day)':''}`;
   const button=document.getElementById('fatigueOverrideButton');
   button.style.display=eligible?'inline-flex':'none';
   button.textContent=root.dataset.expanded==='1'?'Hide override':'Override for this shift';
