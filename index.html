@@ -793,6 +793,8 @@ html[data-theme="dark"] .fatigue-informational-warning{background:#413615;color:
 html[data-theme="dark"] .shift-time-type-button{background:#263c59;color:#e4efff;border-color:#49688d}
 html[data-theme="dark"] .shift-time-choice{background:#263c59;color:#e4efff;border-color:#49688d}
 html[data-theme="dark"] .shift-time-choice[aria-pressed="true"]{background:#5389cf;color:#07172b}
+
+.trim-compare-tray{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:10px 0;padding:10px;border:1px solid var(--border);border-radius:10px}.trim-compare-tray>span{flex:1;min-width:130px;font-weight:600}.trim-compare-action{margin-top:8px;display:flex;justify-content:flex-end}.trim-compare-action button{font-size:12px}.trim-compare-selected{outline:2px solid var(--accent);outline-offset:1px}
 </style>
   <script>
     try{
@@ -2453,6 +2455,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       </div>
       <div class="trim-dev-results" id="trimDevResults">
         <div class="trim-result-toolbar"><span id="trimDevResultCount"></span><button class="btn" type="button" onclick="trimDevClearFilters()">Clear Filters</button></div>
+        <div id="trimCompareTray" class="trim-compare-tray" aria-live="polite"><span id="trimCompareCount">0 selected for comparison</span><button class="btn small" type="button" onclick="trimCompareClear()">Clear selection</button><button class="btn small" id="trimCompareOpenBtn" type="button" onclick="trimCompareOpen()" disabled>Compare selected</button></div>
         <div class="trim-result-list" id="trimDevResultList"></div>
       </div>
     </div>
@@ -15541,6 +15544,40 @@ function trimDevOpenCrewBook(assignment){
   const hit=crewBookLookupJobV8(key,trimDevCrewBookDate());if(title)title.textContent=`Job ${key} • Official Assignment`;if(sub){const trimRevision=crewBookPassengerRevision(trimDevCrewBookDate());sub.textContent=`${crewBookRevisionLabel(trimRevision)} • Effective ${trimRevision.productionEffective||'2026-09-08'}`;}body.innerHTML=crewBookOfficialViewerBodyHTML(key,trimDevCrewBookDate(),hit);modal.classList.add('open');
 }
 
+// Test 2A: Trim Assistant selection feeds the existing swipeable Job Comparison.
+const trimCompareSelected=new Map();
+function trimCompareKey(value){return normalizeCrewBookKey(value)}
+function trimCompareEligible(row){return row?.assignment_type!=='extra_list' && !!trimCompareKey(row?.assignment)}
+function trimCompareUpdate(){
+  const count=document.getElementById('trimCompareCount'),open=document.getElementById('trimCompareOpenBtn');
+  if(count)count.textContent=`${trimCompareSelected.size} selected for comparison${trimCompareSelected.size===1?'':'s'}`;
+  if(open)open.disabled=trimCompareSelected.size<2;
+  document.querySelectorAll('[data-trim-compare-key]').forEach(btn=>{
+    const selected=trimCompareSelected.has(btn.dataset.trimCompareKey);
+    btn.textContent=selected?'✓ Added — Remove':'＋ Add to Comparison';
+    btn.setAttribute('aria-pressed',String(selected));
+    btn.closest('.trim-result')?.classList.toggle('trim-compare-selected',selected);
+  });
+}
+function trimCompareToggle(key){
+  key=trimCompareKey(key);if(!key)return;
+  if(trimCompareSelected.has(key))trimCompareSelected.delete(key);
+  else trimCompareSelected.set(key,true);
+  trimCompareUpdate();
+}
+function trimCompareClear(){trimCompareSelected.clear();trimCompareUpdate()}
+function trimCompareOpen(){
+  const keys=[...trimCompareSelected.keys()];if(keys.length<2)return;
+  showView('comparison');initJobComparison();
+  const date=document.getElementById('jobCompareDate');if(date)date.value=trimDevCrewBookDate();
+  const host=document.getElementById('jobCompareJobRows');if(host){host.innerHTML='';keys.forEach(key=>addJobCompareRow(key,false))}
+  updateJobCompareRowControls();runJobComparison(true);
+}
+function trimCompareActionHTML(row){
+  if(!trimCompareEligible(row))return '';
+  const key=trimCompareKey(row.assignment),selected=trimCompareSelected.has(key);
+  return `<div class="trim-compare-action"><button type="button" class="btn small" data-trim-compare-key="${escapeHTML(key)}" aria-pressed="${selected}" onclick="event.stopPropagation();trimCompareToggle(this.dataset.trimCompareKey)">${selected?'✓ Added — Remove':'＋ Add to Comparison'}</button></div>`;
+}
 let trimDevRenderGeneration=0;
 function trimDevApplyFilters(){
   const generation=++trimDevRenderGeneration;
@@ -15553,7 +15590,7 @@ function trimDevApplyFilters(){
   if(ipmas.length)rows=rows.filter(r=>r.assignment_type!=='extra_list'||ipmas.includes(trimDevIpma(r)));
   if(terminal)rows=rows.filter(r=>r.assignment_type==='extra_list'||String(r.terminal||'')===terminal);
   const count=document.getElementById('trimDevResultCount'),list=document.getElementById('trimDevResultList');if(count)count.textContent=`${rows.length} match${rows.length===1?'':'es'} • sorted by seniority`;
-  if(!list)return;if(!rows.length){list.innerHTML='<div class="trim-dev-empty">No ownable assignments match these filters.</div>';return}
+  trimCompareUpdate();if(!list)return;if(!rows.length){list.innerHTML='<div class="trim-dev-empty">No ownable assignments match these filters.</div>';return}
   trimDevResolutionCache=new Map();
   const trimRenderStart=performance.now();
   let trimCardCount=0;
@@ -15574,23 +15611,24 @@ function trimDevApplyFilters(){
     else if(!extra&&job){detail=trimDevRegularScheduleCardsHTML(r);if(!detail&&job.type==='extraCrewOnly'&&job.extra)detail=`<div class="trim-result-schedules">${trimDevScheduleCard('Published schedule',job.extra)}</div>`}
     const cardLabel=extra?'Guaranteed Extra List':other&&reliefInfo?.type==='yard'?'Yard Relief Crew':other?'Yard / other assignment':reliefInfo?'Relief Crew':'Passenger Crew Book assignment';
     const chipHTML=chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}${c.startsWith('Weekly OT:')?' trim-ot':''}">${escapeHTML(c)}</span>`).join('');
-    if(extra||other)return `<div class="trim-result trim-static"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chipHTML}</div>${other&&detail?detail:''}</div>`;
+    if(extra||other)return `<div class="trim-result trim-static"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chipHTML}</div>${other&&detail?detail:''}${trimCompareActionHTML(r)}</div>`;
     const hint=reliefInfo?'Tap to view every covered job assignment':'Tap to view the official Crew Book assignment';
-    return `<div class="trim-result" role="button" tabindex="0" data-trim-assignment="${escapeHTML(String(r.assignment))}" onclick="trimDevOpenCrewBook(this.dataset.trimAssignment)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();trimDevOpenCrewBook(this.dataset.trimAssignment)}"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chipHTML}</div>${detail}<div class="trim-result-hint">${escapeHTML(hint)}</div></div>`;
+    return `<div class="trim-result" role="button" tabindex="0" data-trim-assignment="${escapeHTML(String(r.assignment))}" onclick="trimDevOpenCrewBook(this.dataset.trimAssignment)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();trimDevOpenCrewBook(this.dataset.trimAssignment)}"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chipHTML}</div>${detail}<div class="trim-result-hint">${escapeHTML(hint)}</div>${trimCompareActionHTML(r)}</div>`;
     }).join('');
     list.insertAdjacentHTML('beforeend',html);
+    trimCompareUpdate();
     cursor+=chunk.length;
     const elapsed=Math.round(performance.now()-trimRenderStart);
     const diag=document.getElementById('trimProfilerCardTiming');
-    if(diag)diag.textContent='Test 1E: '+cursor+'/'+rows.length+' cards rendered · '+elapsed+' ms elapsed · '+trimDevResolutionCache.size+' unique day resolutions';
+    if(diag)diag.textContent='Test 2A: '+cursor+'/'+rows.length+' cards rendered · '+elapsed+' ms elapsed · '+trimDevResolutionCache.size+' unique day resolutions';
     if(cursor<rows.length)setTimeout(renderBatch,0);
     else {
       console.info('[EPL Trim diagnostic] progressive render completed',elapsed+'ms',cursor+'cards');
-      if(diag)diag.textContent='Test 1E complete: '+cursor+' cards · '+elapsed+' ms total rendering · '+trimDevResolutionCache.size+' unique day resolutions';
+      if(diag)diag.textContent='Test 2A complete: '+cursor+' cards · '+elapsed+' ms total rendering · '+trimDevResolutionCache.size+' unique day resolutions';
     }
   };
   const existing=document.getElementById('trimProfilerCardTiming');if(existing)existing.remove();
-  const diag=document.createElement('div');diag.id='trimProfilerCardTiming';diag.style.cssText='font-size:11px;margin:8px 0;padding:8px;border:1px dashed currentColor';diag.textContent='Test 1E: Preparing '+rows.length+' cards…';list.parentElement?.insertBefore(diag,list);
+  const diag=document.createElement('div');diag.id='trimProfilerCardTiming';diag.style.cssText='font-size:11px;margin:8px 0;padding:8px;border:1px dashed currentColor';diag.textContent='Test 2A: Preparing '+rows.length+' cards…';list.parentElement?.insertBefore(diag,list);
   setTimeout(renderBatch,0);
 }
 function trimDevClearFilters(){
