@@ -15427,17 +15427,12 @@ function trimDevTerminalOptions(rows){
   select.innerHTML='<option value="">All terminals</option>'+values.map(v=>`<option value="${escapeHTML(v)}">${escapeHTML(v)}</option>`).join('');if(values.includes(prev))select.value=prev;
 }
 async function trimDevLoad(showStatus=true){
-  const perfStart=performance.now();
-  const perfMarks={};
-  const perfMark=(label)=>{perfMarks[label]=Math.round(performance.now()-perfStart);console.info('[EPL Trim diagnostic]',label,perfMarks[label]+'ms')};
   trimDevInitControls();
   if(crewToolsTraineeRestricted()){trimDevUpdateModeAvailability();const summary=document.getElementById('trimDevSummary');if(summary){summary.classList.add('show');summary.innerHTML=isRosterTraineeSafeguard()?'<strong>Trim Assistant is disabled because your current roster assignment begins with ET.</strong>':'<strong>Trim Assistant is disabled in Engineer Trainee Mode.</strong>'}document.getElementById('trimDevFilters')?.classList.remove('show');document.getElementById('trimDevResults')?.classList.remove('show');return}
 
   const summary=document.getElementById('trimDevSummary'),filters=document.getElementById('trimDevFilters'),results=document.getElementById('trimDevResults'),note=document.getElementById('trimDevRankNote');
-  perfMark('start');
   await crewBookProductionLoad(true); // unchanged behavior; diagnostic only
-  perfMark('crewBookProductionLoad');
-  const admin=await rosterCheckAdmin();perfMark('rosterCheckAdmin');trimDevUpdateModeAvailability();
+  const admin=await rosterCheckAdmin();trimDevUpdateModeAvailability();
   const override=Math.round(Number(document.getElementById('trimTestRank')?.value||0));
 
   // Authorized maintainers can use a local rank override for GitHub testing without changing their profile.
@@ -15448,23 +15443,17 @@ async function trimDevLoad(showStatus=true){
     const below=rows.filter(r=>Number(r.rank)>rankInfo.rank&&(r.assignment_type==='regular'||r.assignment_type==='extra_list'||r.assignment_type==='other')),regular=below.filter(r=>r.assignment_type==='regular').length,extra=below.filter(r=>r.assignment_type==='extra_list').length,other=below.filter(r=>r.assignment_type==='other').length;
     if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Testing as roster rank ${rankInfo.rank}</strong> (local override)<br>${below.length} currently ownable assignments below this rank • ${regular} passenger • ${extra} Extra List • ${other} Yard / other<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(trimDevState.sourceGeneratedAt||trimDevState.uploadedAt))} • Crew Book: ${escapeHTML(crewBookRevisionLabel(crewBookPassengerRevision(trimDevCrewBookDate())))}</span>${trimRosterFreshnessHTML(trimDevState.sourceGeneratedAt||trimDevState.uploadedAt,trimDevState.uploadedAt)}`}
     if(note)note.textContent=rankInfo.profileRank?`Local override ${rankInfo.rank} is active. Profile would otherwise match rank ${rankInfo.profileRank}.`:`Local override ${rankInfo.rank} is active. It does not modify this account's profile.`;
-    trimDevTerminalOptions(below);filters?.classList.add('show');results?.classList.add('show');trimDevApplyFilters();perfMark('renderComplete');return;
+    trimDevTerminalOptions(below);filters?.classList.add('show');results?.classList.add('show');trimDevApplyFilters();return;
   }
 
-  const payload=await trimPublicData();perfMark('trimPublicData');
+  const payload=await trimPublicData();
   if(!payload){if(summary){summary.classList.add('show');summary.innerHTML='<strong>Could not load the latest roster.</strong><br>Please try again while online.'}filters?.classList.remove('show');results?.classList.remove('show');return}
   trimDevState.sourceGeneratedAt=payload.source_generated_at||null;trimDevState.uploadedAt=payload.uploaded_at||null;trimDevState.rowCount=Number(payload.row_count||0);
   if(!payload.match_found){trimDevState.rows=[];trimDevState.rank=null;trimDevState.source='profile';if(summary){summary.classList.add('show');const why=payload.reason==='missing_employee_number'?'Your profile does not have an IBM / employee number saved.':'Your saved IBM / employee number was not found in the latest roster.';summary.innerHTML=`<strong>We could not match you to the current roster.</strong><br>${escapeHTML(why)} Check <strong>Settings → Account → Edit Profile</strong>, then try again.<br><span style="font-size:9px">Latest roster: ${escapeHTML(rosterDateDisplay(payload.source_generated_at||payload.uploaded_at))}</span>${trimRosterFreshnessHTML(payload.source_generated_at||payload.uploaded_at,payload.uploaded_at)}`}filters?.classList.remove('show');results?.classList.remove('show');return}
   trimDevState.rows=Array.isArray(payload.jobs)?payload.jobs:[];trimDevState.rank=Number(payload.own_rank||0);trimDevState.source=trimPublicDataLastResult.source==='cache'?'cache':'profile';
   const regular=Number(payload.regular_count||0),extra=Number(payload.extra_list_count||0),other=Number(payload.other_count||0),below=regular+extra+other;
   if(summary){summary.classList.add('show');summary.innerHTML=`<strong>Roster rank ${trimDevState.rank}</strong><br>${below} currently ownable assignments below you • ${regular} passenger • ${extra} Extra List • ${other} Yard / other<br><span style="font-size:9px">Roster: ${escapeHTML(rosterDateDisplay(payload.source_generated_at||payload.uploaded_at))} • Crew Book: ${escapeHTML(crewBookRevisionLabel(crewBookPassengerRevision(trimDevCrewBookDate())))}</span>${trimRosterFreshnessHTML(payload.source_generated_at||payload.uploaded_at,payload.uploaded_at)}${trimAssistantCacheFallbackHTML()}`}
-  trimDevTerminalOptions(trimDevState.rows);perfMark('terminalOptions');filters?.classList.add('show');results?.classList.add('show');trimDevApplyFilters();perfMark('renderComplete');
-  if(summary){
-    const d=document.createElement('div');
-    d.style.cssText='margin-top:7px;font-size:10px;line-height:1.5;opacity:.85';
-    d.textContent='Test 1E data-ready (ms): Crew Book '+(perfMarks.crewBookProductionLoad??'—')+' · Admin '+(perfMarks.rosterCheckAdmin??'—')+' · Roster '+(perfMarks.trimPublicData??'—')+' · Total '+(perfMarks.renderComplete??'—')+'. Times are cumulative from opening Trim Assistant.';
-    summary.appendChild(d);
-  }
+  trimDevTerminalOptions(trimDevState.rows);filters?.classList.add('show');results?.classList.add('show');trimDevApplyFilters();
 }
 function trimDevCheckedValues(containerId){return [...document.querySelectorAll(`#${containerId} input[type="checkbox"]:checked`)].map(x=>x.value)}
 // Test 1D: share identical GO/date schedule resolutions within one filter render.
@@ -15679,8 +15668,6 @@ function trimDevApplyFilters(){
   const count=document.getElementById('trimDevResultCount'),list=document.getElementById('trimDevResultList');if(count)count.textContent=`${rows.length} match${rows.length===1?'':'es'} • sorted by seniority`;
   trimCompareUpdate();if(!list)return;if(!rows.length){list.innerHTML='<div class="trim-dev-empty">No ownable assignments match these filters.</div>';return}
   trimDevResolutionCache=new Map();
-  const trimRenderStart=performance.now();
-  let trimCardCount=0;
   list.innerHTML='';
   const batchSize=8;
   let cursor=0;
@@ -15688,7 +15675,6 @@ function trimDevApplyFilters(){
     if(generation!==trimDevRenderGeneration || !list.isConnected)return;
     const chunk=rows.slice(cursor,cursor+batchSize);
     const html=chunk.map(r=>{
-    trimCardCount++;
     const extra=r.assignment_type==='extra_list',other=r.assignment_type==='other',ipma=trimDevIpma(r),meta=extra?null:trimDevRegularCrewBookMeta(r),reliefInfo=meta?.relief||null,job=meta?.job||null;
     const chips=[`Relief: ${trimDevRestLabel(r)}`];if(!extra){chips.push(trimDevWeeklyOtLabel(r));chips.push(trimDevWeeklyMealLabel(r))}if(!extra&&r.terminal)chips.push(`Terminal: ${r.terminal}`);if(extra&&ipma)chips.push(`IPMA: ${ipma}`);
     let detail='';
@@ -15705,17 +15691,8 @@ function trimDevApplyFilters(){
     list.insertAdjacentHTML('beforeend',html);
     trimCompareUpdate();
     cursor+=chunk.length;
-    const elapsed=Math.round(performance.now()-trimRenderStart);
-    const diag=document.getElementById('trimProfilerCardTiming');
-    if(diag)diag.textContent='Test 2A: '+cursor+'/'+rows.length+' cards rendered · '+elapsed+' ms elapsed · '+trimDevResolutionCache.size+' unique day resolutions';
     if(cursor<rows.length)setTimeout(renderBatch,0);
-    else {
-      console.info('[EPL Trim diagnostic] progressive render completed',elapsed+'ms',cursor+'cards');
-      if(diag)diag.textContent='Test 2A complete: '+cursor+' cards · '+elapsed+' ms total rendering · '+trimDevResolutionCache.size+' unique day resolutions';
-    }
   };
-  const existing=document.getElementById('trimProfilerCardTiming');if(existing)existing.remove();
-  const diag=document.createElement('div');diag.id='trimProfilerCardTiming';diag.style.cssText='font-size:11px;margin:8px 0;padding:8px;border:1px dashed currentColor';diag.textContent='Test 2A: Preparing '+rows.length+' cards…';list.parentElement?.insertBefore(diag,list);
   setTimeout(renderBatch,0);
 }
 function trimDevClearFilters(){
