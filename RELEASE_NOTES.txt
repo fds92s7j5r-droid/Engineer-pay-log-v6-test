@@ -1,0 +1,1 @@
+V11.0 release candidate with user-approved announcement. Upload index.html and service-worker.js to GitHub TEST first. Keep production unchanged until validation.
