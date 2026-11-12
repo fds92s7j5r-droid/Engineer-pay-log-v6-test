@@ -3114,6 +3114,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
             <div><strong>Show Fatigue Classifications</strong><small>Display Type 1 / Type 2 throughout EPL, including Dashboard, History, Job Comparison, and Quick Job Lookup. This setting does not change saved classifications, pay calculations, or Hours of Service notices.</small></div>
             <label class="switch-label" aria-label="Show fatigue classifications throughout EPL"><input id="fatigueBadgeDisplayToggle" type="checkbox" onchange="setFatigueBadgeDisplay(this.checked)" checked><span class="switch-ui" aria-hidden="true"></span></label>
           </div>
+          <div class="mini" role="note" style="margin-top:10px;line-height:1.5"><strong>Important — Published Fatigue Types and Hours of Service:</strong> EPL reproduces fatigue classifications from the fatigue information at the back of the official LIRR Crew Book. The railroad has occasionally published incorrect fatigue types in the past. If the railroad publishes an incorrect fatigue type, EPL will display that incorrect type. <strong>EPL does not, and will NEVER, independently determine fatigue type.</strong> <strong>EPL must NEVER be used as an authority for Hours of Service (HOS) compliance or legal eligibility to work.</strong> Always verify fatigue classifications and HOS requirements through official railroad sources and procedures.</div>
           <div class="mini" style="margin-top:7px">This preview saves the display choice on this device; cross-device preference sync will be added separately.</div>
         </div>
 
@@ -15972,7 +15973,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 window.addEventListener('pageshow',()=>trimAssistantRefreshLiveIfVisible());
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=11-test3a-go203-loginfix-20261111').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=11-test4b-go203-auth-20261111').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
