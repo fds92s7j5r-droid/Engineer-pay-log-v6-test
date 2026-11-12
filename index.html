@@ -9926,6 +9926,7 @@ async function accountFinishPasswordRecovery(){
   accountUpdateIdentity(user);await accountLoadProfile(user,client);
   if(workspaceResult.migrated){void accountMarkMigrationComplete(user,client);if(getHireDate()&&typeof prepareWelcomeForMigratedUser==='function')prepareWelcomeForMigratedUser();}
   accountHideGate();
+  accountPostStartupLoads(true);
   setCloudTestStatus(`Signed in as ${user.email||'authenticated user'}. ${workspaceResult.switched?'Loaded this account\'s local workspace. ':workspaceResult.migrated?'Migrated this device\'s existing local data into this account. ':''}Checking for safe sync changes…`);
   setTimeout(()=>{void cloudRunAutomaticAccountSyncWithRetry('password-recovery')},350);
 }
@@ -9951,6 +9952,7 @@ async function cloudSignIn(){
   accountUpdateIdentity(data.user);await accountLoadProfile(data.user,client);
   if(workspaceResult.migrated){void accountMarkMigrationComplete(data.user,client);if(getHireDate()&&typeof prepareWelcomeForMigratedUser==='function')prepareWelcomeForMigratedUser();}
   accountHideGate();
+  accountPostStartupLoads(true);
   setCloudTestStatus(`Signed in as ${data.user?.email||email}. ${workspaceResult.switched?'Loaded this account\'s local workspace. ':workspaceResult.migrated?'Migrated this device\'s existing local data into this account. ':''}Restoring account and checking for safe sync changes…`);
   setTimeout(()=>{void cloudRunAutomaticAccountSyncWithRetry('sign-in')},350);
 }
@@ -9989,6 +9991,7 @@ async function accountCreateAccount(){
     accountUpdateIdentity(data.user);await accountLoadProfile(data.user,client);
     if(workspaceResult.migrated){void accountMarkMigrationComplete(data.user,client);if(getHireDate()&&typeof prepareWelcomeForMigratedUser==='function')prepareWelcomeForMigratedUser();}
     accountHideGate();
+    accountPostStartupLoads(true);
     setCloudTestStatus(`Account created and signed in as ${data.user.email||email}. ${workspaceResult.switched?'Loaded a clean account workspace. ':workspaceResult.migrated?'Migrated this device\'s existing local data into the new account. ':''}Checking for safe sync changes…`);
     setTimeout(()=>{void cloudRunAutomaticAccountSyncWithRetry('account-create')},350);
   }else{
@@ -15969,7 +15972,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 window.addEventListener('pageshow',()=>trimAssistantRefreshLiveIfVisible());
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=11-test1-rc1-r416-20261110').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=11-test3a-go203-loginfix-20261111').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
