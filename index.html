@@ -4139,8 +4139,12 @@ const TIME_SLIP_CLAIM_TYPES=[
   {key:'13',code:'13',card:'13 · Night Diff',label:'13 · Night differential above Crew Book earnings',title:'Night differential above the crew assignment book earnings'}
 ];
 const TIME_SLIP_CLAIM_TYPE_KEYS=new Set(TIME_SLIP_CLAIM_TYPES.map(x=>x.key));
-// GitHub R4: previews do not upload, sync, delete, or tombstone cloud shift rows.
-const EPL_CLAIM_R4_DEVICE_ONLY_TEST=true;
+// Production hotfix R1: enable normal shift/photo cloud operations ONLY on EPL's
+// HTTPS production origin. GitHub/local/preview builds remain device-only.
+const EPL_CLAIM_R4_DEVICE_ONLY_TEST = !(
+  window.location.protocol === 'https:' &&
+  /^(?:www\.)?engineerpaylog\.com$/i.test(window.location.hostname)
+);
 const TIME_SLIP_OUTCOMES=new Set(['Pending','Paid','Denied','Partially Paid','Partially Denied']);
 // A Wage Examiners denial is stated as time, not necessarily dollars. The paid amount is a separate fact.
 function parseTimeSlipDuration(raw){
@@ -7972,10 +7976,34 @@ async function compressTimeSlipPhoto(file){
     return {blob,width,height};
   }finally{URL.revokeObjectURL(url)}
 }
+// Photo Sync Hotfix R2: the cloud shift reference must be confirmed BEFORE any
+// potentially quota-limited iOS localStorage write. Generic cloudMirrorShift()
+// only reports failures through status messages, so photo attachment requires a
+// checked write response here.
+let timeSlipPhotoUploadInFlight=false;
+async function cloudCommitTimeSlipPhotoReference(client,user,shift,side,path){
+  if(!accountGuardWorkspace(user))throw new Error('The signed-in account does not match this device workspace.');
+  const now=new Date().toISOString();
+  const {data,error}=await client.from('shifts_v2').upsert({
+    shift_id:String(shift.id),shift_date:shift.date,data:shift,updated_at:now
+  },{onConflict:'user_id,shift_id'}).select('updated_at,data');
+  if(error)throw new Error(`Photo uploaded but its shift record was not saved: ${error.message}`);
+  const row=Array.isArray(data)?data[0]:null;
+  if(!row||row.data?.timeSlipPhotos?.[side]?.path!==path){
+    throw new Error('Photo uploaded, but the cloud could not confirm its attachment to the shift.');
+  }
+  try{await cloudSetBaselineEntry(user,shift,row.updated_at||now)}catch(err){
+    console.warn('Photo saved to cloud, but sync baseline cache could not update:',err);
+  }
+}
 async function uploadTimeSlipPhoto(side,file){
   if(EPL_CLAIM_R4_DEVICE_ONLY_TEST){setTimeSlipPhotoStatus('Photo uploads disabled in this testing build.',true);return}
+  if(timeSlipPhotoUploadInFlight){setTimeSlipPhotoStatus('A photo is already being saved. Please finish that upload first.');return}
   const s=currentTimeSlipPhotoShift();if(!s){setTimeSlipPhotoStatus('Save the shift before adding a photo.',true);return}
+  if(side!=='front'&&side!=='back')return;
+  timeSlipPhotoUploadInFlight=true;
   setTimeSlipPhotoStatus(`Preparing ${side} photo…`);
+  let storageUploaded=false,referenceCommitted=false,uploadedPath='';
   try{
     const client=getCloudClient();if(!client)throw new Error('Cloud connection is unavailable.');
     const user=await cloudCurrentUser(client);if(!user)throw new Error('Sign in before adding Time Slip photos.');
@@ -7983,21 +8011,46 @@ async function uploadTimeSlipPhoto(side,file){
     const prepared=await compressTimeSlipPhoto(file);
     if(prepared.blob.size>12582912)throw new Error('The prepared photo is still too large to upload. Try taking another photo closer to the slip.');
     const oldMeta=s.timeSlipPhotos?.[side]||null;
-    const path=`${user.id}/${safeStoragePathPart(s.id)}/${side}-${Date.now()}.jpg`;
-    setTimeSlipPhotoStatus(`Saving ${side} photo securely…`);
-    const {error}=await client.storage.from(TIME_SLIP_PHOTO_BUCKET).upload(path,prepared.blob,{contentType:'image/jpeg',cacheControl:'3600',upsert:false});
+    uploadedPath=`${user.id}/${safeStoragePathPart(s.id)}/${side}-${Date.now()}.jpg`;
+    setTimeSlipPhotoStatus(`Uploading ${side} photo securely…`);
+    const {error}=await client.storage.from(TIME_SLIP_PHOTO_BUCKET).upload(uploadedPath,prepared.blob,{contentType:'image/jpeg',cacheControl:'3600',upsert:false});
     if(error)throw error;
-    if(!s.timeSlipPhotos||typeof s.timeSlipPhotos!=='object')s.timeSlipPhotos={};
-    s.timeSlipPhotos[side]={path,uploadedAt:new Date().toISOString(),width:prepared.width,height:prepared.height,bytes:prepared.blob.size};
-    persist();await cloudMirrorShift(s);
-    if(oldMeta?.path&&oldMeta.path!==path){
-      const removal=await client.storage.from(TIME_SLIP_PHOTO_BUCKET).remove([oldMeta.path]);
-      if(removal.error)console.warn('Old Time Slip photo cleanup failed:',removal.error);
+    storageUploaded=true;
+    const nextPhotos={...(s.timeSlipPhotos&&typeof s.timeSlipPhotos==='object'?s.timeSlipPhotos:{})};
+    nextPhotos[side]={path:uploadedPath,uploadedAt:new Date().toISOString(),width:prepared.width,height:prepared.height,bytes:prepared.blob.size};
+    const nextShift={...s,timeSlipPhotos:nextPhotos};
+    setTimeSlipPhotoStatus(`Linking ${side} photo to your cloud shift…`);
+    await cloudCommitTimeSlipPhotoReference(client,user,nextShift,side,uploadedPath);
+    referenceCommitted=true;
+    // Cloud is confirmed. Preserve the reference in memory even if Safari's
+    // localStorage is full. Never report the upload as failed in that case.
+    s.timeSlipPhotos=nextPhotos;
+    let localCacheSaved=true;
+    try{persist()}catch(cacheErr){
+      localCacheSaved=false;
+      console.warn('Time Slip photo was saved to cloud but device cache is full:',cacheErr);
     }
-    setTimeSlipPhotoStatus('Photo saved securely to your account.');
-    await renderTimeSlipPhotoSection();renderTimeSlipCenter();renderHistory();
-  }catch(err){console.warn('Time Slip photo upload failed:',err);setTimeSlipPhotoStatus(err?.message||'Photo upload failed.',true);alert(`Time Slip photo could not be saved: ${err?.message||err}`)}
+    if(oldMeta?.path&&oldMeta.path!==uploadedPath){
+      try{
+        const removal=await client.storage.from(TIME_SLIP_PHOTO_BUCKET).remove([oldMeta.path]);
+        if(removal.error)console.warn('Old Time Slip photo cleanup failed:',removal.error);
+      }catch(cleanupErr){console.warn('Old Time Slip photo cleanup unavailable:',cleanupErr)}
+    }
+    try{await renderTimeSlipPhotoSection();renderTimeSlipCenter();renderHistory()}catch(renderErr){
+      console.warn('Photo saved to cloud but preview refresh failed:',renderErr);
+    }
+    if(localCacheSaved)setTimeSlipPhotoStatus('Photo saved securely to your account.');
+    else setTimeSlipPhotoStatus('Photo saved to your cloud account, but this device is out of local storage. Your offline copy may not show it after restarting; please contact support before clearing app data.',true);
+  }catch(err){
+    console.warn('Time Slip photo upload failed:',err);
+    const msg=storageUploaded&&!referenceCommitted
+      ?`The image reached cloud storage but could not be linked to your shift. Please contact support instead of retrying. ${err?.message||err}`
+      :(err?.message||String(err)||'Photo upload failed.');
+    setTimeSlipPhotoStatus(msg,true);
+    alert(`Time Slip photo could not be saved: ${msg}`);
+  }finally{timeSlipPhotoUploadInFlight=false}
 }
+
 async function deleteTimeSlipPhoto(side){
   if(EPL_CLAIM_R4_DEVICE_ONLY_TEST){alert('Photo deletion is disabled in this testing build.');return}
   if(!billingRequireWriteAccess())return;
