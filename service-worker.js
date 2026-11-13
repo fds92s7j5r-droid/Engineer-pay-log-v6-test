@@ -1,4 +1,4 @@
-const CACHE_NAME='epl-v11-photo-sync-hotfix-r2-20261113';
+const CACHE_NAME='epl-v11-photo-sync-storage-r3-20261113';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./GO203_ROAD_YARD_DRAFT_NOV9_2026.pdf'];
 
 self.addEventListener('install',e=>e.waitUntil(

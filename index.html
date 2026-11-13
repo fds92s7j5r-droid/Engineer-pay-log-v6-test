@@ -3627,13 +3627,13 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <div id="timeSlipWrap" class="time-slip-panel">
             <div class="subhead">Time Slip Tracking</div>
             <div class="time-slip-grid">
-              <div class="field full"><label>Date Written</label><input id="timeSlipWritten" type="date" onchange="renderTimeSlipDeadlinePreview()"></div>
+              <div class="field full"><label>Date Written</label><input id="timeSlipWritten" type="date" onchange="renderTimeSlipDeadlinePreview();calculatePreview()"></div>
               <div id="timeSlipDeadlineInfo" class="time-slip-deadline-info field full" style="display:none"></div>
               <div class="field full"><label>Date Submitted</label><input id="timeSlipSubmitted" type="date" onchange="handleTimeSlipSubmittedChange()"></div>
               <div class="field full"><label>Date Confirmed Received</label><input id="timeSlipConfirmedReceived" type="date" onchange="handleTimeSlipConfirmedReceivedChange()"><div class="time-slip-status-hint">Optional. Once Wage Examiners confirms the slip is on file, recording the date silences follow-up reminders while the slip remains Pending.</div></div>
-              <div class="field full"><label>Location Submitted</label><input id="timeSlipLocation" placeholder="e.g. Jamaica"></div>
+              <div class="field full"><label>Location Submitted</label><input id="timeSlipLocation" placeholder="e.g. Jamaica" oninput="calculatePreview()" onchange="calculatePreview()"></div>
               <div class="field full"><label>Overall status (fallback)</label><select id="timeSlipStatus" onchange="handleTimeSlipStatusChange()"><option value="Pending">Pending</option><option value="Paid">Paid</option><option value="Denied">Denied</option></select><div id="timeSlipStatusHint" class="time-slip-status-hint"></div></div>
-              <div class="field full"><label>Date Paid / Denied</label><input id="timeSlipResolved" type="date"></div>
+              <div class="field full"><label>Date Paid / Denied</label><input id="timeSlipResolved" type="date" onchange="calculatePreview()"></div>
             </div>
             <div class="time-slip-claim-code-panel">
               <div class="subhead">Claim Type / Code</div>
@@ -7992,9 +7992,9 @@ async function cloudCommitTimeSlipPhotoReference(client,user,shift,side,path){
   if(!row||row.data?.timeSlipPhotos?.[side]?.path!==path){
     throw new Error('Photo uploaded, but the cloud could not confirm its attachment to the shift.');
   }
-  try{await cloudSetBaselineEntry(user,shift,row.updated_at||now)}catch(err){
-    console.warn('Photo saved to cloud, but sync baseline cache could not update:',err);
-  }
+  // The caller updates the local sync baseline only AFTER the local shift
+  // cache succeeds. A cloud-only photo must not advance the device baseline.
+  return row.updated_at||now;
 }
 async function uploadTimeSlipPhoto(side,file){
   if(EPL_CLAIM_R4_DEVICE_ONLY_TEST){setTimeSlipPhotoStatus('Photo uploads disabled in this testing build.',true);return}
@@ -8020,13 +8020,18 @@ async function uploadTimeSlipPhoto(side,file){
     nextPhotos[side]={path:uploadedPath,uploadedAt:new Date().toISOString(),width:prepared.width,height:prepared.height,bytes:prepared.blob.size};
     const nextShift={...s,timeSlipPhotos:nextPhotos};
     setTimeSlipPhotoStatus(`Linking ${side} photo to your cloud shift…`);
-    await cloudCommitTimeSlipPhotoReference(client,user,nextShift,side,uploadedPath);
+    const cloudUpdatedAt=await cloudCommitTimeSlipPhotoReference(client,user,nextShift,side,uploadedPath);
     referenceCommitted=true;
     // Cloud is confirmed. Preserve the reference in memory even if Safari's
     // localStorage is full. Never report the upload as failed in that case.
     s.timeSlipPhotos=nextPhotos;
     let localCacheSaved=true;
-    try{persist()}catch(cacheErr){
+    try{
+      persist();
+      try{await cloudSetBaselineEntry(user,nextShift,cloudUpdatedAt)}catch(baselineErr){
+        console.warn('Photo saved locally and in cloud; sync baseline cache failed:',baselineErr);
+      }
+    }catch(cacheErr){
       localCacheSaved=false;
       console.warn('Time Slip photo was saved to cloud but device cache is full:',cacheErr);
     }
@@ -11331,8 +11336,70 @@ async function initCloudBridgeTest(){
 }
 
 
-function saveShift(e){if(!billingRequireWriteAccess()){if(e?.preventDefault)e.preventDefault();return;}
-  e.preventDefault();const s=formData();
+// Local Storage R3: if a quota-limited device cannot cache a shift, perform a
+// checked, conflict-aware cloud save without losing newer cloud fields (including
+// Time Slip photo references). Never report success when neither store saved it.
+function cloudShiftFieldEqual(a,b){
+  try{return JSON.stringify(cloudStableValue(a))===JSON.stringify(cloudStableValue(b))}catch{return false}
+}
+async function cloudSaveShiftAfterLocalQuota(shift,previous){
+  if(EPL_CLAIM_R4_DEVICE_ONLY_TEST)throw new Error('Cloud shift writes are disabled in this testing build.');
+  if(navigator.onLine===false)throw new Error('This device appears offline.');
+  const client=getCloudClient();if(!client)throw new Error('The cloud connection is unavailable.');
+  const user=await cloudCurrentUser(client);if(!user)throw new Error('You must sign in to save a shift to your account.');
+  if(!accountGuardWorkspace(user))throw new Error('The signed-in account does not match this device workspace.');
+  const id=String(shift?.id||'');if(!id)throw new Error('The shift ID is missing.');
+  const {data:rows,error:readError}=await client.from('shifts_v2')
+    .select('shift_id,shift_date,updated_at,deleted_at,data').eq('shift_id',id).limit(1);
+  if(readError)throw new Error(`Unable to check the existing cloud shift: ${readError.message}`);
+  const row=Array.isArray(rows)?rows[0]:null;
+  if(row?.deleted_at)throw new Error('This shift was deleted in the cloud. Review the conflict before saving.');
+  const now=new Date().toISOString();
+  let candidate;
+  let result;
+  if(row){
+    if(!previous)throw new Error('A cloud shift already exists with this ID. Its contents were not overwritten.');
+    if(!row.data||typeof row.data!=='object'||Array.isArray(row.data))throw new Error('The existing cloud shift is not readable.');
+    const remote=row.data;
+    if(remote.id!=null&&String(remote.id)!==id)throw new Error('The cloud shift ID does not match its record. No changes were made.');
+    candidate={...remote,id};
+    const conflicts=[];
+    for(const key of Object.keys(shift)){
+      if(key==='id'||cloudShiftFieldEqual(previous[key],shift[key]))continue;
+      // Only edit fields changed in the active form. Leave all untouched cloud
+      // values intact, so a recent photo upload cannot be reverted by old cache.
+      if(!cloudShiftFieldEqual(previous[key],remote[key])&&!cloudShiftFieldEqual(shift[key],remote[key])){
+        conflicts.push(key);continue;
+      }
+      if(shift[key]===undefined)delete candidate[key];else candidate[key]=shift[key];
+    }
+    if(conflicts.length)throw new Error(`This shift changed on another device (${conflicts.slice(0,4).join(', ')}). Review the conflict before replacing anything.`);
+    result=await client.from('shifts_v2').update({
+      shift_date:candidate.date||shift.date,data:candidate,updated_at:now
+    }).eq('shift_id',id).eq('updated_at',row.updated_at).is('deleted_at',null)
+      .select('shift_id,updated_at,data,deleted_at');
+  }else{
+    // INSERT, not upsert: a concurrently created shift must never be overwritten.
+    candidate={...shift};
+    result=await client.from('shifts_v2').insert({
+      shift_id:id,shift_date:shift.date,data:candidate,deleted_at:null,updated_at:now
+    }).select('shift_id,updated_at,data,deleted_at');
+  }
+  if(result.error)throw new Error(`Cloud save failed: ${result.error.message}`);
+  const saved=Array.isArray(result.data)?result.data[0]:null;
+  if(!saved||String(saved.shift_id)!==id||saved.deleted_at||!cloudShiftFieldEqual(saved.data,candidate)){
+    throw new Error('The cloud did not confirm the new shift version. Please check with support before retrying.');
+  }
+  // Do NOT advance the device sync baseline: localStorage failed and still
+  // contains the old shift. Recording the cloud fingerprint as a local baseline
+  // would misclassify it as a new two-sided conflict on the next app launch.
+  return candidate;
+}
+let shiftQuotaSaveInFlight=false;
+async function saveShift(e){
+  if(e?.preventDefault)e.preventDefault();
+  if(!billingRequireWriteAccess()||shiftQuotaSaveInFlight)return;
+  const s=formData();
   if(s.miscPenalty&&(!s.miscPenaltyDescription||!(s.miscPenaltyMinutes>0))){alert('For a Miscellaneous Penalty, enter the nature of the claim and a duration greater than 0:00.');document.getElementById(!s.miscPenaltyDescription?'miscPenaltyDescription':'miscPenaltyHours')?.focus();return}
   if(s.timeSlip&&!validateTimeSlipClaimPayments())return;
   if(s.yardMove&&!s.twoClassesPullTime){alert('For a 2 Classes of Service claim, enter the time you were pulled so Engineer Pay Log can compare the 2 Classes payment with pull-related overtime.');document.getElementById('twoClassesPullTime')?.focus();return}
@@ -11344,7 +11411,38 @@ function saveShift(e){if(!billingRequireWriteAccess()){if(e?.preventDefault)e.pr
     setVacationGrossForYear(year,s.vacationGross);
     s.vacationEndDate=s.specialShift==='Vacation Week'?addDaysISO(s.date,6):'';
   }
-  const idx=shifts.findIndex(x=>x.id===s.id);if(idx>=0)shifts[idx]=s;else shifts.push(s);persist();void cloudMirrorShift(s);closeModal();renderAll();showView('dashboard')
+  const idx=shifts.findIndex(x=>x.id===s.id);
+  const previous=idx>=0?shifts[idx]:null;
+  if(idx>=0)shifts[idx]=s;else shifts.push(s);
+  try{
+    persist();
+  }catch(cacheError){
+    // Restore in-memory history until a verified cloud save succeeds. Keep the
+    // form open if both stores fail; never discard the user's unsaved edits.
+    if(idx>=0)shifts[idx]=previous;else shifts=shifts.filter(x=>x!==s);
+    console.warn('Local shift save unavailable; verifying cloud-only fallback:',cacheError);
+    shiftQuotaSaveInFlight=true;
+    const button=document.querySelector('#shiftForm button[type="submit"]');
+    if(button)button.disabled=true;
+    try{
+      const cloudShift=await cloudSaveShiftAfterLocalQuota(s,previous);
+      // Cloud commit is now VERIFIED. An unrelated UI refresh failure must not
+      // turn a successful cloud save into a misleading “NOT saved” warning.
+      let repaired={...cloudShift,id:s.id};
+      try{repaired=upgradeShift(repaired)}catch(renderErr){console.warn('Cloud shift saved; local field refresh failed:',renderErr)}
+      if(idx>=0)shifts[idx]=repaired;else shifts.push(repaired);
+      setCloudTestStatus('This shift is saved to your cloud account. Local device storage is full; offline changes may not persist.');
+      try{closeModal();renderAll();showView('dashboard')}catch(renderErr){console.warn('Cloud shift saved; UI refresh failed:',renderErr)}
+      alert('Shift saved and verified in your cloud account. This device is out of local storage, so your offline copy may be outdated. Do not clear EPL app data; contact support for safe recovery.');
+    }catch(cloudError){
+      console.warn('Shift could not be saved locally or verified in cloud:',cloudError);
+      setCloudTestStatus(`Shift NOT saved: device storage is full and cloud fallback failed: ${cloudError?.message||cloudError}`);
+      alert(`Shift NOT saved. This device is out of local storage and the cloud save could not be confirmed: ${cloudError?.message||cloudError}. Leave this form open and contact support; do not clear app data.`);
+    }finally{shiftQuotaSaveInFlight=false;if(button)button.disabled=false}
+    return;
+  }
+  // Existing successful local/offline workflow is unchanged.
+  void cloudMirrorShift(s);closeModal();renderAll();showView('dashboard');
 }
 function deleteCurrent(){if(!billingRequireWriteAccess())return;const id=document.getElementById('editId').value;if(!id)return;const deletedShift=shifts.find(x=>x.id===id);if(confirm('Delete this shift?')){shifts=shifts.filter(x=>x.id!==id);persist();if(deletedShift){void cloudDeleteTimeSlipPhotoFiles(deletedShift);void cloudTombstoneShift(deletedShift)}closeModal();renderAll()}}
 function persist(){localStorage.setItem('lirrPayShifts',JSON.stringify(shifts));if(activeWorkspaceUserId)accountSaveWorkspace(activeWorkspaceUserId)}
