@@ -6075,7 +6075,72 @@ async function crewBookProductionLoad(force=false){
   }catch(err){console.warn('Crew Book production load failed:',err);crewBookProductionState.error=err?.message||String(err);return crewBookProductionState.version}finally{crewBookProductionState.loading=false}
 }
 
-function crewBookPassengerRevision(date){const base=date>=CREW_BOOK_REV7_EFFECTIVE?{go:'202',revision:'7',paperRevision:'8',effective:CREW_BOOK_REV7_EFFECTIVE,paperEffective:CREW_BOOK_PAPER_REV8_EFFECTIVE,draft:false,jobs:CREW_BOOK_REV7_AUDITED_JOBS,relief:CREW_BOOK_RELIEF_REV7}:{go:'201',revision:'6',effective:'2026-07-06',draft:false,jobs:CREW_BOOK_REV6_AUDITED_JOBS,relief:CREW_BOOK_RELIEF};return crewBookProductionMergeRevision(base,date)}
+// GO 203 Passenger Paper Revision No. 2 — bulletin dated Nov. 11, effective Nov. 16, 2026.
+// This is a narrow CLIENT-SIDE DATE OVERRIDE on the already-activated GO 203 full-book
+// production channel. It NEVER mutates the certified General Pick source, Supabase rows,
+// R4 storage/time-slip code, or GO 202/GO 203 shifts with report dates before Nov. 16.
+// Old official images remain marked as Rev. 1 until the railroad issues revised pages.
+const GO203_PASSENGER_REV2_EFFECTIVE='2026-11-16';
+const GO203_PASSENGER_REV2_KEYS=new Set(['17','106','202','301','357','442']);
+const GO203_PASSENGER_REV2_NOTES=Object.freeze({
+  '17':'After deadheading to Huntington and taking the existing meal period, operate Train 1589: Huntington 10:46 PM to Penn Station 11:51 PM; then DH to Jamaica. Release 1:15 AM, or 1:17 AM on Saturday (Friday report). Meal treatment unchanged.',
+  '106':'After deadheading to Huntington, operate Train 1585: Huntington 9:37 PM to Penn Station 10:42 PM. Release 11:07 PM. Saturday–Sunday assignment unchanged.',
+  '202':'Monday–Thursday reports: after DH to Brooklyn, operate Train 2804 at 12:32 AM to Jamaica 12:52 AM and release 1:07 AM. Friday report: release 11:25 PM (no Train 2804). Saturday–Sunday assignment unchanged.',
+  '301':'Relief days Tuesday–Wednesday. Both days now covered by Extra Crew; the previous Wednesday Relief Crew 442 coverage is superseded.',
+  '357':'Relief days Tuesday–Wednesday. Tuesday remains Relief Crew 471; Wednesday now Relief Crew 442.',
+  '442':'Relief Crew 442: Monday 355, Tuesday 355, Wednesday 357 (not 301), Thursday 354, Friday 354, Saturday/Sunday off.'
+});
+function crewBookGo203Rev2Applies(date,revision){
+  return String(date||'')>=GO203_PASSENGER_REV2_EFFECTIVE &&
+    String(revision?.go||'')==='203' && revision?.fullBookProduction===true &&
+    String(crewBookProductionState?.version?.go_number||'')==='203';
+}
+function crewBookGo203Rev2Schedule(base,end,variant){
+  if(!base)return base;
+  const start=String(base.start||''),from=parseClock(start),to=parseClock(end);
+  const durationMinutes=from==null||to==null?base.durationMinutes:(to-from+1440)%1440;
+  return {...base,end,endLabel:end,source:'go203-paper-revision-2',variant,durationMinutes,status:'resolved'};
+}
+function crewBookGo203Rev2MergeRevision(revision,date){
+  if(!crewBookGo203Rev2Applies(date,revision))return revision;
+  const jobs={...revision.jobs},relief={...revision.relief};
+  const cloneJob=k=>{const prior=jobs[k];if(!prior||!prior.__go203FullBook)return null;const copy={...prior,daySchedules:{...(prior.daySchedules||{})},coverage:{...(prior.coverage||{})},trainNumbers:[...(prior.trainNumbers||[])]};jobs[k]=copy;return copy};
+  const updateDays=(job,days,end,variant)=>{if(!job)return;for(const day of days){if(job.daySchedules[day])job.daySchedules[day]=crewBookGo203Rev2Schedule(job.daySchedules[day],end,variant)}};
+  const weekdays=['monday','tuesday','wednesday','thursday','friday'];
+  const j17=cloneJob('17');
+  if(j17){
+    updateDays(j17,weekdays.slice(0,4),'01:15','Rev. 2 • Train 1589 • DH Jamaica');
+    updateDays(j17,['friday'],'01:17','Rev. 2 • Train 1589 • Saturday-only release');
+    if(j17.weekday)j17.weekday=crewBookGo203Rev2Schedule(j17.weekday,'01:15','Rev. 2 • Friday reports release 1:17 AM');
+    j17.trainNumbers=j17.trainNumbers.map(x=>String(x)==='1585'?'1589':x);
+    j17.revisionBulletin=GO203_PASSENGER_REV2_NOTES['17'];
+  }
+  const j106=cloneJob('106');
+  if(j106){
+    updateDays(j106,weekdays,'23:07','Rev. 2 • Train 1585 • Release Penn Station');
+    if(j106.weekday)j106.weekday=crewBookGo203Rev2Schedule(j106.weekday,'23:07','Rev. 2 • Train 1585');
+    j106.trainNumbers=j106.trainNumbers.map(x=>String(x)==='1589'?'1585':x);
+    j106.revisionBulletin=GO203_PASSENGER_REV2_NOTES['106'];
+  }
+  const j202=cloneJob('202');
+  if(j202){
+    updateDays(j202,weekdays.slice(0,4),'01:07','Rev. 2 • Mon–Thu report • Train 2804');
+    updateDays(j202,['friday'],'23:25','Rev. 2 • Friday report only • no Train 2804');
+    j202.revisionBulletin=GO203_PASSENGER_REV2_NOTES['202'];
+  }
+  const j301=cloneJob('301');
+  if(j301){j301.coverage.wednesday='Extra Crew';j301.revisionBulletin=GO203_PASSENGER_REV2_NOTES['301']}
+  const j357=cloneJob('357');
+  if(j357){j357.coverage.wednesday='Relief Crew 442';j357.revisionBulletin=GO203_PASSENGER_REV2_NOTES['357']}
+  if(relief['442'])relief['442']={...relief['442'],wednesday:'357'};
+  return {...revision,jobs,relief,paperRevision:'2',productionRevision:'Rev. 2 (Nov. 16 bulletin)',productionEffective:GO203_PASSENGER_REV2_EFFECTIVE,passengerBulletinRevision:2};
+}
+function crewBookGo203Rev2BannerHTML(key,date){
+  const k=normalizeCrewBookKey(key);
+  if(!GO203_PASSENGER_REV2_KEYS.has(k)||!crewBookGo203Rev2Applies(date,crewBookPassengerRevision(date)))return '';
+  return `<div class="crewbook-paper-banner"><strong>GO 203 • Revision No. 2 • Effective November 16, 2026</strong>${escapeHTML(GO203_PASSENGER_REV2_NOTES[k])}<div style="margin-top:6px;font-size:9px">The official printed page below is still Revision 1 and may show superseded details. The newer November 11 bulletin controls these changes.</div></div>`;
+}
+function crewBookPassengerRevision(date){const base=date>=CREW_BOOK_REV7_EFFECTIVE?{go:'202',revision:'7',paperRevision:'8',effective:CREW_BOOK_REV7_EFFECTIVE,paperEffective:CREW_BOOK_PAPER_REV8_EFFECTIVE,draft:false,jobs:CREW_BOOK_REV7_AUDITED_JOBS,relief:CREW_BOOK_RELIEF_REV7}:{go:'201',revision:'6',effective:'2026-07-06',draft:false,jobs:CREW_BOOK_REV6_AUDITED_JOBS,relief:CREW_BOOK_RELIEF};return crewBookGo203Rev2MergeRevision(crewBookProductionMergeRevision(base,date),date)}
 function crewBookRevisionLabel(rev,prefix=''){if(!rev)return '';const lead=prefix?`${prefix} `:'';const production=String(rev.productionRevision||'').trim();if(production)return `${lead}GO ${rev.go} ${production}`;const paper=rev.paperRevision?` + Paper Rev. ${rev.paperRevision}`:'';return `${lead}GO ${rev.go} Rev. ${rev.revision}${paper}`}
 
 // 2026 Labor Day holiday coverage (GO 201 Rev. 6 Holiday Crews H-2 through H-6).
@@ -6347,7 +6412,7 @@ function crewBookOfficialAssignmentHTML(key,date,hit){
   if(cloudRevision){paperHTML=`<details class="crewbook-paper-details"><summary>View ${escapeHTML(crewBookProductionState.version?.revision_label||'Published revision')} excerpt</summary><div class="crewbook-official-body">${crewBookProductionImageHTML(cloudRevision,crewBookProductionState.version?.revision_label||'Published Crew Book revision')}</div></details>`}
   else if(paper){const dayLabel=jobCompareDayLabel(paper.day),scope=paper.portion==='m-f'?'Monday–Friday':paper.portion==='s-s'?'Saturday–Sunday':paper.portion==='saturday'?'Saturday':'Sunday';const msg=paper.applies?'This instruction supersedes the applicable portion of the Crew Book image below.':`Paper Revision 8 changes this job on ${scope}; it does not alter the selected ${dayLabel} schedule.`;paperHTML=`<div class="crewbook-paper-banner${paper.applies?'':' not-current'}"><strong>${paper.applies?'Paper Revision 8 applies to this assignment':'Paper Revision 8 also revises this job'}</strong>${escapeHTML(paper.change)}<br><span>${escapeHTML(msg)}</span></div><details class="crewbook-paper-details"><summary>View Paper Revision 8 excerpt</summary><div class="crewbook-official-body">${crewBookSpriteCropHTML(paper,'Paper Revision 8 • Aug. 31, 2026')}</div></details>`}
   const body=cloudOfficial?`${crewBookProductionImageHTML(cloudOfficial,'Official Crew Book assignment')}<div class="crewbook-image-caption">Versioned production Crew Book image. EPL loaded only this assignment from the cloud and can cache it for repeat use.</div>`:meta?`${crewBookSpriteCropHTML(meta,futureCutover?'Official GO 203 • Full Printed Page':'Official GO 202 Crew Book')}<div class="crewbook-image-caption">${futureCutover?'GO 203 certified Passenger Rev. 1 / Road & Yard Rev. 2 official printed page; scroll/zoom to the assignment.':'Official Sept. 8 GO 202 Crew Book assignment image.'} The structured summary above remains date-aware.</div>`:`<div class="crewbook-official-unavailable">An official assignment image is not available for this crew in the active production image channel. The date-aware summary above still uses the verified Crew Book dataset.</div>`;
-  return `<div class="crewbook-official-wrap">${paperHTML}<details class="crewbook-official-details"><summary>View Official Crew Book Assignment</summary><div class="crewbook-official-body">${body}</div></details></div>`;
+  return `<div class="crewbook-official-wrap">${crewBookGo203Rev2BannerHTML(key,date)}${paperHTML}<details class="crewbook-official-details"><summary>View Official Crew Book Assignment</summary><div class="crewbook-official-body">${body}</div></details></div>`;
 }
 
 function crewBookOfficialViewerBodyHTML(key,date,hit){
@@ -6362,7 +6427,7 @@ function crewBookOfficialViewerBodyHTML(key,date,hit){
   if(cloudOfficial)html+=`<section class="job-compare-official-section"><h3 class="job-compare-official-section-title">Official Crew Book assignment</h3>${crewBookProductionImageHTML(cloudOfficial,'Official Crew Book assignment')}<div class="crewbook-image-caption">Versioned production Crew Book image loaded from the EPL cloud asset channel.</div></section>`;
   else if(meta)html+=`<section class="job-compare-official-section"><h3 class="job-compare-official-section-title">Official Crew Book assignment</h3>${crewBookSpriteCropHTML(meta,futureCutover?'Official GO 203 • Full Printed Page':'Official GO 202 Crew Book')}<div class="crewbook-image-caption">${futureCutover?'Certified GO 203 official printed page; scroll/zoom to the assignment.':'Official Sept. 8 GO 202 Crew Book assignment image.'} The date-aware comparison summary remains controlling.</div></section>`;
   else html+='<div class="crewbook-official-unavailable">An official assignment image is not available for this crew in the active production image channel. The date-aware comparison summary still uses the verified Crew Book dataset.</div>';
-  return temporaryRevisionNote+html;
+  return temporaryRevisionNote+crewBookGo203Rev2BannerHTML(key,date)+html;
 }
 
 function crewBookOfficialComparisonLaunchHTML(key,date,hit){
@@ -6376,7 +6441,7 @@ function crewBookOfficialComparisonLaunchHTML(key,date,hit){
     paperHTML=`<div class="crewbook-paper-banner${paper.applies?'':' not-current'}"><strong>${paper.applies?'Paper Revision 8 applies to this assignment':'Paper Revision 8 also revises this job'}</strong>${escapeHTML(paper.change)}<br><span>${escapeHTML(msg)}</span></div>`;
   }
   if(crewBookRev12Job52Applies(imageKey,date))paperHTML=crewBookRev12Job52BannerHTML();
-  return `<div class="job-compare-official-launch">${paperHTML}<button class="job-compare-official-button" type="button" data-crewbook-key="${escapeHTML(String(key))}" data-crewbook-date="${escapeHTML(date)}" onclick="openJobCompareOfficialViewer(this)">View Official Crew Book Assignment <span aria-hidden="true">↗</span></button></div>`;
+  return `<div class="job-compare-official-launch">${crewBookGo203Rev2BannerHTML(key,date)}${paperHTML}<button class="job-compare-official-button" type="button" data-crewbook-key="${escapeHTML(String(key))}" data-crewbook-date="${escapeHTML(date)}" onclick="openJobCompareOfficialViewer(this)">View Official Crew Book Assignment <span aria-hidden="true">↗</span></button></div>`;
 }
 function openJobCompareOfficialViewer(btn){
   const key=String(btn?.dataset?.crewbookKey||''),date=String(btn?.dataset?.crewbookDate||'');if(!key||!date)return;
@@ -6730,7 +6795,7 @@ function quickLookupReliefResultHTML(key,date,resolved){
   const daysOff=info?.map?CREW_BOOK_DAYS.filter(d=>!info.map[d]).map(jobCompareDayLabel).join(' • '):'—';
   const selectedException=x?quickLookupExceptionText(hit,x,date):'';
   const official=x&&info?.type!=='passenger'?crewBookOfficialAssignmentHTML(key,date,hit):''; // passenger relief images are already shown once in the all-covered gallery
-  return `<article class="quick-lookup-card"><div class="quick-lookup-head"><div class="quick-lookup-titleline"><div class="quick-lookup-job">Relief Crew ${escapeHTML(key)}</div><div class="quick-lookup-source">${escapeHTML(source)}</div></div><div class="quick-lookup-terminal">${escapeHTML(terminal)}</div><div class="quick-lookup-state">${escapeHTML(state)} • ${escapeHTML(date)} ${quickLookupFatigueHTML(key,date,resolved)}</div></div>${detailHTML}${quickLookupWeeklyEarningsHTML(key,date)}${quickLookupReliefWeekHTML(key,date)}<div class="quick-lookup-relief"><strong>Published Relief Crew Days Off</strong>${escapeHTML(daysOff||'No published relief days')}</div><div class="quick-lookup-exception${selectedException?'':' none'}"><strong>Selected-date notes</strong>${escapeHTML(selectedException||'The weekly coverage above shows the complete relief pattern; the selected day is highlighted.')}</div><div class="quick-lookup-card-actions"><button class="btn small" type="button" onclick="compareQuickLookupJob('${escapeHTML(String(key))}','${escapeHTML(date)}')">Compare This Job</button></div>${quickLookupReliefImagesHTML(key,date,info)}${communityJobPanelShellHTML(key,date)}${official}</article>`;
+  return `<article class="quick-lookup-card"><div class="quick-lookup-head"><div class="quick-lookup-titleline"><div class="quick-lookup-job">Relief Crew ${escapeHTML(key)}</div><div class="quick-lookup-source">${escapeHTML(source)}</div></div><div class="quick-lookup-terminal">${escapeHTML(terminal)}</div><div class="quick-lookup-state">${escapeHTML(state)} • ${escapeHTML(date)} ${quickLookupFatigueHTML(key,date,resolved)}</div></div>${crewBookGo203Rev2BannerHTML(key,date)}${detailHTML}${quickLookupWeeklyEarningsHTML(key,date)}${quickLookupReliefWeekHTML(key,date)}<div class="quick-lookup-relief"><strong>Published Relief Crew Days Off</strong>${escapeHTML(daysOff||'No published relief days')}</div><div class="quick-lookup-exception${selectedException?'':' none'}"><strong>Selected-date notes</strong>${escapeHTML(selectedException||'The weekly coverage above shows the complete relief pattern; the selected day is highlighted.')}</div><div class="quick-lookup-card-actions"><button class="btn small" type="button" onclick="compareQuickLookupJob('${escapeHTML(String(key))}','${escapeHTML(date)}')">Compare This Job</button></div>${quickLookupReliefImagesHTML(key,date,info)}${communityJobPanelShellHTML(key,date)}${official}</article>`;
 }
 function quickLookupResultHTML(key,date){
   const resolved=jobCompareResolveForDay(key,date),hit=resolved.hit,x=resolved.schedule,reliefInfo=jobCompareReliefCrewDefinition(key,date);
@@ -6743,7 +6808,7 @@ function quickLookupResultHTML(key,date){
   else if(hit.reliefCrew){terminal=x.location||hit.job?.terminal||'Relief Crew';state=`${jobCompareDayLabel(hit.day)} • Covers Job ${hit.coveredKey}`;reliefLabel='Relief Crew Days Off';reliefText=jobCompareReliefCrewDaysOffText(hit);}
   else{const ownerRelief=!!hit.job?.relief?.includes(hit.day);state=`${jobCompareDayLabel(hit.day)}${ownerRelief?' • Regular owner relief day':''}`;reliefText=jobCompareReliefText(key,hit,date);}
   const duration=jobCompareDuration(x.start,x.end),exception=quickLookupExceptionText(hit,x,date),source=jobCompareSourceLabel(hit),official=crewBookOfficialAssignmentHTML(key,date,hit);
-  return `<article class="quick-lookup-card"><div class="quick-lookup-head"><div class="quick-lookup-titleline"><div class="quick-lookup-job">${escapeHTML(displayKey)}</div><div class="quick-lookup-source">${escapeHTML(source)}</div></div><div class="quick-lookup-terminal">${escapeHTML(terminal)}</div><div class="quick-lookup-state">${escapeHTML(state)} • ${escapeHTML(date)} ${quickLookupFatigueHTML(key,date,resolved)}</div></div><div class="quick-lookup-grid"><div class="quick-lookup-fact"><div class="label">Report</div><div class="value">${escapeHTML(jobCompareTimeLabel(x.start))}</div></div><div class="quick-lookup-fact"><div class="label">Release</div><div class="value">${escapeHTML(jobCompareTimeLabel(x.end))}</div></div><div class="quick-lookup-fact"><div class="label">Duration</div><div class="value">${escapeHTML(fmtMinutes(duration))}</div></div><div class="quick-lookup-fact"><div class="label">Meal</div><div class="value">${x.paysMeal?'Pays Meal Period':'No paid meal period'}</div></div></div>${quickLookupWeeklyEarningsHTML(key,date)}<div class="quick-lookup-relief"><strong>${escapeHTML(reliefLabel)}</strong>${escapeHTML(reliefText)}</div><div class="quick-lookup-exception${exception?'':' none'}"><strong>Date-specific notes</strong>${escapeHTML(exception||'No additional day-specific exception is being applied beyond the published schedule shown above.')}</div><div class="quick-lookup-card-actions"><button class="btn small" type="button" onclick="compareQuickLookupJob('${escapeHTML(String(key))}','${escapeHTML(date)}')">Compare This Job</button></div>${communityJobPanelShellHTML(key,date)}${official}</article>`;
+  return `<article class="quick-lookup-card"><div class="quick-lookup-head"><div class="quick-lookup-titleline"><div class="quick-lookup-job">${escapeHTML(displayKey)}</div><div class="quick-lookup-source">${escapeHTML(source)}</div></div><div class="quick-lookup-terminal">${escapeHTML(terminal)}</div><div class="quick-lookup-state">${escapeHTML(state)} • ${escapeHTML(date)} ${quickLookupFatigueHTML(key,date,resolved)}</div></div>${crewBookGo203Rev2BannerHTML(key,date)}<div class="quick-lookup-grid"><div class="quick-lookup-fact"><div class="label">Report</div><div class="value">${escapeHTML(jobCompareTimeLabel(x.start))}</div></div><div class="quick-lookup-fact"><div class="label">Release</div><div class="value">${escapeHTML(jobCompareTimeLabel(x.end))}</div></div><div class="quick-lookup-fact"><div class="label">Duration</div><div class="value">${escapeHTML(fmtMinutes(duration))}</div></div><div class="quick-lookup-fact"><div class="label">Meal</div><div class="value">${x.paysMeal?'Pays Meal Period':'No paid meal period'}</div></div></div>${quickLookupWeeklyEarningsHTML(key,date)}<div class="quick-lookup-relief"><strong>${escapeHTML(reliefLabel)}</strong>${escapeHTML(reliefText)}</div><div class="quick-lookup-exception${exception?'':' none'}"><strong>Date-specific notes</strong>${escapeHTML(exception||'No additional day-specific exception is being applied beyond the published schedule shown above.')}</div><div class="quick-lookup-card-actions"><button class="btn small" type="button" onclick="compareQuickLookupJob('${escapeHTML(String(key))}','${escapeHTML(date)}')">Compare This Job</button></div>${communityJobPanelShellHTML(key,date)}${official}</article>`;
 }
 
 const EPL_TEST_TOOLS_ENABLED=(/\.github\.io$/i.test(window.location.hostname)||window.location.hostname==='localhost'||window.location.hostname==='127.0.0.1');
@@ -6755,7 +6820,7 @@ function communityRevisionMeta(key,date){
   if(hit?.source==='holiday')return {key:`holiday:${date}`,label:'Labor Day 2026',effective:date};
   const rev=hit?.revision||null;
   if(hit?.source==='yard'||hit?.source==='yard-relief')return {key:`yard:${rev?.effective||'current'}`,label:'Yard Crew Book',effective:rev?.effective||'2026-07-06'};
-  if(rev){const revisionKey=rev.productionVersionId||`${rev.go}:${rev.revision}:${rev.paperRevision||0}:${rev.effective}`;return {key:`passenger:${revisionKey}`,label:crewBookRevisionLabel(rev),effective:rev.productionEffective||rev.effective};}
+  if(rev){const revisionKey=(rev.productionVersionId||`${rev.go}:${rev.revision}:${rev.paperRevision||0}:${rev.effective}`)+(rev.passengerBulletinRevision===2?':passenger-rev2':'');return {key:`passenger:${revisionKey}`,label:crewBookRevisionLabel(rev),effective:rev.productionEffective||rev.effective};}
   return {key:`assignment:${date}`,label:'Crew Book assignment',effective:date};
 }
 function communityJobPanelShellHTML(key,date){
@@ -11342,6 +11407,19 @@ async function initCloudBridgeTest(){
 function cloudShiftFieldEqual(a,b){
   try{return JSON.stringify(cloudStableValue(a))===JSON.stringify(cloudStableValue(b))}catch{return false}
 }
+// Only reconcile Time Slip submission metadata with a positive user
+// confirmation; all other fields remain protected by the R3 changed-field
+// merge and cloud optimistic concurrency checks.
+function cloudTimeSlipUnsyncedFields(previous,shift,remote){
+  if(!previous?.timeSlip||!shift?.timeSlip||!remote?.timeSlip)return [];
+  return ['timeSlipWritten','timeSlipSubmitted','timeSlipLocation'].filter(key=>{
+    const value=shift[key];
+    return typeof value==='string'&&value.trim()!==''&&
+      Object.prototype.hasOwnProperty.call(previous,key)&&
+      typeof previous[key]==='string'&&previous[key].trim()!==''&&
+      (remote[key]===undefined||remote[key]===null||remote[key]==='');
+  });
+}
 async function cloudSaveShiftAfterLocalQuota(shift,previous){
   if(EPL_CLAIM_R4_DEVICE_ONLY_TEST)throw new Error('Cloud shift writes are disabled in this testing build.');
   if(navigator.onLine===false)throw new Error('This device appears offline.');
@@ -11363,9 +11441,10 @@ async function cloudSaveShiftAfterLocalQuota(shift,previous){
     const remote=row.data;
     if(remote.id!=null&&String(remote.id)!==id)throw new Error('The cloud shift ID does not match its record. No changes were made.');
     candidate={...remote,id};
+    const unsyncedFields=cloudTimeSlipUnsyncedFields(previous,shift,remote);
     const conflicts=[];
     for(const key of Object.keys(shift)){
-      if(key==='id'||cloudShiftFieldEqual(previous[key],shift[key]))continue;
+      if(key==='id'||cloudShiftFieldEqual(previous[key],shift[key])||unsyncedFields.includes(key))continue;
       // Only edit fields changed in the active form. Leave all untouched cloud
       // values intact, so a recent photo upload cannot be reverted by old cache.
       if(!cloudShiftFieldEqual(previous[key],remote[key])&&!cloudShiftFieldEqual(shift[key],remote[key])){
@@ -11374,6 +11453,21 @@ async function cloudSaveShiftAfterLocalQuota(shift,previous){
       if(shift[key]===undefined)delete candidate[key];else candidate[key]=shift[key];
     }
     if(conflicts.length)throw new Error(`This shift changed on another device (${conflicts.slice(0,4).join(', ')}). Review the conflict before replacing anything.`);
+    // R4: A quota-limited phone can hold a Time Slip field that never made it
+    // to the cloud. If unchanged, the R3 diff misses it; if edited again, R3
+    // treats the missing remote value as a conflict. Offer safe recovery for both.
+    // Recover only non-empty, explicitly present Time Slip submission fields
+    // where the cloud is still empty. Ask first: a blank cloud value might have
+    // been cleared intentionally on another device. Never silently overwrite a
+    // non-empty remote value, or copy unrelated stale local shift fields.
+    if(unsyncedFields.length){
+      const labels={timeSlipWritten:'Date Written',timeSlipSubmitted:'Date Submitted',timeSlipLocation:'Location Submitted'};
+      const names=unsyncedFields.map(key=>labels[key]||key).join(', ');
+      if(!confirm(`This device has ${names} entered, but your cloud shift has ${unsyncedFields.length===1?'a blank value':'blank values'} for ${unsyncedFields.length===1?'that field':'those fields'}. Save the value${unsyncedFields.length===1?'':'s'} shown on this device to your cloud account?\n\nChoose Cancel to leave the cloud unchanged and review the discrepancy with support.`)){
+        throw new Error(`Cloud save paused: ${names} may not be synchronized. Review the discrepancy before saving.`);
+      }
+      unsyncedFields.forEach(key=>{candidate[key]=shift[key]});
+    }
     result=await client.from('shifts_v2').update({
       shift_date:candidate.date||shift.date,data:candidate,updated_at:now
     }).eq('shift_id',id).eq('updated_at',row.updated_at).is('deleted_at',null)
