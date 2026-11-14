@@ -6012,6 +6012,16 @@ function crewBookProductionBuildFullPassengerRevision(base,v,payload){
       jobs[key]={...row,type:'extraCrewOnly',relief:[],extra:row.schedule?JSON.parse(JSON.stringify(row.schedule)):null,operatesOn:Array.isArray(row.activeDays)?[...row.activeDays]:Object.keys(daySchedules),daySchedules,__cloudProduction:true,__productionVersionId:v.id,__go203FullBook:true};
     }else{
       const daySchedules={};for(const [day,info] of Object.entries(week?.[key]?.days||{})){const schedule=info?.schedule;if(schedule?.status==='resolved')daySchedules[day]=JSON.parse(JSON.stringify(schedule))}
+      // GO 203 Job 17 has a printed meal dot after DH to Huntington in Revision 1,
+      // retained in Revision 2. That is an afforded meal, NOT a paid meal.
+      // Correct this on the GO 203 full-book client copy for every GO 203 report date
+      // (including Nov. 9–15), without changing the certified cloud source or GO 202.
+      if(key==='17'){
+        for(const schedule of Object.values(daySchedules))if(schedule)schedule.paysMeal=false;
+        if(row.weekday)row.weekday={...row.weekday,paysMeal:false};
+        if(row.weekend)row.weekend={...row.weekend,paysMeal:false};
+        if(row.schedule)row.schedule={...row.schedule,paysMeal:false};
+      }
       jobs[key]={...row,type:'regular',relief:Array.isArray(row.reliefDays)?[...row.reliefDays]:[],daySchedules,__cloudProduction:true,__productionVersionId:v.id,__go203FullBook:true};
     }
   }
