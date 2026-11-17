@@ -12894,6 +12894,7 @@ const TRIM_EX1_RELIEF=(()=>{
 })();
 const FUTURE_CREW_BOOK_GO203={go:'203',bookNo:'2',effective:'2026-11-09',status:'published',generalPickAvailable:true,productionResolverEnabled:false};
 const GO203_RELEASE_CANDIDATE='Published Books R1';
+const GO203_NOVEMBER_DASHBOARD_SHORTCUT_ENABLED=false; // 2026 General Pick complete: dashboard shortcut retired, all archive data/code retained.
 const GO203_PUBLIC_PREVIEW_ENABLED=true; // Public November General Pick planning preview is intentionally released; GO 203 production cutover remains separately gated.
 const GO203_FINAL_USER_UPDATE=Object.freeze({
   title:'November General Pick is now available',
@@ -12906,7 +12907,7 @@ function futurePickSurfacePolicy(hostname,isAdmin,publicPreviewEnabled=GO203_PUB
 function futureCrewBookApplyVisibility(){
   const btn=document.getElementById('dashboardFutureGeneralPickBtn'),policy=futurePickSurfacePolicy(window.location.hostname,!!rosterAdminState?.canPublish);
   if(btn){
-    btn.hidden=!policy.publicEntryVisible;
+    btn.hidden=!policy.publicEntryVisible || !GO203_NOVEMBER_DASHBOARD_SHORTCUT_ENABLED;
     const title=btn.querySelector('strong'),copy=btn.querySelector('span');
     if(GO203_PUBLIC_PREVIEW_ENABLED){if(title)title.textContent='November General Pick';if(copy)copy.textContent='Browse the November GO 203 assignments, compare jobs, and build your My Pick list before your turn.'}
     else{if(title)title.textContent='November General Pick';if(copy)copy.textContent='Maintainer preview of the future GO 203 Crew Book. This does not change the current EPL Crew Book.'}
