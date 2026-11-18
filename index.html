@@ -5756,7 +5756,7 @@ function getCrewBookAssistPreference(){
     localStorage.setItem(CREW_BOOK_ASSIST_KEY,'on');
     return 'on';
   }
-  // V10.2: Crew Book Assistance is ON by default for non-trainee users.
+  // Crew Book Assistance is ON by default for all users, including Engineer Trainees.
   // An explicit user choice of OFF is still preserved above.
   return 'on';
 }
@@ -5785,14 +5785,9 @@ function syncCrewBookAssistPreference(){
     localStorage.setItem(CREW_BOOK_ASSIST_KEY,'on');
   }
 }
-function crewBookAssistEnabled(){return !isTraineeMode()&&getCrewBookAssistPreference()==='on'}
+function crewBookAssistEnabled(){return getCrewBookAssistPreference()==='on'}
 function requestCrewBookAssistToggle(enable){
   const box=document.getElementById('crewBookAssistToggle');
-  if(isTraineeMode()){
-    if(box)box.checked=false;
-    alert('Crew Book Assistance is not available while Engineer Trainee Mode is enabled.\n\nEngineer Trainees are strongly encouraged to learn how to read and interpret the Crew Book independently.');
-    return
-  }
   if(enable&&localStorage.getItem(CREW_BOOK_ASSIST_SEEN_KEY)!=='yes'){
     const msg='Enable Crew Book Assistance?\n\nCrew Book information is manually maintained by a friendly neighborhood engineer and is for convenience and reference only. Always verify your assignment using the official Crew Book in Comply365 or the official Service Planning website.\n\nThis data does not account for track work programs, special event programs, temporary service changes, or day-to-day instructions. Auto-filled entries remain editable, and you are responsible for verifying and updating the information that pertains to your assignment.';
     if(!confirm(msg)){if(box)box.checked=false;return}
@@ -5801,9 +5796,9 @@ function requestCrewBookAssistToggle(enable){
   setCrewBookAssistPreference(enable);renderCrewBookAssistUI();
 }
 function renderCrewBookAssistUI(){
-  const trainee=isTraineeMode(),card=document.getElementById('crewBookAssistSettingsCard'),box=document.getElementById('crewBookAssistToggle'),status=document.getElementById('crewBookAssistStatus');
-  if(card)card.style.display=trainee?'none':'';
-  const on=!trainee&&getCrewBookAssistPreference()==='on';if(box)box.checked=on;
+  const card=document.getElementById('crewBookAssistSettingsCard'),box=document.getElementById('crewBookAssistToggle'),status=document.getElementById('crewBookAssistStatus');
+  if(card)card.style.display='';
+  const on=getCrewBookAssistPreference()==='on';if(box)box.checked=on;
   if(status){status.style.display=on?'block':'none';status.innerHTML=on?`<strong>Active:</strong> GO ${CREW_BOOK_REVISION.go}, Revision ${CREW_BOOK_REVISION.revision}, effective ${CREW_BOOK_REVISION.effective}. Full passenger assignment dataset loaded. Crew Book-assisted fields remain editable.`:''}
   ['crewBookFillRegularBtn','crewBookFillReliefBtn','crewBookFillShiftBtn'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=on?'inline-flex':'none'});
 }
@@ -7010,13 +7005,14 @@ function runQuickJobLookup(showValidation=true){QUICK_JOB_LOOKUP_MODE='lookup';i
 
 
 function renderCrewBookAssistUI(){
-  const trainee=isTraineeMode(),box=document.getElementById('crewBookAssistToggle'),status=document.getElementById('crewBookAssistStatus'),reg=document.getElementById('crewBookFillRegularBtn'),rel=document.getElementById('crewBookFillReliefBtn'),shift=document.getElementById('crewBookFillShiftBtn'),viewReg=document.getElementById('crewBookViewMyJobRegularBtn'),viewRel=document.getElementById('crewBookViewMyJobReliefBtn');
-  const on=!trainee&&getCrewBookAssistPreference()==='on';
+  const card=document.getElementById('crewBookAssistSettingsCard'),box=document.getElementById('crewBookAssistToggle'),status=document.getElementById('crewBookAssistStatus'),reg=document.getElementById('crewBookFillRegularBtn'),rel=document.getElementById('crewBookFillReliefBtn'),shift=document.getElementById('crewBookFillShiftBtn'),viewReg=document.getElementById('crewBookViewMyJobRegularBtn'),viewRel=document.getElementById('crewBookViewMyJobReliefBtn');
+  const on=getCrewBookAssistPreference()==='on';
+  if(card)card.style.display='';
   if(box){box.checked=on;box.disabled=false}
   if(status){
-    status.style.display=(on||trainee)?'block':'none';
+    status.style.display=on?'block':'none';
     const assistRevision=crewBookPassengerRevision(typeof isoLocal==='function'?isoLocal(new Date()):'2026-09-28');
-    status.innerHTML=trainee?'<strong>Engineer Trainee Mode:</strong> Crew Book Assistance is unavailable. Engineer Trainees are strongly encouraged to learn how to read and interpret the Crew Book independently.':(on?`<strong>Active:</strong> ${escapeHTML(crewBookRevisionLabel(assistRevision,'Passenger'))} (human-certified) • Yard assignments loaded.`:'');
+    status.innerHTML=on?`<strong>Active:</strong> ${escapeHTML(crewBookRevisionLabel(assistRevision,'Passenger'))} (human-certified) • Yard assignments loaded.`:'';
   }
   if(reg)reg.style.display=on?'inline-flex':'none';if(rel)rel.style.display=on?'inline-flex':'none';if(shift)shift.style.display=on?'inline-flex':'none';if(viewReg)viewReg.style.display=on?'inline-flex':'none';if(viewRel)viewRel.style.display=on?'inline-flex':'none';
 }
