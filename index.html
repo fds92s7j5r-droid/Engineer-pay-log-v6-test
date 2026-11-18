@@ -795,6 +795,16 @@ html[data-theme="dark"] .shift-time-choice{background:#263c59;color:#e4efff;bord
 html[data-theme="dark"] .shift-time-choice[aria-pressed="true"]{background:#5389cf;color:#07172b}
 
 .trim-compare-tray{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:10px 0;padding:10px;border:1px solid var(--border);border-radius:10px}.trim-compare-tray>span{flex:1;min-width:130px;font-weight:600}.trim-compare-action{margin-top:8px;display:flex;justify-content:flex-end}.trim-compare-action button{font-size:12px}.trim-compare-selected{outline:2px solid var(--accent);outline-offset:1px}
+    /* R5E developer-only read-only roster health diagnostic */
+    .r5e-health-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,265px),1fr));gap:10px;margin-top:12px}
+    .r5e-health-day{border:1px solid var(--border,#d7dce1);border-radius:12px;padding:12px;background:var(--card-bg,transparent)}
+    .r5e-health-day-top{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+    .r5e-health-pill{border-radius:99px;padding:3px 8px;font-size:11px;font-weight:700}
+    .r5e-good{color:#0f6c3f;background:#dff4e8}.r5e-caution{color:#865400;background:#fff2d4}.r5e-neutral{color:#41556b;background:#e8edf3}
+    .r5e-health-meta{font-size:12px;opacity:.85;margin-top:8px;line-height:1.65}
+    .r5e-health-facts{display:grid;gap:5px;margin-top:10px;font-size:12px;font-weight:600}
+    .r5e-health-footnote{font-size:12px;opacity:.8;line-height:1.5;margin:12px 0 0}
+    html[data-theme="dark"] .r5e-good{background:#183e2c;color:#b5ebcb}html[data-theme="dark"] .r5e-caution{background:#473614;color:#ffe29d}html[data-theme="dark"] .r5e-neutral{background:#293541;color:#d3e1ed}
 </style>
   <script>
     try{
@@ -2716,6 +2726,18 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       </div>
 
       <div class="card span12 settings-card roster-admin-card developer-admin-card" id="rosterAdminCard">
+        <!-- R5E GitHub QA only: read-only; hidden on production hosts and guarded by roster-admin authorization. -->
+        <details class="developer-tool-disclosure" id="rosterHealthR5EDisclosure" hidden>
+          <summary><span><strong>Roster Health Monitor — R5E</strong><small>Read-only daily publication and change summary (GitHub test).</small></span><span class="developer-summary-right"><span class="roster-admin-badge">Developer QA</span><span class="settings-chevron">›</span></span></summary>
+          <div class="developer-tool-disclosure-body">
+            <p class="developer-tool-copy">Seven Eastern calendar days of published BLE snapshots. Shows whether an automatic roster was actually published, manual-only days, roster integrity, and aggregate assignment and rank changes. <strong>Read-only:</strong> no publishing, settings changes, alerts, or scheduler access.</p>
+            <div class="settings-action-row" style="margin:8px 0 12px">
+              <button class="btn small primary" id="rosterHealthR5ERefresh" type="button" onclick="rosterHealthR5ELoad()">Refresh Roster Health</button>
+            </div>
+            <div id="rosterHealthR5EStatus" class="account-sync-detail" role="status" aria-live="polite">Ready for a read-only check. Select Refresh Roster Health.</div>
+            <div id="rosterHealthR5EResults"></div>
+          </div>
+        </details>
         <details class="developer-tool-disclosure">
           <summary><span><strong>Roster Maintenance</strong><small>Trim Assistant roster PDF, publishing, and Retirement Watch.</small></span><span class="developer-summary-right"><span class="roster-admin-badge">Developer</span><span class="settings-chevron">›</span></span></summary>
           <div class="developer-tool-disclosure-body">
@@ -14611,6 +14633,8 @@ function developerApplyEnvironmentVisibility(){
   const localTesting=document.getElementById('developerLocalTestingDisclosure');
   const lifecycleBox=document.getElementById('bidLifecycleDeveloperTestBox');
   if(localTesting)localTesting.hidden=!testOnly;
+  const rosterHealthQA=document.getElementById('rosterHealthR5EDisclosure');
+  if(rosterHealthQA)rosterHealthQA.hidden=!testOnly;
   if(lifecycleBox)lifecycleBox.hidden=!testOnly;
   const rev8Demo=document.getElementById('crewOpsRev8DemoBtn');
   const clearLocalCrew=document.getElementById('crewOpsClearLocalTestBtn');
@@ -14697,6 +14721,158 @@ async function communityModerationSetHidden(noteId,hide){
   if(hide&&!confirm(`Hide this Community Note from Engineer Pay Log users?\n\nJob ${row.job_key}: “${String(row.body||'').slice(0,180)}${String(row.body||'').length>180?'…':''}”\n\nThe note will remain in Developer Tools and can be restored later.`))return;
   const client=getCloudClient();if(!client)return;try{const {data,error}=await client.rpc('community_job_note_set_hidden',{p_note_id:noteId,p_hidden:!!hide});if(error)throw error;if(data!==true)throw new Error('Note was not found.');communityModerationState.loaded=false;await communityModerationLoad(true)}catch(err){console.warn('Community note moderation failed:',err);alert(`Could not ${hide?'hide':'restore'} this Community Note. Please try again.`)}
 }
+
+// EPL R5E GitHub QA: all queries are SELECT-only. Employee IDs never reach the UI or local storage.
+const rosterHealthR5EState={busy:false};
+function rosterHealthR5EEasternKey(value){
+  const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(value));
+  const o=Object.fromEntries(parts.map(p=>[p.type,p.value]));
+  return `${o.year}-${o.month}-${o.day}`;
+}
+function rosterHealthR5ECalendarKey(today,daysAgo){
+  const [year,month,day]=today.split('-').map(Number);
+  return new Date(Date.UTC(year,month-1,day-daysAgo)).toISOString().slice(0,10);
+}
+function rosterHealthR5EEasternTime(value){
+  if(!value)return '—';
+  return new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit',hour12:true}).format(new Date(value))+' ET';
+}
+function rosterHealthR5EDayLabel(key){
+  return new Date(key+'T12:00:00Z').toLocaleDateString('en-US',{timeZone:'UTC',month:'short',day:'numeric',weekday:'short'});
+}
+function rosterHealthR5ESnapshotDays(snapshots){
+  const days=new Map();
+  for(const snap of snapshots){
+    const key=rosterHealthR5EEasternKey(snap.uploaded_at);
+    let d=days.get(key);
+    if(!d){d={key,snapshots:[],latest:null,auto:[],manual:[]};days.set(key,d)}
+    d.snapshots.push(snap);
+    if(!d.latest||new Date(snap.uploaded_at)>new Date(d.latest.uploaded_at))d.latest=snap;
+    if(snap.parser_version==='crew_json_v1')d.auto.push(snap);
+    if(snap.parser_version==='roster_pdf_v1')d.manual.push(snap);
+  }
+  return days;
+}
+function rosterHealthR5ECompareRows(previous,current){
+  const prior=new Map(),cur=new Map();
+  let duplicate=0,invalid=0,assignments=0,ranks=0,newRows=0,removedRows=0;
+  for(const row of previous){const id=String(row.employee_id??'').trim();if(id)prior.set(id,row)}
+  for(const row of current){
+    const id=String(row.employee_id??'').trim();
+    if(!id||row.rank===null||row.rank===undefined||!Number.isFinite(Number(row.rank)))invalid++;
+    if(cur.has(id))duplicate++;
+    if(id)cur.set(id,row);
+    if(!prior.has(id)){newRows++;continue}
+    const p=prior.get(id);
+    if(String(row.assignment??'')!==String(p.assignment??''))assignments++;
+    if(Number(row.rank)!==Number(p.rank))ranks++;
+  }
+  for(const id of prior.keys())if(!cur.has(id))removedRows++;
+  return {assignments,ranks,newRows,removedRows,duplicate,invalid};
+}
+function rosterHealthR5EIntegrity(rows,declared){
+  const ids=new Set();let invalid=0,duplicate=0;
+  for(const row of rows){
+    const id=String(row.employee_id??'').trim();
+    if(!id||row.rank===null||row.rank===undefined||!Number.isFinite(Number(row.rank)))invalid++;
+    if(id&&ids.has(id))duplicate++;
+    ids.add(id);
+  }
+  return {ok:rows.length===Number(declared)&&invalid===0&&duplicate===0,actual:rows.length,declared:Number(declared),invalid,duplicate};
+}
+async function rosterHealthR5ELoadRows(client,snapshot){
+  const result=[];
+  // Each page is capped below the PostgREST default maximum. Never download names or shift details.
+  for(let offset=0;offset<6000;offset+=600){
+    const {data,error}=await client.from('roster_rows').select('employee_id,rank,assignment').eq('snapshot_id',snapshot.id).order('rank',{ascending:true}).range(offset,offset+599);
+    if(error)throw new Error('Read-only roster rows are not available for this account.');
+    result.push(...(data||[]));
+    if(!data||data.length<600)return result;
+  }
+  throw new Error('Roster exceeds the safe read-only diagnostic limit.');
+}
+async function rosterHealthR5ELoad(){
+  const status=document.getElementById('rosterHealthR5EStatus');
+  const output=document.getElementById('rosterHealthR5EResults');
+  const button=document.getElementById('rosterHealthR5ERefresh');
+  // Enforce both environment and authenticated admin. Hiding a card alone isn't authorization.
+  if(!EPL_TEST_TOOLS_ENABLED||!rosterAdminState?.checked||!rosterAdminState?.canPublish)return;
+  if(rosterHealthR5EState.busy)return;
+  const client=getCloudClient();
+  if(!client){if(status)status.textContent='Cloud sign-in required. No data was changed.';return}
+  rosterHealthR5EState.busy=true;
+  if(button)button.disabled=true;
+  if(status)status.textContent='Reading published roster snapshots (no writes)…';
+  try{
+    const user=await cloudCurrentUser(client);
+    if(!user||user.id!==rosterAdminState.user?.id)throw new Error('Authenticated developer session required.');
+    const today=rosterHealthR5EEasternKey(new Date());
+    const firstKey=rosterHealthR5ECalendarKey(today,30);
+    const {data,error}=await client.from('roster_snapshots')
+      .select('id,uploaded_at,source_generated_at,source_file_name,parser_version,row_count,status')
+      .eq('status','published').gte('uploaded_at',firstKey+'T00:00:00Z')
+      .order('uploaded_at',{ascending:false}).limit(1000);
+    if(error)throw new Error('Published snapshots are not readable from this developer session.');
+    if((data||[]).length>=1000)throw new Error('Too many snapshots for a safe comparison; increase the read window after review.');
+    const days=rosterHealthR5ESnapshotDays(data||[]);
+    const dates=Array.from({length:7},(_,i)=>rosterHealthR5ECalendarKey(today,i));
+    const priorDays=[...days.keys()].sort();
+    // Limit row downloads to latest snapshot per date and the immediately preceding published date.
+    const required=new Map();
+    const comparisons=[];
+    for(const date of dates){
+      const d=days.get(date);
+      const previousKey=priorDays.filter(x=>x<date).at(-1)||null;
+      const prev=previousKey?days.get(previousKey):null;
+      if(d?.latest)required.set(d.latest.id,d.latest);
+      if(prev?.latest&&d?.latest)required.set(prev.latest.id,prev.latest);
+      comparisons.push({date,d,previousKey,prev});
+    }
+    const loaded=new Map();
+    const snaps=[...required.values()];
+    for(let i=0;i<snaps.length;i+=2){
+      const pair=snaps.slice(i,i+2);
+      if(status)status.textContent=`Reading authenticated roster records ${Math.min(i+2,snaps.length)}/${snaps.length} (temporary memory only)…`;
+      const rows=await Promise.all(pair.map(s=>rosterHealthR5ELoadRows(client,s)));
+      pair.forEach((s,j)=>loaded.set(s.id,rows[j]));
+    }
+    let html='<div class="r5e-health-grid">';
+    let currentIntegrity=true;
+    for(const {date,d,previousKey,prev} of comparisons){
+      const isToday=date===today;
+      const health=d?(d.auto.length?'automatic_published':'manual_only'):'no_publication';
+      const type=health==='automatic_published'?'Automatic published':health==='manual_only'?'Manual only':'No publication yet';
+      const tone=health==='automatic_published'?'r5e-good':health==='manual_only'?'r5e-caution':'r5e-neutral';
+      const latest=d?.latest||null;
+      const actual=latest?loaded.get(latest.id):null;
+      const integrity=latest?rosterHealthR5EIntegrity(actual||[],latest.row_count):null;
+      if(isToday&&integrity&&!integrity.ok)currentIntegrity=false;
+      const pRows=prev?.latest?loaded.get(prev.latest.id):null;
+      const pIntegrity=prev?.latest?rosterHealthR5EIntegrity(pRows||[],prev.latest.row_count):null;
+      // Never report a numerical change count when either underlying snapshot failed validation.
+      const comp=integrity?.ok&&pIntegrity?.ok?rosterHealthR5ECompareRows(pRows,actual):null;
+      const gap=previousKey?Math.round((new Date(date+'T00:00:00Z')-new Date(previousKey+'T00:00:00Z'))/86400000):null;
+      const firstAuto=d?.auto?.length?d.auto.slice().sort((a,b)=>new Date(a.uploaded_at)-new Date(b.uploaded_at))[0]:null;
+      const source=latest?(latest.parser_version==='crew_json_v1'?'Automatic source':latest.parser_version==='roster_pdf_v1'?'Manual PDF':'Other source'):'No source';
+      const countText=integrity?`${integrity.actual} / ${integrity.declared} rows · ${integrity.ok?'Integrity OK':`${integrity.invalid} invalid, ${integrity.duplicate} duplicates or row-count mismatch`}`:'No roster rows';
+      const changes=comp?`${comp.assignments} assignment · ${comp.ranks} rank · ${comp.newRows} joined · ${comp.removedRows} removed${gap>1?` (across ${gap} days)`:''}`:'No comparison baseline';
+      let sla='';
+      if(date>='2026-11-18'&&firstAuto){
+        const mins=Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date(firstAuto.uploaded_at)).find(p=>p.type==='hour')?.value||0)*60+Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',minute:'2-digit'}).formatToParts(new Date(firstAuto.uploaded_at)).find(p=>p.type==='minute')?.value||0);
+        sla=mins>=67&&mins<=75?' · Within 1:07–1:15 target':' · Outside 1:07–1:15 target';
+      }
+      html+=`<div class="r5e-health-day"><div class="r5e-health-day-top"><strong>${escapeHTML(rosterHealthR5EDayLabel(date))}${isToday?' · Today':''}</strong><span class="r5e-health-pill ${tone}">${escapeHTML(type)}</span></div><div class="r5e-health-meta">${latest?`${escapeHTML(source)} · Published ${escapeHTML(rosterHealthR5EEasternTime(latest.uploaded_at))}`:'No published snapshot observed'}${firstAuto?`<div>First automatic: ${escapeHTML(rosterHealthR5EEasternTime(firstAuto.uploaded_at))}${escapeHTML(sla)}</div>`:''}</div><div class="r5e-health-facts"><span>${escapeHTML(countText)}</span><span>${escapeHTML(changes)}</span></div></div>`;
+    }
+    html+='</div><p class="r5e-health-footnote">Read-only evidence from published snapshots, not GitHub workflow-attempt logs. “Manual only” is not proof of scheduler failure. “No publication yet” is not proof of a failed run. A comparison spanning missing days is explicitly marked. Only aggregate changes are displayed; employee identities remain private. The 1:07 AM target applies from Nov. 18 onward.</p>';
+    if(output)output.innerHTML=html;
+    if(status)status.textContent=`Live read-only report refreshed ${rosterHealthR5EEasternTime(new Date())} · ${dates.length} Eastern days${currentIntegrity?'':' · WARNING: current roster integrity mismatch'}.`;
+  }catch(err){
+    console.warn('R5E read-only health load failed:',err?.message||err);
+    if(status)status.textContent=`Could not verify the live roster report: ${err?.message||String(err)}. No data was changed.`;
+    if(output)output.textContent='No verified comparison data available.';
+  }finally{rosterHealthR5EState.busy=false;if(button)button.disabled=false}
+}
+// End EPL R5E GitHub QA read-only health panel.
 
 async function rosterLoadLatestSnapshot(){
   if(!rosterAdminState.canPublish)return null;
