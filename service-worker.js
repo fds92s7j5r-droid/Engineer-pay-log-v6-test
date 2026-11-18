@@ -1,4 +1,4 @@
-const CACHE_NAME='epl-v11-trainee-crewbook-assist-r1-github-20261117';
+const CACHE_NAME='epl-v11-timeslip-sync-visibility-r1-github-test-20261117';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./GO203_ROAD_YARD_DRAFT_NOV9_2026.pdf'];
 
 self.addEventListener('install',e=>e.waitUntil(

@@ -9129,8 +9129,8 @@ function accountCaptureWorkspace(){
   return out;
 }
 function accountSaveWorkspace(userId){
-  if(!userId)return;
-  try{localStorage.setItem(accountWorkspaceKey(userId),JSON.stringify(accountCaptureWorkspace()))}catch(err){console.warn('Account workspace save failed:',err)}
+  if(!userId)return true;
+  try{localStorage.setItem(accountWorkspaceKey(userId),JSON.stringify(accountCaptureWorkspace()));return true}catch(err){console.warn('Account workspace save failed:',err);return false}
 }
 function accountClearWorkspaceKeys(){for(const key of ACCOUNT_SCOPED_LOCAL_KEYS)localStorage.removeItem(key)}
 function accountLoadWorkspaceSnapshot(userId){
@@ -9160,6 +9160,8 @@ function accountActivateWorkspace(user){
   if(owner===nextId){activeWorkspaceUserId=nextId;accountRefreshWorkspaceUI();return {switched:false,migrated:false}}
 
   if(owner)accountSaveWorkspace(owner);
+  // Never show one account's cloud review hints in another account's workspace.
+  cloudShiftSyncStorageWarning=false;cloudTimeSlipSyncReviewHints=[];
   let target=accountLoadWorkspaceSnapshot(nextId);
   let migrated=false;
 
@@ -10371,6 +10373,38 @@ function cloudStableValue(value){
 function cloudSameShiftData(a,b){
   try{return JSON.stringify(cloudStableValue(a||{}))===JSON.stringify(cloudStableValue(b||{}))}catch{return false}
 }
+// Cloud sync cache state is account-local and deliberately not a durable success signal.
+// A quota failure may leave freshly downloaded cloud records visible only in memory.
+let cloudShiftSyncStorageWarning=false;
+let cloudTimeSlipSyncReviewHints=[];
+function cloudTimeSlipNeedsCloudReview(local,cloud){
+  return !!(local?.timeSlip&&cloud?.timeSlip&&timeSlipDisplayStatus(local)==='Needs Submission'&&
+    !local.timeSlipSubmitted&&/^\d{4}-\d{2}-\d{2}$/.test(String(cloud.timeSlipSubmitted||''))&&
+    String(cloud.timeSlipLocation||'').trim());
+}
+function cloudUpdateTimeSlipReviewHints(groups){
+  const candidates=[...(groups?.untrackedDiff||[]),...(groups?.bothChanged||[])];
+  cloudTimeSlipSyncReviewHints=candidates.filter(({row,local})=>
+    cloudTimeSlipNeedsCloudReview(local,row?.data))
+    .map(({row,local})=>({id:String(row.shift_id||''),assignment:String(local.assignment||row.data?.assignment||'Shift'),date:String(local.date||row.shift_date||'')}));
+}
+function cloudRefreshTimeSlipPresentation(){
+  try{renderTimeSlipCenter();renderTimeSlipDeadlineBanner();renderTimeSlipWageBanner();renderDashboard()}catch(err){console.warn('Time Slip display refresh failed:',err)}
+}
+// Keep the baseline behind the local persistence boundary: a downloaded row is
+// not safely synchronized just because its in-memory copy matches the cloud.
+async function cloudFinishDownloadedShiftChanges(user,downloadCandidates){
+  let stored=false;
+  try{stored=persist()!==false}catch(err){console.warn('Downloaded shift cache save failed:',err)}
+  cloudShiftSyncStorageWarning=!stored;
+  try{renderAll()}catch(err){console.warn('Cloud download screen refresh failed:',err);cloudRefreshTimeSlipPresentation()}
+  if(!stored)return {stored:false,baselineFailed:false};
+  let baselineFailed=false;
+  for(const candidate of downloadCandidates){
+    if(!await cloudSetBaselineEntry(user,candidate.shift,candidate.updatedAt))baselineFailed=true;
+  }
+  return {stored:true,baselineFailed};
+}
 const CLOUD_SYNC_BASELINE_PREFIX='engineerPayLogCloudSyncBaselineTest:';
 function cloudBaselineKey(user){return `${CLOUD_SYNC_BASELINE_PREFIX}${user?.id||'unknown'}`}
 function cloudLoadBaseline(user){
@@ -10538,7 +10572,11 @@ async function cloudRunVersionAwareSync(options={}){
       `Conflicts/review cases left untouched: ${reviewCount}`
     ].join('\n');
 
+    // Do not auto-resolve differences without a trustworthy last-synced baseline.
+    // A read-only review cue is safer than silently overwriting user edits.
+    cloudUpdateTimeSlipReviewHints(groups);
     if(actionCount===0){
+      cloudRefreshTimeSlipPresentation();
       setCloudTestStatus(`${automatic?'Automatic sync':'Version-aware sync'} found no proven one-sided changes to apply for ${user.email||'authenticated user'}. ${reviewCount} conflict/review case(s) remain untouched.`);
       return;
     }
@@ -10586,6 +10624,8 @@ async function cloudRunVersionAwareSync(options={}){
     const freshRows=Array.isArray(freshData)?freshData:[];
     const freshById=new Map(freshRows.filter(r=>r&&r.shift_id!=null).map(r=>[String(r.shift_id),r]));
     let importedNew=0,downloadedEdits=0,removedSafe=0;
+    const downloadCandidates=[];
+    let baselineSaveFailed=false;
 
     // Import active rows still absent locally.
     for(const row of freshRows){
@@ -10594,7 +10634,7 @@ async function cloudRunVersionAwareSync(options={}){
       if(shifts.some(s=>String(s?.id??'')===id))continue;
       const replacement={...row.data,id};if(!replacement.date&&row.shift_date)replacement.date=row.shift_date;upgradeShift(replacement);
       shifts.push(replacement);importedNew++;
-      await cloudSetBaselineEntry(user,replacement,row.updated_at||null);
+      downloadCandidates.push({shift:replacement,updatedAt:row.updated_at||null});
     }
 
     // Apply cloud-only edits only when the local copy is still exactly the
@@ -10607,7 +10647,7 @@ async function cloudRunVersionAwareSync(options={}){
       if(currentFp!==base.fingerprint)continue;
       const replacement={...row.data,id};if(!replacement.date&&row.shift_date)replacement.date=row.shift_date;upgradeShift(replacement);
       shifts[idx]=replacement;downloadedEdits++;
-      await cloudSetBaselineEntry(user,replacement,row.updated_at||null);
+      downloadCandidates.push({shift:replacement,updatedAt:row.updated_at||null});
     }
 
     // Apply cloud deletions only when the local copy is still the exact baseline
@@ -10624,7 +10664,17 @@ async function cloudRunVersionAwareSync(options={}){
       const before=shifts.length;shifts=shifts.filter(s=>!safeRemoveIds.has(String(s?.id??'')));removedSafe=before-shifts.length;
     }
 
-    if(importedNew||downloadedEdits||removedSafe){persist();renderAll()}
+    if(importedNew||downloadedEdits||removedSafe){
+      const commit=await cloudFinishDownloadedShiftChanges(user,downloadCandidates);
+      if(!commit.stored){
+        setCloudTestStatus('Cloud sync failed to cache downloaded changes on this device. The new cloud data is visible for this session only; no downloaded-shift sync checkpoint was advanced. Do not clear EPL data or assume these changes will survive a restart; free storage safely and retry sync.');
+        return;
+      }
+      baselineSaveFailed=commit.baselineFailed;
+    }else{
+      // Even without a data change, rebuild a potentially stale Time Slip list.
+      cloudRefreshTimeSlipPresentation();
+    }
 
     // Refresh baseline for every active local/cloud pair that now matches exactly.
     const {data:finalData,error:finalError}=await client.from('shifts_v2')
@@ -10636,7 +10686,9 @@ async function cloudRunVersionAwareSync(options={}){
       for(const row of finalRows){
         if(!row||row.shift_id==null||row.deleted_at)continue;
         const local=finalLocalById.get(String(row.shift_id));
-        if(local&&cloudSameShiftData(local,row.data))await cloudSetBaselineEntry(user,local,row.updated_at||null);
+        if(local&&cloudSameShiftData(local,row.data)){
+          if(!await cloudSetBaselineEntry(user,local,row.updated_at||null))baselineSaveFailed=true;
+        }
       }
       // Prune stale baseline metadata once a shift no longer exists on both this
       // device and the account. Tombstone+local conflicts keep their baseline.
@@ -10644,7 +10696,7 @@ async function cloudRunVersionAwareSync(options={}){
       const pairedIds=new Set(finalRows.filter(row=>row&&row.shift_id!=null&&finalLocalById.has(String(row.shift_id))).map(row=>String(row.shift_id)));
       let baselinePruned=false;
       for(const id of Object.keys(baselineNow)){if(!pairedIds.has(String(id))){delete baselineNow[id];baselinePruned=true}}
-      if(baselinePruned)cloudSaveBaseline(user,baselineNow);
+      if(baselinePruned&&!cloudSaveBaseline(user,baselineNow))baselineSaveFailed=true;
       // Count remaining version-aware review cases after the safe actions.
       const finalBaseline=cloudLoadBaseline(user);remainingReview=0;
       for(const row of finalRows){
@@ -10667,7 +10719,7 @@ async function cloudRunVersionAwareSync(options={}){
       }
     }
 
-    setCloudTestStatus(`${automatic?'Automatic sync complete':'Version-aware sync complete'} for ${user.email||'authenticated user'}. Uploaded ${uploadedNew} new local shift(s); auto-uploaded ${uploadedEdits} device edit(s); imported ${importedNew} new cloud shift(s); auto-downloaded ${downloadedEdits} cloud edit(s); applied ${removedSafe} safe cloud deletion(s); ${uploadBlocked} cloud write(s) skipped/blocked; ${remainingReview} conflict/review case(s) left untouched.`);
+    setCloudTestStatus(`${automatic?'Automatic sync complete':'Version-aware sync complete'} for ${user.email||'authenticated user'}. Uploaded ${uploadedNew} new local shift(s); auto-uploaded ${uploadedEdits} device edit(s); imported ${importedNew} new cloud shift(s); auto-downloaded ${downloadedEdits} cloud edit(s); applied ${removedSafe} safe cloud deletion(s); ${uploadBlocked} cloud write(s) skipped/blocked; ${remainingReview} conflict/review case(s) left untouched.${baselineSaveFailed?' Warning: device storage failed to save the sync checkpoint; this does not confirm durable sync.':''}`);
   }catch(err){
     console.warn('Version-aware sync failed:',err);
     setCloudTestStatus(`Version-aware sync failed: ${err?.message||err}`);
@@ -11577,7 +11629,7 @@ async function saveShift(e){
   void cloudMirrorShift(s);closeModal();renderAll();showView('dashboard');
 }
 function deleteCurrent(){if(!billingRequireWriteAccess())return;const id=document.getElementById('editId').value;if(!id)return;const deletedShift=shifts.find(x=>x.id===id);if(confirm('Delete this shift?')){shifts=shifts.filter(x=>x.id!==id);persist();if(deletedShift){void cloudDeleteTimeSlipPhotoFiles(deletedShift);void cloudTombstoneShift(deletedShift)}closeModal();renderAll()}}
-function persist(){localStorage.setItem('lirrPayShifts',JSON.stringify(shifts));if(activeWorkspaceUserId)accountSaveWorkspace(activeWorkspaceUserId)}
+function persist(){localStorage.setItem('lirrPayShifts',JSON.stringify(shifts));return activeWorkspaceUserId?accountSaveWorkspace(activeWorkspaceUserId):true}
 function dateLabel(iso){if(!iso)return'';return new Date(iso+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'})}
 function fullDateLabel(iso){return new Date(iso+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric',year:'numeric'})}
 
@@ -11692,6 +11744,13 @@ function renderTimeSlipCenter(){
   const counts=Object.fromEntries(groups.map(g=>[g,grouped[g].length]));
   let out=`<div class="rate-note" style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><strong>Wage Examiners Office</strong><br><span class="muted">${WAGE_EXAMINERS_PHONE_DISPLAY}</span></div><a class="btn primary small" href="tel:${WAGE_EXAMINERS_TEL}">☎ Call Wage Examiners</a></div><div class="timeslip-summary">${groups.map(g=>`<div class="statbox"><div class="num">${counts[g]}</div><div>${g}</div></div>`).join('')}</div>`;
   for(const g of groups){const list=grouped[g];out+=`<div class="timeslip-group"><h3>${g}</h3>${list.length?list.map(timeSlipCard).join(''):'<div class="empty">No '+g.toLowerCase()+' time slips.</div>'}</div>`}
+  if(cloudShiftSyncStorageWarning){
+    out='<div class="rate-note" style="margin-bottom:10px"><strong>Device storage warning:</strong> Cloud changes are visible for this session but could not be fully saved on this device. Do not clear EPL data. Check Settings → Account Sync and retry when storage is available.</div>'+out;
+  }
+  if(cloudTimeSlipSyncReviewHints.length){
+    const example=cloudTimeSlipSyncReviewHints[0],extra=cloudTimeSlipSyncReviewHints.length-1;
+    out=`<div class="rate-note" style="margin-bottom:10px"><strong>Time Slip needs sync review:</strong> Your cloud record has Date Submitted and Location Submitted for ${escapeHTML(example.assignment)} (${escapeHTML(example.date)}), but this device still shows Needs Submission.${extra?` ${extra} other slip(s) also need review.`:''} No records were overwritten. Open Settings → Account Sync to review the difference.</div>`+out;
+  }
   el.innerHTML=out;
 }
 function getNextThursday(base=new Date()){const d=new Date(base.getFullYear(),base.getMonth(),base.getDate()),delta=(4-d.getDay()+7)%7;d.setDate(d.getDate()+delta);return d}
