@@ -805,6 +805,20 @@ html[data-theme="dark"] .shift-time-choice[aria-pressed="true"]{background:#5389
     .r5e-health-facts{display:grid;gap:5px;margin-top:10px;font-size:12px;font-weight:600}
     .r5e-health-footnote{font-size:12px;opacity:.8;line-height:1.5;margin:12px 0 0}
     html[data-theme="dark"] .r5e-good{background:#183e2c;color:#b5ebcb}html[data-theme="dark"] .r5e-caution{background:#473614;color:#ffe29d}html[data-theme="dark"] .r5e-neutral{background:#293541;color:#d3e1ed}
+
+    /* R2: restrained holiday schedule cards; technical source details tucked away. */
+    .holiday-lookup-card .quick-lookup-state{font-size:12px;color:var(--ink);font-weight:650}
+    .holiday-lookup-message{padding:11px 14px;border-bottom:1px solid var(--line);font-size:11px;line-height:1.5;color:var(--muted)}
+    .holiday-lookup-message.warning{background:#fff9e9;color:#805d19}
+    .holiday-lookup-reminder{padding:10px 14px;font-size:10px;color:var(--muted);line-height:1.45;border-bottom:1px solid var(--line)}
+    .holiday-source-details{border-bottom:0;background:var(--card)}
+    .holiday-source-details>summary{list-style:none;cursor:pointer;padding:11px 14px;color:var(--muted);font-size:10px;font-weight:750}
+    .holiday-source-details>summary::-webkit-details-marker{display:none}
+    .holiday-source-details>summary::after{content:' +';color:var(--muted)}
+    .holiday-source-details[open]>summary::after{content:' −'}
+    .holiday-source-body{padding:0 14px 12px;color:var(--muted);font-size:10px;line-height:1.5;overflow-wrap:anywhere}
+    .holiday-weekend-image{border-bottom:1px solid var(--line)}
+    html[data-theme="dark"] .holiday-lookup-message.warning{background:#2a2415;color:#f2dfaa}
 </style>
   <script>
     try{
@@ -2052,7 +2066,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <div class="section-title"><h2>Quick Job Lookup</h2><button class="btn small" id="quickLookupTopButton" type="button" onclick="quickLookupTopAction()">Dashboard</button></div>
       <div class="quick-lookup-mode-toggle" role="group" aria-label="Quick Job Lookup mode"><button id="quickLookupModeLookup" class="active" type="button" onclick="setQuickJobLookupMode('lookup')">Lookup</button><button id="quickLookupModeBrowse" type="button" onclick="setQuickJobLookupMode('browse')">Browse</button></div>
       <div id="quickLookupPaneLookup" class="quick-lookup-pane">
-        <p class="quick-lookup-intro">Look up one regular assignment, relief crew, Yard assignment, or supported holiday assignment. The selected date applies the correct revision and any day-specific Crew Book exception automatically. <strong>For relief crews, the full Monday–Sunday coverage is shown together so you can see every job the crew protects without changing the date.</strong> For GO 202 passenger jobs, official September 8 assignment images are loaded and become viewable beginning September 8.</p>
+        <p class="quick-lookup-intro">Look up an assignment and date to see its Crew Book schedule. Relief Crew lookups show the full week.</p>
         <div class="quick-lookup-controls">
           <div class="field full"><label>Assignment</label><input id="quickLookupJob" type="text" autocomplete="off" autocapitalize="characters" placeholder="e.g. 293, 470, YE-1" onkeydown="if(event.key==='Enter'){event.preventDefault();runQuickJobLookup()}"></div>
           <div class="field full"><label>Date</label><input id="quickLookupDate" type="date" onchange="quickLookupDateChanged(this.value)"></div>
@@ -6173,7 +6187,7 @@ function crewBookGo203Rev2BannerHTML(key,date){
 const GO203_PASSENGER_REV3_EFFECTIVE='2026-11-23';
 const GO203_PASSENGER_REV3_NOTES=Object.freeze({
  '352':'Relief days Saturday–Sunday; both days covered by Relief Crew 460 (not Extra Crew).',
- '354':'Monday–Friday report time 3:16 PM (previously 3:26 PM). Holiday H-354 remains a separate assignment.'
+ '354':'Monday–Friday report time changed from 3:26 PM to 3:16 PM.'
 });
 function crewBookGo203Rev3MergeRevision(revision,date){
  if(String(date||'')<GO203_PASSENGER_REV3_EFFECTIVE||String(revision?.go||'')!=='203'||revision?.fullBookProduction!==true)return revision;
@@ -6201,7 +6215,7 @@ function crewBookGo203Rev3MergeRevision(revision,date){
 function crewBookGo203Rev3BannerHTML(key,date){
  const k=normalizeCrewBookKey(key);
  if(String(date||'')<GO203_PASSENGER_REV3_EFFECTIVE||!GO203_PASSENGER_REV3_NOTES[k]||!crewBookProductionIsFutureCutover(date))return '';
- return `<div class="crewbook-paper-banner"><strong>GO 203 • Revision 3 • Effective November 23, 2026</strong>${escapeHTML(GO203_PASSENGER_REV3_NOTES[k])}<div style="margin-top:6px;font-size:9px">Revision 3 bulletin overrides the older printed image for these fields. No changes to holiday H-job report times.</div></div>`;
+ return `<div class="crewbook-paper-banner"><strong>GO 203 • Revision 3 • Effective November 23, 2026</strong>${escapeHTML(GO203_PASSENGER_REV3_NOTES[k])}</div>`;
 }
 
 function crewBookPassengerRevision(date){const base=date>=CREW_BOOK_REV7_EFFECTIVE?{go:'202',revision:'7',paperRevision:'8',effective:CREW_BOOK_REV7_EFFECTIVE,paperEffective:CREW_BOOK_PAPER_REV8_EFFECTIVE,draft:false,jobs:CREW_BOOK_REV7_AUDITED_JOBS,relief:CREW_BOOK_RELIEF_REV7}:{go:'201',revision:'6',effective:'2026-07-06',draft:false,jobs:CREW_BOOK_REV6_AUDITED_JOBS,relief:CREW_BOOK_RELIEF};return crewBookGo203Rev3MergeRevision(crewBookGo203Rev2MergeRevision(crewBookProductionMergeRevision(base,date),date),date)}
@@ -6904,40 +6918,77 @@ function go203ThanksgivingEntry(k){return GO203_THANKSGIVING_ASSIGNMENTS[String(
 function go203ThanksgivingTime(v){if(!v)return '—';const [hh,mm]=v.split(':').map(Number);return `${hh%12||12}:${String(mm).padStart(2,'0')} ${hh<12?'AM':'PM'}`}
 function go203ThanksgivingSummary(k){
  const e=go203ThanksgivingEntry(k);if(!e)return '';
- if(e.s==='work')return `Thanksgiving: ${e.h} • ${go203ThanksgivingTime(e.r)}–${go203ThanksgivingTime(e.e)}`;
- if(e.s==='extra_work')return 'Thanksgiving: assigned to work (Extra List; assignment not specified)';
- if(e.s==='conflict')return 'Thanksgiving: source tables conflict — verify';
- return 'Thanksgiving: no assignment published';
+ if(e.s==='work')return `${e.h} • ${go203ThanksgivingTime(e.r)}–${go203ThanksgivingTime(e.e)}`;
+ if(e.s==='extra_work')return 'Assigned to work (Extra List; assignment not listed)';
+ if(e.s==='conflict')return 'Assignment needs verification';
+ return 'No assignment listed';
 }
 function go203ThanksgivingTrimInfoHTML(row){
- if(row?.assignment_type==='extra_list')return '<div class="trim-result-detail"><strong>Thanksgiving:</strong> Engineer Extra List assignments are shown separately as jobs 1101–1185 in Quick Job Lookup. No roster-position-to-Extra-List-number assumption is made.</div>';
+ if(row?.assignment_type==='extra_list')return '<div class="trim-result-detail"><strong>🦃 Thanksgiving:</strong> Check your Extra List job number in Quick Job Lookup.</div>';
  const e=go203ThanksgivingEntry(row?.assignment);if(!e)return '';
- return `<div class="trim-result-detail"><strong>🦃 Nov 26:</strong> ${escapeHTML(go203ThanksgivingSummary(row?.assignment))}<br><small>GO 203 Rev. 2 • ${escapeHTML(e.p||'holiday table')}${e.sp?` • Schedule ${escapeHTML(e.sp)}`:''}${e.f?' • release selected from date-specific footnote':''}. Holiday scheduling only; not a pay calculation.</small></div>`;
+ return `<div class="trim-result-detail"><strong>🦃 Thanksgiving:</strong> ${escapeHTML(go203ThanksgivingSummary(row?.assignment))}</div>`;
 }
-function go203ThanksgivingQuickLookupHTML(key,date){
- const k=normalizeCrewBookKey(key),e=go203ThanksgivingEntry(k),h=GO203_THANKSGIVING_H_COVERAGE[k];
- if(!e&&!h)return `<div class="quick-lookup-error"><strong>${escapeHTML(k)}</strong><br>No Thanksgiving engineer holiday-table entry for this number. Use an H-job, regular/relief crew, or engineer Extra List job number (1101–1185). For Yard assignments refer to their official work source.</div>`;
- let title=`Job ${k}`,status='',source='',notes='',schedule=null;
- if(e){
-  status=go203ThanksgivingSummary(k);source=`GO 203 Rev. 2 • Holiday assignments ${e.p}`;
-  if(e.s==='work'){schedule=e;title=`Job ${k} → ${e.h}`;source+=` • H-job schedule ${e.sp}`;}
-  else if(e.s==='extra_work')notes='Engineer Guaranteed Extra List entry marked W = assigned to work. The Crew Book does not supply a specific H-job, report time, or release time for this entry.';
-  else if(e.s==='unlisted')notes='The official holiday work column is blank. Do not infer that the engineer is guaranteed off or automatically entitled to holiday pay.';
-  else notes='CONFLICT: Coverage page H-2 assigns H-63 to regular Job 30, but regular assignment page H-7 leaves Job 30 blank. Must be confirmed by an official correction.';
- }else if(h){
-  title=k;source=`GO 203 Rev. 2 • Holiday coverage ${h.p}`;
-  if(h.s==='assigned'){
-   const owner=go203ThanksgivingEntry(h.v);if(owner?.s==='work'&&owner.h===k){schedule=owner;status=`${k} covered by regular/relief Job ${h.v}`;source+=` • H-job schedule ${owner.sp}`;}
-   else if(k==='H-63'){status='SOURCE CONFLICT — H-63 / Job 30';notes=h.note;}
-   else{status=`${k} shows coverage by Job ${h.v}`;notes='Schedule not reconciled to assignment table. Verify the official H-job entry.';}
-  }else if(h.s==='conflict'){status='SOURCE CONFLICT — H-63 / Job 30';notes=h.note||'Two published holiday tables disagree; verify before relying on this schedule.';}else if(h.s==='tba'){status=`${k} — to be assigned (+)`;notes='The + sign denotes an unassigned coverage slot, not a specific engineer being scheduled.';}
-  else{status=`${k} — not scheduled (-)`;notes='The official coverage table contains a dash; no substitute assignment has been inferred.';}
- }
- const time=schedule?`<div class="quick-lookup-grid"><div class="quick-lookup-fact"><div class="label">Holiday report</div><div class="value">${escapeHTML(go203ThanksgivingTime(schedule.r))}</div></div><div class="quick-lookup-fact"><div class="label">Holiday release</div><div class="value">${escapeHTML(go203ThanksgivingTime(schedule.e))}</div></div></div>`:'';
- const footnote=schedule?.f?`<div class="quick-lookup-exception"><strong>Source footnote:</strong> ${escapeHTML(schedule.footnote||'Date-dependent variant checked against printed H-job schedule.')}</div>`:'';
- return `<article class="quick-lookup-card"><div class="quick-lookup-head"><div class="quick-lookup-titleline"><div class="quick-lookup-job">${escapeHTML(title)}</div><div class="quick-lookup-source">Thanksgiving Day • Thu Nov 26, 2026</div></div><div class="quick-lookup-state">${escapeHTML(status)}</div></div>${time}<div class="quick-lookup-relief"><strong>Official source</strong>${escapeHTML(source)}</div>${notes?`<div class="quick-lookup-exception"><strong>Important</strong>${escapeHTML(notes)}</div>`:''}${footnote}<div class="quick-lookup-exception"><strong>Scheduling only</strong>These times are drawn from the holiday Crew Book section. This lookup does not independently determine holiday pay, paid meals, or Hours of Service; temporary scratch-sheet changes may supersede the book.</div></article>`;
+function go203ThanksgivingWeekendImageHTML(schedule,date){
+ const underlying=String(schedule?.h||'').replace(/^H-/, '');
+ if(!/^\d+$/.test(underlying))return '';
+ const meta=crewBookGo203OfficialSprite(underlying,date),cloud=crewBookProductionAsset(underlying,'official_job',date);
+ const label=`Official GO 203 — Job ${underlying} weekend portion`;
+ // Consistent precedence with existing approved Crew Book image path: latest Rev2
+ // crop, then official cloud job asset, then existing GO203 individual-job sprite.
+ const image=meta?.rev2?crewBookSpriteCropHTML(meta,label):cloud?crewBookProductionImageHTML(cloud,label):meta?crewBookSpriteCropHTML(meta,label):'<div class="crewbook-official-unavailable">This Crew Book image is not available right now. The published holiday times remain shown above.</div>';
+ return `<details class="crewbook-official-details holiday-weekend-image"><summary>View Job ${escapeHTML(underlying)} Weekend Crew Book Schedule</summary><div class="crewbook-official-body">${image}<div class="crewbook-image-caption">${escapeHTML(schedule.h)} uses the weekend portion of Job ${escapeHTML(underlying)}. Refer to the holiday report/release times above for this date.</div></div></details>`;
 }
 
+function go203ThanksgivingQuickLookupHTML(key,date){
+ const k=normalizeCrewBookKey(key),e=go203ThanksgivingEntry(k),h=GO203_THANKSGIVING_H_COVERAGE[k];
+ if(!e&&!h)return `<div class="quick-lookup-error"><strong>${escapeHTML(k)}</strong><br>No Thanksgiving holiday entry is listed for this number. Try a regular, relief, H-job, or engineer Extra List assignment.</div>`;
+ const isExtra=Number(k)>=1101&&Number(k)<=1185&&/^\d+$/.test(k);
+ let title=isExtra?`Extra List ${k}`:`Job ${k}`,status='',source='',note='',privateNote='',schedule=null;
+ if(e){
+   source=`GO 203 Rev. 2 • Holiday assignments ${e.p}`;
+   if(e.s==='work'){
+     schedule=e;title=`Job ${k} → ${e.h}`;
+     status=`Weekend portion of Job ${String(e.h).replace(/^H-/, '')}`;
+     source+=` • H-job schedule ${e.sp}`;
+   }else if(e.s==='extra_work'){
+     status='Assigned to work — specific assignment not listed';
+     note='Check the holiday scratch sheet for your assignment and report time.';
+   }else if(e.s==='conflict'){
+     status='Holiday assignment needs verification';
+     note='The published holiday tables disagree. Check the latest official correction.';
+     privateNote=e.note||'Coverage page H-2 assigns H-63 to Job 30, but assignment page H-7 leaves Job 30 blank.';
+   }else{
+     status='No Thanksgiving assignment listed';
+   }
+ }else if(h){
+   title=k;source=`GO 203 Rev. 2 • Holiday coverage ${h.p}`;
+   if(h.s==='assigned'){
+     const owner=go203ThanksgivingEntry(h.v);
+     if(owner?.s==='work'&&owner.h===k){
+       schedule=owner;status=`Covered by Job ${h.v} · Weekend portion of Job ${k.replace(/^H-/, '')}`;
+       source+=` • H-job schedule ${owner.sp}`;
+     }else{
+       status='Holiday assignment needs verification';
+       note='The holiday coverage and assignment tables do not agree. Check the latest official correction.';
+       privateNote=h.note||`Coverage table shows Job ${h.v}; assignment is not verified in the other table.`;
+     }
+   }else if(h.s==='conflict'){
+     status='Holiday assignment needs verification';
+     note='The published holiday tables disagree. Check the latest official correction.';
+     privateNote=h.note||'Holiday coverage and assignment tables conflict.';
+   }else if(h.s==='tba'){
+     status='To be assigned';
+   }else{
+     status='No assignment scheduled';
+   }
+ }
+ const clock=schedule?`<div class="quick-lookup-grid"><div class="quick-lookup-fact"><div class="label">Report</div><div class="value">${escapeHTML(go203ThanksgivingTime(schedule.r))}</div></div><div class="quick-lookup-fact"><div class="label">Release</div><div class="value">${escapeHTML(go203ThanksgivingTime(schedule.e))}</div></div></div>`:'';
+ const image=schedule?go203ThanksgivingWeekendImageHTML(schedule,date):'';
+ const visibleNote=note?`<div class="holiday-lookup-message${(e?.s==='conflict'||(h&&!schedule&&h.s==='assigned')||h?.s==='conflict')?' warning':''}">${escapeHTML(note)}</div>`:'';
+ const extraDetail=[source,privateNote,schedule?.f?`Schedule footnote: ${schedule.footnote||'Date-dependent schedule variant verified against printed H-job schedule.'}`:''].filter(Boolean).join(' · ');
+ const detailHTML=`<details class="holiday-source-details"><summary>Source details</summary><div class="holiday-source-body">${escapeHTML(extraDetail)}</div></details>`;
+ return `<article class="quick-lookup-card holiday-lookup-card"><div class="quick-lookup-head"><div class="quick-lookup-titleline"><div class="quick-lookup-job">${escapeHTML(title)}</div><div class="quick-lookup-source">Thanksgiving · Nov 26, 2026</div></div><div class="quick-lookup-state">${escapeHTML(status)}</div></div>${clock}${visibleNote}${image}<div class="holiday-lookup-reminder">Holiday schedule only. Check the latest scratch sheet for changes.</div>${detailHTML}</article>`;
+}
 function quickLookupResultHTML(key,date){
   if(date===GO203_THANKSGIVING_DATE)return go203ThanksgivingQuickLookupHTML(key,date);
   const resolved=jobCompareResolveForDay(key,date),hit=resolved.hit,x=resolved.schedule,reliefInfo=jobCompareReliefCrewDefinition(key,date);
@@ -7106,7 +7157,7 @@ async function communityReact(noteId,reaction){
   await communityLoadForLookup(COMMUNITY_CONTEXT.jobKey,COMMUNITY_CONTEXT.date);
 }
 
-function runQuickJobLookup(showValidation=true){QUICK_JOB_LOOKUP_MODE='lookup';initQuickJobLookup();const raw=(document.getElementById('quickLookupJob')?.value||'').trim(),date=document.getElementById('quickLookupDate')?.value,result=document.getElementById('quickLookupResult'),note=document.getElementById('quickLookupSourceNote');if(!result)return;if(!raw||!date){if(showValidation)result.innerHTML='<div class="quick-lookup-error"><strong>Enter an assignment and date.</strong><br>Both are required for a date-aware Crew Book lookup.</div>';return}const key=normalizeCrewBookKey(raw);result.innerHTML=quickLookupResultHTML(key,date);if(date!==GO203_THANKSGIVING_DATE)void communityLoadForLookup(key,date);if(note){const rev=crewBookPassengerRevision(date);note.innerHTML=`<strong>${escapeHTML(date)}</strong> • ${escapeHTML(crewBookRevisionLabel(rev,'Passenger'))}<br>Regular assignments, relief crews, Yard assignments, and supported holiday assignments are resolved from the selected date. Weekly OT excludes paid meal-period allowances; paid meals are shown separately.${date===GO203_THANKSGIVING_DATE?' Thanksgiving source is a separate published holiday table; pay is not inferred.':''}`}}
+function runQuickJobLookup(showValidation=true){QUICK_JOB_LOOKUP_MODE='lookup';initQuickJobLookup();const raw=(document.getElementById('quickLookupJob')?.value||'').trim(),date=document.getElementById('quickLookupDate')?.value,result=document.getElementById('quickLookupResult'),note=document.getElementById('quickLookupSourceNote');if(!result)return;if(!raw||!date){if(showValidation)result.innerHTML='<div class="quick-lookup-error"><strong>Enter an assignment and date.</strong><br>Both are required for a date-aware Crew Book lookup.</div>';return}const key=normalizeCrewBookKey(raw);result.innerHTML=quickLookupResultHTML(key,date);if(date!==GO203_THANKSGIVING_DATE)void communityLoadForLookup(key,date);if(note){const rev=crewBookPassengerRevision(date);note.innerHTML=date===GO203_THANKSGIVING_DATE?'<strong>Thanksgiving Day — November 26, 2026</strong> · GO 203 Rev. 2 holiday tables':`<strong>${escapeHTML(date)}</strong> · ${escapeHTML(crewBookRevisionLabel(rev,'Passenger'))}`;}}
 
 
 function renderCrewBookAssistUI(){
@@ -16289,7 +16340,6 @@ function trimDevApplyFilters(){
     else if(other)detail=trimDevYardRegularScheduleCardsHTML(r);
     else if(!extra&&job){detail=trimDevRegularScheduleCardsHTML(r);if(!detail&&job.type==='extraCrewOnly'&&job.extra)detail=`<div class="trim-result-schedules">${trimDevScheduleCard('Published schedule',job.extra)}</div>`}
     const cardLabel=extra?'Guaranteed Extra List':other&&reliefInfo?.type==='yard'?'Yard Relief Crew':other?'Yard / other assignment':reliefInfo?'Relief Crew':'Passenger Crew Book assignment';
-    if(!extra&&/^\d+$/.test(String(r.assignment)))chips.push(go203ThanksgivingSummary(r.assignment));
     const chipHTML=chips.map(c=>`<span class="trim-chip${c.startsWith('IPMA:')?' trim-ipma':''}${c.startsWith('Weekly OT:')?' trim-ot':''}">${escapeHTML(c)}</span>`).join('');
     if(extra||other)return `<div class="trim-result trim-static"><div class="trim-result-top"><div><div class="trim-result-job">${escapeHTML(r.assignment)}</div><div class="trim-result-type">${escapeHTML(cardLabel)}</div></div><div class="trim-result-rank">Rank ${Number(r.rank)}</div></div><div class="trim-result-meta">${chipHTML}</div>${other&&detail?detail:''}${go203ThanksgivingTrimInfoHTML(r)}${trimCompareActionHTML(r)}</div>`;
     const hint=reliefInfo?'Tap to view every covered job assignment':'Tap to view the official Crew Book assignment';
@@ -16557,7 +16607,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 window.addEventListener('pageshow',()=>trimAssistantRefreshLiveIfVisible());
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=11-test4b-go203-auth-20261111').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=r5e-rev3-thanksgiving-r2-20261120').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });

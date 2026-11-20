@@ -1,4 +1,4 @@
-const CACHE_NAME='epl-v11-1-r5e-rev3-thanksgiving-test-r1-20261120';
+const CACHE_NAME='epl-v11-1-r5e-rev3-thanksgiving-r2-20261120';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./GO203_ROAD_YARD_DRAFT_NOV9_2026.pdf'];
 
 self.addEventListener('install',e=>e.waitUntil(
