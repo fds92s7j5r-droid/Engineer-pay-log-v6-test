@@ -6209,14 +6209,33 @@ const GO203_PASSENGER_REV3_NOTES=Object.freeze({
  '354':'Monday–Friday report time changed from 3:26 PM to 3:16 PM.'
 });
 function crewBookGo203Rev3MergeRevision(revision,date){
- if(String(date||'')<GO203_PASSENGER_REV3_EFFECTIVE||String(revision?.go||'')!=='203'||revision?.fullBookProduction!==true)return revision;
+ // Reconcile both sides of Job 352's published relief change. The cloud full-book
+ // relief map can still name Crew 460 on a Rev. 2 report date. A future-only
+ // overlay would leave that historical reverse mapping untouched.
+ if(String(revision?.go||'')!=='203'||revision?.fullBookProduction!==true)return revision;
+ const rev3Active=String(date||'')>=GO203_PASSENGER_REV3_EFFECTIVE;
  const jobs={...revision.jobs},relief={...revision.relief};
  const j352=jobs['352'];
  if(j352?.__go203FullBook){
-   const coverage={...(j352.coverage||{}),saturday:'Relief Crew 460',sunday:'Relief Crew 460'};
-   jobs['352']={...j352,relief:['saturday','sunday'],reliefDays:['saturday','sunday'],coverage,revisionBulletin:GO203_PASSENGER_REV3_NOTES['352']};
-   const r460={...(relief['460']||{})};r460.saturday='352';r460.sunday='352';relief['460']=r460;
+   const coverage={...(j352.coverage||{}),saturday:rev3Active?'Relief Crew 460':'Extra Crew',sunday:rev3Active?'Relief Crew 460':'Extra Crew'};
+   jobs['352']={...j352,relief:['saturday','sunday'],reliefDays:['saturday','sunday'],coverage,...(rev3Active?{revisionBulletin:GO203_PASSENGER_REV3_NOTES['352']}:{})};
+   // A reverse lookup determines the 'covered by' text in Quick Lookup and
+   // Job Comparison; purge only stale weekend references to Job 352.
+   for(const [crew,map] of Object.entries(relief)){
+     if(!map||typeof map!=='object'||(rev3Active&&crew==='460'))continue;
+     if(String(map.saturday||'')==='352'||String(map.sunday||'')==='352'){
+       const corrected={...map};
+       if(String(corrected.saturday||'')==='352')corrected.saturday=null;
+       if(String(corrected.sunday||'')==='352')corrected.sunday=null;
+       relief[crew]=corrected;
+     }
+   }
+   if(rev3Active){
+     const r460={...(relief['460']||{})};r460.saturday='352';r460.sunday='352';relief['460']=r460;
+   }
  }
+ // Do not mark historical GO 203 dates as Revision 3.
+ if(!rev3Active)return j352?.__go203FullBook?{...revision,jobs,relief}:revision;
  const j354=jobs['354'];
  if(j354?.__go203FullBook){
    const daySchedules={...(j354.daySchedules||{})},week=['monday','tuesday','wednesday','thursday','friday'];
@@ -6668,7 +6687,7 @@ function jobCompareReliefText(key,hit,date){
   if(!hit||hit.source==='holiday')return hit?.source==='holiday'?'Holiday assignment — regular relief pattern not applicable':'—';
   const days=Array.isArray(hit.job?.relief)?hit.job.relief:[];if(!days.length)return 'No published regular relief days';
   const coverage=jobCompareReliefCoverage(key,date);
-  return days.map(day=>{const crews=coverage[day]||[];return `${jobCompareDayLabel(day)}${crews.length?` — covered by ${crews.join(', ')}`:''}`}).join(' • ');
+  return days.map(day=>{const crews=coverage[day]||[];const extra352=key==='352'&&String(date||'')<GO203_PASSENGER_REV3_EFFECTIVE&&hit.revision?.go==='203'&&hit.revision?.fullBookProduction===true&&String(hit.job?.coverage?.[day]||'').toLowerCase()==='extra crew';return `${jobCompareDayLabel(day)}${crews.length?` — covered by ${crews.join(', ')}`:extra352?' — covered by Extra Crew':''}`}).join(' • ');
 }
 function jobCompareReliefCrewDaysOffText(hit){
   if(!hit?.reliefCrew||!hit.reliefMap)return '—';
@@ -16742,7 +16761,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 window.addEventListener('pageshow',()=>trimAssistantRefreshLiveIfVisible());
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=r5e-rev3-weekly-earnings-r4-20261120').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=r5c-rev3-352-coverage-20261120').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
