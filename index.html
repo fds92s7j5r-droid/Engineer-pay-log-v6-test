@@ -1352,6 +1352,17 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     .job-compare-money .label{font-size:10px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.06em}
     .job-compare-money .amount{font-size:25px;font-weight:900;color:var(--ink);margin-top:2px}
     .job-compare-money .sub{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.35}
+    .job-compare-weekly{padding:13px 14px;border-bottom:1px solid var(--line);background:var(--bg)}
+    .job-compare-weekly-label{font-size:10px;font-weight:850;color:var(--brand);text-transform:uppercase;letter-spacing:.045em}
+    .job-compare-weekly-total{font-size:25px;font-weight:900;letter-spacing:-.02em;color:var(--ink);margin-top:3px;line-height:1.22}
+    .job-compare-weekly-note{font-size:10px;color:var(--muted);line-height:1.4;margin-top:4px}
+    .job-compare-weekly-details{margin-top:7px}
+    .job-compare-weekly-details>summary{cursor:pointer;color:var(--brand);font-weight:800;font-size:10.5px}
+    .job-compare-weekly-breakdown{border-top:1px solid var(--line);padding-top:8px;margin-top:8px;display:grid;gap:7px}
+    .job-compare-weekly-breakdown>div{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:10.5px}
+    .job-compare-weekly-breakdown strong{color:var(--ink)}
+    .job-compare-weekly-breakdown .job-compare-weekly-breakdown-total{padding-top:7px;margin-top:2px;border-top:1px solid var(--line);font-weight:850;color:var(--ink)}
+    .job-compare-week-range{font-size:10px;font-weight:800;color:var(--brand);background:var(--bg);padding:9px 12px;border-bottom:1px solid var(--line)}
     .job-compare-facts{display:grid;grid-template-columns:1fr 1fr}
     .job-compare-fact{padding:12px 13px;border-bottom:1px solid var(--line)}
     .job-compare-fact:nth-child(odd){border-right:1px solid var(--line)}
@@ -6656,11 +6667,90 @@ function jobCompareReliefCrewDaysOffText(hit){
   const days=CREW_BOOK_DAYS.filter(day=>!hit.reliefMap?.[day]);
   return days.length?days.map(jobCompareDayLabel).join(' • '):'No published relief days';
 }
-function jobComparePayForSchedule(key,date,schedule){
+function jobComparePayForSchedule(key,date,schedule,mode=JOB_COMPARE_PAY_MODE){
   if(!schedule)return null;
   const ratePct=payScaleForDate(date);if(!ratePct||!rateTableFor(ratePct))return {rateMissing:true};
-  const s={date,assignment:key,start:schedule.start,end:schedule.end,paysMeal:!!schedule.paysMeal,rd:JOB_COMPARE_PAY_MODE==='relief',traineeMode:false};
+  const s={date,assignment:key,start:schedule.start,end:schedule.end,paysMeal:!!schedule.paysMeal,rd:mode==='relief',traineeMode:false};
   return calculate(s);
+}
+
+// Weekly Job Earnings: the published assignment's *normal* week, not a
+// summation of seven hypothetical if-worked shifts. The selected-day All-OT
+// toggle must not turn a regular job's entire week into relief-day overtime.
+// In particular, regular owners do NOT earn their assigned relief-day work;
+// relief crews DO earn the specific jobs they actually cover each day.
+const JOB_COMPARE_WEEKLY_PAY_FIELDS=['regular','ot','mptePay','freightMealPay','night','dailyCertPay'];
+function jobCompareWeekMonday(date){
+  const d=new Date(`${date}T12:00:00`);
+  if(!Number.isFinite(d.getTime()))return null;
+  d.setDate(d.getDate()-((d.getDay()+6)%7));
+  return d;
+}
+function jobCompareWeekDate(monday,offset){const d=new Date(monday);d.setDate(monday.getDate()+offset);return isoLocal(d)}
+function jobCompareWeekHasHoliday(monday){
+  return Array.from({length:7},(_,i)=>jobCompareWeekDate(monday,i)).some(date=>isContractHoliday(date)||crewBookIsLaborDay2026(date)||date===GO203_THANKSGIVING_DATE);
+}
+function jobCompareWeekRevisionKey(key,date){
+  const rev=(isYardCrewKey(key)||isYardReliefKey(key))?crewBookRoadYardRevision(date):crewBookPassengerRevision(date);
+  // Preserve the verified GO 202/203 November 9 cutover even when a device
+  // has not loaded its GO 203 cloud cache yet.
+  const cutoverEra=String(date)<'2026-11-09'?'before-go203':'go203-and-later';
+  return [cutoverEra,rev?.go,rev?.revision,rev?.paperRevision,rev?.productionVersionId,rev?.productionEffective].map(v=>String(v||'')).join('|');
+}
+function jobCompareEarningsWeekMonday(key,date){
+  const monday=jobCompareWeekMonday(date);if(!monday)return null;
+  if(!jobCompareWeekHasHoliday(monday))return monday;
+  // A holiday-week comparison uses an adjacent ordinary week with the SAME
+  // official Crew Book revision. Do not jump a historical GO cutover merely
+  // because the chosen week contains a holiday (e.g. Nov 8, GO 202).
+  const sourceRev=jobCompareWeekRevisionKey(key,date);
+  for(let i=1;i<=9;i++)for(const direction of [1,-1]){
+    const alternate=new Date(monday);alternate.setDate(monday.getDate()+7*i*direction);
+    if(jobCompareWeekHasHoliday(alternate))continue;
+    const rev=jobCompareWeekRevisionKey(key,jobCompareWeekDate(alternate,0));
+    if(rev===sourceRev)return alternate;
+  }
+  return null;
+}
+function jobCompareNormalWeekData(key,anchorDate){
+  key=normalizeCrewBookKey(key);
+  const monday=jobCompareEarningsWeekMonday(key,anchorDate);
+  if(!monday)return {unavailable:'No regular non-holiday week is available for this date.'};
+  const firstDate=jobCompareWeekDate(monday,0),lastDate=jobCompareWeekDate(monday,6),
+        isAlternativeWeek=firstDate!==isoLocal(jobCompareWeekMonday(anchorDate)),
+        totals={regular:0,ot:0,mptePay:0,freightMealPay:0,night:0,dailyCertPay:0,other:0,total:0},days=[];
+  let rateMissing=false;
+  for(let i=0;i<7;i++){
+    const date=jobCompareWeekDate(monday,i),day=CREW_BOOK_DAYS[i],resolved=jobCompareResolveForDay(key,date),hit=resolved?.hit,schedule=resolved?.schedule;
+    if(!hit)return {unavailable:'A published daily schedule could not be verified for the full week.'};
+    const ownerRelief=!hit.reliefCrew&&Array.isArray(hit.job?.relief)&&hit.job.relief.includes(day);
+    if(ownerRelief||hit.reliefCrew&&!hit.coveredKey){days.push({date,day,off:true,hit});continue}
+    if(!schedule?.start||!schedule?.end){
+      return {unavailable:'A scheduled workday is missing published report or release times.'};
+    }
+    // Treat this as the scheduled assignment, NEVER a picked-up relief day.
+    const pay=jobComparePayForSchedule(key,date,schedule,'regular');
+    if(pay?.rateMissing){rateMissing=true;days.push({date,day,hit,schedule,pay:null,off:false});continue}
+    if(!pay||!Number.isFinite(pay.total))return {unavailable:'The existing pay engine could not price this workday.'};
+    let components=0;
+    for(const f of JOB_COMPARE_WEEKLY_PAY_FIELDS){const v=Number(pay[f]||0);totals[f]+=v;components+=v}
+    totals.other+=pay.total-components;
+    totals.total+=pay.total;
+    days.push({date,day,hit,schedule,pay,off:false});
+  }
+  const worked=days.filter(d=>!d.off).length;
+  if(!worked)return {unavailable:'No published scheduled workdays for this assignment.'};
+  return {totals,days,worked,firstDate,lastDate,isAlternativeWeek,rateMissing,ratePct:payScaleForDate(lastDate)};
+}
+function jobCompareWeekDateLabel(date){const [year,month,day]=date.split('-').map(Number);return new Date(year,month-1,day,12).toLocaleDateString('en-US',{month:'short',day:'numeric'})}
+function jobCompareWeeklyEarningsHTML(key,anchorDate,weekData=null){
+  const week=weekData||jobCompareNormalWeekData(key,anchorDate);
+  if(week.rateMissing)return `<section class="job-compare-weekly"><div class="job-compare-weekly-label">Estimated Weekly Job Earnings</div><div class="job-compare-weekly-total">Set hire date</div><div class="job-compare-weekly-note">A hire date is needed for your pay-scale estimate.</div></section>`;
+  if(week.unavailable)return `<section class="job-compare-weekly"><div class="job-compare-weekly-label">Estimated Weekly Job Earnings</div><div class="job-compare-weekly-total">—</div><div class="job-compare-weekly-note">${escapeHTML(week.unavailable)}</div></section>`;
+  const b=week.totals,meal=b.mptePay+b.freightMealPay,
+    entries=[['Straight time',b.regular],['Scheduled overtime',b.ot],['Paid meals',meal],['Night differential',b.night],['Daily certificates',b.dailyCertPay],['Other scheduled pay',b.other]].filter(([label,v])=>Math.abs(v)>.001||label==='Straight time');
+  const range=`${jobCompareWeekDateLabel(week.firstDate)}–${jobCompareWeekDateLabel(week.lastDate)}`;
+  return `<section class="job-compare-weekly"><div class="job-compare-weekly-label">Estimated Weekly Job Earnings</div><div class="job-compare-weekly-total">${escapeHTML(money(b.total))}</div><div class="job-compare-weekly-note">${week.worked} scheduled workday${week.worked===1?'':'s'} · ${escapeHTML(range)} · Regular job pay${week.isAlternativeWeek?(week.firstDate<isoLocal(jobCompareWeekMonday(anchorDate))?' · previous non-holiday week':' · next non-holiday week'):''}</div><details class="job-compare-weekly-details"><summary>Weekly earnings breakdown</summary><div class="job-compare-weekly-breakdown">${entries.map(([label,v])=>`<div><span>${escapeHTML(label)}</span><strong>${escapeHTML(money(v))}</strong></div>`).join('')}<div class="job-compare-weekly-breakdown-total"><span>Weekly gross</span><strong>${escapeHTML(money(b.total))}</strong></div></div></details></section>`;
 }
 function jobCompareResolveForDay(key,date){
   key=normalizeCrewBookKey(key);
@@ -6693,26 +6783,23 @@ function jobCompareFatigueBadge(f){
   const title=`GO 203 ${f.page} • Job ${f.job}${f.reliefFallback?' • published weekly type (regular owner relief day)':''}`;
   return `<span class="job-compare-fatigue" title="${escapeHTML(title)}">Type ${escapeHTML(f.type)}</span>`;
 }
-function jobCompareWeekRows(key,anchorDate){
-  const base=new Date(anchorDate+'T12:00:00'),mon=new Date(base);mon.setDate(base.getDate()-((base.getDay()+6)%7));
+function jobCompareWeekRows(key,anchorDate,weekData=null){
+  const week=weekData||jobCompareNormalWeekData(key,anchorDate);
+  if(!week.days)return `<div class="job-compare-week-row">${escapeHTML(week.rateMissing?'Set hire date to estimate weekly pay.':week.unavailable||'Weekly schedule unavailable.')}</div>`;
   let rows='';
-  for(let i=0;i<7;i++){
-    const d=new Date(mon);d.setDate(mon.getDate()+i);const date=isoLocal(d),day=CREW_BOOK_DAYS[i],resolved=jobCompareResolveForDay(key,date),x=resolved.schedule,hit=resolved.hit;
-    let main='Off / no active schedule',sub='';
-    if(x){
+  for(const d of week.days){
+    const {date,day,hit,schedule:x,pay,off}=d;
+    let main='Relief day / Off',sub='No scheduled earnings';
+    if(!off&&x){
       const time=`${jobCompareTimeLabel(x.start)} – ${jobCompareTimeLabel(x.end)}`,duration=jobCompareDuration(x.start,x.end);
       if(hit?.reliefCrew){main=`Job ${hit.coveredKey} • ${time}`;sub=`${hit.job?.terminal||'Covered assignment'} • ${fmtMinutes(duration)}${x.paysMeal?' • Pays meal':''}`}
-      else if(hit?.source==='holiday'){main=`Holiday Crew ${hit.key} • ${time}`;sub=`${hit.job?.terminal||'Holiday assignment'} • ${fmtMinutes(duration)} • Holiday pay${x.paysMeal?' • Pays meal':''}`}
-      else{const ownerRelief=!!hit?.job?.relief?.includes(day);main=time;sub=`${fmtMinutes(duration)}${ownerRelief?' • Regular owner relief day':''}${x.paysMeal?' • Pays meal':''}`}
-    }else if(hit?.reliefCrew){main='Relief Day / Off';sub='No covered assignment'}
-    else if(hit?.source==='holiday'){
-      if(hit.state==='off')main='Off / To Be Assigned'; else if(hit.state==='none')main='No published holiday assignment'; else main='Holiday assignment unavailable';
+      else{main=time;sub=`${fmtMinutes(duration)}${x.paysMeal?' • Pays meal':''}`}
     }
-    const fatigue=jobCompareFatigueForResolved(key,date,resolved);
-    const pay=x?jobComparePayForSchedule(key,date,x):null,payText=pay?.rateMissing?'Rate —':pay?money(pay.total):'—';
-    rows+=`<div class="job-compare-week-row${date===anchorDate?' selected':''}"><div class="job-compare-week-day">${escapeHTML(day.slice(0,3).toUpperCase())}</div><div class="job-compare-week-main"><strong>${escapeHTML(main)}</strong><span>${escapeHTML(sub||date)}${fatigue?` • ${escapeHTML(`Type ${fatigue.type}`)}`:''}</span></div><div class="job-compare-week-pay">${escapeHTML(payText)}</div></div>`;
+    const fatigue=!off?jobCompareFatigueForResolved(key,date,{hit,schedule:x}):null;
+    const payText=off?'—':pay?' '+money(pay.total):'Rate —';
+    rows+=`<div class="job-compare-week-row${date===anchorDate?' selected':''}"><div class="job-compare-week-day">${escapeHTML(day.slice(0,3).toUpperCase())}</div><div class="job-compare-week-main"><strong>${escapeHTML(main)}</strong><span>${escapeHTML(sub)}${fatigue?` • ${escapeHTML(`Type ${fatigue.type}`)}`:''}</span></div><div class="job-compare-week-pay">${escapeHTML(payText)}</div></div>`;
   }
-  return rows;
+  return `<div class="job-compare-week-range">Regular week: ${escapeHTML(jobCompareWeekDateLabel(week.firstDate))}–${escapeHTML(jobCompareWeekDateLabel(week.lastDate))}${week.isAlternativeWeek?' (selected week contains a holiday)':''}</div>`+rows;
 }
 function jobCompareCardHTML(key,date){
   const resolved=jobCompareResolveForDay(key,date),hit=resolved.hit,x=resolved.schedule;
@@ -6739,14 +6826,16 @@ function jobCompareCardHTML(key,date){
   const ownerReliefDay=!hit?.reliefCrew&&hit?.source!=='holiday'&&!!hit?.job?.relief?.includes(hit?.day);
   const payScenario=JOB_COMPARE_PAY_MODE==='relief'?'relief-day scenario — entire assignment at overtime':(ownerReliefDay?'regular-pay scenario — regular owner is off this day':'regular-pay scenario');
   const paySub=pay?.rateMissing?'A hire date is needed to determine your pay scale.':pay?`${pay.ratePct}% rate • ${payScenario}${hit?.source==='holiday'?' • holiday rules applied':''}${x.paysMeal?' • meal allowance included':''}`:(hit.reliefCrew?'Relief crew is off on this date.':'No active schedule to price for this date.');
-  const source=jobCompareSourceLabel(hit),weekKey=hit.source==='holiday'&&hit.h?hit.h:reliefKey,official=crewBookOfficialComparisonLaunchHTML(key,date,hit);
+  const source=jobCompareSourceLabel(hit),official=crewBookOfficialComparisonLaunchHTML(key,date,hit);
+  const weeklyData=jobCompareNormalWeekData(key,date);
   const fatigue=jobCompareFatigueForResolved(key,date,resolved);
   return `<article class="job-compare-card">
     <div class="job-compare-card-head"><div class="job-compare-card-titleline"><div class="job-compare-job">${escapeHTML(displayKey)}</div><div class="job-compare-source">${escapeHTML(source)}</div></div><div class="job-compare-terminal">${escapeHTML(terminal)}</div><div class="job-compare-date-state">${escapeHTML(dateState)}</div>${fatigue?`<div class="job-compare-fatigue-row">Published fatigue: ${jobCompareFatigueBadge(fatigue)}${fatigue.reliefFallback?' <small>(weekly type on regular owner relief day)</small>':''}</div>`:''}</div>
     <div class="job-compare-money"><div class="label">Estimated Earnings If Worked</div><div class="amount">${escapeHTML(payText)}</div><div class="sub">${escapeHTML(paySub)}</div></div>
+    ${jobCompareWeeklyEarningsHTML(key,date,weeklyData)}
     <div class="job-compare-facts"><div class="job-compare-fact"><div class="label">Report</div><div class="value">${x?escapeHTML(jobCompareTimeLabel(x.start)):'—'}</div></div><div class="job-compare-fact"><div class="label">Release</div><div class="value">${x?escapeHTML(jobCompareTimeLabel(x.end)):'—'}</div></div><div class="job-compare-fact"><div class="label">Duration</div><div class="value">${x?escapeHTML(fmtMinutes(duration)):'—'}</div></div><div class="job-compare-fact"><div class="label">Meal</div><div class="value">${x?(x.paysMeal?'Pays Meal':'No'):'—'}</div></div></div>
     <div class="job-compare-relief"><strong>${escapeHTML(reliefLabel)}</strong><span>${escapeHTML(reliefText)}</span></div>
-    <details class="job-compare-details"><summary>Weekly schedule & pay</summary><div class="job-compare-week">${jobCompareWeekRows(weekKey,date)}</div></details>${official}
+    <details class="job-compare-details"><summary>Weekly schedule & pay</summary><div class="job-compare-week">${jobCompareWeekRows(key,date,weeklyData)}</div></details>${official}
   </article>`;
 }
 function runJobComparison(showValidation=true){
@@ -6757,7 +6846,7 @@ function runJobComparison(showValidation=true){
   host.innerHTML=`<div class="job-compare-position" aria-live="polite"><span id="jobComparePositionText">1 of ${keys.length}</span><span>${keys.map((_,i)=>`<i class="job-compare-position-dot${i===0?' active':''}" aria-hidden="true"></i>`).join('')}</span></div><div class="job-compare-strip">${keys.map(key=>jobCompareCardHTML(key,date)).join('')}</div>`;
   const strip=host.querySelector('.job-compare-strip'),positionText=host.querySelector('#jobComparePositionText'),dots=[...host.querySelectorAll('.job-compare-position-dot')];
   if(strip&&keys.length>1){let raf=0;strip.addEventListener('scroll',()=>{cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>{const cards=[...strip.querySelectorAll('.job-compare-card')];if(!cards.length)return;let best=0,bestDist=Infinity;cards.forEach((card,i)=>{const d=Math.abs(card.offsetLeft-strip.scrollLeft-strip.offsetLeft);if(d<bestDist){bestDist=d;best=i}});if(positionText)positionText.textContent=`${best+1} of ${keys.length}`;dots.forEach((dot,i)=>dot.classList.toggle('active',i===best))})},{passive:true})}
-  if(note){const rev=crewBookPassengerRevision(date),pct=payScaleForDate(date);note.innerHTML=`<strong>${escapeHTML(date)}</strong> • Passenger GO ${escapeHTML(rev.go)} Rev. ${escapeHTML(rev.revision)}${rev.paperRevision?` + Paper Rev. ${escapeHTML(rev.paperRevision)}`:''}${pct?` • Your rate: ${pct}%`:' • Hire date needed for dollar estimates'}<br>Regular assignments and relief crews are supported. Dollar figures are <strong>if-worked estimates</strong> for the selected pay mode; holiday dates automatically use the app's holiday-pay rules. Swipe cards horizontally to compare. Open <strong>Weekly schedule & pay</strong> to see each job's Monday–Sunday pattern.`}
+  if(note){const rev=crewBookPassengerRevision(date),pct=payScaleForDate(date);note.innerHTML=`<strong>${escapeHTML(date)}</strong> • Passenger GO ${escapeHTML(rev.go)} Rev. ${escapeHTML(rev.revision)}${rev.paperRevision?` + Paper Rev. ${escapeHTML(rev.paperRevision)}`:''}${pct?` • Your rate: ${pct}%`:' • Hire date needed for dollar estimates'}<br><strong>Daily</strong> if-worked earnings follow the selected Pay Mode. <strong>Weekly Job Earnings</strong> total the assignment's published workdays at regular job pay, including scheduled OT, meals and differentials. Holiday weeks use the next regular non-holiday week; personal claims are excluded. Swipe cards to compare.`}
 }
 
 
@@ -16611,7 +16700,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 window.addEventListener('pageshow',()=>trimAssistantRefreshLiveIfVisible());
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=r5e-rev3-thanksgiving-r3-20261120').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=r5e-rev3-weekly-earnings-r4-20261120').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
