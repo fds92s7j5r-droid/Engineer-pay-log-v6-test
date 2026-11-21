@@ -1629,7 +1629,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
     html[data-theme="dark"] .bid-sheet-summary{background:#241d33;border-color:#655080;color:#d8c9ed}html[data-theme="dark"] .bid-sheet-summary strong{color:#eee5fb}html[data-theme="dark"] .bid-sheet-status-pill.open{background:#123024;color:#99dfba}html[data-theme="dark"] .bid-sheet-status-pill.upcoming{background:#14283a;color:#b9d8f7}html[data-theme="dark"] .bid-sheet-status-pill.closed{background:#252b34;color:#b7c0cc}html[data-theme="dark"] .bid-sheet-status-pill.results{background:#302343;color:#d8c9ed}html[data-theme="dark"] .bid-sheet-status-pill.effective{background:#3d3210;color:#ffe58a}html[data-theme="dark"] .bid-sheet-status-pill.past{background:#252b34;color:#b7c0cc}html[data-theme="dark"] .bid-sheet-builder{background:#15273a;border-color:#365a7d}html[data-theme="dark"] .bid-draft-empty{background:#112235;border-color:#3b5874}html[data-theme="dark"] .bid-draft-sync.synced{background:#123024;color:#99dfba}html[data-theme="dark"] .bid-draft-sync.saving{background:#3d3210;color:#ffe58a}html[data-theme="dark"] .bid-draft-sync.local{background:#25364a;color:#c4d0dc}html[data-theme="dark"] .bid-draft-sync.error{background:#431e25;color:#ffb2bd}html[data-theme="dark"] .bid-sheet-card-actions .bid-add-choice.added{background:#123024;color:#99dfba}html[data-theme="dark"] .bid-call-ready-warning{background:#30280e;border-color:#806d25;color:#ffe8a1}
     @media(max-width:620px){.bid-sheet-search-row{grid-template-columns:1fr}.bid-sheet-builder-head{align-items:center}.bid-draft-choice{grid-template-columns:34px minmax(0,1fr)}.bid-draft-controls{grid-column:1 / -1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));justify-content:stretch}.bid-draft-controls .btn{font-size:9px}.bid-sheet-builder-actions{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}}
 
-    /* Bid Sheet Staging Area — isolated GitHub test build */
+    /* Bid Sheet Staging Area — device-isolated on GitHub, account sync in production */
     .bid-staging{display:none;margin:12px 0;padding:14px;border:1px solid #85aecf;border-radius:14px;background:#edf6fd}
     .bid-staging.show{display:block}.bid-staging-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
     .bid-staging-head h3{margin:0;color:var(--brand);font-size:15px}.bid-staging-sub{font-size:10px;color:var(--muted);margin:3px 0 0;line-height:1.45}
@@ -2388,9 +2388,9 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <section class="bid-staging" id="bidStagingArea" aria-labelledby="bidStagingTitle">
         <div class="bid-staging-head">
           <div><h3 id="bidStagingTitle">Staging Area <span id="bidStagingCount">(0)</span></h3><p class="bid-staging-sub">Shortlist assignments, compare them, and arrange priorities before deciding what belongs on My Bid Sheet.</p></div>
-          <span class="bid-stage-inline-status" id="bidStagingStatus" role="status" aria-live="polite">Device-only test</span>
+          <span class="bid-stage-inline-status" id="bidStagingStatus" role="status" aria-live="polite">Checking account sync…</span>
         </div>
-        <div class="bid-staging-test"><strong>GitHub test preview:</strong> Staging and My Bid Sheet changes are saved on this device only. This preview does not write either list to Supabase or sync these lists between devices.</div>
+        <div class="bid-staging-test" id="bidStagingSyncNote" role="status" aria-live="polite">Your staging list is saved on this device while EPL checks account synchronization.</div><button class="btn small" type="button" id="bidStagingResolveButton" onclick="bidStagingResolveCloud()" hidden>Merge device and account staging lists</button>
         <div class="bid-staging-list" id="bidStagingList" role="list"></div>
         <div class="bid-stage-transfer">
           <div><label for="bidStagingTransferMode">Transfer to My Bid Sheet</label><select id="bidStagingTransferMode"><option value="append">Append after existing choices (skip duplicates)</option><option value="replace">Replace My Bid Sheet with staged order</option></select></div>
@@ -2408,7 +2408,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <button class="btn primary" id="bidSheetCallReadyButton" type="button" onclick="bidSheetOpenCallReady()" disabled>Call-Ready List</button>
           <button class="btn danger" id="bidSheetClearDraftButton" type="button" onclick="bidSheetClearDraft()" disabled>Clear List</button>
         </div>
-        <div class="bid-sheet-builder-note" id="bidSheetBuilderLifecycleNote">This is a planning list only. Engineer Pay Log does not submit bids; call the Crew Dispatcher through the railroad's normal process.</div>
+        <div class="bid-sheet-builder-note" id="bidSheetBuilderLifecycleNote">This is a planning list only. Engineer Pay Log does not submit bids; call the Crew Dispatcher through the railroad's normal process.</div><button class="btn small" type="button" id="bidSheetRecoverPreviewButton" onclick="bidSheetRecoverPreviewDraft()" hidden>Recover choices saved in the earlier device-only preview</button>
       </section>
       <div class="bid-sheet-filters" id="bidSheetFilters">
         <div class="trim-filter-title">Assignment type</div>
@@ -15295,7 +15295,7 @@ async function rosterPublishPreview(){
 // ---- Bid Sheet Assistant + developer PDF publisher ----
 const BID_SHEET_PARSER_VERSION='bid_sheet_pdf_v1';
 const BID_SHEET_CACHE_KEY='epl_bid_sheet_cache_v1';
-const BID_STAGING_TEST_ISOLATED=true; // NEVER ship this build as production: Bid Sheet edits stay local.
+const BID_STAGING_TEST_ISOLATED=EPL_TEST_TOOLS_ENABLED; // GitHub is device-isolated. Cloudflare uses account sync.
 const BID_SHEET_DRAFT_CACHE_KEY=BID_STAGING_TEST_ISOLATED?'epl_bid_sheet_drafts_staging_test_v1':'epl_bid_sheet_drafts_v1';
 let bidSheetPreviewState=null;
 let bidSheetAdminState={latest:null};
@@ -15449,6 +15449,8 @@ function bidSheetDraftRender(){
   const hasSnapshot=!!bidSheetState.snapshot;builder.classList.toggle('show',hasSnapshot);if(!hasSnapshot)return;
   const phase=bidLifecyclePhase(),editable=bidSheetDraftEditable(),preBid=phase.key==='upcoming',open=phase.key==='open',stateMatches=bidSheetDraftState.loaded&&bidSheetDraftState.snapshotId===String(bidSheetState.snapshot?.id||''),choices=stateMatches?bidSheetDraftState.choices:[];
   if(subtitle)subtitle.textContent=choices.length?(choices.length+' choice'+(choices.length===1?'':'s')+' in priority order'):'Your choices in priority order';
+  const recover=document.getElementById('bidSheetRecoverPreviewButton'),localPreview=bidSheetPreviewChoices();
+  if(recover){const current=new Set(choices.map(x=>x.toUpperCase())),missing=localPreview.filter(x=>!current.has(x.toUpperCase()));recover.hidden=BID_STAGING_TEST_ISOLATED||!missing.length;recover.disabled=!stateMatches||!bidSheetDraftState.synced||bidSheetDraftState.dirty||!!bidSheetDraftState.error||!editable;recover.textContent=`Recover ${missing.length} choice${missing.length===1?'':'s'} from device-only preview`;}
   const status=stateMatches?bidSheetDraftSyncPresentation():{text:'Loading draft…',cls:'local'};if(sync){sync.textContent=status.text;sync.className='bid-draft-sync '+status.cls;sync.title=status.title||''}
   if(callReady){callReady.disabled=!choices.length;callReady.textContent=preBid?'View Prepared Bid List':open?'Call-Ready List':'View Saved Bid List'}if(clear)clear.disabled=!choices.length||!editable;if(note)note.textContent=preBid?`Pre-bid planning is open now. Build and reorder your list before official bidding opens ${bidSheetDateLabel(bidSheetState.snapshot?.open_date)}. This saved list does not submit a bid.`:open?"This is a planning list only. Engineer Pay Log does not submit bids; call the Crew Dispatcher through the railroad's normal process.":bidSheetDraftLockedMessage();
   bidStagingRender();
@@ -15473,7 +15475,12 @@ async function bidSheetDraftLoad(snapshotId,force=false){
   try{
     const {data,error}=await client.from('bid_sheet_drafts').select('choices,updated_at').eq('user_id',userId).eq('snapshot_id',snapshotId).maybeSingle();
     if(error)throw error;if(token!==bidSheetDraftLoadSequence)return;
-    if(bidSheetDraftState.dirty){await bidSheetDraftSaveCloud();return}
+    if(bidSheetDraftState.dirty){
+      const different=!!data&&JSON.stringify(bidSheetDraftNormalizeChoices(data.choices))!==JSON.stringify(bidSheetDraftState.choices);
+      if(different){bidSheetDraftState.syncConflict=true;bidSheetDraftState.error='This device and your account have different My Bid Sheet choices. Both remain preserved; no automatic overwrite was made.';bidSheetDraftRender();return}
+      if(data){bidSheetDraftState.dirty=false;bidSheetDraftState.synced=true;bidSheetDraftState.error=null;bidSheetDraftPersistLocal(false);bidSheetDraftRender();return}
+      await bidSheetDraftSaveCloud();return
+    }
     if(data){
       bidSheetDraftState.choices=bidSheetDraftNormalizeChoices(data.choices);bidSheetDraftState.updatedAt=data.updated_at||null;bidSheetDraftState.synced=true;bidSheetDraftState.error=null;bidSheetDraftPersistLocal(false);
     }else if(bidSheetDraftState.choices.length){
@@ -15492,7 +15499,7 @@ function bidSheetDraftScheduleSave(delay=250){
 }
 async function bidSheetDraftSaveCloud(){
   if(BID_STAGING_TEST_ISOLATED){bidSheetDraftRender();return}
-  const state=bidSheetDraftState;if(!state.loaded||!state.dirty||!state.snapshotId||!state.userId||navigator.onLine===false){bidSheetDraftRender();return}
+  const state=bidSheetDraftState;if(!state.loaded||!state.dirty||state.syncConflict||!state.snapshotId||!state.userId||navigator.onLine===false){bidSheetDraftRender();return}
   if(bidSheetDraftSaveInFlight){bidSheetDraftScheduleSave(300);return}
   const snapshotId=state.snapshotId,userId=state.userId,choices=[...state.choices],revision=state.revision,saveToken=++bidSheetDraftSaveSequence;
   const client=getCloudClient();if(!client){state.error='Cloud connection unavailable. Your draft remains saved on this device.';bidSheetDraftRender();return}
@@ -15714,14 +15721,14 @@ async function bidSheetPublishPreview(){
 function bidSheetCacheSave(payload){try{localStorage.setItem(BID_SHEET_CACHE_KEY,JSON.stringify(payload))}catch{}}
 function bidSheetCacheLoad(){try{const raw=localStorage.getItem(BID_SHEET_CACHE_KEY);return raw?JSON.parse(raw):null}catch{return null}}
 async function bidSheetLoad(force=false){
-  if(bidSheetState.loaded&&!force&&!bidSheetState.error){bidStagingLoad(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);return}
+  if(bidSheetState.loaded&&!force&&!bidSheetState.error){bidStagingLoad(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);await bidStagingMaybeSync();return}
   const summary=document.getElementById('bidSheetSummary');if(summary){summary.classList.add('show');summary.textContent='Loading the latest published bid sheet...'}
   const client=getCloudClient();
-  if(!client){const cached=bidSheetCacheLoad();bidSheetState={snapshot:cached?.snapshot||null,rows:cached?.rows||[],loaded:true,cached:!!cached,error:cached?null:'Cloud connection unavailable.'};bidStagingLoad(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);return}
+  if(!client){const cached=bidSheetCacheLoad();bidSheetState={snapshot:cached?.snapshot||null,rows:cached?.rows||[],loaded:true,cached:!!cached,error:cached?null:'Cloud connection unavailable.'};bidStagingLoad(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);await bidStagingMaybeSync();return}
   try{
     const {data,error}=await client.rpc('bid_sheet_current_data');if(error)throw error;const payload=data||{snapshot:null,rows:[]};bidSheetCacheSave(payload);bidSheetState={snapshot:payload.snapshot||null,rows:Array.isArray(payload.rows)?payload.rows:[],loaded:true,cached:false,error:null};
   }catch(err){console.warn('Bid Sheet Assistant load failed:',err);const cached=bidSheetCacheLoad();bidSheetState={snapshot:cached?.snapshot||null,rows:cached?.rows||[],loaded:true,cached:!!cached,error:cached?null:(err?.message||String(err))}}
-  bidStagingLoad(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',force);
+  bidStagingLoad(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',force);await bidStagingMaybeSync();
 }
 function openBidSheetAssistant(){
   if(crewToolsTraineeRestricted()){alert(isRosterTraineeSafeguard()?'Bid Sheet Assistant is not available while your current roster assignment is an Engineer Trainee (ET) assignment.':'Bid Sheet Assistant is not available while Engineer Trainee Mode is active.');return}
@@ -15917,35 +15924,130 @@ function bidSheetClearFilters(){
   for(const id of ['bidTypeNumbered','bidTypeExtra','bidTypeYard']){const el=document.getElementById(id);if(el)el.checked=true}for(const id of ['bidReliefChecks','bidIpmaChecks'])document.querySelectorAll(`#${id} input[type="checkbox"]`).forEach(x=>x.checked=false);const fatigueDay=document.getElementById('bidFatigueDay'),fatigueType=document.getElementById('bidFatigueType');if(fatigueDay)fatigueDay.value='';if(fatigueType)fatigueType.value='';const search=document.getElementById('bidSheetSearch');if(search)search.value='';const terminal=document.getElementById('bidSheetTerminal');if(terminal)terminal.value='';bidSheetApplyFilters();
 }
 
-// ---- Bid Sheet Staging Area (isolated, device-only GitHub test) ----
+function bidSheetPreviewChoices(){
+  if(BID_STAGING_TEST_ISOLATED)return [];
+  try{const cache=JSON.parse(localStorage.getItem('epl_bid_sheet_drafts_staging_test_v1')||'{}');
+    return bidSheetDraftNormalizeChoices(cache?.[String(bidSheetState.snapshot?.id||'')]?.choices);
+  }catch{return []}
+}
+function bidSheetRecoverPreviewDraft(){
+  if(BID_STAGING_TEST_ISOLATED||!billingRequireWriteAccess())return;
+  const state=bidSheetDraftState,preview=bidSheetPreviewChoices();
+  if(!state.loaded||!state.synced||state.dirty||state.saving||state.error||!bidSheetDraftEditable()){alert('Wait until My Bid Sheet is loaded and saved to your account before recovering preview choices.');return}
+  const existing=new Set(state.choices.map(x=>x.toUpperCase())),missing=preview.filter(x=>!existing.has(x.toUpperCase()));
+  if(!missing.length)return;
+  if(state.choices.length+missing.length>200){alert('Not enough room to recover all choices. Please reduce the list first.');return}
+  if(!confirm(`Recover ${missing.length} device-only preview choice(s) into My Bid Sheet?\n\nThese jobs will be APPENDED to your existing account-saved list. Your existing choices and their order are preserved. The preview copy remains stored on this device.`))return;
+  state.choices.push(...missing);bidSheetDraftChanged();
+}
+// ---- Bid Sheet Staging Area (account sync in production, isolated on GitHub) ----
 const BID_STAGING_CACHE_KEY='epl_bid_sheet_staging_v1';
-let bidStagingState={snapshotId:'',userId:'',choices:[],loaded:false,updatedAt:null};
-let bidStagingDrag=null;
-function bidStagingResetMemory(){bidStagingState={snapshotId:'',userId:'',choices:[],loaded:false,updatedAt:null};bidStagingDrag=null}
+const BID_STAGING_CLOUD_KEY_PREFIX='bid_staging_v1:';
+let bidStagingState=bidStagingEmptyState();
+let bidStagingDrag=null,bidStagingLoadSequence=0,bidStagingSaveTimer=null,bidStagingSaveInFlight=false;
+function bidStagingEmptyState(){return {snapshotId:'',userId:'',choices:[],loaded:false,updatedAt:null,dirty:false,saving:false,synced:false,error:null,conflict:false,cloudUpdatedAt:null,revision:0}}
+function bidStagingResetMemory(){
+  bidStagingLoadSequence++;if(bidStagingSaveTimer){clearTimeout(bidStagingSaveTimer);bidStagingSaveTimer=null}
+  bidStagingState=bidStagingEmptyState();bidStagingDrag=null;
+}
 function bidStagingCacheMap(){
   try{const x=JSON.parse(localStorage.getItem(BID_STAGING_CACHE_KEY)||'{}');return x&&typeof x==='object'&&!Array.isArray(x)?x:{}}catch{return {}}
 }
+function bidStagingSameChoices(a,b){return JSON.stringify(a)===JSON.stringify(b)}
+function bidStagingCloudKey(snapshotId){return BID_STAGING_CLOUD_KEY_PREFIX+String(snapshotId||'')}
 function bidStagingLoad(snapshotId){
   const userId=String(activeWorkspaceUserId||'');snapshotId=String(snapshotId||'');
   if(!userId||!snapshotId){bidStagingResetMemory();bidStagingRender();return}
   if(bidStagingState.loaded&&bidStagingState.userId===userId&&bidStagingState.snapshotId===snapshotId){bidStagingRender();return}
-  const record=bidStagingCacheMap()[snapshotId];
-  bidStagingState={snapshotId,userId,choices:bidSheetDraftNormalizeChoices(record?.choices),loaded:true,updatedAt:record?.updatedAt||null};
+  bidStagingResetMemory();
+  const record=bidStagingCacheMap()[snapshotId],choices=bidSheetDraftNormalizeChoices(record?.choices);
+  bidStagingState={snapshotId,userId,choices,loaded:true,updatedAt:record?.updatedAt||null,dirty:record?.dirty===undefined?choices.length>0:!!record.dirty,saving:false,synced:false,error:null,conflict:false,cloudUpdatedAt:record?.cloudUpdatedAt||null,revision:0};
   bidStagingRender();
 }
+async function bidStagingMaybeSync(){
+  if(BID_STAGING_TEST_ISOLATED||navigator.onLine===false||!bidStagingReady()||bidStagingState.saving||bidStagingState.conflict)return;
+  const s=bidStagingState;
+  if(s.dirty&&!s.error&&s.cloudUpdatedAt){bidStagingScheduleSave(0);return}
+  await bidStagingLoadCloud(s.snapshotId,s.userId,++bidStagingLoadSequence);
+}
 function bidStagingReady(){return bidStagingState.loaded&&bidStagingState.snapshotId===String(bidSheetState.snapshot?.id||'')&&bidStagingState.userId===String(activeWorkspaceUserId||'')}
+async function bidStagingLoadCloud(snapshotId,userId,token){
+  if(BID_STAGING_TEST_ISOLATED||navigator.onLine===false)return;
+  const client=getCloudClient();if(!client){bidStagingState.error='Cloud connection unavailable';bidStagingRender();return}
+  try{
+    const user=await cloudCurrentUser(client);if(token!==bidStagingLoadSequence)return;
+    if(!user||String(user.id)!==userId||!accountGuardWorkspace(user))throw new Error('Account session unavailable');
+    const {data,error}=await client.from(CLOUD_SETTINGS_TABLE).select('setting_value,updated_at').eq('user_id',userId).eq('setting_key',bidStagingCloudKey(snapshotId)).maybeSingle();
+    if(error)throw error;if(token!==bidStagingLoadSequence||!bidStagingReady())return;
+    const state=bidStagingState,remote=data?bidSheetDraftNormalizeChoices(data.setting_value?.choices):[],remoteTime=data?.updated_at||null;
+    if(!data){state.cloudUpdatedAt=null;state.error=null;if(state.choices.length||state.dirty){state.dirty=true;bidStagingPersist();bidStagingScheduleSave(0)}else{state.synced=true;state.error=null;bidStagingPersist()}}
+    else if(bidStagingSameChoices(state.choices,remote)){state.synced=true;state.dirty=false;state.conflict=false;state.error=null;state.cloudUpdatedAt=remoteTime;bidStagingPersist()}
+    else if(state.dirty){state.conflict=true;state.error='The device and account contain different staging lists. Both are preserved until you choose Merge.';state.cloudUpdatedAt=remoteTime;bidStagingPersist()}
+    else{state.choices=remote;state.synced=true;state.error=null;state.cloudUpdatedAt=remoteTime;state.updatedAt=remoteTime;bidStagingPersist(false);bidSheetApplyFilters()}
+  }catch(err){if(token!==bidStagingLoadSequence)return;bidStagingState.error=err?.message||String(err);console.warn('Staging account load unavailable:',err)}
+  bidStagingRender();
+}
+function bidStagingScheduleSave(delay=300){
+  if(BID_STAGING_TEST_ISOLATED||navigator.onLine===false||bidStagingState.conflict)return;
+  if(bidStagingSaveTimer)clearTimeout(bidStagingSaveTimer);
+  bidStagingSaveTimer=setTimeout(()=>{bidStagingSaveTimer=null;void bidStagingSaveCloud()},Math.max(0,delay));
+}
+async function bidStagingSaveCloud(){
+  const state=bidStagingState;
+  if(BID_STAGING_TEST_ISOLATED||navigator.onLine===false||!bidStagingReady()||!state.dirty||state.conflict||state.error||state.saving)return;
+  if(bidStagingSaveInFlight){bidStagingScheduleSave(400);return}
+  const client=getCloudClient();if(!client){state.error='Cloud connection unavailable';bidStagingRender();return}
+  const {snapshotId,userId,revision,cloudUpdatedAt}=state,choices=[...state.choices],token=bidStagingLoadSequence;
+  bidStagingSaveInFlight=true;state.saving=true;bidStagingRender();
+  try{
+    const user=await cloudCurrentUser(client);if(!user||String(user.id)!==userId||!accountGuardWorkspace(user))throw new Error('Account session unavailable');
+    const key=bidStagingCloudKey(snapshotId);
+    const {data:existing,error:readError}=await client.from(CLOUD_SETTINGS_TABLE).select('setting_value,updated_at').eq('user_id',userId).eq('setting_key',key).maybeSingle();if(readError)throw readError;
+    if((existing?.updated_at||null)!==(cloudUpdatedAt||null)){
+      if(existing&&bidStagingSameChoices(bidSheetDraftNormalizeChoices(existing.setting_value?.choices),choices)){
+        if(token===bidStagingLoadSequence){state.cloudUpdatedAt=existing.updated_at;state.error=null;if(state.revision===revision){state.dirty=false;state.synced=true;bidStagingPersist(false)}else{state.dirty=true;state.synced=false;bidStagingPersist()}}
+        return;
+      }
+      if(token===bidStagingLoadSequence){state.conflict=true;state.error='Account staging changed on another device. Local changes are preserved; choose Merge to combine lists.';bidStagingPersist()}
+      return;
+    }
+    if(token!==bidStagingLoadSequence||!bidStagingReady())return;
+    const result=await cloudUpsertAccountSetting(user,key,{version:1,choices},client);
+    if(!result.ok)throw new Error(result.error||'Staging save failed');
+    if(token===bidStagingLoadSequence&&state.revision===revision){state.dirty=false;state.synced=true;state.error=null;state.cloudUpdatedAt=result.row?.updated_at||null;bidStagingPersist(false)}
+    else if(token===bidStagingLoadSequence){state.cloudUpdatedAt=result.row?.updated_at||null;bidStagingPersist();}
+  }catch(err){if(token===bidStagingLoadSequence){state.error=err?.message||String(err);state.synced=false;bidStagingPersist()}console.warn('Staging account save unavailable:',err)}
+  finally{bidStagingSaveInFlight=false;if(token===bidStagingLoadSequence){state.saving=false;bidStagingRender();if(state.dirty&&!state.error&&!state.conflict)bidStagingScheduleSave(250)}}
+}
+async function bidStagingResolveCloud(){
+  const state=bidStagingState;if(!state.conflict||!bidStagingReady()||BID_STAGING_TEST_ISOLATED||navigator.onLine===false)return;
+  if(!billingRequireWriteAccess())return;
+  if(!confirm('Merge the cloud staging list with the unsynced list on this device?\n\nCloud choices keep their existing order; missing device choices are appended. Neither set of jobs will be deleted. You can reorder afterward.'))return;
+  const client=getCloudClient();if(!client)return;
+  const snapshotId=state.snapshotId,userId=state.userId;
+  try{
+    const user=await cloudCurrentUser(client);if(!user||String(user.id)!==userId||!accountGuardWorkspace(user))throw new Error('Account session unavailable');
+    const {data,error}=await client.from(CLOUD_SETTINGS_TABLE).select('setting_value,updated_at').eq('user_id',userId).eq('setting_key',bidStagingCloudKey(snapshotId)).maybeSingle();if(error)throw error;
+    if(state.snapshotId!==snapshotId||state.userId!==userId)return;
+    const remote=bidSheetDraftNormalizeChoices(data?.setting_value?.choices),known=new Set(remote.map(x=>x.toUpperCase()));
+    const merged=[...remote];for(const choice of state.choices){if(!known.has(choice.toUpperCase())&&merged.length<200){known.add(choice.toUpperCase());merged.push(choice)}}
+    if(merged.length<new Set([...remote,...state.choices].map(x=>x.toUpperCase())).size)throw new Error('Cannot merge more than 200 jobs into Staging');
+    state.choices=merged;state.cloudUpdatedAt=data?.updated_at||null;state.conflict=false;state.error=null;state.dirty=true;state.synced=false;state.revision++;bidStagingPersist();bidStagingRender();bidSheetApplyFilters();bidStagingScheduleSave(0);
+  }catch(err){state.error=err?.message||String(err);bidStagingRender()}
+}
 function bidStagingCanEdit(){return bidStagingReady()&&bidSheetDraftEditable()}
 function bidStagingHas(assignment){return bidStagingState.choices.some(a=>String(a).toUpperCase()===String(assignment||'').toUpperCase())}
-function bidStagingPersist(){
+function bidStagingPersist(dirty=bidStagingState.dirty){
   if(!bidStagingReady())return;
   try{
-    const cache=bidStagingCacheMap();cache[bidStagingState.snapshotId]={choices:[...bidStagingState.choices],updatedAt:new Date().toISOString()};
-    localStorage.setItem(BID_STAGING_CACHE_KEY,JSON.stringify(cache));
-    bidStagingState.updatedAt=cache[bidStagingState.snapshotId].updatedAt;
-    accountSaveWorkspace(bidStagingState.userId);
+    const s=bidStagingState,cache=bidStagingCacheMap();cache[s.snapshotId]={choices:[...s.choices],updatedAt:s.updatedAt||new Date().toISOString(),dirty:!!dirty,cloudUpdatedAt:s.cloudUpdatedAt||null};
+    localStorage.setItem(BID_STAGING_CACHE_KEY,JSON.stringify(cache));accountSaveWorkspace(s.userId);
   }catch(error){console.warn('Staging save on device failed:',error);alert('Could not save staging on this device. Check browser storage before closing this page.')}
 }
-function bidStagingChanged(){bidStagingState.choices=bidSheetDraftNormalizeChoices(bidStagingState.choices);bidStagingPersist();bidStagingRender();bidSheetApplyFilters()}
+function bidStagingChanged(){
+  const s=bidStagingState;s.choices=bidSheetDraftNormalizeChoices(s.choices);s.dirty=true;s.synced=false;s.revision++;s.updatedAt=new Date().toISOString();
+  bidStagingPersist();bidStagingRender();bidSheetApplyFilters();bidStagingScheduleSave();
+}
 function bidStagingAdd(assignment){
   if(!billingRequireWriteAccess())return;
   if(!bidStagingCanEdit()){alert(bidSheetDraftLockedMessage());return}
@@ -16001,7 +16103,10 @@ function bidStagingRender(){
   panel.classList.toggle('show',!!snapshot);if(!snapshot)return;
   const count=document.getElementById('bidStagingCount'),status=document.getElementById('bidStagingStatus'),transfer=document.getElementById('bidStagingTransferButton'),note=document.getElementById('bidStagingLifecycleNote');
   if(count)count.textContent=`(${choices.length})`;
-  if(status)status.textContent=ready?'Device-only test':'Loading staging…';
+  if(status){const s=bidStagingState;status.textContent=!ready?'Loading staging…':BID_STAGING_TEST_ISOLATED?'GitHub test • device only':s.conflict?'Review sync conflict':s.saving?'Saving to account…':s.error?'Saved on device • sync issue':s.dirty?'Saved on device':s.synced?'Saved to your account':'Loading cloud…'}
+  const syncNote=document.getElementById('bidStagingSyncNote'),resolve=document.getElementById('bidStagingResolveButton');
+  if(syncNote)syncNote.innerHTML=BID_STAGING_TEST_ISOLATED?'<strong>GitHub test preview:</strong> Staging and My Bid Sheet stay device-only and do not write to Supabase.':bidStagingState.conflict?'<strong>Staging sync needs review:</strong> Your device and account lists are both preserved. Choose Merge to keep all unique jobs.':bidStagingState.error?'<strong>Account sync unavailable:</strong> Your staging list is preserved on this device. Please do not clear browser data.':bidStagingState.synced?'<strong>Account saved:</strong> Staging syncs between your signed-in devices for this bid bulletin.': 'Staging saves on this device while cloud synchronization completes.';
+  if(resolve){resolve.hidden=BID_STAGING_TEST_ISOLATED||!bidStagingState.conflict;resolve.disabled=!editable||navigator.onLine===false;}
   if(transfer)transfer.disabled=!ready||!editable||!choices.length||!bidSheetDraftState.loaded||bidSheetDraftState.snapshotId!==String(snapshot.id);
   if(note)note.textContent=!editable?(billingIsReadOnly()?'Read-only account: staging remains visible, but editing and transfer are disabled.':bidSheetDraftLockedMessage()):'Drag the dotted handle to reorder on phones or computers; ↑ / ↓ also work. Transferring keeps Staging intact and never submits an official bid.';
   if(!ready){list.innerHTML='<div class="bid-draft-empty">Loading staging for this account and bulletin…</div>';return}
@@ -16027,7 +16132,7 @@ function bidStagingTransfer(){
   const prompt=mode==='replace'?`REPLACE My Bid Sheet with these ${staged.length} staged choices in the shown order?\n\nThis will remove ${original.length} existing choice(s) from My Bid Sheet. Staging stays unchanged.\n\nThis cannot be undone automatically.`:`Append ${fresh.length} new staged job(s) after your ${original.length} existing My Bid Sheet choice(s)?\n\n${staged.length-fresh.length} duplicate(s) will be skipped. Staging stays unchanged.`;
   if(!confirm(prompt))return;
   bidSheetDraftState.choices=next;bidSheetDraftChanged();bidStagingRender();
-  alert(mode==='replace'?`My Bid Sheet now contains the ${next.length} staged choices in order (device-only test).`:`Added ${fresh.length} job(s) to My Bid Sheet. ${staged.length-fresh.length} duplicate(s) skipped (device-only test).`);
+  alert(mode==='replace'?`My Bid Sheet now contains the ${next.length} staged choices in order. Check the save status to confirm account sync.`:`Added ${fresh.length} job(s) to My Bid Sheet. ${staged.length-fresh.length} duplicate(s) skipped. Check the save status to confirm account sync.`);
 }
 function bidStagingPointerDown(event){
   const grip=event.target.closest?.('[data-stage-grip]');if(!grip||event.button!==0||!bidStagingCanEdit())return;
@@ -16054,6 +16159,7 @@ function bidStagingBindDrag(){
   list.addEventListener('pointerup',event=>bidStagingPointerEnd(event));list.addEventListener('pointercancel',event=>bidStagingPointerEnd(event,true));
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bidStagingBindDrag,{once:true});else bidStagingBindDrag();
+window.addEventListener('online',()=>{if(bidStagingReady())void bidStagingMaybeSync()});
 // ---- End Bid Sheet Staging Area ----
 
 // ---- End Bid Sheet Assistant ----
