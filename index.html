@@ -2742,13 +2742,13 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <div class="card span12 settings-card roster-admin-card developer-admin-card" id="rosterAdminCard">
         <!-- R5E read-only roster health monitor: authorized roster maintainers only. -->
         <details class="developer-tool-disclosure" id="rosterHealthR5EDisclosure" hidden>
-          <summary><span><strong>Roster Health Monitor — R5E</strong><small>Read-only daily publication and change summary.</small></span><span class="developer-summary-right"><span class="roster-admin-badge">Developer</span><span class="settings-chevron">›</span></span></summary>
+          <summary><span><strong>Roster Health Monitor</strong><small>Daily roster publications and changes.</small></span><span class="developer-summary-right"><span class="roster-admin-badge">Developer</span><span class="settings-chevron">›</span></span></summary>
           <div class="developer-tool-disclosure-body">
             <p class="developer-tool-copy">Seven Eastern calendar days of published BLE snapshots. Shows whether an automatic roster was actually published, manual-only days, roster integrity, and aggregate assignment and rank changes. <strong>Read-only:</strong> no publishing, settings changes, alerts, or scheduler access.</p>
             <div class="settings-action-row" style="margin:8px 0 12px">
               <button class="btn small primary" id="rosterHealthR5ERefresh" type="button" onclick="rosterHealthR5ELoad()">Refresh Roster Health</button>
             </div>
-            <div id="rosterHealthR5EStatus" class="account-sync-detail" role="status" aria-live="polite">Ready for a read-only check. Select Refresh Roster Health.</div>
+            <div id="rosterHealthR5EStatus" class="account-sync-detail" role="status" aria-live="polite">Select Refresh Roster Health to view the latest publications.</div>
             <div id="rosterHealthR5EResults"></div>
           </div>
         </details>
@@ -6919,12 +6919,17 @@ function go203ThanksgivingTime(v){if(!v)return '—';const [hh,mm]=v.split(':').
 function go203ThanksgivingSummary(k){
  const e=go203ThanksgivingEntry(k);if(!e)return '';
  if(e.s==='work')return `${e.h} • ${go203ThanksgivingTime(e.r)}–${go203ThanksgivingTime(e.e)}`;
- if(e.s==='extra_work')return 'Assigned to work (Extra List; assignment not listed)';
+ if(e.s==='extra_work')return 'Works Thanksgiving';
  if(e.s==='conflict')return 'Assignment needs verification';
  return 'No assignment listed';
 }
 function go203ThanksgivingTrimInfoHTML(row){
- if(row?.assignment_type==='extra_list')return '<div class="trim-result-detail"><strong>🦃 Thanksgiving:</strong> Check your Extra List job number in Quick Job Lookup.</div>';
+ if(row?.assignment_type==='extra_list'){
+   // Extra List assignments vary daily; show only the published holiday work designation.
+   const extraKey=(String(row.assignment||'').match(/(\d{4})$/)||[])[1];
+   const extraEntry=extraKey?go203ThanksgivingEntry(extraKey):null;
+   return extraEntry?.s==='extra_work'?'<div class="trim-result-detail"><strong>🦃 Works Thanksgiving</strong></div>':'';
+ }
  const e=go203ThanksgivingEntry(row?.assignment);if(!e)return '';
  return `<div class="trim-result-detail"><strong>🦃 Thanksgiving:</strong> ${escapeHTML(go203ThanksgivingSummary(row?.assignment))}</div>`;
 }
@@ -6945,28 +6950,27 @@ function go203ThanksgivingQuickLookupHTML(key,date){
  const isExtra=Number(k)>=1101&&Number(k)<=1185&&/^\d+$/.test(k);
  let title=isExtra?`Extra List ${k}`:`Job ${k}`,status='',source='',note='',privateNote='',schedule=null;
  if(e){
-   source=`GO 203 Rev. 2 • Holiday assignments ${e.p}`;
+   source=`GO 203 Rev. 2 · Holiday assignments (page ${e.p})`;
    if(e.s==='work'){
      schedule=e;title=`Job ${k} → ${e.h}`;
      status=`Weekend portion of Job ${String(e.h).replace(/^H-/, '')}`;
-     source+=` • H-job schedule ${e.sp}`;
+     source+=` · Holiday schedule (page ${e.sp})`;
    }else if(e.s==='extra_work'){
-     status='Assigned to work — specific assignment not listed';
-     note='Check the holiday scratch sheet for your assignment and report time.';
+     status='Works Thanksgiving';
    }else if(e.s==='conflict'){
      status='Holiday assignment needs verification';
      note='The published holiday tables disagree. Check the latest official correction.';
      privateNote=e.note||'Coverage page H-2 assigns H-63 to Job 30, but assignment page H-7 leaves Job 30 blank.';
    }else{
-     status='No Thanksgiving assignment listed';
+     status=isExtra?'No Thanksgiving work designation listed':'No Thanksgiving assignment listed';
    }
  }else if(h){
-   title=k;source=`GO 203 Rev. 2 • Holiday coverage ${h.p}`;
+   title=k;source=`GO 203 Rev. 2 · Holiday coverage (page ${h.p})`;
    if(h.s==='assigned'){
      const owner=go203ThanksgivingEntry(h.v);
      if(owner?.s==='work'&&owner.h===k){
        schedule=owner;status=`Covered by Job ${h.v} · Weekend portion of Job ${k.replace(/^H-/, '')}`;
-       source+=` • H-job schedule ${owner.sp}`;
+       source+=` · Holiday schedule (page ${owner.sp})`;
      }else{
        status='Holiday assignment needs verification';
        note='The holiday coverage and assignment tables do not agree. Check the latest official correction.';
@@ -6985,9 +6989,9 @@ function go203ThanksgivingQuickLookupHTML(key,date){
  const clock=schedule?`<div class="quick-lookup-grid"><div class="quick-lookup-fact"><div class="label">Report</div><div class="value">${escapeHTML(go203ThanksgivingTime(schedule.r))}</div></div><div class="quick-lookup-fact"><div class="label">Release</div><div class="value">${escapeHTML(go203ThanksgivingTime(schedule.e))}</div></div></div>`:'';
  const image=schedule?go203ThanksgivingWeekendImageHTML(schedule,date):'';
  const visibleNote=note?`<div class="holiday-lookup-message${(e?.s==='conflict'||(h&&!schedule&&h.s==='assigned')||h?.s==='conflict')?' warning':''}">${escapeHTML(note)}</div>`:'';
- const extraDetail=[source,privateNote,schedule?.f?`Schedule footnote: ${schedule.footnote||'Date-dependent schedule variant verified against printed H-job schedule.'}`:''].filter(Boolean).join(' · ');
- const detailHTML=`<details class="holiday-source-details"><summary>Source details</summary><div class="holiday-source-body">${escapeHTML(extraDetail)}</div></details>`;
- return `<article class="quick-lookup-card holiday-lookup-card"><div class="quick-lookup-head"><div class="quick-lookup-titleline"><div class="quick-lookup-job">${escapeHTML(title)}</div><div class="quick-lookup-source">Thanksgiving · Nov 26, 2026</div></div><div class="quick-lookup-state">${escapeHTML(status)}</div></div>${clock}${visibleNote}${image}<div class="holiday-lookup-reminder">Holiday schedule only. Check the latest scratch sheet for changes.</div>${detailHTML}</article>`;
+ const extraDetail=[source,privateNote,schedule?.f?`Schedule note: ${schedule.footnote||'Date-dependent schedule variant verified against printed H-job schedule.'}`:''].filter(Boolean).join(' · ');
+ const detailHTML=`<details class="holiday-source-details"><summary>View Official Source</summary><div class="holiday-source-body">${escapeHTML(extraDetail)}</div></details>`;
+ return `<article class="quick-lookup-card holiday-lookup-card"><div class="quick-lookup-head"><div class="quick-lookup-titleline"><div class="quick-lookup-job">${escapeHTML(title)}</div><div class="quick-lookup-source">Thanksgiving · Nov 26, 2026</div></div><div class="quick-lookup-state">${escapeHTML(status)}</div></div>${clock}${visibleNote}${image}<div class="holiday-lookup-reminder">Check the latest holiday scratch sheet for changes.</div>${detailHTML}</article>`;
 }
 function quickLookupResultHTML(key,date){
   if(date===GO203_THANKSGIVING_DATE)return go203ThanksgivingQuickLookupHTML(key,date);
@@ -16607,7 +16611,7 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 window.addEventListener('pageshow',()=>trimAssistantRefreshLiveIfVisible());
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./service-worker.js?v=r5e-rev3-thanksgiving-r2-20261120').catch(err => {
+    navigator.serviceWorker.register('./service-worker.js?v=r5e-rev3-thanksgiving-r3-20261120').catch(err => {
       console.warn('Service worker registration failed:', err);
     });
   });
