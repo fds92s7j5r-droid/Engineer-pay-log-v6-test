@@ -3202,7 +3202,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <summary><span><strong>Pay Rules & Rates</strong><small>Rate table Jul 29, 2026 • 8-hour minimum • reference details</small></span><span class="settings-chevron">›</span></summary>
           <div class="settings-disclosure-body">
             <div class="pay-rules-quick"><span><strong>Minimum</strong>8 hours</span><span><strong>Night Diff.</strong>8:00 PM–5:59 AM</span><span><strong>Daily Cert</strong>$10 normal shift</span></div>
-            <details class="settings-inline-details"><summary>View full pay rules</summary><div class="rate-note details-copy"><strong>Pay scale:</strong> Automatically determined from Employment Start Date using the BLET rate tables effective July 29, 2026 (60%, 80%, 90%, 100%).<br><strong>Minimum:</strong> 8 hours per paid shift.<br><strong>Normal OT:</strong> actual time over 8 hours.<br><strong>Full-shift OT:</strong> Holiday, Short Swing, or Relief Day.<br><strong>Holiday Pay:</strong> Separate 8:00 straight-time payment when eligibility is confirmed; requires working the following day unless that day is a regular relief day, approved vacation day, or approved personal day.<br><strong>Night differential:</strong> actual time between 8:00 PM and 5:59 AM.<br><strong>Meal Period:</strong> 20 minutes at time-and-one-half.<br><strong>Freight Meal:</strong> 40 minutes at time-and-one-half.<br><strong>Fuel Claim:</strong> 30 minutes at time-and-one-half.<br><strong>Daily Cert:</strong> $10 once per normal worked shift; excluded from Special Shifts.<br><strong>60% Sick Day:</strong> Available after four years of service when regular sick days are exhausted; pays one basic eight-hour day from the 60% pay table with no daily certification.<br><strong>Trainee:</strong> 1 hour straight time per trainee, maximum 2.<br><strong>Operating Without a Conductor:</strong> 8 hours straight time.<br><strong>Yard Certification:</strong> 1 hour straight time per certification.<br><strong>Commingle / Sheridan-Shop-House Move:</strong> each adds 8 hours straight time.<br><strong>2 Classes of Service:</strong> compares the 8-hour straight-time payment with ordinary overtime attributable to the pull and uses the greater payment; the same pull is not paid both ways.<br><strong>Terminal Not In Crew Book:</strong> 2 hours straight time.<br><strong>Runaround Claim:</strong> 2 hours straight time plus the entered difference in earnings, all straight time.<br><strong>Time on Time:</strong> variable additional straight-time payment, maximum 8:00 per shift.<br><strong>Miscellaneous Penalty:</strong> user-entered description and duration paid at the selected straight-time or overtime rate.<br><strong>Vacation Week:</strong> 1/52 of previous year gross earnings, minimum five basic days.<br><strong>Single Vacation Day:</strong> 1/5 of the vacation-week value, minimum one basic day.</div></details>
+            <details class="settings-inline-details"><summary>View full pay rules</summary><div class="rate-note details-copy"><strong>Pay scale:</strong> Automatically determined from Employment Start Date using the BLET rate tables effective July 29, 2026 (60%, 80%, 90%, 100%).<br><strong>Minimum:</strong> 8 hours per paid shift.<br><strong>Normal OT:</strong> actual time over 8 hours.<br><strong>Full-shift OT:</strong> Holiday, Short Swing, or Relief Day.<br><strong>Holiday Pay:</strong> Separate 8:00 straight-time payment when eligibility is confirmed; requires working the following day unless that day is a regular relief day, approved vacation day, or approved personal day.<br><strong>Night differential:</strong> actual time between 8:00 PM and 5:59 AM.<br><strong>Meal Period:</strong> 20 minutes at time-and-one-half.<br><strong>Freight Meal:</strong> 40 minutes at time-and-one-half.<br><strong>Fuel Claim:</strong> 30 minutes at time-and-one-half.<br><strong>Daily Cert:</strong> $10 once per normal worked shift; excluded from Special Shifts.<br><strong>60% Sick Day:</strong> Pays one basic eight-hour day from the 60% pay table with no daily certification.<br><strong>Trainee:</strong> 1 hour straight time per trainee, maximum 2.<br><strong>Operating Without a Conductor:</strong> 8 hours straight time.<br><strong>Yard Certification:</strong> 1 hour straight time per certification.<br><strong>Commingle / Sheridan-Shop-House Move:</strong> each adds 8 hours straight time.<br><strong>2 Classes of Service:</strong> compares the 8-hour straight-time payment with ordinary overtime attributable to the pull and uses the greater payment; the same pull is not paid both ways.<br><strong>Terminal Not In Crew Book:</strong> 2 hours straight time.<br><strong>Runaround Claim:</strong> 2 hours straight time plus the entered difference in earnings, all straight time.<br><strong>Time on Time:</strong> variable additional straight-time payment, maximum 8:00 per shift.<br><strong>Miscellaneous Penalty:</strong> user-entered description and duration paid at the selected straight-time or overtime rate.<br><strong>Vacation Week:</strong> 1/52 of previous year gross earnings, minimum five basic days.<br><strong>Single Vacation Day:</strong> 1/5 of the vacation-week value, minimum one basic day.</div></details>
           </div>
         </details>
 
@@ -4151,15 +4151,6 @@ function payScaleForDate(dateStr){
   if(d<1095)return 90;
   return 100;
 }
-function sixtyPercentSickDayEligibility(dateStr){
-  const hire=getHireDate();
-  if(!hire||!dateStr||!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(hire))return {eligible:false,reason:'missing'};
-  const anniversary=new Date(hire+'T12:00:00');
-  if(Number.isNaN(anniversary.getTime()))return {eligible:false,reason:'missing'};
-  anniversary.setFullYear(anniversary.getFullYear()+4);
-  const effective=isoLocal(anniversary);
-  return {eligible:dateStr>=effective,reason:dateStr>=effective?'eligible':'not_yet',effective};
-}
 function currentPayScale(){
   const now=new Date();
   const today=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
@@ -4774,10 +4765,24 @@ function previousWeekSpecialEarnings(dateStr,category,specialType,depth=0){
   return sum;
 }
 function calculate(s,depth=0){
+  const special=s.specialShift||'';
+  // 60% Sick Day: one basic eight-hour day at the published 60% rate,
+  // independent of the engineer's current pay scale and employment date.
+  // Does not add the daily certification or any worked-shift premiums.
+  // Trainee mode does not offer this special shift.
+  if(special==='60% Sick Day'){
+    if(s.traineeMode)return {rateMissing:true,invalidTraineeSpecial:true};
+    const fixedBasic=rateTableFor(60)?.hour?.[8]?.[0];
+    if(!Number.isFinite(fixedBasic))return {rateMissing:true};
+    return {actual:480,payable:480,holiday:false,ssot:false,rd:false,fullOT:false,ratePct:60,payType:'60% Sick Day',
+      regular:fixedBasic,ot:0,night:0,holidayBonus:0,mptePay:0,freightMealPay:0,fuelClaimPay:0,dailyCertPay:0,specialPay:0,
+      traineeCount:0,ponePay:0,noCoPay:0,yardCertCount:0,certPay:0,comminglePay:0,classesPay:0,sheridanPay:0,terminalPay:0,
+      runaroundBaseMinutes:0,runaroundDiffMinutes:0,runaroundPay:0,a2mins:0,a2:0,total:fixedBasic};
+  }
+
   const ratePct=Number(s.ratePct)||payScaleForDate(s.date);
   if(!ratePct||!rateTableFor(ratePct))return {rateMissing:true,ratePct:null};
   const table=rateTableFor(ratePct),basicST=table.hour[8][0];
-  const special=s.specialShift||'';
   const traineeMode=!!s.traineeMode;
   const sharedSpecial=['Two Year Book','Miscellaneous Instruction','Personal Day','Company Court'].includes(special);
 
@@ -4814,21 +4819,6 @@ function calculate(s,depth=0){
       traineeCount:0,ponePay:0,noCoPay:0,yardCertCount:0,certPay:0,comminglePay:0,classesPay:0,sheridanPay:0,terminalPay:0,
       runaroundBaseMinutes:0,runaroundDiffMinutes:0,runaroundPay:0,a2mins:0,a2:0,total:specialPay,
       vacationGross:gross,missingVacationGross:!(gross>0),vacationEndDate:special==='Vacation Week'?addDaysISO(s.date,6):''};
-  }
-
-  // Contract 60% Sick Day: after four years of service and exhaustion of
-  // regular sick days, pay ONE basic day from the 60% table, regardless of the
-  // employee's current pay scale. Never add the Daily Certification or any
-  // worked-shift premium. The app cannot verify sick-day balance.
-  if(special==='60% Sick Day'){
-    const eligibility=sixtyPercentSickDayEligibility(s.date);
-    if(!eligibility.eligible)return {rateMissing:true,sickEligibility:eligibility};
-    const fixedBasic=rateTableFor(60)?.hour?.[8]?.[0];
-    if(!Number.isFinite(fixedBasic))return {rateMissing:true};
-    return {actual:480,payable:480,holiday:false,ssot:false,rd:false,fullOT:false,ratePct:60,payType:'60% Sick Day',
-      regular:fixedBasic,ot:0,night:0,holidayBonus:0,mptePay:0,freightMealPay:0,fuelClaimPay:0,dailyCertPay:0,specialPay:0,
-      traineeCount:0,ponePay:0,noCoPay:0,yardCertCount:0,certPay:0,comminglePay:0,classesPay:0,sheridanPay:0,terminalPay:0,
-      runaroundBaseMinutes:0,runaroundDiffMinutes:0,runaroundPay:0,a2mins:0,a2:0,total:fixedBasic};
   }
 
   // Flat special shifts: 8 hours straight time, no Daily Cert.
@@ -7679,9 +7669,8 @@ function calculatePreview(){
   const c=calculate({...s,holiday:holidayBox.checked,holidayPayEligible:$('holidayPayEligibleFlag')?.checked!==false});
   if(!c||c.rateMissing){
     resetCalcRows();$('pTotal').textContent='$0.00';
-    const sickReason=c?.sickEligibility?.reason;
-    $('pTime').textContent=sickReason==='not_yet'?`Eligible beginning ${c.sickEligibility.effective}`:(c&&c.rateMissing?'Set hire date in Settings':'—');
-    $('payTypeBadge').textContent=sickReason==='not_yet'?'Not yet eligible':(c&&c.rateMissing?'Hire date needed':(s.specialShift||'Normal'));
+    $('pTime').textContent=c&&c.rateMissing?'Set hire date in Settings':'—';
+    $('payTypeBadge').textContent=c&&c.rateMissing?'Hire date needed':(s.specialShift||'Normal');
     $('payTypeBadge').className='badge';renderShiftWarnings(s);return;
   }
   $('pTime').textContent=c.actual||c.payable?`${fmtMinutes(c.actual)} / ${fmtMinutes(c.payable)}`:'Not time-based';
@@ -7925,13 +7914,8 @@ function toggleSpecialShift(){
       :'Pays the 8:00 straight-time guarantee only. Check Include 8:00 Holiday Pay if the following-day eligibility requirement is met. Daily Cert does not apply.';
   }
   else if(type==='60% Sick Day'){
-    const eligible=sixtyPercentSickDayEligibility($('date')?.value||'');
     const amount=rateTableFor(60)?.hour?.[8]?.[0];
-    msg.textContent=eligible.reason==='missing'
-      ?'Available after four years of service, once regular sick days are exhausted. Set your employment start date in Settings to confirm eligibility. Pays one basic day at the 60% rate with no daily certification.'
-      :eligible.reason==='not_yet'
-        ?`This benefit becomes available after four years of service (from ${eligible.effective}). Select an eligible date or use the regular Sick Day option.`
-        :`Pays one basic 8-hour day at the 60% pay-table rate (${money(amount)}), regardless of your current pay scale. No daily certification. Use only after your regular sick days are exhausted.`;
+    msg.textContent=`Pays one basic 8-hour day at the 60% pay scale (${money(amount)}). No daily certification.`;
   }
   else if(type==='Sick Day'||type==='Paid Guarantee')msg.textContent='Pays a flat 8:00 hours of straight time. Daily Cert does not apply.';
   else if(!category)msg.textContent=myJobConfigured()?'My Job could not determine this job class automatically. Choose the category that applies to this Special Shift.':'Choose the job category that applies to this Special Shift.';
@@ -11899,15 +11883,6 @@ async function saveShift(e){
   if(e?.preventDefault)e.preventDefault();
   if(!billingRequireWriteAccess()||shiftQuotaSaveInFlight)return;
   const s=formData();
-  if(s.specialShift==='60% Sick Day'){
-    const eligibility=sixtyPercentSickDayEligibility(s.date);
-    if(!eligibility.eligible){
-      alert(eligibility.reason==='missing'
-        ?'Set your employment start date in Settings before using 60% Sick Day.'
-        :`60% Sick Day is available after four years of service, beginning ${eligibility.effective}.`);
-      return;
-    }
-  }
   if(s.miscPenalty&&(!s.miscPenaltyDescription||!(s.miscPenaltyMinutes>0))){alert('For a Miscellaneous Penalty, enter the nature of the claim and a duration greater than 0:00.');document.getElementById(!s.miscPenaltyDescription?'miscPenaltyDescription':'miscPenaltyHours')?.focus();return}
   if(s.timeSlip&&!validateTimeSlipClaimPayments())return;
   if(s.yardMove&&!s.twoClassesPullTime){alert('For a 2 Classes of Service claim, enter the time you were pulled so Engineer Pay Log can compare the 2 Classes payment with pull-related overtime.');document.getElementById('twoClassesPullTime')?.focus();return}
