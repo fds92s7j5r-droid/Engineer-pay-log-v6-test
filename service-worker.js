@@ -1,4 +1,4 @@
-const CACHE_NAME='epl-v11-1-rev3-weekly-holiday-60sick-r5a-20261120';
+const CACHE_NAME='epl-v11-1-announcement-r5b-20261120';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./GO203_ROAD_YARD_DRAFT_NOV9_2026.pdf'];
 
 self.addEventListener('install',e=>e.waitUntil(
