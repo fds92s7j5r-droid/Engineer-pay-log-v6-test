@@ -1,4 +1,4 @@
-const CACHE_NAME='epl-v11-1-go203-rev3-images-r5e-20261123';
+const CACHE_NAME='epl-v11-1-fatigue-withdrawn-rc2-images-20261124';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./GO203_ROAD_YARD_DRAFT_NOV9_2026.pdf'];
 
 self.addEventListener('install',e=>e.waitUntil(
@@ -9,7 +9,7 @@ self.addEventListener('install',e=>e.waitUntil(
 
 self.addEventListener('activate',e=>e.waitUntil(
   caches.keys()
-    .then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME&&k!=='epl-crewbook-cloud-assets-v1'&&k!=='epl-notification-intents-v1').map(k=>caches.delete(k))))
+    .then(keys=>Promise.all(keys.filter(k=>k!==CACHE_NAME&&k!=='epl-crewbook-cloud-assets-v1'&&k!=='epl-notification-intents-v1'&&k!=='epl-fatigue-official-images-v1').map(k=>caches.delete(k))))
     .then(()=>self.clients.claim())
 ));
 
@@ -22,6 +22,12 @@ self.addEventListener('fetch',e=>{
   const isCrewBookCloudAsset=requestUrl.origin==='https://swvtzdwrzuzhsnqwnike.supabase.co'&&requestUrl.pathname.startsWith('/storage/v1/object/public/crew-book-assets/');
   if(isCrewBookCloudAsset){
     e.respondWith(caches.open('epl-crewbook-cloud-assets-v1').then(cache=>cache.match(e.request).then(cached=>cached||fetch(e.request).then(r=>{if(r.ok||r.type==='opaque')cache.put(e.request,r.clone());return r}))));
+    return;
+  }
+  // GO 203 fatigue relief excerpts are immutable and only fetched when the
+  // user opens the job image. Cache each individual image for later/offline use.
+  if(requestUrl.origin===self.location.origin&&/\/assets\/crewbook\/go203_fatigue_[a-z0-9]+_\d{8}\.jpg$/.test(requestUrl.pathname)){
+    e.respondWith(caches.open('epl-fatigue-official-images-v1').then(cache=>cache.match(e.request).then(cached=>cached||fetch(e.request).then(r=>{if(r.ok)cache.put(e.request,r.clone());return r}))));
     return;
   }
   // Other cloud/auth/API traffic must never be served from the PWA cache.

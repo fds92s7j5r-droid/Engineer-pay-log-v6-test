@@ -819,6 +819,13 @@ html[data-theme="dark"] .shift-time-choice[aria-pressed="true"]{background:#5389
     .holiday-source-body{padding:0 14px 12px;color:var(--muted);font-size:10px;line-height:1.5;overflow-wrap:anywhere}
     .holiday-weekend-image{border-bottom:1px solid var(--line)}
     html[data-theme="dark"] .holiday-lookup-message.warning{background:#2a2415;color:#f2dfaa}
+
+.fatigue-relief-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0}
+.fatigue-relief-table{width:100%;min-width:520px;border-collapse:collapse;font-size:12px}
+.fatigue-relief-table th,.fatigue-relief-table td{padding:8px 7px;text-align:left;border-bottom:1px solid #dce5ee;white-space:nowrap}
+.fatigue-relief-table th{color:#47627c;font-size:11px;font-weight:800;background:#edf4fa}
+.fatigue-relief-table .fatigue-deadhead td{font-style:italic;color:#415b77;background:#f7fafe}
+
 </style>
   <script>
     try{
@@ -2093,7 +2100,7 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
         <div class="quick-browse-controls">
           <div class="field full"><label>Search Assignment</label><input id="quickBrowseSearch" type="search" autocomplete="off" autocapitalize="characters" placeholder="e.g. 113, 470, YE-1" oninput="renderQuickJobBrowse()"></div>
           <div class="field full"><label>Terminal</label><select id="quickBrowseTerminal" onchange="renderQuickJobBrowse()"><option value="">All terminals</option></select></div>
-          <div class="field full"><label>Assignment Type</label><select id="quickBrowseType" onchange="renderQuickJobBrowse()"><option value="all">All assignments</option><option value="passenger">Passenger jobs</option><option value="passenger-relief">Passenger Relief Crews</option><option value="extra">Extra Crews</option><option value="yard">Yard jobs</option><option value="yard-relief">Yard Relief Crews</option></select></div>
+          <div class="field full"><label>Assignment Type</label><select id="quickBrowseType" onchange="renderQuickJobBrowse()"><option value="all">All assignments</option><option value="passenger">Passenger jobs</option><option value="passenger-relief">Passenger Relief Crews</option><option value="extra">Extra Crews</option><option value="fatigue-relief">Fatigue Relief (non-ownable)</option><option value="yard">Yard jobs</option><option value="yard-relief">Yard Relief Crews</option></select></div>
         </div>
         <div id="quickBrowseSourceNote" class="quick-lookup-note">Browse uses EPL's verified, date-aware Crew Book resolver. Relief Crew terminal filtering is based on the terminals of the assignments that crew covers.</div>
         <div id="quickBrowseCount" class="quick-browse-count"></div>
@@ -2802,12 +2809,19 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <summary><span><strong>Bid Sheet Maintenance</strong><small>Bid Sheet PDF upload, preview, and publishing.</small></span><span class="developer-summary-right"><span class="roster-admin-badge">Developer</span><span class="settings-chevron">›</span></span></summary>
           <div class="developer-tool-disclosure-body">
         <div id="bidSheetAdminLatest" class="account-sync-detail">Checking the latest published bid sheet...</div>
+        <div class="roster-admin-drop" id="bidWithdrawalAdminBox">
+          <div class="account-claim-kicker">Official Bulletin Status</div>
+          <div id="bidWithdrawalAdminState" class="account-sync-detail">Loading withdrawal status...</div>
+          <p class="muted">Use only when the Crew Dispatcher's official phone tape confirms a bulletin has been withdrawn. This preserves the original bid sheet, saved choices, and historical data; it does not publish awards.</p>
+          <button id="bidWithdrawalAdminButton" class="btn small" type="button" onclick="bidWithdrawalAdminToggle()" disabled>Mark Bid Sheet Withdrawn</button>
+          <p class="muted">GitHub preview: direct status writes are disabled. Test the Withdrawn phase with Dashboard Lifecycle Test below.</p>
+        </div>
         <div class="bid-lifecycle-test-box" id="bidLifecycleDeveloperTestBox">
           <div class="account-claim-kicker">Developer testing</div>
           <strong>Dashboard Lifecycle Test</strong>
           <div class="bid-lifecycle-test-grid" style="margin-top:9px">
             <div class="field full"><label>Test Date</label><input id="bidLifecycleTestDate" type="date"></div>
-            <div class="field full"><label>Results State</label><select id="bidLifecycleTestResults"><option value="auto">Automatic</option><option value="pending">Force results pending</option><option value="posted">Force results posted</option></select></div>
+            <div class="field full"><label>Results State</label><select id="bidLifecycleTestResults"><option value="auto">Automatic</option><option value="pending">Force results pending</option><option value="posted">Force results posted</option><option value="withdrawn">Force bulletin withdrawn (local test)</option></select></div>
           </div>
           <div class="settings-action-row" style="margin-top:10px">
             <button class="btn primary small" type="button" onclick="bidLifecycleApplyTest()">Apply Test State</button>
@@ -3364,9 +3378,14 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
 <div id="whatsNewModal" class="modal">
   <div class="modal-card" style="max-width:620px">
-    <div class="modal-head"><div><h2 style="margin:0">What's New in Engineer Pay Log V11.1</h2></div></div>
+    <div class="modal-head"><div><h2 style="margin:0">What's New in Engineer Pay Log V11.1 · R5F</h2></div></div>
     <div class="modal-body">
-      <p style="margin-top:0"><strong>New holiday assignment information, weekly job earnings, and more ways to track your time.</strong></p>
+      <p style="margin-top:0"><strong>GO 203 Fatigue Relief Jobs and withdrawn bid sheet status.</strong></p>
+       <h3>24 Temporary Fatigue Relief Jobs</h3>
+       <p>Quick Job Lookup and Add Shift now recognize 12 weekday and 12 weekend assignments effective November 9, 2026. Each assignment includes a zoomable official image excerpt that loads only when opened and is cached for repeat viewing. All have no scheduled meal and can never be owned or bid on. Holiday lookups use weekend portions when applicable; verify actual assignments with the railroad. These jobs expire when the Summer 2027 General Pick takes effect.</p>
+       <h3>Withdrawn Bid Sheets</h3>
+       <p>When Crew Dispatch confirms withdrawal and the developer marks a bulletin withdrawn, EPL stops displaying awards-pending alerts and briefly displays the withdrawal notice. Original sheets and saved choices remain available for reference. Always rely on the Crew Dispatcher’s official phone tape.</p>
+       <h3>Earlier V11.1 Updates</h3>
       <h3>Holiday Assignments at a Glance</h3>
       <p>Trim Assistant now shows work badges for Thanksgiving, Christmas Day, New Year's Day, and Presidents Day. See the actual H-job or other holiday assignment where published. Quick Job Lookup provides holiday report and release times and the relevant Crew Book schedule when available. Check the latest holiday scratch sheet for any changes.</p>
       <h3>Weekly Job Earnings in Job Comparison</h3>
@@ -3825,7 +3844,7 @@ const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
 const APP_VERSION='11.1';
-const WHATS_NEW_VERSION='11.1-release-20261120';
+const WHATS_NEW_VERSION='11.1-r5f-rc2-fatigue-withdrawn-official-images-20261124';
 const CONTACT_EMAIL='admin@engineerpaylog.com';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
 const BACKUP_REMIND_LATER_KEY='engineerPayLogBackupRemindLaterUntil';
@@ -5454,6 +5473,7 @@ function normalizeMyJob(j){
 }
 function myJobConfigured(){
   const j=normalizeMyJob(getMyJob());
+  if(j&&(go203FatigueIsJob(j.assignment)||go203FatigueIsJob(j.reliefCrewNumber)||Object.values(j.reliefDays||{}).some(d=>go203FatigueIsJob(d?.assignment))))return false;
   if(!(j&&j.enabled))return false;
   if(j.type==='relief'){
     if(!j.reliefCrewNumber)return false;
@@ -5577,6 +5597,7 @@ function saveMyJob(){
   const type=document.getElementById('myJobTypeRelief')?.checked?'relief':'regular';
   if(type==='relief'){
     const reliefCrewNumber=(document.getElementById('myJobReliefCrewNumber')?.value||'').trim();
+    if(go203FatigueIsJob(reliefCrewNumber)){alert('Fatigue Relief assignments cannot be owned as Relief Crews.');return}
     if(!reliefCrewNumber){alert('Please enter the Relief Crew number.');return}
     const reliefDays={};
     for(const day of MY_JOB_RELIEF_DAYS){
@@ -5584,12 +5605,14 @@ function saveMyJob(){
       const assignment=(document.getElementById(`myJobRelief${cap}Assignment`)?.value||'').trim();
       const location=reliefLocationValue(day);
       const start=document.getElementById(`myJobRelief${cap}Start`)?.value||'',end=document.getElementById(`myJobRelief${cap}End`)?.value||'',paysMeal=!!document.getElementById(`myJobRelief${cap}PaysMeal`)?.checked;
+      if(go203FatigueIsJob(assignment)){alert('Fatigue Relief assignments cannot be saved in an owned My Job relief schedule.');return}
       if(!reliefDay&&(!assignment||!location||!start||!end)){alert(`Please complete ${cap}'s assignment, location, start, and release time, or mark it as a Relief Day.`);return}
       reliefDays[day]={reliefDay,assignment:reliefDay?'':assignment,location:reliefDay?'':location,start:reliefDay?'':start,end:reliefDay?'':end,paysMeal:reliefDay?false:paysMeal};
     }
     localStorage.setItem(MY_JOB_KEY,JSON.stringify({enabled:true,type:'relief',reliefCrewNumber,reliefDays,deadheadWatch}));
   }else{
     const assignment=(document.getElementById('myJobNumber')?.value||'').trim();
+    if(go203FatigueIsJob(assignment)){alert('Fatigue Relief jobs cannot be owned or saved as My Job. Use Add Shift when assigned.');return}
     if(!assignment){alert('Please enter the Job Number.');return}
     const location=regularLocationValue();
     if(!location){alert('Please select the Home Terminal for this job.');return}
@@ -5663,6 +5686,7 @@ function openMyJobSettings(){
 }
 function applyMyJob(){
   const j=normalizeMyJob(getMyJob());if(!j||!j.enabled)return;
+  if(go203FatigueIsJob(j.assignment)||go203FatigueIsJob(j.reliefCrewNumber)||Object.values(j.reliefDays||{}).some(d=>go203FatigueIsJob(d?.assignment))){alert('Fatigue Relief assignments are not ownable and cannot be used as My Job.');return}
   const date=document.getElementById('date')?.value;if(!date){alert('Select a date first.');return}
   const d=new Date(date+'T12:00:00'),day=MY_JOB_RELIEF_DAYS[(d.getDay()+6)%7];
   const dayLabel=day.charAt(0).toUpperCase()+day.slice(1);
@@ -6449,8 +6473,81 @@ function resolveYardReliefCoveredJobV8(key,day,date='',options={}){
   // so use assignment-operating logic rather than owner-workday logic.
   return resolveYardJobV8(key,day,date,options);
 }
+
+// GO 203 Engineer Fatigue Relief Jobs — source bulletin Nov. 9, 2026.
+// Temporary, NEVER ownable, no scheduled meal, and valid only in the GO 203 General Pick.
+// Next General Pick effective date MUST be entered when officially announced.
+const GO203_FATIGUE_RELIEF_EFFECTIVE='2026-11-09';
+const GO203_FATIGUE_NEXT_PICK_EFFECTIVE=''; // Set to official Summer 2027 General Pick cutover (exclusive); DO NOT guess.
+const GO203_FATIGUE_RELIEF_JOBS=Object.freeze({"EFJR1":{"key":"EFJR1","portion":"weekday","start":"04:38","terminal":"Jamaica","end":"11:55","paysMeal":false,"ownable":false,"movements":[{"train":"2819","fromJob":"194","from":"Jamaica","depart":"05:08","to":"Brooklyn","arrive":"05:28"},{"train":"2838","fromJob":"194","from":"Brooklyn","depart":"07:20","to":"Jamaica","arrive":"07:38"},{"train":"2883","fromJob":"180","from":"Jamaica","depart":"09:55","to":"Brooklyn","arrive":"10:15"}],"deadheads":[{"after":3,"to":"Jamaica"}],"page":1},"EFLR1":{"key":"EFLR1","portion":"weekday","start":"04:58","terminal":"Long Beach","end":"11:38","paysMeal":false,"ownable":false,"movements":[{"train":"809","fromJob":"243","from":"Long Beach","depart":"05:13","to":"Grand Central","arrive":"06:08"},{"train":"1610","fromJob":"246","from":"Grand Central","depart":"06:42","to":"Huntington","arrive":"07:52"},{"train":"1523","fromJob":"246","from":"Huntington","depart":"09:04","to":"Penn Station","arrive":"10:08"}],"deadheads":[{"after":3,"to":"Long Beach"}],"page":1},"EFNR1":{"key":"EFNR1","portion":"weekday","start":"05:05","terminal":"Penn Station","end":"11:03","paysMeal":false,"ownable":false,"movements":[{"train":"1310","fromJob":"94","from":"Penn Station","depart":"05:20","to":"Port Washington","arrive":"06:12"},{"train":"415","fromJob":"94","from":"Port Washington","depart":"06:47","to":"Grand Central","arrive":"07:30"},{"train":"416","fromJob":"256","from":"Grand Central","depart":"08:42","to":"Port Washington","arrive":"09:29"},{"train":"329","fromJob":"256","from":"Port Washington","depart":"10:10","to":"Penn Station","arrive":"10:58"}],"page":1},"EFBR1":{"key":"EFBR1","portion":"weekday","start":"10:04","terminal":"Babylon","end":"15:43","paysMeal":false,"ownable":false,"movements":[{"train":"3121","fromJob":"259","from":"Babylon","depart":"10:54","to":"Jamaica","arrive":"11:39"},{"train":"2905","fromJob":"181","from":"Jamaica","depart":"12:56","to":"Brooklyn","arrive":"13:16"},{"train":"2894","fromJob":"181","from":"Brooklyn","depart":"13:35","to":"Jamaica","arrive":"13:55"}],"deadheads":[{"after":3,"to":"Babylon"}],"page":1},"EFPR1":{"key":"EFPR1","portion":"weekday","start":"10:23","terminal":"Port Washington","end":"18:09","paysMeal":false,"ownable":false,"movements":[{"train":"429","fromJob":"248","from":"Port Washington","depart":"10:38","to":"Grand Central","arrive":"11:25"},{"train":"750","fromJob":"308","from":"Grand Central","depart":"12:53","to":"Hempstead","arrive":"13:47"},{"train":"799","fromJob":"232","from":"Hempstead","depart":"14:59","to":"Grand Central","arrive":"15:50"},{"train":"460","fromJob":"308","from":"Grand Central","depart":"17:22","to":"Port Washington","arrive":"18:04"}],"page":1},"EFGR1":{"key":"EFGR1","portion":"weekday","start":"10:54","terminal":"Grand Central","end":"18:32","paysMeal":false,"ownable":false,"movements":[{"train":"2724","fromJob":"289","from":"Grand Central","depart":"11:14","to":"Far Rockaway","arrive":"12:12"},{"train":"2753","fromJob":"289","from":"Far Rockaway","depart":"13:20","to":"Grand Central","arrive":"14:15"},{"train":"262","fromJob":"254","from":"Grand Central","depart":"15:05","to":"Babylon","arrive":"16:19"}],"deadheads":[{"after":3,"to":"Grand Central"}],"page":2},"EFNR2":{"key":"EFNR2","portion":"weekday","start":"12:25","terminal":"Penn Station","end":"17:47","paysMeal":false,"ownable":false,"movements":[{"train":"1552","fromJob":"346","from":"Penn Station","depart":"12:40","to":"Huntington","arrive":"13:48"},{"train":"1150","fromJob":"104","from":"Penn Station","depart":"15:46","to":"Massapequa","arrive":"16:41"},{"train":"4159","fromJob":"104","from":"Massapequa","depart":"16:56","to":"Penn Station","arrive":"17:42"}],"deadheads":[{"after":1,"to":"Penn Station"}],"page":2},"EFGR2":{"key":"EFGR2","portion":"weekday","start":"12:28","terminal":"Grand Central","end":"18:40","paysMeal":false,"ownable":false,"movements":[{"train":"450","fromJob":"345","from":"Grand Central","depart":"12:48","to":"Port Washington","arrive":"13:35"},{"train":"355","fromJob":"345","from":"Port Washington","depart":"14:08","to":"Penn Station","arrive":"14:55"},{"train":"758","fromJob":"140","from":"Penn Station","depart":"16:05","to":"Hempstead","arrive":"16:56"},{"train":"3753","fromJob":"140","from":"Hempstead","depart":"17:40","to":"Grand Central","arrive":"18:35"}],"page":2},"EFKR1":{"key":"EFKR1","portion":"weekday","start":"15:39","terminal":"Ronkonkoma","end":"22:40","paysMeal":false,"ownable":false,"movements":[{"train":"4953","fromJob":"355","from":"Ronkonkoma","depart":"16:09","to":"Penn Station","arrive":"17:27"},{"train":"364","fromJob":"327","from":"Penn Station","depart":"18:26","to":"Port Washington","arrive":"19:05"},{"train":"367","fromJob":"327","from":"Port Washington","depart":"19:56","to":"Penn Station","arrive":"20:44"}],"deadheads":[{"after":3,"to":"Ronkonkoma"}],"page":2},"EFGR3":{"key":"EFGR3","portion":"weekday","start":"16:29","terminal":"Grand Central","end":"22:31","paysMeal":false,"ownable":false,"movements":[{"train":"1464","fromJob":"165","from":"Grand Central","depart":"16:49","to":"Great Neck","arrive":"17:23"},{"train":"1363","fromJob":"165","from":"Great Neck","depart":"17:54","to":"Penn Station","arrive":"18:29"},{"train":"366","fromJob":"269","from":"Penn Station","depart":"19:10","to":"Port Washington","arrive":"19:51"},{"train":"469","fromJob":"269","from":"Port Washington","depart":"21:39","to":"Grand Central","arrive":"22:26"}],"page":2},"EFGR4":{"key":"EFGR4","portion":"weekday","start":"17:23","terminal":"Grand Central","end":"23:53","paysMeal":false,"ownable":false,"movements":[{"train":"1466","fromJob":"301","from":"Grand Central","depart":"17:43","to":"Great Neck","arrive":"18:18"},{"train":"4461","fromJob":"301","from":"Great Neck","depart":"18:32","to":"Grand Central","arrive":"19:23"},{"train":"782","fromJob":"270","from":"Grand Central","depart":"20:44","to":"Hempstead","arrive":"21:38"},{"train":"775","fromJob":"270","from":"Hempstead","depart":"22:56","to":"Grand Central","arrive":"23:48"}],"page":3},"EFWR1":{"key":"EFWR1","portion":"weekday","start":"18:46","terminal":"West Hempstead","end":"23:45","paysMeal":false,"ownable":false,"movements":[{"train":"1763","fromJob":"187","from":"West Hempstead","depart":"19:01","to":"Brooklyn","arrive":"19:48"},{"train":"2970","fromJob":"187","from":"Brooklyn","depart":"20:22","to":"Jamaica","arrive":"20:42"},{"train":"8959","fromJob":"201","from":"Jamaica","depart":"21:35","to":"Brooklyn","arrive":"21:55"},{"train":"8972","fromJob":"201","from":"Brooklyn","depart":"22:25","to":"Jamaica","arrive":"22:45"}],"deadheads":[{"after":4,"to":"West Hempstead"}],"page":3},"EFNW1":{"key":"EFNW1","portion":"weekend","start":"03:03","terminal":"Penn Station","end":"09:18","paysMeal":false,"ownable":false,"movements":[{"train":"6302","fromJob":"227","from":"Penn Station","depart":"03:18","to":"Port Washington","arrive":"04:04"},{"train":"3481","fromJob":"227","from":"Port Washington","depart":"05:20","to":"Grand Central","arrive":"06:07"},{"train":"6412","fromJob":"151","from":"Grand Central","depart":"07:03","to":"Port Washington","arrive":"07:50"},{"train":"6315","fromJob":"151","from":"Port Washington","depart":"08:26","to":"Penn Station","arrive":"09:13"}],"page":3},"EFJW1":{"key":"EFJW1","portion":"weekend","start":"03:40","terminal":"Jamaica","end":"10:50","paysMeal":false,"ownable":false,"movements":[{"train":"5891","fromJob":"175","from":"Jamaica","depart":"04:10","to":"Brooklyn","arrive":"04:30"},{"train":"8830","fromJob":"175","from":"Brooklyn","depart":"06:45","to":"Jamaica","arrive":"07:05"},{"train":"8853","fromJob":"183","from":"Jamaica","depart":"09:35","to":"Brooklyn","arrive":"09:55"},{"train":"8860","fromJob":"183","from":"Brooklyn","depart":"10:25","to":"Jamaica","arrive":"10:45"}],"page":3},"EFNW2":{"key":"EFNW2","portion":"weekend","start":"05:29","terminal":"Penn Station","end":"11:18","paysMeal":false,"ownable":false,"movements":[{"train":"6108","fromJob":"95","from":"Penn Station","depart":"05:44","to":"Babylon","arrive":"06:57"},{"train":"6416","fromJob":"198","from":"Grand Central","depart":"09:01","to":"Port Washington","arrive":"09:48"},{"train":"6319","fromJob":"198","from":"Port Washington","depart":"10:26","to":"Penn Station","arrive":"11:13"}],"deadheads":[{"after":1,"to":"Grand Central"}],"page":3},"EFPW1":{"key":"EFPW1","portion":"weekend","start":"10:39","terminal":"Port Washington","end":"15:53","paysMeal":false,"ownable":false,"movements":[{"train":"6421","fromJob":"288","from":"Port Washington","depart":"10:54","to":"Grand Central","arrive":"11:41"},{"train":"6450","fromJob":"288","from":"Grand Central","depart":"12:01","to":"Port Washington","arrive":"12:48"},{"train":"6453","fromJob":"309","from":"Port Washington","depart":"13:54","to":"Grand Central","arrive":"14:41"},{"train":"6456","fromJob":"309","from":"Grand Central","depart":"15:01","to":"Port Washington","arrive":"15:48"}],"page":4},"EFGW1":{"key":"EFGW1","portion":"weekend","start":"11:19","terminal":"Grand Central","end":"17:25","paysMeal":false,"ownable":false,"movements":[{"train":"8720","fromJob":"299","from":"Grand Central","depart":"11:39","to":"Far Rockaway","arrive":"12:37"},{"train":"8753","fromJob":"299","from":"Far Rockaway","depart":"13:11","to":"Grand Central","arrive":"14:07"},{"train":"6754","fromJob":"161","from":"Grand Central","depart":"14:26","to":"Hempstead","arrive":"15:19"},{"train":"6757","fromJob":"161","from":"Hempstead","depart":"16:27","to":"Grand Central","arrive":"17:20"}],"page":4},"EFBW1":{"key":"EFBW1","portion":"weekend","start":"12:24","terminal":"Babylon","end":"19:31","paysMeal":false,"ownable":false,"movements":[{"train":"6157","fromJob":"289","from":"Babylon","depart":"13:14","to":"Penn Station","arrive":"14:25"},{"train":"5168","fromJob":"102","from":"Penn Station","depart":"14:53","to":"Farmingdale","arrive":"15:43"},{"train":"8169","fromJob":"102","from":"Farmingdale","depart":"16:22","to":"Penn Station","arrive":"17:23"}],"deadheads":[{"after":3,"to":"Babylon"}],"page":4},"EFPW2":{"key":"EFPW2","portion":"weekend","start":"12:39","terminal":"Port Washington","end":"17:53","paysMeal":false,"ownable":false,"movements":[{"train":"6451","fromJob":"86","from":"Port Washington","depart":"12:54","to":"Grand Central","arrive":"13:41"},{"train":"6454","fromJob":"86","from":"Grand Central","depart":"14:01","to":"Port Washington","arrive":"14:48"},{"train":"6457","fromJob":"311","from":"Port Washington","depart":"15:54","to":"Grand Central","arrive":"16:41"},{"train":"6460","fromJob":"311","from":"Grand Central","depart":"17:01","to":"Port Washington","arrive":"17:48"}],"page":4},"EFKW1":{"key":"EFKW1","portion":"weekend","start":"15:40","terminal":"Ronkonkoma","end":"23:31","paysMeal":false,"ownable":false,"movements":[{"train":"7969","fromJob":"355","from":"Ronkonkoma","depart":"16:10","to":"Penn Station","arrive":"17:30"},{"train":"6868","fromJob":"324","from":"Penn Station","depart":"19:06","to":"Long Beach","arrive":"20:01"},{"train":"6877","fromJob":"324","from":"Long Beach","depart":"20:39","to":"Penn Station","arrive":"21:35"}],"deadheads":[{"after":3,"to":"Ronkonkoma"}],"page":4},"EFFW1":{"key":"EFFW1","portion":"weekend","start":"15:56","terminal":"Far Rockaway","end":"21:42","paysMeal":false,"ownable":false,"movements":[{"train":"8761","fromJob":"301","from":"Far Rockaway","depart":"16:11","to":"Grand Central","arrive":"17:07"},{"train":"6762","fromJob":"200","from":"Grand Central","depart":"17:26","to":"Hempstead","arrive":"18:19"},{"train":"6765","fromJob":"200","from":"Hempstead","depart":"19:27","to":"Grand Central","arrive":"20:20"},{"train":"8766","fromJob":"301","from":"Grand Central","depart":"20:39","to":"Far Rockaway","arrive":"21:37"}],"page":5},"EFGW2":{"key":"EFGW2","portion":"weekend","start":"15:19","terminal":"Grand Central","end":"22:12","paysMeal":false,"ownable":false,"movements":[{"train":"8756","fromJob":"163","from":"Grand Central","depart":"15:39","to":"Far Rockaway","arrive":"16:37"},{"train":"8763","fromJob":"163","from":"Far Rockaway","depart":"17:11","to":"Grand Central","arrive":"18:07"},{"train":"8764","fromJob":"165","from":"Grand Central","depart":"19:39","to":"Far Rockaway","arrive":"20:37"},{"train":"8773","fromJob":"165","from":"Far Rockaway","depart":"21:11","to":"Grand Central","arrive":"22:07"}],"page":5},"EFNW3":{"key":"EFNW3","portion":"weekend","start":"17:18","terminal":"Penn Station","end":"23:19","paysMeal":false,"ownable":false,"movements":[{"train":"6360","fromJob":"352","from":"Penn Station","depart":"17:33","to":"Port Washington","arrive":"18:19"},{"train":"6463","fromJob":"326","from":"Port Washington","depart":"18:54","to":"Grand Central","arrive":"19:41"},{"train":"6466","fromJob":"326","from":"Grand Central","depart":"20:01","to":"Port Washington","arrive":"20:48"},{"train":"6371","fromJob":"352","from":"Port Washington","depart":"22:27","to":"Penn Station","arrive":"23:14"}],"page":5},"EFNW4":{"key":"EFNW4","portion":"weekend","start":"17:41","terminal":"Penn Station","end":"23:46","paysMeal":false,"ownable":false,"movements":[{"train":"7574","fromJob":"100","from":"Penn Station","depart":"17:56","to":"Huntington","arrive":"19:08"},{"train":"7583","fromJob":"100","from":"Huntington","depart":"20:03","to":"Penn Station","arrive":"21:10"},{"train":"6368","fromJob":"354","from":"Penn Station","depart":"21:32","to":"Port Washington","arrive":"22:19"},{"train":"6397","fromJob":"354","from":"Port Washington","depart":"22:55","to":"Penn Station","arrive":"23:41"}],"page":5}});
+// Chronological, effective-dated adjustments can be appended to this array, never overwrite past shifts.
+// Example: {key:'EFJR1',effective:'YYYY-MM-DD',endExclusive:'',changes:{start:'05:00',movements:[...]}};
+const GO203_FATIGUE_RELIEF_REVISIONS=Object.freeze([]);
+function go203FatigueIsJob(key){return Object.prototype.hasOwnProperty.call(GO203_FATIGUE_RELIEF_JOBS,normalizeCrewBookKey(key))}
+function go203FatiguePortion(date){const d=crewBookDayForDate(date);return isContractHoliday(date)||d==='saturday'||d==='sunday'?'weekend':'weekday'}
+function go203FatigueDefinition(key,date){
+  const source=GO203_FATIGUE_RELIEF_JOBS[normalizeCrewBookKey(key)];if(!source)return null;
+  let item=source;
+  for(const revision of GO203_FATIGUE_RELIEF_REVISIONS){if(revision.key!==source.key||date<revision.effective||revision.endExclusive&&date>=revision.endExclusive)continue;item={...item,...revision.changes}}
+  return item;
+}
+function go203FatigueActive(key,date){
+  const item=go203FatigueDefinition(key,date);
+  return !!(item&&/^\d{4}-\d{2}-\d{2}$/.test(date)&&date>=GO203_FATIGUE_RELIEF_EFFECTIVE&&(!GO203_FATIGUE_NEXT_PICK_EFFECTIVE||date<GO203_FATIGUE_NEXT_PICK_EFFECTIVE)&&item.portion===go203FatiguePortion(date));
+}
+function go203FatigueLookup(key,date){
+  const item=go203FatigueDefinition(key,date);if(!item)return null;
+  const day=crewBookDayForDate(date),active=go203FatigueActive(key,date);
+  const revision={go:'203',revision:'Fatigue Relief',effective:GO203_FATIGUE_RELIEF_EFFECTIVE,source:'GO203 Fatigue Relief Nov 9 2026'};
+  return {key:item.key,day,source:'fatigue-relief',revision,job:{...item,type:'workableNotOwnable',status:'active',relief:[]},schedule:active?{start:item.start,end:item.end,paysMeal:false,location:item.terminal}:null,active};
+}
+function go203FatigueMovementsHTML(item){
+  const stages=[];
+  (item.movements||[]).forEach((m,index)=>{
+    stages.push(`<tr><td>${escapeHTML(m.train)}</td><td>${escapeHTML(m.fromJob)}</td><td>${escapeHTML(m.from)}</td><td>${escapeHTML(jobCompareTimeLabel(m.depart))}</td><td>${escapeHTML(m.to)}</td><td>${escapeHTML(jobCompareTimeLabel(m.arrive))}</td></tr>`);
+    for(const dh of item.deadheads||[])if(dh.after===index+1)stages.push(`<tr class="fatigue-deadhead"><td colspan="6">Deadhead to ${escapeHTML(dh.to)}</td></tr>`)
+  });
+  return `<div class="fatigue-relief-scroll"><table class="fatigue-relief-table"><thead><tr><th>Train</th><th>Job</th><th>From</th><th>Lv.</th><th>To</th><th>Arr.</th></tr></thead><tbody>${stages.join('')}</tbody></table></div>`;
+}
+// On-demand, individual official excerpts for the temporary GO 203 fatigue relief jobs.
+// These are cropped only from the railroad's Nov. 9 bulletin; never re-use a stale
+// excerpt for a later revision unless that revision provides a matching image.
+const GO203_FATIGUE_OFFICIAL_IMAGE_MAP=Object.freeze({"EFJR1":{"file":"assets/crewbook/go203_fatigue_efjr1_20261109.jpg","offset":0,"width":1491,"height":241,"spriteHeight":241,"page":1,"originalEdition":"2026-11-09"},"EFLR1":{"file":"assets/crewbook/go203_fatigue_eflr1_20261109.jpg","offset":0,"width":1491,"height":240,"spriteHeight":240,"page":1,"originalEdition":"2026-11-09"},"EFNR1":{"file":"assets/crewbook/go203_fatigue_efnr1_20261109.jpg","offset":0,"width":1491,"height":269,"spriteHeight":269,"page":1,"originalEdition":"2026-11-09"},"EFBR1":{"file":"assets/crewbook/go203_fatigue_efbr1_20261109.jpg","offset":0,"width":1491,"height":241,"spriteHeight":241,"page":1,"originalEdition":"2026-11-09"},"EFPR1":{"file":"assets/crewbook/go203_fatigue_efpr1_20261109.jpg","offset":0,"width":1491,"height":269,"spriteHeight":269,"page":1,"originalEdition":"2026-11-09"},"EFGR1":{"file":"assets/crewbook/go203_fatigue_efgr1_20261109.jpg","offset":0,"width":1491,"height":241,"spriteHeight":241,"page":2,"originalEdition":"2026-11-09"},"EFNR2":{"file":"assets/crewbook/go203_fatigue_efnr2_20261109.jpg","offset":0,"width":1491,"height":269,"spriteHeight":269,"page":2,"originalEdition":"2026-11-09"},"EFGR2":{"file":"assets/crewbook/go203_fatigue_efgr2_20261109.jpg","offset":0,"width":1491,"height":268,"spriteHeight":268,"page":2,"originalEdition":"2026-11-09"},"EFKR1":{"file":"assets/crewbook/go203_fatigue_efkr1_20261109.jpg","offset":0,"width":1491,"height":241,"spriteHeight":241,"page":2,"originalEdition":"2026-11-09"},"EFGR3":{"file":"assets/crewbook/go203_fatigue_efgr3_20261109.jpg","offset":0,"width":1491,"height":269,"spriteHeight":269,"page":2,"originalEdition":"2026-11-09"},"EFGR4":{"file":"assets/crewbook/go203_fatigue_efgr4_20261109.jpg","offset":0,"width":1491,"height":269,"spriteHeight":269,"page":3,"originalEdition":"2026-11-09"},"EFWR1":{"file":"assets/crewbook/go203_fatigue_efwr1_20261109.jpg","offset":0,"width":1491,"height":269,"spriteHeight":269,"page":3,"originalEdition":"2026-11-09"},"EFNW1":{"file":"assets/crewbook/go203_fatigue_efnw1_20261109.jpg","offset":0,"width":1491,"height":269,"spriteHeight":269,"page":3,"originalEdition":"2026-11-09"},"EFJW1":{"file":"assets/crewbook/go203_fatigue_efjw1_20261109.jpg","offset":0,"width":1491,"height":268,"spriteHeight":268,"page":3,"originalEdition":"2026-11-09"},"EFNW2":{"file":"assets/crewbook/go203_fatigue_efnw2_20261109.jpg","offset":0,"width":1491,"height":269,"spriteHeight":269,"page":3,"originalEdition":"2026-11-09"},"EFPW1":{"file":"assets/crewbook/go203_fatigue_efpw1_20261109.jpg","offset":0,"width":1491,"height":269,"spriteHeight":269,"page":4,"originalEdition":"2026-11-09"},"EFGW1":{"file":"assets/crewbook/go203_fatigue_efgw1_20261109.jpg","offset":0,"width":1491,"height":269,"spriteHeight":269,"page":4,"originalEdition":"2026-11-09"},"EFBW1":{"file":"assets/crewbook/go203_fatigue_efbw1_20261109.jpg","offset":0,"width":1491,"height":240,"spriteHeight":240,"page":4,"originalEdition":"2026-11-09"},"EFPW2":{"file":"assets/crewbook/go203_fatigue_efpw2_20261109.jpg","offset":0,"width":1491,"height":269,"spriteHeight":269,"page":4,"originalEdition":"2026-11-09"},"EFKW1":{"file":"assets/crewbook/go203_fatigue_efkw1_20261109.jpg","offset":0,"width":1491,"height":241,"spriteHeight":241,"page":4,"originalEdition":"2026-11-09"},"EFFW1":{"file":"assets/crewbook/go203_fatigue_effw1_20261109.jpg","offset":0,"width":1491,"height":269,"spriteHeight":269,"page":5,"originalEdition":"2026-11-09"},"EFGW2":{"file":"assets/crewbook/go203_fatigue_efgw2_20261109.jpg","offset":0,"width":1491,"height":269,"spriteHeight":269,"page":5,"originalEdition":"2026-11-09"},"EFNW3":{"file":"assets/crewbook/go203_fatigue_efnw3_20261109.jpg","offset":0,"width":1491,"height":269,"spriteHeight":269,"page":5,"originalEdition":"2026-11-09"},"EFNW4":{"file":"assets/crewbook/go203_fatigue_efnw4_20261109.jpg","offset":0,"width":1491,"height":269,"spriteHeight":269,"page":5,"originalEdition":"2026-11-09"}});
+function go203FatigueOfficialImageMeta(key,date){
+  const normalized=normalizeCrewBookKey(key);
+  const newer=(GO203_FATIGUE_RELIEF_REVISIONS||[]).some(r=>r.key===normalized&&date>=r.effective&&(!r.endExclusive||date<r.endExclusive));
+  if(newer)return null; // newer schedule data must never silently display obsolete artwork
+  return GO203_FATIGUE_OFFICIAL_IMAGE_MAP[normalized]||null;
+}
+function go203FatigueRevealOfficialImage(scope){
+  if(!scope)return;
+  scope.querySelectorAll('img[data-crewbook-lazy-src]').forEach(img=>{
+    const url=img.getAttribute('data-crewbook-lazy-src');
+    if(url){img.setAttribute('src',url);img.removeAttribute('data-crewbook-lazy-src')}
+  });
+}
+function go203FatigueOfficialImageBody(key,date){
+  const meta=go203FatigueOfficialImageMeta(key,date),item=go203FatigueDefinition(key,date);
+  if(!item)return '';
+  if(!meta)return `<div class="crewbook-official-unavailable">The Nov. 9 official image is not shown because an updated schedule may apply. Consult the current railroad bulletin.</div>`+go203FatigueSourceLink(item);
+  return crewBookSpriteCropHTML(meta,'Official GO 203 Fatigue Relief • '+item.key,true)+`<div class="crewbook-image-caption">Individual crop of the official GO 203 fatigue relief bulletin, November 9, 2026. Opened images are cached for repeat viewing; the EPL summary stays date-aware; official railroad instructions take precedence. Later official revisions may supersede this excerpt.</div>`;
+}
+function go203FatigueOfficialAssignmentHTML(key,date){
+  const item=go203FatigueDefinition(key,date);if(!item)return '';
+  return `<div class="crewbook-official-wrap"><details class="crewbook-official-details" ontoggle="if(this.open)go203FatigueRevealOfficialImage(this)"><summary>View Official Fatigue Relief Assignment</summary><div class="crewbook-official-body">${go203FatigueOfficialImageBody(key,date)}</div></details></div>`;
+}
+function go203FatigueSourceLink(item){return `<a class="btn small" href="go203_fatigue_relief_20261109.pdf#page=${Number(item.page)||1}" target="_blank" rel="noopener">View Official Fatigue Relief Bulletin (page ${Number(item.page)||1})</a>`}
+function go203FatigueQuickLookupHTML(key,date){
+  const item=go203FatigueDefinition(key,date),hit=go203FatigueLookup(key,date),active=!!hit?.active;
+  if(!item)return '';
+  const expired=!!GO203_FATIGUE_NEXT_PICK_EFFECTIVE&&date>=GO203_FATIGUE_NEXT_PICK_EFFECTIVE;
+  const reason=date<GO203_FATIGUE_RELIEF_EFFECTIVE?'Not yet effective':expired?'Expired at Summer 2027 General Pick':'Not assigned on this day; '+(go203FatiguePortion(date)==='weekend'?'weekend':'weekday')+' fatigue jobs only';
+  return `<article class="quick-lookup-card"><div class="quick-lookup-head"><div class="quick-lookup-titleline"><div class="quick-lookup-job">${escapeHTML(item.key)}</div><div class="quick-lookup-source">GO 203 Fatigue Relief · effective Nov 9, 2026</div></div><div class="quick-lookup-terminal">${escapeHTML(item.terminal)}</div><div class="quick-lookup-state">${escapeHTML(date)} · ${item.portion==='weekday'?'Monday–Friday':'Saturday–Sunday / holidays'} · Never ownable</div></div><div class="crewbook-paper-banner"><strong>Temporary assignment · no scheduled meal</strong> · ${active?'May be worked as assigned, but cannot be owned or bid. Standard engineer pay rules apply.':'Inactive for this date: '+escapeHTML(reason)+'.'} The source bulletin lists no meal period.</div><div class="quick-lookup-grid"><div class="quick-lookup-fact"><div class="label">Report</div><div class="value">${active?escapeHTML(jobCompareTimeLabel(item.start)):'—'}</div></div><div class="quick-lookup-fact"><div class="label">Release</div><div class="value">${active?escapeHTML(jobCompareTimeLabel(item.end)):'—'}</div></div><div class="quick-lookup-fact"><div class="label">Duration</div><div class="value">${active?escapeHTML(fmtMinutes(jobCompareDuration(item.start,item.end))):'—'}</div></div><div class="quick-lookup-fact"><div class="label">Meal</div><div class="value">None</div></div></div>${active?`<h3 style="margin:16px 0 8px">Published train movements</h3>${go203FatigueMovementsHTML(item)}`:''}${go203FatigueOfficialAssignmentHTML(key,date)}<div class="quick-lookup-actions" style="margin-top:12px">${go203FatigueSourceLink(item)}</div><div class="quick-lookup-exception">Holiday use is possible but NOT confirmed by this bulletin. Check the official scratch sheet and Crew Dispatcher for whether an assignment actually operates. Future revisions will be applied by effective date. When the Summer 2027 General Pick takes effect, these jobs expire but historical lookups remain available.</div></article>`;
+}
+
 function crewBookLookupJobV8(input,date){
   const key=normalizeCrewBookKey(input),day=crewBookDayForDate(date);
+  if(go203FatigueIsJob(key))return go203FatigueLookup(key,date);
   if(crewBookIsLaborDay2026(date)){
     if(isHolidayCrewKey(key))return crewBookLookupLaborDayH(key);
     if(/^\d+$/.test(key)){
@@ -6484,10 +6581,10 @@ function crewBookOfficialImageKey(key,hit){
   if(hit.source==='passenger-relief'&&hit.coveredKey)return String(hit.coveredKey);
   return null;
 }
-function crewBookSpriteCropHTML(meta,label){
+function crewBookSpriteCropHTML(meta,label,deferImage=false){
   if(!meta)return '';
   const shift=((Number(meta.offset||0)/Number(meta.spriteHeight||1))*100).toFixed(6);
-  return `<div class="crewbook-image-shell"><div class="crewbook-image-toolbar"><span>${escapeHTML(label||'Official Crew Book')}</span><span class="crewbook-image-tools"><button type="button" aria-label="Zoom out" onclick="crewBookImageZoom(this,-.25)">−</button><button type="button" aria-label="Reset zoom" onclick="crewBookImageZoom(this,0)">1×</button><button type="button" aria-label="Zoom in" onclick="crewBookImageZoom(this,.25)">+</button></span></div><div class="crewbook-image-viewer" data-scale="1"><div class="crewbook-image-stage" style="width:100%;aspect-ratio:${Number(meta.width)||900} / ${Number(meta.height)||600}"><img loading="lazy" src="${escapeHTML(meta.file)}" alt="${escapeHTML(label||'Official Crew Book assignment')}" style="transform:translateY(-${shift}%)"></div></div></div>`;
+  return `<div class="crewbook-image-shell"><div class="crewbook-image-toolbar"><span>${escapeHTML(label||'Official Crew Book')}</span><span class="crewbook-image-tools"><button type="button" aria-label="Zoom out" onclick="crewBookImageZoom(this,-.25)">−</button><button type="button" aria-label="Reset zoom" onclick="crewBookImageZoom(this,0)">1×</button><button type="button" aria-label="Zoom in" onclick="crewBookImageZoom(this,.25)">+</button></span></div><div class="crewbook-image-viewer" data-scale="1"><div class="crewbook-image-stage" style="width:100%;aspect-ratio:${Number(meta.width)||900} / ${Number(meta.height)||600}"><img loading="lazy" ${deferImage?'data-crewbook-lazy-src':'src'}="${escapeHTML(meta.file)}" alt="${escapeHTML(label||'Official Crew Book assignment')}" style="transform:translateY(-${shift}%)"></div></div></div>`;
 }
 function crewBookImageZoom(btn,delta){
   const shell=btn?.closest?.('.crewbook-image-shell'),viewer=shell?.querySelector?.('.crewbook-image-viewer'),stage=shell?.querySelector?.('.crewbook-image-stage');if(!viewer||!stage)return;
@@ -6580,6 +6677,7 @@ function crewBookOfficialAssignmentHTML(key,date,hit){
 }
 
 function crewBookOfficialViewerBodyHTML(key,date,hit){
+  if(hit?.source==='fatigue-relief')return go203FatigueOfficialImageBody(key,date);
   const temporaryRevisionNote='<div class="crewbook-temporary-revision-note"><strong>Note:</strong> This does not account for temporary revisions such as track work programs.</div>';
   if(!hit)return temporaryRevisionNote+'<div class="crewbook-official-unavailable">An official Crew Book assignment image is not available for this lookup.</div>';
   if(date<CREW_BOOK_GO202_IMAGE_EFFECTIVE)return temporaryRevisionNote+'<div class="crewbook-official-unavailable"><strong>Official September 8 Crew Book images are loaded and ready.</strong><br>They will become available for viewing beginning September 8. The structured result continues to use the revision applicable to the selected date.</div>';
@@ -6598,6 +6696,7 @@ function crewBookOfficialViewerBodyHTML(key,date,hit){
 
 function crewBookOfficialComparisonLaunchHTML(key,date,hit){
   if(!hit)return '';
+  if(hit.source==='fatigue-relief')return `<div class="job-compare-official-launch"><button class="job-compare-official-button" type="button" data-crewbook-key="${escapeHTML(String(key))}" data-crewbook-date="${escapeHTML(date)}" onclick="openJobCompareOfficialViewer(this)">View Official Fatigue Relief Assignment <span aria-hidden="true">↗</span></button></div>`;
   if(date<CREW_BOOK_GO202_IMAGE_EFFECTIVE)return `<div class="crewbook-official-unavailable"><strong>Official September 8 Crew Book images are loaded and ready.</strong><br>They will become available for viewing beginning September 8. This comparison continues to use the Crew Book revision applicable to the selected date.</div>`;
   const imageKey=crewBookOfficialImageKey(key,hit);if(!imageKey)return '';
   const paper=crewBookProductionIsFutureCutover(date)?null:crewBookPaperRev8VisualStatus(imageKey,date);let paperHTML='';
@@ -6616,6 +6715,7 @@ function openJobCompareOfficialViewer(btn){
   if(title)title.textContent=`${hit?.reliefCrew?'Relief Crew ':'Job '}${key} • Official Assignment`;
   if(sub)sub.textContent=`${jobCompareDayLabel(crewBookDayForDate(date))} • ${date}`;
   body.innerHTML=crewBookOfficialViewerBodyHTML(key,date,hit);modal.classList.add('open');
+  if(hit?.source==='fatigue-relief')go203FatigueRevealOfficialImage(body);
 }
 function closeJobCompareOfficialViewer(){document.getElementById('jobCompareOfficialModal')?.classList.remove('open')}
 
@@ -6672,6 +6772,7 @@ function jobCompareDayLabel(day){return day?day.charAt(0).toUpperCase()+day.slic
 function jobCompareSourceLabel(hit){
   if(!hit)return '';
   if(hit.source==='holiday')return 'Labor Day 2026';
+  if(hit.source==='fatigue-relief')return 'GO 203 Fatigue Relief';
   if(hit.source==='yard')return 'Yard Crew Book';
   if(hit.source==='yard-relief')return 'Yard Relief Crew';
   const r=hit.revision;if(r)return crewBookRevisionLabel(r);return hit.source==='passenger-relief'?'Passenger Relief Crew':'Passenger Crew Book';
@@ -6702,6 +6803,7 @@ function jobCompareReliefCoverage(key,date){
   return result;
 }
 function jobCompareReliefText(key,hit,date){
+  if(hit?.source==='fatigue-relief')return 'Temporary non-ownable assignment; no regular relief-day ownership or weekly guarantee is implied.';
   if(!hit||hit.source==='holiday')return hit?.source==='holiday'?'Holiday assignment — regular relief pattern not applicable':'—';
   const days=Array.isArray(hit.job?.relief)?hit.job.relief:[];if(!days.length)return 'No published regular relief days';
   const coverage=jobCompareReliefCoverage(key,date);
@@ -6759,6 +6861,7 @@ function jobCompareEarningsWeekMonday(key,date){
 }
 function jobCompareNormalWeekData(key,anchorDate){
   key=normalizeCrewBookKey(key);
+  if(go203FatigueIsJob(key))return {unavailable:'Temporary, non-ownable fatigue relief assignment. Weekly job earnings do not apply; use the daily if-worked estimate.'};
   const monday=jobCompareEarningsWeekMonday(key,anchorDate);
   if(!monday)return {unavailable:'No regular non-holiday week is available for this date.'};
   const firstDate=jobCompareWeekDate(monday,0),lastDate=jobCompareWeekDate(monday,6),
@@ -6823,7 +6926,7 @@ function jobCompareResolveForDay(key,date){
 function jobCompareFatigueForResolved(key,date,resolved){
   if(!fatigueBadgesVisible())return null;
   const hit=resolved?.hit;
-  if(hit?.source==='holiday'||hit?.source==='yard'||hit?.source==='yard-relief')return null;
+  if(hit?.source==='holiday'||hit?.source==='yard'||hit?.source==='yard-relief'||hit?.source==='fatigue-relief')return null;
   if(hit?.reliefCrew){
     if(!hit.coveredKey)return null;
     return go203FatigueForAssignment(hit.coveredKey,date);
@@ -6880,7 +6983,7 @@ function jobCompareCardHTML(key,date){
   const ownerReliefDay=!hit?.reliefCrew&&hit?.source!=='holiday'&&!!hit?.job?.relief?.includes(hit?.day);
   const payScenario=JOB_COMPARE_PAY_MODE==='relief'?'relief-day scenario — entire assignment at overtime':(ownerReliefDay?'regular-pay scenario — regular owner is off this day':'regular-pay scenario');
   const paySub=pay?.rateMissing?'A hire date is needed to determine your pay scale.':pay?`${pay.ratePct}% rate • ${payScenario}${hit?.source==='holiday'?' • holiday rules applied':''}${x.paysMeal?' • meal allowance included':''}`:(hit.reliefCrew?'Relief crew is off on this date.':'No active schedule to price for this date.');
-  const source=jobCompareSourceLabel(hit),official=crewBookOfficialComparisonLaunchHTML(key,date,hit);
+  const source=jobCompareSourceLabel(hit),official=hit?.source==='fatigue-relief'?crewBookOfficialComparisonLaunchHTML(key,date,hit)+go203FatigueSourceLink(hit.job):crewBookOfficialComparisonLaunchHTML(key,date,hit);
   const weeklyData=jobCompareNormalWeekData(key,date);
   const fatigue=jobCompareFatigueForResolved(key,date,resolved);
   return `<article class="job-compare-card">
@@ -6921,7 +7024,7 @@ function setQuickJobLookupMode(mode,focus=true){
 function quickLookupDateChanged(value){const browseDate=document.getElementById('quickBrowseDate');if(browseDate&&value)browseDate.value=value;runQuickJobLookup(false)}
 function quickBrowseDateChanged(value){renderQuickJobBrowse()}
 function clearQuickJobLookup(){const job=document.getElementById('quickLookupJob'),result=document.getElementById('quickLookupResult'),note=document.getElementById('quickLookupSourceNote');if(job)job.value='';if(result)result.innerHTML='<div class="quick-lookup-empty">Enter an assignment and date to begin.</div>';if(note)note.textContent='Quick Job Lookup uses the same verified Crew Book resolver as Crew Book Assistance and Job Comparison.'}
-function quickBrowseTypeLabel(type){return type==='passenger'?'Passenger Job':type==='passenger-relief'?'Passenger Relief Crew':type==='extra'?'Extra Crew':type==='yard'?'Yard Job':type==='yard-relief'?'Yard Relief Crew':'Assignment'}
+function quickBrowseTypeLabel(type){return type==='fatigue-relief'?'Fatigue Relief (non-ownable)':type==='passenger'?'Passenger Job':type==='passenger-relief'?'Passenger Relief Crew':type==='extra'?'Extra Crew':type==='yard'?'Yard Job':type==='yard-relief'?'Yard Relief Crew':'Assignment'}
 function quickBrowseDayPair(days){return (Array.isArray(days)?days:[]).map(d=>String(d||'').slice(0,3).toUpperCase()).join('/')||'—'}
 function quickBrowseReliefDays(map){return quickBrowseDayPair(CREW_BOOK_DAYS.filter(day=>!map?.[day]))}
 function quickBrowseUnique(values){return [...new Set((values||[]).map(v=>String(v||'').trim()).filter(Boolean))]}
@@ -6938,10 +7041,12 @@ function quickBrowseItems(date){
   const yardDataset=crewBookRoadYardDatasetForDate(date);
   for(const [key,job] of Object.entries(yardDataset.jobs||{})){if(!job)continue;out.push({key:String(key),type:'yard',terminals:quickBrowseUnique([job.terminal]),job,revision:crewBookRoadYardRevision(date)})}
   for(const [key,map] of Object.entries(yardDataset.relief||{})){const info={key:String(key),map,type:'yard',revision:crewBookRoadYardRevision(date)};out.push({key:String(key),type:'yard-relief',terminals:quickBrowseReliefTerminals(info),map,revision:info.revision})}
+  for(const [key,item] of Object.entries(GO203_FATIGUE_RELIEF_JOBS))if(go203FatigueActive(key,date))out.push({key,type:'fatigue-relief',terminals:[item.terminal],job:item,revision:{go:'203'}});
   return out;
 }
 function quickBrowseSort(a,b){const an=/^\d+$/.test(a.key),bn=/^\d+$/.test(b.key);if(an&&bn)return Number(a.key)-Number(b.key);if(an!==bn)return an?-1:1;return a.key.localeCompare(b.key,undefined,{numeric:true})}
 function quickBrowseMeta(item,date){
+  if(item.type==='fatigue-relief')return `${jobCompareTimeLabel(item.job.start)}–${jobCompareTimeLabel(item.job.end)} · No meals · Cannot be owned`;
   const stats=quickLookupWeeklyStats(item.key,date),earn=stats?`Weekly OT: ${fmtMinutes(stats.overtime)} • Paid meals: ${stats.meals}`:'No scheduled work in selected week';
   if(item.type==='passenger'||item.type==='yard')return `Relief: ${quickBrowseDayPair(item.job?.relief)} • ${earn}`;
   if(item.type==='passenger-relief'||item.type==='yard-relief'){const covered=quickBrowseUnique(CREW_BOOK_DAYS.map(day=>item.map?.[day])),coverText=covered.length<=5?covered.join(', '):`${covered.slice(0,5).join(', ')} +${covered.length-5} more`;return `Relief: ${quickBrowseReliefDays(item.map)} • Covers: ${coverText||'—'} • ${earn}`}
@@ -7158,6 +7263,7 @@ function go203ThanksgivingQuickLookupHTML(key,date){
  return `<article class="quick-lookup-card holiday-lookup-card"><div class="quick-lookup-head"><div class="quick-lookup-titleline"><div class="quick-lookup-job">${escapeHTML(title)}</div><div class="quick-lookup-source">Thanksgiving · Nov 26, 2026</div></div><div class="quick-lookup-state">${escapeHTML(status)}</div></div>${clock}${visibleNote}${image}<div class="holiday-lookup-reminder">Check the latest holiday scratch sheet for changes.</div>${detailHTML}</article>`;
 }
 function quickLookupResultHTML(key,date){
+  if(go203FatigueIsJob(key))return go203FatigueQuickLookupHTML(key,date);
   if(date===GO203_THANKSGIVING_DATE)return go203ThanksgivingQuickLookupHTML(key,date);
   const resolved=jobCompareResolveForDay(key,date),hit=resolved.hit,x=resolved.schedule,reliefInfo=jobCompareReliefCrewDefinition(key,date);
   if(reliefInfo)return quickLookupReliefResultHTML(key,date,resolved);
@@ -7179,6 +7285,7 @@ let COMMUNITY_CONTEXT=null;
 function communityRevisionMeta(key,date){
   const resolved=jobCompareResolveForDay(key,date),hit=resolved?.hit||null;
   if(hit?.source==='holiday')return {key:`holiday:${date}`,label:'Labor Day 2026',effective:date};
+  if(hit?.source==='fatigue-relief')return {key:`fatigue:${key}:${date}`,label:'GO 203 Fatigue Relief',effective:GO203_FATIGUE_RELIEF_EFFECTIVE};
   const rev=hit?.revision||null;
   if(hit?.source==='yard'||hit?.source==='yard-relief')return {key:`yard:${rev?.effective||'current'}`,label:'Yard Crew Book',effective:rev?.effective||'2026-07-06'};
   if(rev){const revisionKey=(rev.productionVersionId||`${rev.go}:${rev.revision}:${rev.paperRevision||0}:${rev.effective}`)+(rev.passengerBulletinRevision===2?':passenger-rev2':'');return {key:`passenger:${revisionKey}`,label:crewBookRevisionLabel(rev),effective:rev.productionEffective||rev.effective};}
@@ -7374,6 +7481,7 @@ function fillRegularMyJobFromCrewBook(){
     }
     alert(`Yard job ${key} filled from the current Yard Crew Book dataset. Relief Day marks the regular owner's days off; the assignment may still operate and be covered by another crew.`);return
   }
+  if(go203FatigueIsJob(key)){alert('Fatigue Relief assignments are never ownable. Use Add Shift to enter work performed.');return}
   if(!/^\d+$/.test(key)){alert('Enter a passenger job number or supported Yard assignment.');return}
   const rev=crewBookPassengerRevision(refDate),job=rev.jobs[key];
   if(!job||job.status==='abolished'){alert(`Job ${key} is not active in ${crewBookRevisionLabel(rev,'Passenger')} for ${refDate}.`);return}
@@ -7437,11 +7545,12 @@ function fillShiftFromCrewBook(){
     return
   }
   if(hit.job.status==='abolished'){clearCrewBookShiftAutofillFields();showCrewBookLookupWarning(`Job ${key} is abolished for this Crew Book revision.`);return}if(!hit.schedule){clearCrewBookShiftAutofillFields();showCrewBookLookupWarning(`Assignment ${key} does not have an active ${hit.day} schedule for ${date}.`);return}
-  document.getElementById('assignment').value=key;setLocationUI(hit.schedule.location||hit.job.terminal);document.getElementById('start').value=hit.schedule.start||'';document.getElementById('end').value=hit.schedule.end||'';const pm=document.getElementById('paysMealFlag');if(pm)pm.checked=!!hit.schedule.paysMeal;const mp=document.getElementById('mpteFlag');if(mp&&hit.schedule.paysMeal)mp.checked=false;calculatePreview()
+  document.getElementById('assignment').value=key;setLocationUI(hit.schedule.location||hit.job.terminal);document.getElementById('start').value=hit.schedule.start||'';document.getElementById('end').value=hit.schedule.end||'';const pm=document.getElementById('paysMealFlag');if(pm)pm.checked=!!hit.schedule.paysMeal;const mp=document.getElementById('mpteFlag');if(mp&&(hit.schedule.paysMeal||hit.source==='fatigue-relief'))mp.checked=false;calculatePreview()
 }
 function applyMyJob(){
   const j=normalizeMyJob(getMyJob());
   if(!j||!j.enabled)return;
+  if(go203FatigueIsJob(j.assignment)||go203FatigueIsJob(j.reliefCrewNumber)||Object.values(j.reliefDays||{}).some(d=>go203FatigueIsJob(d?.assignment))){alert('Fatigue Relief assignments are not ownable and cannot be used as My Job.');return}
   const date=document.getElementById('date')?.value;
   if(!date){alert('Select a date first.');return}
   const day=crewBookDayForDate(date),dayLabel=day[0].toUpperCase()+day.slice(1);
@@ -11912,6 +12021,11 @@ async function saveShift(e){
   if(e?.preventDefault)e.preventDefault();
   if(!billingRequireWriteAccess()||shiftQuotaSaveInFlight)return;
   const s=formData();
+  if(go203FatigueIsJob(s.assignment)){
+    if(!go203FatigueActive(s.assignment,s.date)){alert('This Fatigue Relief job is not applicable to this date. Check the GO 203 bulletin, weekday/weekend and General Pick dates.');return}
+    if(s.shiftType==='Own'){alert('Fatigue Relief jobs cannot be owned. Choose your actual non-own shift status.');return}
+    s.paysMeal=false;
+  }
   if(s.miscPenalty&&(!s.miscPenaltyDescription||!(s.miscPenaltyMinutes>0))){alert('For a Miscellaneous Penalty, enter the nature of the claim and a duration greater than 0:00.');document.getElementById(!s.miscPenaltyDescription?'miscPenaltyDescription':'miscPenaltyHours')?.focus();return}
   if(s.timeSlip&&!validateTimeSlipClaimPayments())return;
   if(s.yardMove&&!s.twoClassesPullTime){alert('For a 2 Classes of Service claim, enter the time you were pulled so Engineer Pay Log can compare the 2 Classes payment with pull-related overtime.');document.getElementById('twoClassesPullTime')?.focus();return}
@@ -15311,6 +15425,59 @@ async function rosterPublishPreview(){
 }
 
 // ---- Bid Sheet Assistant + developer PDF publisher ----
+
+// Withdrawn bulletins remain published history. This independently reads the
+// withdrawal flag via the matching read-only DB RPC; never infer it from missing awards.
+const BID_WITHDRAWAL_CACHE_KEY='epl_bid_sheet_withdrawal_v1';
+let bidWithdrawalState={snapshotId:'',withdrawn:false,withdrawnAt:'',loaded:false,error:''};
+function bidWithdrawalCacheRead(){try{return JSON.parse(localStorage.getItem(BID_WITHDRAWAL_CACHE_KEY)||'null')||{}}catch{return {}}}
+function bidWithdrawalCacheWrite(v){try{localStorage.setItem(BID_WITHDRAWAL_CACHE_KEY,JSON.stringify(v))}catch{}}
+function bidWithdrawalReset(snapshotId){
+  const saved=bidWithdrawalCacheRead();bidWithdrawalState={snapshotId:String(snapshotId||''),withdrawn:saved?.snapshotId===String(snapshotId||'')&&saved.withdrawn===true,withdrawnAt:saved?.snapshotId===String(snapshotId||'')?String(saved.withdrawnAt||''):'',loaded:false,error:''};
+}
+async function bidWithdrawalLoad(force=false){
+  const id=String(bidSheetState.snapshot?.id||'');if(!id){bidWithdrawalReset('');return}
+  if(id!==bidWithdrawalState.snapshotId)bidWithdrawalReset(id);
+  if(bidWithdrawalState.loaded&&!force)return;
+  const client=getCloudClient();if(!client)return;
+  try{
+    const {data,error}=await client.rpc('epl_bid_sheet_withdrawal_state',{p_snapshot_id:id});if(error)throw error;
+    if(id!==String(bidSheetState.snapshot?.id||''))return;
+    const v=data&&typeof data==='object'?data:{};
+    bidWithdrawalState={snapshotId:id,withdrawn:v.withdrawn===true,withdrawnAt:String(v.withdrawn_at||''),loaded:true,error:''};
+    bidWithdrawalCacheWrite(bidWithdrawalState);
+  }catch(err){if(id!==String(bidSheetState.snapshot?.id||''))return;bidWithdrawalState.error='Shared withdrawal status unavailable. Install and verify the accompanying read-only SQL function.';console.warn('Bid Sheet withdrawal status unavailable:',err)}
+  bidSheetRender();bidLifecycleRender();bidWithdrawalAdminRender();
+}
+function bidWithdrawalIsCurrent(){return bidWithdrawalState.snapshotId===String(bidSheetState.snapshot?.id||'')&&bidWithdrawalState.withdrawn===true}
+function bidWithdrawalAdminRender(){
+  const status=document.getElementById('bidWithdrawalAdminState'),btn=document.getElementById('bidWithdrawalAdminButton'),row=bidSheetAdminState.latest,withdrawn=bidWithdrawalIsCurrent()&&String(row?.id||'')===String(bidSheetState.snapshot?.id||'');
+  if(status)status.textContent=row?`${row.bulletin_id||'Current bulletin'} · ${withdrawn?'Withdrawn':'Published'}${bidWithdrawalState.error?' · Shared status unavailable':''}`:'No published bulletin loaded';
+  if(btn){btn.textContent=withdrawn?'Restore Bulletin (mistaken withdrawal)':'Mark Bid Sheet Withdrawn';btn.disabled=!row?.id||EPL_TEST_TOOLS_ENABLED||!bidWithdrawalState.loaded||!!bidWithdrawalState.error;btn.title=EPL_TEST_TOOLS_ENABLED?'Use Dashboard Lifecycle Test on GitHub; live writes are disabled.':''}
+}
+async function bidWithdrawalAdminToggle(){
+  if(EPL_TEST_TOOLS_ENABLED)return alert('GitHub tests do not change real published bulletin status. Use the local lifecycle test instead.');
+  if(!await rosterCheckAdmin(true))return alert('Only the authorized developer can maintain bulletin status.');
+  const row=bidSheetAdminState.latest;if(!row?.id)return alert('No published bulletin is available.');
+  if(String(row.id)!==String(bidSheetState.snapshot?.id||''))return alert('Load the latest bid sheet first and try again.');
+  if(bidWithdrawalState.error||!bidWithdrawalState.loaded)return alert('Shared withdrawal status has not been verified. Do not write until the read-only SQL function is installed.');
+  const next=!bidWithdrawalIsCurrent();
+  if(!confirm(next?`Mark ${row.bulletin_id} WITHDRAWN?\n\nOnly do this after verifying the Crew Dispatcher’s phone tape. No awards should be issued. The bid sheet and user drafts will be retained.`:`Restore ${row.bulletin_id} to active bulletin status?\n\nOnly do this to correct an erroneous withdrawal.`))return;
+  const client=getCloudClient();if(!client)return;
+  const btn=document.getElementById('bidWithdrawalAdminButton');if(btn)btn.disabled=true;
+  try{
+    const {data:latest,error:readError}=await client.from('bid_sheet_snapshots').select('id,metadata,status').eq('id',row.id).single();if(readError)throw readError;
+    if(latest?.status!=='published')throw Error('Bulletin is not in published status.');
+    const metadata={...(latest.metadata&&typeof latest.metadata==='object'?latest.metadata:{})};
+    if(next){metadata.epl_withdrawn=true;metadata.epl_withdrawn_at=new Date().toISOString();metadata.epl_withdrawn_source='crew_dispatcher_phone_tape';}
+    else{metadata.epl_withdrawn=false;metadata.epl_withdrawn_at=null;}
+    const {data:updated,error:writeError}=await client.from('bid_sheet_snapshots').update({metadata}).eq('id',row.id).eq('status','published').select('id').single();if(writeError)throw writeError;if(!updated?.id)throw Error('No published bulletin row was updated.');
+    await bidWithdrawalLoad(true);if(bidWithdrawalIsCurrent()!==next)throw Error('Shared status verification did not match the saved value.');
+    bidSheetSetStatus(next?'Bulletin withdrawn. No awards expected; original bid choices retained.':'Bulletin withdrawal reversed.','success');
+  }catch(err){bidSheetSetStatus(`Withdrawal change was not verified: ${err?.message||String(err)}`,'error');console.error(err)}
+  finally{bidWithdrawalAdminRender()}
+}
+
 const BID_SHEET_PARSER_VERSION='bid_sheet_pdf_v1';
 const BID_SHEET_CACHE_KEY='epl_bid_sheet_cache_v1';
 const BID_STAGING_TEST_ISOLATED=EPL_TEST_TOOLS_ENABLED; // GitHub is device-isolated. Cloudflare uses account sync.
@@ -15329,7 +15496,7 @@ let bidLifecycleTestState=bidLifecycleReadTestState();
 
 function bidLifecycleReadTestState(){
   if(!EPL_TEST_TOOLS_ENABLED){try{localStorage.removeItem(BID_LIFECYCLE_TEST_KEY)}catch{};return {date:'',results:'auto'}}
-  try{const raw=localStorage.getItem(BID_LIFECYCLE_TEST_KEY),x=raw?JSON.parse(raw):{};return {date:/^\d{4}-\d{2}-\d{2}$/.test(String(x?.date||''))?String(x.date):'',results:['pending','posted'].includes(String(x?.results||''))?String(x.results):'auto'}}catch{return {date:'',results:'auto'}}
+  try{const raw=localStorage.getItem(BID_LIFECYCLE_TEST_KEY),x=raw?JSON.parse(raw):{};return {date:/^\d{4}-\d{2}-\d{2}$/.test(String(x?.date||''))?String(x.date):'',results:['pending','posted','withdrawn'].includes(String(x?.results||''))?String(x.results):'auto'}}catch{return {date:'',results:'auto'}}
 }
 function bidLifecycleTestActive(){return !!EPL_TEST_TOOLS_ENABLED&&!!rosterAdminState.canPublish&&(!!bidLifecycleTestState.date||bidLifecycleTestState.results!=='auto')}
 function bidLifecycleDate(){return EPL_TEST_TOOLS_ENABLED&&rosterAdminState.canPublish&&bidLifecycleTestState.date?bidLifecycleTestState.date:isoLocal(new Date())}
@@ -15352,6 +15519,7 @@ function bidLifecycleExpectedAwardsDate(snapshot){
 }
 function bidLifecyclePhase(){
   const s=bidSheetState.snapshot;if(!s)return {key:'none',date:bidLifecycleDate(),results:false};const today=bidLifecycleDate(),results=bidLifecycleResultsAvailable();
+  if(EPL_TEST_TOOLS_ENABLED&&rosterAdminState.canPublish&&bidLifecycleTestState.results==='withdrawn'||bidWithdrawalIsCurrent())return {key:'withdrawn',date:today,results:false};
   if(s.open_date&&today<s.open_date)return {key:'upcoming',date:today,results};
   if(s.close_date&&today<=s.close_date)return {key:'open',date:today,results};
   if(!results)return {key:'results_pending',date:today,results:false};
@@ -15364,7 +15532,7 @@ function bidSheetDraftLockedMessage(){
   const phase=bidLifecyclePhase();if(phase.key==='upcoming')return `Pre-bid planning is available now. Official bidding opens ${bidSheetDateLabel(bidSheetState.snapshot?.open_date)}.`;return `This bulletin closed ${bidSheetDateLabel(bidSheetState.snapshot?.close_date)}. Your saved list is preserved as a read-only personal reference.`;
 }
 function bidLifecycleApplyTest(){
-  if(!EPL_TEST_TOOLS_ENABLED||!rosterAdminState.canPublish)return;const date=String(document.getElementById('bidLifecycleTestDate')?.value||''),results=String(document.getElementById('bidLifecycleTestResults')?.value||'auto');bidLifecycleTestState={date:/^\d{4}-\d{2}-\d{2}$/.test(date)?date:'',results:['pending','posted'].includes(results)?results:'auto'};localStorage.setItem(BID_LIFECYCLE_TEST_KEY,JSON.stringify(bidLifecycleTestState));bidLifecycleInitControls();bidSheetRender();awardRender();bidLifecycleRender();
+  if(!EPL_TEST_TOOLS_ENABLED||!rosterAdminState.canPublish)return;const date=String(document.getElementById('bidLifecycleTestDate')?.value||''),results=String(document.getElementById('bidLifecycleTestResults')?.value||'auto');bidLifecycleTestState={date:/^\d{4}-\d{2}-\d{2}$/.test(date)?date:'',results:['pending','posted','withdrawn'].includes(results)?results:'auto'};localStorage.setItem(BID_LIFECYCLE_TEST_KEY,JSON.stringify(bidLifecycleTestState));bidLifecycleInitControls();bidSheetRender();awardRender();bidLifecycleRender();
 }
 function bidLifecycleClearTest(){
   if(!EPL_TEST_TOOLS_ENABLED)return;
@@ -15382,6 +15550,11 @@ function bidLifecycleRender(){
   const phase=bidLifecyclePhase(),s=bidSheetState.snapshot,p=bidLifecycleCurrentAwardPayload(),choices=(bidSheetDraftState.snapshotId===String(s.id)&&bidSheetDraftState.loaded)?bidSheetDraftState.choices.length:0,bulletin=escapeHTML(s.bulletin_id||'Current bulletin');
   if((phase.key==='awarded'||phase.key==='effective')&&p?.match_found){host.classList.remove('show');host.innerHTML='';return}
   if(phase.key==='off_cycle'||phase.key==='none'){host.classList.remove('show');host.innerHTML='';return}
+  if(phase.key==='withdrawn'){
+    const days=bidWithdrawalState.withdrawnAt?(Date.parse(phase.date+'T12:00:00')-Date.parse(bidWithdrawalState.withdrawnAt))/86400000:0;
+    if(bidWithdrawalState.withdrawnAt&&days>3){host.classList.remove('show');host.innerHTML='';return}
+    host.className='bid-lifecycle-alert show';host.innerHTML=`<div class="bid-lifecycle-kicker">BULLETIN UPDATE</div><div class="bid-lifecycle-title">${bulletin} Bid Sheet Withdrawn</div><div class="bid-lifecycle-copy">Bid Sheet has been withdrawn. Listen to the Crew Dispatcher’s phone tape for official confirmation.</div><div class="bid-lifecycle-actions"><button class="btn" type="button" onclick="openBidSheetAssistant()">View Archived Bid Sheet</button></div>`;return;
+  }
   let cls='',kicker='',title='',copy='',actions=`<button class="btn" type="button" onclick="openBidSheetAssistant()">View Bid Sheet</button>`;
   if(phase.key==='upcoming'){cls='';kicker='Pre-bid planning';title=`${bulletin} opens ${escapeHTML(bidSheetDateLabel(s.open_date))}`;copy=choices?`${choices} choice${choices===1?'':'s'} already saved in your planned priority order. You can keep building and reordering your list now; it will remain saved when bidding opens.`:`${Number(s.row_count||bidSheetState.rows.length)} advertised assignments are available now. Build and arrange your personal priority list before bidding opens; Engineer Pay Log does not submit an official bid.`;if(choices)actions+=`<button class="btn primary" type="button" onclick="bidSheetOpenCallReady()">View Prepared List</button>`}
   else if(phase.key==='open'){cls='open';kicker='Bid sheet open';title=`${bulletin} closes ${escapeHTML(bidSheetDateLabel(s.close_date))}`;copy=choices?`${choices} choice${choices===1?'':'s'} saved in your call-in priority order.`:'Build your personal priority list before the bulletin closes.';if(choices)actions+=`<button class="btn primary" type="button" onclick="bidSheetOpenCallReady()">Call-Ready List</button>`}
@@ -15717,7 +15890,7 @@ async function bidSheetLoadAdminLatest(){
   if(!rosterAdminState.canPublish)return null;const client=getCloudClient(),el=document.getElementById('bidSheetAdminLatest');if(!client)return null;
   try{
     const {data,error}=await client.from('bid_sheet_snapshots').select('id,bulletin_id,bulletin_name,open_date,effective_date,close_date,posted_date,row_count,uploaded_at,status').eq('status','published').order('posted_date',{ascending:false}).order('uploaded_at',{ascending:false}).limit(1).maybeSingle();if(error)throw error;
-    bidSheetAdminState.latest=data||null;if(el)el.innerHTML=data?`<strong>Latest published bid sheet:</strong> ${escapeHTML(data.bulletin_id)} • ${Number(data.row_count||0)} assignments • closes ${escapeHTML(bidSheetDateLabel(data.close_date))}`:'<strong>No bid sheet has been published yet.</strong> Your first validated upload will establish the feature.';return data||null;
+    bidSheetAdminState.latest=data||null;bidWithdrawalAdminRender();if(el)el.innerHTML=data?`<strong>Latest published bid sheet:</strong> ${escapeHTML(data.bulletin_id)} • ${Number(data.row_count||0)} assignments • closes ${escapeHTML(bidSheetDateLabel(data.close_date))}`:'<strong>No bid sheet has been published yet.</strong> Your first validated upload will establish the feature.';return data||null;
   }catch(err){console.warn('Latest bid sheet load failed:',err);if(el)el.textContent='Bid Sheet database setup is required before publishing.';return null}
 }
 async function bidSheetPublishPreview(){
@@ -15739,14 +15912,14 @@ async function bidSheetPublishPreview(){
 function bidSheetCacheSave(payload){try{localStorage.setItem(BID_SHEET_CACHE_KEY,JSON.stringify(payload))}catch{}}
 function bidSheetCacheLoad(){try{const raw=localStorage.getItem(BID_SHEET_CACHE_KEY);return raw?JSON.parse(raw):null}catch{return null}}
 async function bidSheetLoad(force=false){
-  if(bidSheetState.loaded&&!force&&!bidSheetState.error){bidStagingLoad(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);await bidStagingMaybeSync();return}
+  if(bidSheetState.loaded&&!force&&!bidSheetState.error){bidStagingLoad(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);await bidStagingMaybeSync();await bidWithdrawalLoad();return}
   const summary=document.getElementById('bidSheetSummary');if(summary){summary.classList.add('show');summary.textContent='Loading the latest published bid sheet...'}
   const client=getCloudClient();
-  if(!client){const cached=bidSheetCacheLoad();bidSheetState={snapshot:cached?.snapshot||null,rows:cached?.rows||[],loaded:true,cached:!!cached,error:cached?null:'Cloud connection unavailable.'};bidStagingLoad(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);await bidStagingMaybeSync();return}
+  if(!client){const cached=bidSheetCacheLoad();bidSheetState={snapshot:cached?.snapshot||null,rows:cached?.rows||[],loaded:true,cached:!!cached,error:cached?null:'Cloud connection unavailable.'};bidStagingLoad(bidSheetState.snapshot?.id||'');bidWithdrawalReset(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',false);await bidStagingMaybeSync();return}
   try{
     const {data,error}=await client.rpc('bid_sheet_current_data');if(error)throw error;const payload=data||{snapshot:null,rows:[]};bidSheetCacheSave(payload);bidSheetState={snapshot:payload.snapshot||null,rows:Array.isArray(payload.rows)?payload.rows:[],loaded:true,cached:false,error:null};
   }catch(err){console.warn('Bid Sheet Assistant load failed:',err);const cached=bidSheetCacheLoad();bidSheetState={snapshot:cached?.snapshot||null,rows:cached?.rows||[],loaded:true,cached:!!cached,error:cached?null:(err?.message||String(err))}}
-  bidStagingLoad(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',force);await bidStagingMaybeSync();
+  bidStagingLoad(bidSheetState.snapshot?.id||'');bidWithdrawalReset(bidSheetState.snapshot?.id||'');bidSheetRender();await bidSheetDraftLoad(bidSheetState.snapshot?.id||'',force);await bidStagingMaybeSync();await bidWithdrawalLoad(force);
 }
 function openBidSheetAssistant(){
   if(crewToolsTraineeRestricted()){alert(isRosterTraineeSafeguard()?'Bid Sheet Assistant is not available while your current roster assignment is an Engineer Trainee (ET) assignment.':'Bid Sheet Assistant is not available while Engineer Trainee Mode is active.');return}
@@ -15754,6 +15927,7 @@ function openBidSheetAssistant(){
 }
 function bidSheetStatus(snapshot){
   const today=bidLifecycleDate(),open=snapshot?.open_date,close=snapshot?.close_date,effective=snapshot?.effective_date,phase=bidLifecyclePhase();
+  if(phase.key==='withdrawn')return {key:'withdrawn',label:'Withdrawn · no awards will be issued'};
   if(open&&today<open)return {key:'upcoming',label:`Upcoming • opens ${bidSheetDateLabel(open)}`};
   if(close&&today<=close)return {key:'open',label:`Open for bids • closes ${bidSheetDateLabel(close)}`};
   if(phase.key==='results_pending')return {key:'closed',label:`Closed • results pending`};
@@ -16227,6 +16401,8 @@ async function awardLoadAdminLatest(){
   if(!rosterAdminState.canPublish)return null;const client=getCloudClient(),el=document.getElementById('awardAdminLatest');if(!client)return null;try{const {data,error}=await client.from('award_snapshots').select('id,bulletin_id,effective_date,row_count,uploaded_at,status').eq('status','published').order('effective_date',{ascending:false}).order('uploaded_at',{ascending:false}).limit(1).maybeSingle();if(error)throw error;awardAdminState.latest=data||null;if(el)el.innerHTML=data?`<strong>Latest published awards:</strong> ${escapeHTML(data.bulletin_id)} • ${Number(data.row_count||0)} awards • effective ${escapeHTML(bidSheetDateLabel(data.effective_date))}`:'<strong>No Bulletin Awards have been published yet.</strong> Upload the official results after they are posted.';return data||null}catch(err){console.warn('Latest awards load failed:',err);if(el)el.textContent='Awards database setup is required before publishing.';return null}
 }
 async function awardPublishPreview(){
+  await bidWithdrawalLoad(true);if(bidWithdrawalState.error||!bidWithdrawalState.loaded){alert('Unable to verify the bulletin withdrawal status. Awards publishing is blocked until the shared status can be checked.');return}
+  if(bidWithdrawalIsCurrent()){alert('This bid sheet is marked withdrawn. Bulletin Awards cannot be published against it.');return}
   const parsed=awardPreviewState;if(!parsed?.valid||!parsed.relatedBid?.id)return;if(!await rosterCheckAdmin(true)){awardSetStatus('This account is no longer authorized to publish awards.','error');return}const client=getCloudClient(),user=rosterAdminState.user||await cloudCurrentUser(client);if(!client||!user)return;const diff=parsed.differences,warning=diff&&(diff.extra.length||diff.missing.length)?`\n\nReview warning: ${diff.bidCount} advertised / ${diff.awardCount} awarded${diff.extra.length?`\nAwards-only: ${diff.extra.join(', ')}`:''}${diff.missing.length?`\nBid-only: ${diff.missing.join(', ')}`:''}`:'';if(!confirm(`Publish Bulletin Awards ${parsed.bulletinId}?\n\n${parsed.rows.length} private award rows\nEffective ${bidSheetDateLabel(parsed.effectiveDate)}${warning}\n\nEmployee names will NOT be uploaded.`))return;const btn=document.getElementById('awardPublishBtn');if(btn){btn.disabled=true;btn.textContent='Publishing...'}awardSetStatus('Checking for a duplicate Awards PDF...');let snapshotId=null;try{const {data:existing,error:existingError}=await client.from('award_snapshots').select('id,status,bulletin_id').eq('source_sha256',parsed.sha256).maybeSingle();if(existingError)throw existingError;if(existing)throw new Error(`This exact Awards PDF was already uploaded${existing.status==='published'?' and published':''}.`);const metadata={pages:parsed.pages,declared_total:parsed.declaredTotal,bid_sheet_row_count:parsed.differences?.bidCount??null,awards_only_assignments:parsed.differences?.extra||[],bid_only_assignments:parsed.differences?.missing||[]};const {data:snapshot,error:snapshotError}=await client.from('award_snapshots').insert({bid_sheet_snapshot_id:parsed.relatedBid.id,bulletin_id:parsed.bulletinId,bulletin_name:parsed.bulletinName,sequence_number:parsed.sequence,open_date:parsed.openDate,effective_date:parsed.effectiveDate,close_date:parsed.closeDate,posted_date:parsed.postedDate,source_file_name:parsed.file.name,source_sha256:parsed.sha256,row_count:parsed.rows.length,uploaded_by:user.id,status:'draft',parser_version:AWARD_PARSER_VERSION,metadata}).select('id').single();if(snapshotError)throw snapshotError;snapshotId=snapshot.id;const cleanRows=parsed.rows.map(r=>({snapshot_id:snapshotId,assignment:r.assignment,employee_id:r.employee_id,position_code:r.position_code,rank:r.rank,roster:r.roster,first_rank:r.first_rank,first_roster:r.first_roster,source_page:r.source_page,row_order:r.row_order}));const {error:rowsError}=await client.from('award_rows').insert(cleanRows);if(rowsError)throw rowsError;const {error:publishError}=await client.from('award_snapshots').update({status:'published'}).eq('id',snapshotId);if(publishError)throw publishError;let pushQueueWarning='';if(!EPL_TEST_TOOLS_ENABLED){try{await pushInvoke({action:'notify_award_snapshot',snapshot_id:snapshotId})}catch(pushErr){console.warn('Award push queue failed:',pushErr);pushQueueWarning=' Push alerts could not be queued; awards are still published.'}}awardSetStatus(`Published ${parsed.bulletinId} with ${parsed.rows.length} private award rows. Employee names were not stored.${pushQueueWarning}`,'success');awardPreviewState=null;document.getElementById('awardAdminPreview')?.classList.remove('show');const input=document.getElementById('awardPdfInput');if(input)input.value='';awardState.loaded=false;await awardLoadAdminLatest();await awardLoad(true)}catch(err){console.error('Awards publish failed:',err);if(snapshotId){try{await client.from('award_snapshots').delete().eq('id',snapshotId)}catch{}}awardSetStatus(`Awards were not published: ${err?.message||err}`,'error')}finally{if(btn){btn.disabled=!awardPreviewState?.valid;btn.textContent='Publish Awards'}}
 }
 function awardRender(){

@@ -1,0 +1,367 @@
+{
+  "source": "go203_fatigue_relief_20261109.pdf",
+  "source_sha256": "19743d1e095a4a385abde69076292f8d8cb831717cecf14c65eae6d724e980d6",
+  "count": 24,
+  "images": [
+    {
+      "key": "EFJR1",
+      "page": 1,
+      "file": "assets/crewbook/go203_fatigue_efjr1_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        88.5,
+        541.0,
+        168.43
+      ],
+      "width": 1491,
+      "height": 241,
+      "sha256": "7073230ba7587d66829820711c0b25687d99b9e04355cc0656bbee2a6f37bc75",
+      "bytes": 32761
+    },
+    {
+      "key": "EFLR1",
+      "page": 1,
+      "file": "assets/crewbook/go203_fatigue_eflr1_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        172.72,
+        541.0,
+        252.66
+      ],
+      "width": 1491,
+      "height": 240,
+      "sha256": "37e1129063358ee8e8edc893f6eb841ff880a4fe50cb56569a58663f21d137eb",
+      "bytes": 38195
+    },
+    {
+      "key": "EFNR1",
+      "page": 1,
+      "file": "assets/crewbook/go203_fatigue_efnr1_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        256.94,
+        541.0,
+        346.24
+      ],
+      "width": 1491,
+      "height": 269,
+      "sha256": "1a23d9cbfc19f4d45c97cab2691e656cc00b9059ab16dd90f41679bdcc94d761",
+      "bytes": 41999
+    },
+    {
+      "key": "EFBR1",
+      "page": 1,
+      "file": "assets/crewbook/go203_fatigue_efbr1_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        350.52,
+        541.0,
+        430.47
+      ],
+      "width": 1491,
+      "height": 241,
+      "sha256": "ea83541aaf659331da8334e0fa5b3b30e728b716a7a9386eead145c490760e8a",
+      "bytes": 32711
+    },
+    {
+      "key": "EFPR1",
+      "page": 1,
+      "file": "assets/crewbook/go203_fatigue_efpr1_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        434.82,
+        541.0,
+        524.12
+      ],
+      "width": 1491,
+      "height": 269,
+      "sha256": "e19050a39514157b5d18e0cd1852fb2957efc09076a87318333bc6bf7c62cde9",
+      "bytes": 41479
+    },
+    {
+      "key": "EFGR1",
+      "page": 2,
+      "file": "assets/crewbook/go203_fatigue_efgr1_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        48.54,
+        541.0,
+        128.48
+      ],
+      "width": 1491,
+      "height": 241,
+      "sha256": "3b97b791b1c7051be25755d91442f9df281068acc9938adc069d14d4c6735442",
+      "bytes": 36047
+    },
+    {
+      "key": "EFNR2",
+      "page": 2,
+      "file": "assets/crewbook/go203_fatigue_efnr2_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        132.76,
+        541.0,
+        222.07
+      ],
+      "width": 1491,
+      "height": 269,
+      "sha256": "38934247d9616f797d85255514ec85d672f10044b76f96725c4410b58d5c8756",
+      "bytes": 36493
+    },
+    {
+      "key": "EFGR2",
+      "page": 2,
+      "file": "assets/crewbook/go203_fatigue_efgr2_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        226.36,
+        541.0,
+        315.66
+      ],
+      "width": 1491,
+      "height": 268,
+      "sha256": "708fe0cfd5e678dd5464aeb4f6c49b9dfd0c1b7e37fa5a25242b46d9edeb9287",
+      "bytes": 44489
+    },
+    {
+      "key": "EFKR1",
+      "page": 2,
+      "file": "assets/crewbook/go203_fatigue_efkr1_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        319.94,
+        541.0,
+        399.89
+      ],
+      "width": 1491,
+      "height": 241,
+      "sha256": "a04e53a1559738716b0ea554f7532b388c26dfb4b7ca7c791633a9da1cb151a4",
+      "bytes": 36369
+    },
+    {
+      "key": "EFGR3",
+      "page": 2,
+      "file": "assets/crewbook/go203_fatigue_efgr3_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        404.22,
+        541.0,
+        493.52
+      ],
+      "width": 1491,
+      "height": 269,
+      "sha256": "d84864835a10e0eb0fe51ac8f395de55046329473fff3dbd4e871cf9d83c0ffb",
+      "bytes": 40870
+    },
+    {
+      "key": "EFGR4",
+      "page": 3,
+      "file": "assets/crewbook/go203_fatigue_efgr4_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        48.54,
+        541.0,
+        137.84
+      ],
+      "width": 1491,
+      "height": 269,
+      "sha256": "35ddd81f38038b3a410661df83930a689f0851ed17cad2cff46499894cd0da36",
+      "bytes": 40071
+    },
+    {
+      "key": "EFWR1",
+      "page": 3,
+      "file": "assets/crewbook/go203_fatigue_efwr1_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        142.12,
+        541.0,
+        231.42
+      ],
+      "width": 1491,
+      "height": 269,
+      "sha256": "dd166679bdb47cf278c6b9e58c64d4af0a1348489fbc7376240dfe746d844898",
+      "bytes": 40981
+    },
+    {
+      "key": "EFNW1",
+      "page": 3,
+      "file": "assets/crewbook/go203_fatigue_efnw1_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        245.1,
+        541.0,
+        334.4
+      ],
+      "width": 1491,
+      "height": 269,
+      "sha256": "706e96ec1718e8e57c17f9ba16b17e7da3d9c0b3759bf8afcbb3f88aeefb797c",
+      "bytes": 44271
+    },
+    {
+      "key": "EFJW1",
+      "page": 3,
+      "file": "assets/crewbook/go203_fatigue_efjw1_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        338.68,
+        541.0,
+        427.98
+      ],
+      "width": 1491,
+      "height": 268,
+      "sha256": "efb4cad9fbc60a156d99ffdf1640f9a217552ebd186c0a1c49dd30eac23c0540",
+      "bytes": 39999
+    },
+    {
+      "key": "EFNW2",
+      "page": 3,
+      "file": "assets/crewbook/go203_fatigue_efnw2_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        432.27,
+        541.0,
+        521.58
+      ],
+      "width": 1491,
+      "height": 269,
+      "sha256": "2f5907a3fbc7918c266a615b9c04edebf72ce800c91746a2710ff2d47729c95a",
+      "bytes": 36948
+    },
+    {
+      "key": "EFPW1",
+      "page": 4,
+      "file": "assets/crewbook/go203_fatigue_efpw1_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        48.54,
+        541.0,
+        137.84
+      ],
+      "width": 1491,
+      "height": 269,
+      "sha256": "75231c4813a9520ab95fe7099cfc93b7fe5bb52be0d7f47a1b8163a9c9f49776",
+      "bytes": 43201
+    },
+    {
+      "key": "EFGW1",
+      "page": 4,
+      "file": "assets/crewbook/go203_fatigue_efgw1_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        142.12,
+        541.0,
+        231.42
+      ],
+      "width": 1491,
+      "height": 269,
+      "sha256": "d152a9771321060d038a5ac710e77eed9dd03fa2cbd122ca20a400969fa1a3fb",
+      "bytes": 41735
+    },
+    {
+      "key": "EFBW1",
+      "page": 4,
+      "file": "assets/crewbook/go203_fatigue_efbw1_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        235.71,
+        541.0,
+        315.64
+      ],
+      "width": 1491,
+      "height": 240,
+      "sha256": "f565639fe4113a25f620d7ff45ab5e86e973b5d48bb76c7c37853dcd53b073a7",
+      "bytes": 37103
+    },
+    {
+      "key": "EFPW2",
+      "page": 4,
+      "file": "assets/crewbook/go203_fatigue_efpw2_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        319.93,
+        541.0,
+        409.29
+      ],
+      "width": 1491,
+      "height": 269,
+      "sha256": "9e8cc2fa439b3a33e83bf707a95f123a8bd8e5ca99eb6a419af49d485ee59fc8",
+      "bytes": 42194
+    },
+    {
+      "key": "EFKW1",
+      "page": 4,
+      "file": "assets/crewbook/go203_fatigue_efkw1_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        413.57,
+        541.0,
+        493.51
+      ],
+      "width": 1491,
+      "height": 241,
+      "sha256": "800f1b0aea13556c20561ee01d521b13d84c1a73855f8f7e8debb2705294ff6f",
+      "bytes": 35730
+    },
+    {
+      "key": "EFFW1",
+      "page": 5,
+      "file": "assets/crewbook/go203_fatigue_effw1_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        48.54,
+        541.0,
+        137.84
+      ],
+      "width": 1491,
+      "height": 269,
+      "sha256": "33f407c6b7f9d37c7e67bfb7c79d0c88a81c038e475ee920e8bbae5fc8169cf1",
+      "bytes": 40713
+    },
+    {
+      "key": "EFGW2",
+      "page": 5,
+      "file": "assets/crewbook/go203_fatigue_efgw2_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        142.12,
+        541.0,
+        231.42
+      ],
+      "width": 1491,
+      "height": 269,
+      "sha256": "c73287f91c42d9f82df6ebef3cea685b20163440e79a2a7a715e3432af4ad67f",
+      "bytes": 42111
+    },
+    {
+      "key": "EFNW3",
+      "page": 5,
+      "file": "assets/crewbook/go203_fatigue_efnw3_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        235.71,
+        541.0,
+        325.01
+      ],
+      "width": 1491,
+      "height": 269,
+      "sha256": "e6164313086a81a619a6ec2034fdf6d8bbf4fe88ad007e17e0b86eba0f71efe4",
+      "bytes": 46564
+    },
+    {
+      "key": "EFNW4",
+      "page": 5,
+      "file": "assets/crewbook/go203_fatigue_efnw4_20261109.jpg",
+      "pdfCrop": [
+        44.0,
+        329.29,
+        541.0,
+        418.65
+      ],
+      "width": 1491,
+      "height": 269,
+      "sha256": "bf0ea4324c99903d22ed748736d163dbf0dbbd21acfd859d13ddb0641216fbef",
+      "bytes": 40936
+    }
+  ]
+}
