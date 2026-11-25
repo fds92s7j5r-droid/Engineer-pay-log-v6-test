@@ -542,6 +542,38 @@ html[data-theme="dark"] .fatigue-informational-warning{background:#413615;color:
     html[data-theme="dark"] .calc strong,
     html[data-theme="dark"] .calc .section-title h2{color:#fff!important}
 
+
+/* R5F RC3: uncommon bulletin withdrawal controls remain collapsed until explicitly opened. */
+.bid-withdrawn-details{margin:10px 0;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}
+.bid-withdrawn-details>summary{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:13px 15px;list-style:none;cursor:pointer;font-weight:850;color:var(--ink)}
+.bid-withdrawn-details>summary::-webkit-details-marker{display:none}
+.bid-withdrawn-details>summary:after{content:'+';font-size:19px;color:var(--muted);line-height:1}
+.bid-withdrawn-details[open]>summary:after{content:'−'}
+.bid-withdrawn-details .roster-admin-drop{margin:0 10px 10px}
+.shift-type-choice.shift-type-ineligible{opacity:.42;cursor:not-allowed}
+.history-list-row{cursor:pointer}
+.history-list-row:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.shift-readonly-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.shift-readonly-caption{display:block;margin-top:4px;color:var(--muted);font-size:12px;font-weight:750}
+.shift-readonly-summary{padding:14px;border-radius:13px;background:var(--bg);border:1px solid var(--line)}
+.shift-readonly-kicker{color:var(--muted);font-size:12px;font-weight:750}
+.shift-readonly-summary h3{font-size:24px;line-height:1.25;margin:4px 0 8px;color:var(--ink)}
+.shift-readonly-location{margin-top:7px;font-size:13px;color:var(--muted)}
+.shift-readonly-section{padding:14px 0;border-bottom:1px solid var(--line)}
+.shift-readonly-section h3{font-size:16px;margin:0 0 10px;color:var(--ink)}
+.shift-readonly-section h4{font-size:13px;margin:10px 0 5px;color:var(--ink)}
+.shift-readonly-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.shift-readonly-info{padding:10px 12px;border:1px solid var(--line);border-radius:10px;min-width:0;background:var(--bg)}
+.shift-readonly-label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.shift-readonly-value{font-size:16px;font-weight:800;line-height:1.4;margin-top:4px;color:var(--ink);overflow-wrap:anywhere}
+.shift-readonly-chips{display:flex;flex-wrap:wrap;gap:6px}
+.shift-readonly-chip{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;background:var(--bg);border:1px solid var(--line);font-size:11px;font-weight:800;color:var(--ink)}
+.shift-readonly-pay-row{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;color:var(--ink)}
+.shift-readonly-pay-row strong{font-variant-numeric:tabular-nums;text-align:right}
+.shift-readonly-pay-row.total{font-size:18px;font-weight:850;border-bottom:0}
+.shift-readonly-note{font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ink);line-height:1.5}
+@media(max-width:460px){.shift-readonly-grid{grid-template-columns:1fr 1fr}.shift-readonly-value{font-size:14px}}
+
     /* List view */
     .history-month-head{
       display:flex;align-items:center;justify-content:space-between;gap:12px;
@@ -2809,13 +2841,16 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
           <summary><span><strong>Bid Sheet Maintenance</strong><small>Bid Sheet PDF upload, preview, and publishing.</small></span><span class="developer-summary-right"><span class="roster-admin-badge">Developer</span><span class="settings-chevron">›</span></span></summary>
           <div class="developer-tool-disclosure-body">
         <div id="bidSheetAdminLatest" class="account-sync-detail">Checking the latest published bid sheet...</div>
-        <div class="roster-admin-drop" id="bidWithdrawalAdminBox">
+        <details class="bid-withdrawn-details" id="bidWithdrawalDisclosure">
+          <summary>Withdrawn Bid Sheet</summary>
+          <div class="roster-admin-drop" id="bidWithdrawalAdminBox">
           <div class="account-claim-kicker">Official Bulletin Status</div>
           <div id="bidWithdrawalAdminState" class="account-sync-detail">Loading withdrawal status...</div>
           <p class="muted">Use only when the Crew Dispatcher's official phone tape confirms a bulletin has been withdrawn. This preserves the original bid sheet, saved choices, and historical data; it does not publish awards.</p>
           <button id="bidWithdrawalAdminButton" class="btn small" type="button" onclick="bidWithdrawalAdminToggle()" disabled>Mark Bid Sheet Withdrawn</button>
           <p class="muted">GitHub preview: direct status writes are disabled. Test the Withdrawn phase with Dashboard Lifecycle Test below.</p>
-        </div>
+          </div>
+        </details>
         <div class="bid-lifecycle-test-box" id="bidLifecycleDeveloperTestBox">
           <div class="account-claim-kicker">Developer testing</div>
           <strong>Dashboard Lifecycle Test</strong>
@@ -3384,7 +3419,9 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
        <h3>24 Temporary Fatigue Relief Jobs</h3>
        <p>Quick Job Lookup and Add Shift now recognize 12 weekday and 12 weekend assignments effective November 9, 2026. Each assignment includes a zoomable official image excerpt that loads only when opened and is cached for repeat viewing. All have no scheduled meal and can never be owned or bid on. Holiday lookups use weekend portions when applicable; verify actual assignments with the railroad. These jobs expire when the Summer 2027 General Pick takes effect.</p>
        <h3>Withdrawn Bid Sheets</h3>
-       <p>When Crew Dispatch confirms withdrawal and the developer marks a bulletin withdrawn, EPL stops displaying awards-pending alerts and briefly displays the withdrawal notice. Original sheets and saved choices remain available for reference. Always rely on the Crew Dispatcher’s official phone tape.</p>
+       <p>Withdrawn bulletin maintenance is tucked away until needed. When confirmed and marked withdrawn, EPL stops displaying awards-pending alerts and briefly displays the withdrawal notice.</p>
+       <h3>View Saved Shifts</h3>
+       <p>Tap a shift in Dashboard Recent Shifts or History to see its saved crew names, times, pay, and notes without opening the editor. Edit and Duplicate remain separate buttons.</p>
        <h3>Earlier V11.1 Updates</h3>
       <h3>Holiday Assignments at a Glance</h3>
       <p>Trim Assistant now shows work badges for Thanksgiving, Christmas Day, New Year's Day, and Presidents Day. See the actual H-job or other holiday assignment where published. Quick Job Lookup provides holiday report and release times and the relevant Crew Book schedule when available. Check the latest holiday scratch sheet for any changes.</p>
@@ -3550,6 +3587,17 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
       <button class="btn" type="button" onclick="bidSheetExportPDF()">Export PDF</button>
       <button class="btn" type="button" onclick="bidSheetCloseCallReady()">Done</button>
     </div>
+  </div>
+</div>
+
+<div id="shiftReadOnlyModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="shiftReadOnlyTitle" onclick="if(event.target===this)closeReadOnlyShift()">
+  <div class="modal-card shift-readonly-card">
+    <div class="modal-head shift-readonly-head">
+      <div><h2 id="shiftReadOnlyTitle">Shift details</h2><span class="shift-readonly-caption">View only</span></div>
+      <button class="btn small" type="button" onclick="closeReadOnlyShift()">Close</button>
+    </div>
+    <div class="modal-body" id="shiftReadOnlyBody"></div>
+    <div class="modal-foot"><button class="btn primary" type="button" onclick="closeReadOnlyShift()">Done</button></div>
   </div>
 </div>
 
@@ -3844,7 +3892,7 @@ const RATE_TABLES={"60":{"minute":[null,[0.573,0.86,0.01],[1.146,1.719,0.02],[1.
 
 const HIRE_DATE_KEY='engineerPayLogHireDate';
 const APP_VERSION='11.1';
-const WHATS_NEW_VERSION='11.1-r5f-rc2-fatigue-withdrawn-official-images-20261124';
+const WHATS_NEW_VERSION='11.1-r5f-rc3-fatigue-withdrawn-shift-view-20261124';
 const CONTACT_EMAIL='admin@engineerpaylog.com';
 const LAST_BACKUP_KEY='engineerPayLogLastBackupAt';
 const BACKUP_REMIND_LATER_KEY='engineerPayLogBackupRemindLaterUntil';
@@ -6530,7 +6578,7 @@ function go203FatigueOfficialImageBody(key,date){
   const meta=go203FatigueOfficialImageMeta(key,date),item=go203FatigueDefinition(key,date);
   if(!item)return '';
   if(!meta)return `<div class="crewbook-official-unavailable">The Nov. 9 official image is not shown because an updated schedule may apply. Consult the current railroad bulletin.</div>`+go203FatigueSourceLink(item);
-  return crewBookSpriteCropHTML(meta,'Official GO 203 Fatigue Relief • '+item.key,true)+`<div class="crewbook-image-caption">Individual crop of the official GO 203 fatigue relief bulletin, November 9, 2026. Opened images are cached for repeat viewing; the EPL summary stays date-aware; official railroad instructions take precedence. Later official revisions may supersede this excerpt.</div>`;
+  return crewBookSpriteCropHTML(meta,'Official GO 203 Fatigue Relief • '+item.key,true);
 }
 function go203FatigueOfficialAssignmentHTML(key,date){
   const item=go203FatigueDefinition(key,date);if(!item)return '';
@@ -6542,7 +6590,7 @@ function go203FatigueQuickLookupHTML(key,date){
   if(!item)return '';
   const expired=!!GO203_FATIGUE_NEXT_PICK_EFFECTIVE&&date>=GO203_FATIGUE_NEXT_PICK_EFFECTIVE;
   const reason=date<GO203_FATIGUE_RELIEF_EFFECTIVE?'Not yet effective':expired?'Expired at Summer 2027 General Pick':'Not assigned on this day; '+(go203FatiguePortion(date)==='weekend'?'weekend':'weekday')+' fatigue jobs only';
-  return `<article class="quick-lookup-card"><div class="quick-lookup-head"><div class="quick-lookup-titleline"><div class="quick-lookup-job">${escapeHTML(item.key)}</div><div class="quick-lookup-source">GO 203 Fatigue Relief · effective Nov 9, 2026</div></div><div class="quick-lookup-terminal">${escapeHTML(item.terminal)}</div><div class="quick-lookup-state">${escapeHTML(date)} · ${item.portion==='weekday'?'Monday–Friday':'Saturday–Sunday / holidays'} · Never ownable</div></div><div class="crewbook-paper-banner"><strong>Temporary assignment · no scheduled meal</strong> · ${active?'May be worked as assigned, but cannot be owned or bid. Standard engineer pay rules apply.':'Inactive for this date: '+escapeHTML(reason)+'.'} The source bulletin lists no meal period.</div><div class="quick-lookup-grid"><div class="quick-lookup-fact"><div class="label">Report</div><div class="value">${active?escapeHTML(jobCompareTimeLabel(item.start)):'—'}</div></div><div class="quick-lookup-fact"><div class="label">Release</div><div class="value">${active?escapeHTML(jobCompareTimeLabel(item.end)):'—'}</div></div><div class="quick-lookup-fact"><div class="label">Duration</div><div class="value">${active?escapeHTML(fmtMinutes(jobCompareDuration(item.start,item.end))):'—'}</div></div><div class="quick-lookup-fact"><div class="label">Meal</div><div class="value">None</div></div></div>${active?`<h3 style="margin:16px 0 8px">Published train movements</h3>${go203FatigueMovementsHTML(item)}`:''}${go203FatigueOfficialAssignmentHTML(key,date)}<div class="quick-lookup-actions" style="margin-top:12px">${go203FatigueSourceLink(item)}</div><div class="quick-lookup-exception">Holiday use is possible but NOT confirmed by this bulletin. Check the official scratch sheet and Crew Dispatcher for whether an assignment actually operates. Future revisions will be applied by effective date. When the Summer 2027 General Pick takes effect, these jobs expire but historical lookups remain available.</div></article>`;
+  return `<article class="quick-lookup-card"><div class="quick-lookup-head"><div class="quick-lookup-titleline"><div class="quick-lookup-job">${escapeHTML(item.key)}</div><div class="quick-lookup-source">GO 203 Fatigue Relief · effective Nov 9, 2026</div></div><div class="quick-lookup-terminal">${escapeHTML(item.terminal)}</div><div class="quick-lookup-state">${escapeHTML(date)} · ${item.portion==='weekday'?'Monday–Friday':'Saturday–Sunday / holidays'} · Non-ownable</div></div>${active?'':`<div class="quick-lookup-exception">Not valid for this date: ${escapeHTML(reason)}.</div>`}<div class="quick-lookup-grid"><div class="quick-lookup-fact"><div class="label">Report</div><div class="value">${active?escapeHTML(jobCompareTimeLabel(item.start)):'—'}</div></div><div class="quick-lookup-fact"><div class="label">Release</div><div class="value">${active?escapeHTML(jobCompareTimeLabel(item.end)):'—'}</div></div><div class="quick-lookup-fact"><div class="label">Duration</div><div class="value">${active?escapeHTML(fmtMinutes(jobCompareDuration(item.start,item.end))):'—'}</div></div><div class="quick-lookup-fact"><div class="label">Meal</div><div class="value">None</div></div></div>${active?`<h3 style="margin:16px 0 8px">Published train movements</h3>${go203FatigueMovementsHTML(item)}`:''}${go203FatigueOfficialAssignmentHTML(key,date)}<div class="quick-lookup-actions" style="margin-top:12px">${go203FatigueSourceLink(item)}</div></article>`;
 }
 
 function crewBookLookupJobV8(input,date){
@@ -7692,15 +7740,29 @@ function mealFlagChanged(which){
   if(which==='penalty'&&pen?.checked&&pays)pays.checked=false;
   calculatePreview();
 }
+function fatigueOwnNotAllowed(){return go203FatigueIsJob(document.getElementById('assignment')?.value||'')}
+function refreshFatigueOwnOption(){
+  const checkbox=document.querySelector('input[name="shiftTypeChoice"][value="Own"]');
+  if(!checkbox)return;
+  const blocked=fatigueOwnNotAllowed();
+  checkbox.disabled=blocked;
+  const tile=checkbox.closest('.shift-type-choice');
+  if(tile){tile.classList.toggle('shift-type-ineligible',blocked);tile.setAttribute('aria-disabled',String(blocked));tile.title=blocked?'Fatigue relief jobs cannot be owned':''}
+  if(blocked&&checkbox.checked){checkbox.checked=false;if(document.getElementById('shiftType')?.value==='Own')document.getElementById('shiftType').value=''}
+}
 function chooseShiftTypeTile(event,tile){
   if(event.target && event.target.matches('input[type="checkbox"]'))return;
   const box=tile.querySelector('input[type="checkbox"]');
-  if(!box)return;
+  if(!box||box.disabled)return;
   box.checked=true;
   chooseShiftType(box);
 }
-function chooseShiftType(box){document.querySelectorAll('input[name="shiftTypeChoice"]').forEach(b=>{if(b!==box)b.checked=false});document.getElementById('shiftType').value=box.checked?box.value:'';calculatePreview()}
-function setShiftTypeUI(value){document.getElementById('shiftType').value=value||'';document.querySelectorAll('input[name="shiftTypeChoice"]').forEach(b=>b.checked===false?null:null);document.querySelectorAll('input[name="shiftTypeChoice"]').forEach(b=>{b.checked=b.value===(value||'')})}
+function chooseShiftType(box){
+  if(box.disabled||(box.value==='Own'&&fatigueOwnNotAllowed())){box.checked=false;refreshFatigueOwnOption();return}
+  document.querySelectorAll('input[name="shiftTypeChoice"]').forEach(b=>{if(b!==box)b.checked=false});
+  document.getElementById('shiftType').value=box.checked?box.value:'';calculatePreview()
+}
+function setShiftTypeUI(value){document.getElementById('shiftType').value=value||'';document.querySelectorAll('input[name="shiftTypeChoice"]').forEach(b=>{b.checked=b.value===(value||'')});refreshFatigueOwnOption()}
 function formData(){
   const $=id=>document.getElementById(id);
   const a2h=Math.max(0,Number($('a2Hours').value)||0),a2m=Math.min(59,Math.max(0,Number($('a2Minutes').value)||0));
@@ -7797,6 +7859,7 @@ function handleShiftDateChange(){
   updateHolidayPayEligibilityUI();toggleSpecialShift();renderTimeSlipDeadlinePreview();calculatePreview();
 }
 function calculatePreview(){
+  refreshFatigueOwnOption();
   refreshFatigueEditor();
   const $=id=>document.getElementById(id),s=formData(),holidayBox=$('holidayFlag');
   communityRefreshShiftPanelFromForm();
@@ -12660,6 +12723,52 @@ function setFatigueBadgeDisplay(enabled){
   }
 }
 
+
+// R5F RC3: Read-only shift viewer. This function must never mutate or save a shift.
+function shiftViewInfo(label,value){
+  return `<div class="shift-readonly-info"><div class="shift-readonly-label">${escapeHTML(label)}</div><div class="shift-readonly-value">${escapeHTML(value===null||value===undefined||value===''?'—':String(value))}</div></div>`;
+}
+function shiftViewPayRows(c){
+  const entries=[['Regular pay','regular'],['Overtime','ot'],['Night differential','night'],['Holiday pay','holidayBonus'],['Daily certification','dailyCertPay'],['Meal period','mptePay'],['Freight meal','freightMealPay'],['Fuel claim','fuelClaimPay'],['OT upon completion','otCompletionPay'],['Trainee','ponePay'],['Without conductor','noCoPay'],['Yard certification','certPay'],['Commingle','comminglePay'],['Two classes of service','classesPay'],['Sheridan / Shop / House','sheridanPay'],['Terminal not in crew book','terminalPay'],['Runaround','runaroundPay'],['Time on time','a2'],['Miscellaneous penalty','miscPenaltyPay'],['Other','specialPay']];
+  return entries.filter(([,key])=>Number(c[key])>0.001).map(([label,key])=>`<div class="shift-readonly-pay-row"><span>${escapeHTML(label)}</span><strong>${money(c[key])}</strong></div>`).join('');
+}
+function shiftViewRecordedFlags(s){
+  const defs=[['Holiday',s.holiday],['Short swing',s.ssot],['Relief day',s.rd],['Pays meal period',s.paysMeal],['Meal period',s.mpte],['Freight meal',s.freightMeal],['Fuel claim',s.fuelClaim],['Unscheduled overtime',s.unscheduledOT],['Overtime upon completion',s.otCompletion],['Trainee',s.pone],['Operating without conductor',s.noCo],['Yard certification',s.cert],['Commingle',s.commingle],['Two classes of service',s.yardMove],['Sheridan / Shop / House',s.sheridanMove],['Terminal not in crew book',s.terminalNotCrewBook],['Runaround',s.runaround],['Time on time',s.a2],['Miscellaneous penalty',s.miscPenalty]];
+  return defs.filter(([,on])=>!!on).map(([name])=>`<span class="shift-readonly-chip">${escapeHTML(name)}</span>`).join('');
+}
+function shiftViewTimeSlipHTML(s){
+  if(!s.timeSlip)return '';
+  const claims=Array.isArray(s.timeSlipClaimTypes)?s.timeSlipClaimTypes:[];
+  const payments=normalizeClaimPayments(s.timeSlipClaimPayments,claims);
+  const claimRows=claims.map(key=>{
+    const meta=TIME_SLIP_CLAIM_TYPES.find(x=>x.key===key),status=payments[key]?.status||'';
+    return `<div class="shift-readonly-pay-row"><span>${escapeHTML(meta?.title||meta?.label||key)}</span><strong>${escapeHTML(status||'Claimed')}</strong></div>`;
+  }).join('');
+  const dates=[['Written',s.timeSlipWritten],['Submitted',s.timeSlipSubmitted],['Received',s.timeSlipConfirmedReceived],['Resolved',s.timeSlipResolved]].filter(([,value])=>value).map(([label,value])=>shiftViewInfo(label,formatDateShort(value))).join('');
+  const followups=(Array.isArray(s.timeSlipFollowUps)?s.timeSlipFollowUps:[]).map(f=>`<div class="shift-readonly-note">${escapeHTML(f.spokeWith||'Follow-up')}${f.note?` — ${escapeHTML(f.note)}`:''}</div>`).join('');
+  return `<section class="shift-readonly-section"><h3>Time slip</h3><div class="shift-readonly-grid">${shiftViewInfo('Status',timeSlipDisplayStatus(s))}${s.timeSlipLocation?shiftViewInfo('Submitted at',s.timeSlipLocation):''}${dates}</div>${claimRows?`<div class="shift-readonly-pay">${claimRows}</div>`:''}${followups?`<h4>Follow-ups</h4>${followups}`:''}${timeSlipPhotoCount(s)?`<p class="muted">${timeSlipPhotoCount(s)} photo${timeSlipPhotoCount(s)===1?'':'s'} on file</p>`:''}</section>`;
+}
+function viewShiftReadOnly(id){
+  const s=shifts.find(item=>String(item.id)===String(id));
+  const modal=document.getElementById('shiftReadOnlyModal'),body=document.getElementById('shiftReadOnlyBody');
+  if(!s||!modal||!body)return;
+  const c=calculate(s),hasPay=!!c&&!c.rateMissing&&Number.isFinite(c.total);
+  const headline=s.classDay?'Class':(s.specialShift||s.assignment||'Shift');
+  const flags=shiftViewRecordedFlags(s),crew=s.traineeMode?shiftViewInfo('Instructor',s.engineerName||'Not recorded')+shiftViewInfo('Engineer IBM',s.engineerIBM||'Not recorded'):shiftViewInfo('Conductor',s.conductorName||'Not recorded')+shiftViewInfo('Brakeman',s.brakemanName||'Not recorded');
+  const timeInfo=s.start||s.end?`<section class="shift-readonly-section"><h3>Time</h3><div class="shift-readonly-grid">${shiftViewInfo('Start',s.start?jobCompareTimeLabel(s.start):'—')}${shiftViewInfo('Release',s.end?jobCompareTimeLabel(s.end):'—')}${hasPay?shiftViewInfo('Actual / payable',fmtMinutes(c.actual)+' / '+fmtMinutes(c.payable)):''}</div></section>`:'';
+  const savedNotes=[s.notes?`<section class="shift-readonly-section"><h3>Notes</h3><div class="shift-readonly-note">${escapeHTML(s.notes)}</div></section>`:'',s.miscPenaltyDescription?`<section class="shift-readonly-section"><h3>Penalty details</h3><div class="shift-readonly-note">${escapeHTML(s.miscPenaltyDescription)}</div></section>`:''].join('');
+  body.innerHTML=`<div class="shift-readonly-summary"><div class="shift-readonly-kicker">${escapeHTML(fullDateLabel(s.date))}</div><h3>${escapeHTML(headline)}</h3>${s.shiftType?`<span class="shift-readonly-chip">${escapeHTML(s.shiftType)}</span>`:''}<div class="shift-readonly-location">${escapeHTML(s.location?canonicalLocation(s.location):(s.specialCategory||''))}</div></div>
+  <section class="shift-readonly-section"><h3>Crew</h3><div class="shift-readonly-grid">${crew}</div></section>
+  ${timeInfo}
+  ${flags?`<section class="shift-readonly-section"><h3>Recorded pay flags</h3><div class="shift-readonly-chips">${flags}</div></section>`:''}
+  ${hasPay?`<section class="shift-readonly-section"><h3>Calculated pay</h3><div class="shift-readonly-pay">${shiftViewPayRows(c)}<div class="shift-readonly-pay-row total"><span>Total</span><strong>${money(c.total)}</strong></div></div></section>`:`<section class="shift-readonly-section"><h3>Calculated pay</h3><p class="muted">${c?.rateMissing?'Hire date needed for pay calculation.':'Pay estimate unavailable.'}</p></section>`}
+  ${shiftViewTimeSlipHTML(s)}${savedNotes}`;
+  modal.classList.add('open');
+  modal.querySelector('.modal-body')?.scrollTo(0,0);
+}
+function closeReadOnlyShift(){document.getElementById('shiftReadOnlyModal')?.classList.remove('open')}
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&document.getElementById('shiftReadOnlyModal')?.classList.contains('open')){event.preventDefault();closeReadOnlyShift()}});
+
 function shiftHTML(s,options={}){
   const c=calculate(s),parts=historyDateParts(s.date);
   let tags=[];
@@ -12686,7 +12795,8 @@ function shiftHTML(s,options={}){
     detail=[time,location].filter(Boolean).join(' • ');
   }
 
-  return `<div class="history-list-row${s.timeSlip?' timeslip':''}" style="--history-accent:${historyAccentColor(s)}">
+  const safeShiftId=escapeHTML(s.id);
+  return `<div class="history-list-row${s.timeSlip?' timeslip':''}" style="--history-accent:${historyAccentColor(s)}" data-shift-id="${safeShiftId}" tabindex="0" role="group" aria-label="Shift ${escapeHTML(s.assignment||s.specialShift||'details')} on ${escapeHTML(fullDateLabel(s.date))}. Tap to view details." onclick="if(!event.target.closest('button,a,input,select,textarea'))viewShiftReadOnly(this.dataset.shiftId)" onkeydown="if(event.target===this&&(event.key==='Enter'||event.key===' ')){event.preventDefault();viewShiftReadOnly(this.dataset.shiftId)}" title="Tap to view saved shift details">
     <div class="history-date-block"><div class="history-dow">${parts.dow}</div><div class="history-day">${parts.day}</div></div>
     <div class="history-accent" aria-hidden="true"></div>
     <div class="history-row-main">
@@ -12696,7 +12806,7 @@ function shiftHTML(s,options={}){
     <div class="history-row-right">
       <div class="history-row-pay">${c&&!c.rateMissing?money(Number.isFinite(Number(options.payOverride))?Number(options.payOverride):c.total):'—'}</div>
       ${options.payNote?`<div class="mini" style="max-width:190px;text-align:right;margin-left:auto">${escapeHTML(options.payNote)}</div>`:''}
-      <div class="history-row-actions"><button class="btn small" onclick="duplicateShift('${s.id}')">Duplicate</button><button class="btn small" onclick="editShift('${s.id}')">Edit</button></div>
+      <div class="history-row-actions"><button class="btn small" onclick="event.stopPropagation();duplicateShift(this.closest('.history-list-row').dataset.shiftId)">Duplicate</button><button class="btn small" onclick="event.stopPropagation();editShift(this.closest('.history-list-row').dataset.shiftId)">Edit</button></div>
     </div>
   </div>`;
 }

@@ -1,4 +1,4 @@
-const CACHE_NAME='epl-v11-1-fatigue-withdrawn-rc2-images-20261124';
+const CACHE_NAME='epl-v11-1-fatigue-withdrawn-rc3-readonly-20261124';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./GO203_ROAD_YARD_DRAFT_NOV9_2026.pdf'];
 
 self.addEventListener('install',e=>e.waitUntil(
