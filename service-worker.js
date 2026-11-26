@@ -1,4 +1,4 @@
-const CACHE_NAME='epl-v11-1-holiday-h-jobs-rc2-20261126';
+const CACHE_NAME='epl-v11-1-holiday-rc2-fatigue-prefs-persist-r2-20261126';
 const APP_SHELL=['./','./index.html','./demo.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png','./icons/presenting-engineer.jpg','./GO203_ROAD_YARD_DRAFT_NOV9_2026.pdf'];
 
 self.addEventListener('install',e=>e.waitUntil(

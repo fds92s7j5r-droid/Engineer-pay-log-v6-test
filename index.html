@@ -3208,11 +3208,19 @@ html[data-theme="dark"] .nav #nav-add{background:#315f91!important;color:#fff!im
 
         <div class="settings-pref-section" id="fatigueBadgeDisplaySettingsCard">
           <div class="settings-row settings-toggle-row borderless-row">
-            <div><strong>Show Fatigue Classifications</strong><small>Display Type 1 / Type 2 throughout EPL, including Dashboard, History, Job Comparison, and Quick Job Lookup. This setting does not change saved classifications, pay calculations, or Hours of Service notices.</small></div>
-            <label class="switch-label" aria-label="Show fatigue classifications throughout EPL"><input id="fatigueBadgeDisplayToggle" type="checkbox" onchange="setFatigueBadgeDisplay(this.checked)" checked><span class="switch-ui" aria-hidden="true"></span></label>
+            <div><strong>Show Fatigue Classifications</strong><small>Display Type 1 / Type 2 on Dashboard, History, Job Comparison, and Quick Job Lookup. Add Shift has its own display setting below. This does not change saved classifications or pay calculations.</small></div>
+            <label class="switch-label" aria-label="Show fatigue classifications throughout EPL"><input id="fatigueBadgeDisplayToggle" type="checkbox" onchange="setFatigueBadgeDisplay(this.checked)"><span class="switch-ui" aria-hidden="true"></span></label>
           </div>
-          <div class="mini" role="note" style="margin-top:10px;line-height:1.5"><strong>Important — Published Fatigue Types and Hours of Service:</strong> EPL reproduces fatigue classifications from the fatigue information at the back of the official LIRR Crew Book. The railroad has occasionally published incorrect fatigue types in the past. If the railroad publishes an incorrect fatigue type, EPL will display that incorrect type. <strong>EPL does not, and will NEVER, independently determine fatigue type.</strong> <strong>EPL must NEVER be used as an authority for Hours of Service (HOS) compliance or legal eligibility to work.</strong> Always verify fatigue classifications and HOS requirements through official railroad sources and procedures.</div>
-          <div class="mini" style="margin-top:7px">This preview saves the display choice on this device; cross-device preference sync will be added separately.</div>
+          <details class="settings-inline-details" id="fatigueSafetyDetails" style="margin-top:10px"><summary>Fatigue classifications &amp; Hours of Service — important information</summary><div class="notice details-copy">EPL reproduces the published fatigue classifications from the official LIRR Crew Book. The railroad has occasionally published incorrect classifications, which EPL may therefore reproduce. <strong>EPL never independently determines fatigue type, Hours of Service compliance, rest eligibility, or whether an engineer can legally work.</strong> Verify fatigue classifications and Hours of Service obligations with official railroad sources and procedures.</div></details>
+          <div class="mini" style="margin-top:7px">Off unless you turn it on. Your choice is saved on this device; a missing or reset preference will stay off.</div>
+        </div>
+
+        <div class="settings-pref-section" id="shiftFatigueDisplaySettingsCard">
+          <div class="settings-row settings-toggle-row borderless-row">
+            <div><strong>Show Fatigue Information in Add Shift</strong><small>Show or hide the published fatigue type, release-time comparison, and related fatigue notices while entering or editing a shift. This is a display choice only; your times, pay, and saved fatigue records are not changed.</small></div>
+            <label class="switch-label" aria-label="Show fatigue information in Add Shift"><input id="shiftFatigueDisplayToggle" type="checkbox" onchange="setShiftFatigueDisplay(this.checked)"><span class="switch-ui" aria-hidden="true"></span></label>
+          </div>
+          <div class="mini" style="margin-top:7px">Off by default and independent of the other fatigue settings. Your choice is saved on this device. Turn it on to review or change a shift-specific fatigue override.</div>
         </div>
 
         <div class="settings-pref-section" id="bidFatigueDisplaySettingsCard">
@@ -3890,6 +3898,7 @@ const NET_ESTIMATOR_ENABLED_KEY='engineerPayLogNetEstimatorEnabled';
 const NET_PAY_HISTORY_KEY='engineerPayLogNetPayHistory';
 const HISTORY_VIEW_KEY='engineerPayLogHistoryView';
 const FATIGUE_BADGE_DISPLAY_KEY='engineerPayLogShowFatigueBadges_v1';
+const SHIFT_FATIGUE_DISPLAY_KEY='engineerPayLogShowShiftFatigueInfo_v1';
 const BID_FATIGUE_FILTER_DISPLAY_KEY='engineerPayLogShowBidFatigueFilters_v1';
 const CREW_BOOK_ASSIST_KEY='engineerPayLogCrewBookAssist';
 const CREW_BOOK_ASSIST_SEEN_KEY='engineerPayLogCrewBookAssistSeen';
@@ -12639,7 +12648,9 @@ function refreshFatigueEditor(){
   const publishedRow=GO203_PASSENGER_FATIGUE[numericJob];
   const eligibleContext=!special&&!trainee&&/^\d{4}-\d{2}-\d{2}$/.test(date)&&date>=GO203_FATIGUE_EFFECTIVE&&/^\d{1,4}$/.test(numericJob);
   const informativeNoType=eligibleContext&&!f;
-  root.style.display=(available||informativeNoType)?'block':'none';
+  // Presentation-only preference. Keep all underlying calculations and saved
+  // engineer overrides intact even when the Add Shift panel is hidden.
+  root.style.display=fatigueShiftDetailsVisible()&&(available||informativeNoType)?'block':'none';
   const key=available?`${f.job}|${f.date}`:'';
   if(root.dataset.fatigueKey!==key){
     document.getElementById('fatigueOverrideSelect').value='';
@@ -12708,7 +12719,7 @@ function refreshFatigueEditor(){
     const overnight=fatigueAfterMidnightNotice(assignment,date,start,end,review);
     warn.innerHTML=overnight
       ?'<strong>Hours of Service — Review</strong><div style="margin-top:4px">This published Type 1 assignment has a changed release time that appears to finish after midnight. Under SI 100-R, an inadvertently late Type 1 finish requires immediate notification to Crew Management, except when deadheading back to the initial terminal. Rest requirements may change; EPL does not decide fatigue type or rest eligibility.</div>'
-      :'<strong>Release-time change — Review</strong><div style="margin-top:4px">The recorded release differs from GO 203. Only the engineer can record a different fatigue type after determining it is appropriate. Check with Crew Management as needed; EPL does not reclassify the assignment or determine rest eligibility.</div>';
+      :'<strong>Release differs from GO 203</strong><div style="margin-top:4px">EPL does not change your published fatigue type. Verify with Crew Management if needed.</div>';
   }
 }
 function go203FatigueForShift(s){
@@ -12727,11 +12738,12 @@ function go203FatigueForShift(s){
 // End GO 203 published fatigue classifications.
 
 // Presentation only: never changes the GO 203 classification or SI 100-R notice.
-// Default ON for discovery; R4.13 GitHub testing stores this preference locally.
+// Explicit opt-in. If local storage is empty, reset, or unavailable, never
+// reactivate fatigue classification displays without an engineer selecting ON.
 let fatigueBadgeDisplayFallback=null;
 function fatigueBadgesVisible(){
   if(fatigueBadgeDisplayFallback!==null)return fatigueBadgeDisplayFallback;
-  try{return localStorage.getItem(FATIGUE_BADGE_DISPLAY_KEY)!=='0'}catch{return true}
+  try{return localStorage.getItem(FATIGUE_BADGE_DISPLAY_KEY)==='1'}catch{return false}
 }
 function syncFatigueBadgeDisplaySetting(){
   const el=document.getElementById('fatigueBadgeDisplayToggle');
@@ -12742,6 +12754,8 @@ function setFatigueBadgeDisplay(enabled){
   fatigueBadgeDisplayFallback=show;
   try{localStorage.setItem(FATIGUE_BADGE_DISPLAY_KEY,show?'1':'0')}catch{}
   syncFatigueBadgeDisplaySetting();
+  syncShiftFatigueDisplaySetting();
+  if(document.getElementById('shiftModal')?.classList.contains('open'))refreshFatigueEditor();
   renderDashboard();
   renderHistory();
   if(getHistoryView()==='calendar')renderHistoryCalendar();
@@ -12756,6 +12770,26 @@ function setFatigueBadgeDisplay(enabled){
   }
 }
 
+
+// Independent, presentation-only Add Shift fatigue preference. For existing users,
+// this surface is OFF until explicitly enabled, independently of other
+// fatigue display choices. Missing/unreadable storage also remains OFF.
+// Nothing is sent to Supabase.
+let shiftFatigueDisplayFallback=null;
+function fatigueShiftDetailsVisible(){
+  if(shiftFatigueDisplayFallback!==null)return shiftFatigueDisplayFallback;
+  try{return localStorage.getItem(SHIFT_FATIGUE_DISPLAY_KEY)==='1'}catch{return false}
+}
+function syncShiftFatigueDisplaySetting(){
+  const el=document.getElementById('shiftFatigueDisplayToggle');
+  if(el)el.checked=fatigueShiftDetailsVisible();
+}
+function setShiftFatigueDisplay(enabled){
+  shiftFatigueDisplayFallback=!!enabled;
+  try{localStorage.setItem(SHIFT_FATIGUE_DISPLAY_KEY,enabled?'1':'0')}catch{}
+  syncShiftFatigueDisplaySetting();
+  if(document.getElementById('shiftModal')?.classList.contains('open'))refreshFatigueEditor();
+}
 
 // R5F RC3: Read-only shift viewer. This function must never mutate or save a shift.
 function shiftViewInfo(label,value){
@@ -16958,8 +16992,8 @@ function trimDevClearFilters(){
 
 // ---- End developer roster PDF importer ----
 
-function renderAll(){developerApplyEnvironmentVisibility();crewOpsRender();void refreshRosterTraineeSafeguard();renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();trimDevUpdateModeAvailability();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI();void pushRenderSettings();void pushRenderDashboardPrompt()}
-function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){trimDevUpdateModeAvailability();void renderDashboardCommunityNotes();void bidLifecycleLoad(false);void pushRenderDashboardPrompt();setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison'){if(!trimCompareLaunchPending)trimCompareOpeningFromTrim=false;trimCompareSyncReturnButton();initJobComparison();}else if(trimCompareOpeningFromTrim){trimCompareOpeningFromTrim=false;trimCompareSyncReturnButton();}if(v==='lookup')initQuickJobLookup();if(v==='futurepick')renderFutureGeneralPickFoundation();if(v==='trim'){if(trimCompareSkipNextTrimReload)trimCompareSkipNextTrimReload=false;else void trimDevLoad(false);}if(v==='bid')void bidSheetLoad(false);if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();applyAppearance();updateInstallSettingsVisibility();developerRenderTestState();crewOpsRender();void rosterCheckAdmin();void refreshRosterTraineeSafeguard()}renderMyJobUI()}
+function renderAll(){developerApplyEnvironmentVisibility();crewOpsRender();void refreshRosterTraineeSafeguard();renderDashboard();renderHistory();renderTimeSlipCenter();renderSavedJobs();renderPaycheck();updateBackupUI();updateTraineeModeUI();trimDevUpdateModeAvailability();loadMyJobSettings();renderMyJobUI();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();syncFatigueBadgeDisplaySetting();syncShiftFatigueDisplaySetting();applyAppearance();setHistoryView(getHistoryView(),false);const v=document.getElementById('settingsAppVersion');if(v)v.textContent=APP_VERSION;updateInstallSettingsVisibility();renderMyJobWeekPreview();billingRenderUI();void pushRenderSettings();void pushRenderDashboardPrompt()}
+function showView(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));const view=document.getElementById(v+'View');if(view)view.classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));const n=document.getElementById('nav-'+v);if(n)n.classList.add('active');if(v==='dashboard'){trimDevUpdateModeAvailability();void renderDashboardCommunityNotes();void bidLifecycleLoad(false);void pushRenderDashboardPrompt();setTimeout(()=>void renderDashboardCommunityNotes(),350)}if(v==='history')renderHistory();if(v==='timeslips')renderTimeSlipCenter();if(v==='savedjobs')renderSavedJobs();if(v==='paychecks')renderPaycheck();if(v==='comparison'){if(!trimCompareLaunchPending)trimCompareOpeningFromTrim=false;trimCompareSyncReturnButton();initJobComparison();}else if(trimCompareOpeningFromTrim){trimCompareOpeningFromTrim=false;trimCompareSyncReturnButton();}if(v==='lookup')initQuickJobLookup();if(v==='futurepick')renderFutureGeneralPickFoundation();if(v==='trim'){if(trimCompareSkipNextTrimReload)trimCompareSkipNextTrimReload=false;else void trimDevLoad(false);}if(v==='bid')void bidSheetLoad(false);if(v==='settings'){updateBackupUI();loadMyJobSettings();renderCrewBookAssistUI();renderNetEstimatorSettings();renderTimeSlipWageSettings();loadVacationGrossSettings();syncFatigueBadgeDisplaySetting();syncShiftFatigueDisplaySetting();applyAppearance();updateInstallSettingsVisibility();developerRenderTestState();crewOpsRender();void rosterCheckAdmin();void refreshRosterTraineeSafeguard()}renderMyJobUI()}
 function getFilteredHistoryShifts(){
   const q=(document.getElementById('historySearch')?.value||'').toLowerCase();
   return shifts.filter(s=>[
